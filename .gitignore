@@ -1,0 +1,21 @@
+# SQLite database files — this is real family data, not code.
+# The database itself lives outside git (see README).
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# DBeaver workspace/project files (local connection settings,
+# credentials, cached metadata — specific to each person's machine)
+.dbeaver/
+*.dbeaver-data-sources.xml
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# Editor clutter
+.vscode/
+*.swp
