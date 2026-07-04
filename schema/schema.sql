@@ -26,17 +26,37 @@ CREATE TABLE Persons (
 );
 
 -- ------------------------------------------------------------
--- (planned) Relationships: links between Persons
---   e.g. biological_parent, step_parent, spouse
+-- Relationships: links between Persons
+--   relationship_type: 'biological_parent', 'step_parent', 'spouse'
+--     - for 'biological_parent'/'step_parent': person_id_1 is the
+--       parent, person_id_2 is the child
+--     - for 'spouse': person_id_1/person_id_2 order doesn't matter
+--   status/start_date/end_date only apply to 'spouse' rows:
+--     - status: 'married', 'divorced', or 'widowed'
+--     - start_date: marriage date
+--     - end_date: divorce date, or date of spouse's death if widowed
+--   Siblings are NOT stored here — they're derived by querying for
+--   people who share a parent, to avoid duplicating data that could
+--   drift out of sync.
 -- ------------------------------------------------------------
--- CREATE TABLE Relationships ( ... );
+CREATE TABLE Relationships (
+    relationship_id   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    person_id_1       INTEGER NOT NULL,
+    person_id_2       INTEGER NOT NULL,
+    relationship_type TEXT NOT NULL,
+    status            TEXT,
+    start_date        DATE,
+    end_date          DATE,
+    CONSTRAINT Relationships_Persons_FK_1 FOREIGN KEY (person_id_1) REFERENCES Persons(person_id),
+    CONSTRAINT Relationships_Persons_FK_2 FOREIGN KEY (person_id_2) REFERENCES Persons(person_id)
+);
 
 -- ------------------------------------------------------------
--- (planned) Families: family groupings with description/image
+-- (planned) Families: couples/partnerships with description/image
 -- ------------------------------------------------------------
 -- CREATE TABLE Families ( ... );
 
 -- ------------------------------------------------------------
--- (planned) Images: photos linked to Persons and/or Families
+-- (planned) Media: photos and documents linked to Persons/Families
 -- ------------------------------------------------------------
--- CREATE TABLE Images ( ... );
+-- CREATE TABLE Media ( ... );
