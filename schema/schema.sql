@@ -52,9 +52,16 @@ CREATE TABLE Relationships (
 );
 
 -- ------------------------------------------------------------
--- (planned) Families: couples/partnerships with description/image
+-- Families: couples/partnerships with description/image
 -- ------------------------------------------------------------
--- CREATE TABLE Families ( ... );
+CREATE TABLE Families (
+	family_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	person_id_1 INTEGER,
+	person_id_2 INTEGER,
+	description TEXT,
+	CONSTRAINT Families_Persons_FK FOREIGN KEY (person_id_1) REFERENCES Persons(person_id),
+	CONSTRAINT Families_Persons_FK_1 FOREIGN KEY (person_id_2) REFERENCES Persons(person_id)
+);
 
 -- ------------------------------------------------------------
 -- (planned) Media: photos and documents linked to Persons/Families
