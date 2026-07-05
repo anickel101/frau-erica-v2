@@ -22,29 +22,32 @@ CREATE TABLE Persons (
     last_name     TEXT NOT NULL,
     middle_name   TEXT,
     date_of_birth DATE,
-    date_of_death DATE
+    date_of_death DATE,
+    notes         TEXT
 );
 
 -- ------------------------------------------------------------
 -- Relationships: links between Persons
---   relationship_type: 'biological_parent', 'step_parent', 'spouse'
---     - for 'biological_parent'/'step_parent': person_id_1 is the
---       parent, person_id_2 is the child
+--   relationship_type: 'biological_parent', 'step_parent',
+--     'adoptive_parent', 'spouse'
+--     - for parent types: person_id_1 is the parent, person_id_2
+--       is the child
 --     - for 'spouse': person_id_1/person_id_2 order doesn't matter
 --   status/start_date/end_date only apply to 'spouse' rows:
---     - status: 'married', 'divorced', or 'widowed'
+--     - status: 'married', 'divorced', 'widowed', or 'separated'
 --     - start_date: marriage date
 --     - end_date: divorce date, or date of spouse's death if widowed
 --   Siblings are NOT stored here — they're derived by querying for
 --   people who share a parent, to avoid duplicating data that could
---   drift out of sync.
+--   drift out of sync. Full vs. half sibling is likewise derivable
+--   by checking how many parents two people have in common.
 -- ------------------------------------------------------------
 CREATE TABLE Relationships (
     relationship_id   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     person_id_1       INTEGER NOT NULL,
     person_id_2       INTEGER NOT NULL,
-    relationship_type TEXT NOT NULL,
-    status            TEXT,
+    relationship_type TEXT NOT NULL CHECK (relationship_type IN ('biological_parent', 'step_parent', 'adoptive_parent', 'spouse')),
+    status            TEXT CHECK (status IN ('married', 'divorced', 'widowed', 'separated')),
     start_date        DATE,
     end_date          DATE,
     CONSTRAINT Relationships_Persons_FK_1 FOREIGN KEY (person_id_1) REFERENCES Persons(person_id),
@@ -52,23 +55,23 @@ CREATE TABLE Relationships (
 );
 
 -- ------------------------------------------------------------
--- Families: couples/partnerships with description and photo
---   person_id_1/person_id_2 are nullable to support single-parent
---   families. The same person can appear across multiple Families
---   rows (e.g. widowed then remarried) — each row is one pairing,
---   not a lifelong assignment.
---   Children are NOT stored here — they're derived via Relationships
---   (anyone whose parent is person_id_1 or person_id_2).
+-- Safety check: for parent-type relationships, catches the most
+-- common data-entry mistake — person_id_1/person_id_2 reversed —
+-- by checking that the parent's birth date precedes the child's.
+-- Only fires when both birth dates are known; can't catch every
+-- reversal (e.g. when a birth date is missing), but catches the
+-- common case for free.
 -- ------------------------------------------------------------
-CREATE TABLE Families (
-    family_id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    person_id_1  INTEGER,
-    person_id_2  INTEGER,
-    description  TEXT,
-    image_id     INTEGER REFERENCES Images(image_id),
-    CONSTRAINT Families_Persons_FK   FOREIGN KEY (person_id_1) REFERENCES Persons(person_id),
-    CONSTRAINT Families_Persons_FK_1 FOREIGN KEY (person_id_2) REFERENCES Persons(person_id)
-);
+CREATE TRIGGER check_parent_birth_order
+BEFORE INSERT ON Relationships
+WHEN NEW.relationship_type IN ('biological_parent', 'step_parent', 'adoptive_parent')
+BEGIN
+    SELECT RAISE(ABORT, 'Parent must be born before child — check person_id_1/person_id_2 order')
+    WHERE (SELECT date_of_birth FROM Persons WHERE person_id = NEW.person_id_1) IS NOT NULL
+      AND (SELECT date_of_birth FROM Persons WHERE person_id = NEW.person_id_2) IS NOT NULL
+      AND (SELECT date_of_birth FROM Persons WHERE person_id = NEW.person_id_1) >
+          (SELECT date_of_birth FROM Persons WHERE person_id = NEW.person_id_2);
+END;
 
 -- ------------------------------------------------------------
 -- Images: photos, with metadata
@@ -103,6 +106,27 @@ CREATE TABLE Documents (
 );
 
 -- ------------------------------------------------------------
+-- Families: couples/partnerships with description and photo
+--   person_id_1/person_id_2 are nullable to support single-parent
+--   families. The same person can appear across multiple Families
+--   rows (e.g. widowed then remarried) — each row is one pairing,
+--   not a lifelong assignment.
+--   Children are NOT stored here — they're derived via Relationships
+--   (anyone whose parent is person_id_1 or person_id_2).
+--   tags: free-text, comma-separated (e.g. 'Mayflower').
+-- ------------------------------------------------------------
+CREATE TABLE Families (
+    family_id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    person_id_1  INTEGER,
+    person_id_2  INTEGER,
+    description  TEXT,
+    image_id     INTEGER REFERENCES Images(image_id),
+    tags         TEXT,
+    CONSTRAINT Families_Persons_FK   FOREIGN KEY (person_id_1) REFERENCES Persons(person_id),
+    CONSTRAINT Families_Persons_FK_1 FOREIGN KEY (person_id_2) REFERENCES Persons(person_id)
+);
+
+-- ------------------------------------------------------------
 -- ImageLinks: connects Images to Persons, Families, and/or
 --   Documents (e.g. a header image illustrating a document).
 --   person_id/family_id/document_id are all nullable — typically
@@ -127,7 +151,7 @@ CREATE TABLE ImageLinks (
 -- ------------------------------------------------------------
 CREATE TABLE DocumentLinks (
     document_link_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    document_id      INTEGER NOT NULL,
+    document_id       INTEGER NOT NULL,
     person_id         INTEGER,
     family_id         INTEGER,
     CONSTRAINT DocumentLinks_Documents_FK FOREIGN KEY (document_id) REFERENCES Documents(document_id),
