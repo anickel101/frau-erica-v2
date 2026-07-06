@@ -91,16 +91,31 @@ CREATE TABLE Images (
 );
 
 -- ------------------------------------------------------------
--- Documents: written pieces (biographies, articles, etc.)
+-- Documents: written pieces (biographies, articles, letters, etc.)
+--   content: the body text, stored as Markdown. Embedded images
+--     use a {{image:ID}} placeholder referencing a real Images row
+--     (resolved at render time by the website, not by the database).
+--   series_key/series_title/series_order: for multi-chapter pieces
+--     (e.g. a memoir split across several pages). series_key is a
+--     shared value across all chapters of the same work; series_order
+--     gives their sequence. A standalone document leaves all three
+--     blank. This replaces the old site's approach of hand-maintained
+--     "table of contents" links copy-pasted into every chapter file,
+--     which had already drifted out of sync in the original source.
+--   genre: closed set, taken directly from the original site's own
+--     genre index page.
 -- ------------------------------------------------------------
 CREATE TABLE Documents (
     document_id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    series_key   TEXT,
+    series_title TEXT,
+    series_order INTEGER,
     title        TEXT NOT NULL,
     author       TEXT,
     summary      TEXT,
-    genre        TEXT,
+    content      TEXT,
+    genre        TEXT CHECK (genre IN ('Biography', 'Memoir', 'History', 'Literary', 'Letter', 'Recipe', 'Other')),
     tags         TEXT,
-    content_url  TEXT NOT NULL,
     notes        TEXT,
     is_published INTEGER NOT NULL DEFAULT 0
 );
@@ -128,7 +143,8 @@ CREATE TABLE Families (
 
 -- ------------------------------------------------------------
 -- ImageLinks: connects Images to Persons, Families, and/or
---   Documents (e.g. a header image illustrating a document).
+--   Documents (e.g. a header image illustrating a document, or
+--   an image embedded partway through a document's content).
 --   person_id/family_id/document_id are all nullable — typically
 --   only one is set per row. One image can have many link rows
 --   (e.g. a group photo linked to 5 people).
