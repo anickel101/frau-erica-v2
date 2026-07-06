@@ -15,14 +15,25 @@ PRAGMA foreign_keys = ON;
 
 -- ------------------------------------------------------------
 -- Persons: one row per individual in the family tree
+--   date_of_birth/date_of_death hold a full date when known.
+--   birth_year/death_year hold just the year when that's all
+--   that's known (common for older/distant relatives) — avoids
+--   fabricating a fake full date (e.g. defaulting to Jan 1st).
+--   When the full date is known, the matching _year column is
+--   left blank; when only a year is known, the full date column
+--   is left blank instead.
+--   suffix: e.g. 'Jr.', 'Sr.', 'II', 'III', 'IV'
 -- ------------------------------------------------------------
 CREATE TABLE Persons (
     person_id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     first_name    TEXT NOT NULL,
     last_name     TEXT NOT NULL,
     middle_name   TEXT,
+    suffix        TEXT,
     date_of_birth DATE,
+    birth_year    INTEGER,
     date_of_death DATE,
+    death_year    INTEGER,
     notes         TEXT
 );
 
