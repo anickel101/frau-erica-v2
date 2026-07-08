@@ -86,6 +86,11 @@ END;
 
 -- ------------------------------------------------------------
 -- Images: photos, with metadata
+--   url: just the filename (e.g. 'Addie1.jpg'), not a full URL.
+--     The website builds the actual link at display time (base
+--     URL lives in app config, not the database) — this way the
+--     hosting location (S3, a custom domain, CloudFront, etc.)
+--     can change without touching any data.
 -- ------------------------------------------------------------
 CREATE TABLE Images (
     image_id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
