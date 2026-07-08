@@ -15,14 +15,25 @@ PRAGMA foreign_keys = ON;
 
 -- ------------------------------------------------------------
 -- Persons: one row per individual in the family tree
+--   date_of_birth/date_of_death hold a full date when known.
+--   birth_year/death_year hold just the year when that's all
+--   that's known (common for older/distant relatives) — avoids
+--   fabricating a fake full date (e.g. defaulting to Jan 1st).
+--   When the full date is known, the matching _year column is
+--   left blank; when only a year is known, the full date column
+--   is left blank instead.
+--   suffix: e.g. 'Jr.', 'Sr.', 'II', 'III', 'IV'
 -- ------------------------------------------------------------
 CREATE TABLE Persons (
     person_id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     first_name    TEXT NOT NULL,
     last_name     TEXT NOT NULL,
     middle_name   TEXT,
+    suffix        TEXT,
     date_of_birth DATE,
+    birth_year    INTEGER,
     date_of_death DATE,
+    death_year    INTEGER,
     notes         TEXT
 );
 
@@ -91,16 +102,31 @@ CREATE TABLE Images (
 );
 
 -- ------------------------------------------------------------
--- Documents: written pieces (biographies, articles, etc.)
+-- Documents: written pieces (biographies, articles, letters, etc.)
+--   content: the body text, stored as Markdown. Embedded images
+--     use a {{image:ID}} placeholder referencing a real Images row
+--     (resolved at render time by the website, not by the database).
+--   series_key/series_title/series_order: for multi-chapter pieces
+--     (e.g. a memoir split across several pages). series_key is a
+--     shared value across all chapters of the same work; series_order
+--     gives their sequence. A standalone document leaves all three
+--     blank. This replaces the old site's approach of hand-maintained
+--     "table of contents" links copy-pasted into every chapter file,
+--     which had already drifted out of sync in the original source.
+--   genre: closed set, taken directly from the original site's own
+--     genre index page.
 -- ------------------------------------------------------------
 CREATE TABLE Documents (
     document_id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    series_key   TEXT,
+    series_title TEXT,
+    series_order INTEGER,
     title        TEXT NOT NULL,
     author       TEXT,
     summary      TEXT,
-    genre        TEXT,
+    content      TEXT,
+    genre        TEXT CHECK (genre IN ('Biography', 'Memoir', 'History', 'Literary', 'Letter', 'Recipe', 'Other')),
     tags         TEXT,
-    content_url  TEXT NOT NULL,
     notes        TEXT,
     is_published INTEGER NOT NULL DEFAULT 0
 );
@@ -128,7 +154,8 @@ CREATE TABLE Families (
 
 -- ------------------------------------------------------------
 -- ImageLinks: connects Images to Persons, Families, and/or
---   Documents (e.g. a header image illustrating a document).
+--   Documents (e.g. a header image illustrating a document, or
+--   an image embedded partway through a document's content).
 --   person_id/family_id/document_id are all nullable — typically
 --   only one is set per row. One image can have many link rows
 --   (e.g. a group photo linked to 5 people).
@@ -151,10 +178,54 @@ CREATE TABLE ImageLinks (
 -- ------------------------------------------------------------
 CREATE TABLE DocumentLinks (
     document_link_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    document_id       INTEGER NOT NULL,
+    document_id      INTEGER NOT NULL,
     person_id         INTEGER,
     family_id         INTEGER,
     CONSTRAINT DocumentLinks_Documents_FK FOREIGN KEY (document_id) REFERENCES Documents(document_id),
     CONSTRAINT DocumentLinks_Persons_FK   FOREIGN KEY (person_id)   REFERENCES Persons(person_id),
     CONSTRAINT DocumentLinks_Families_FK  FOREIGN KEY (family_id)   REFERENCES Families(family_id)
+);
+
+-- ------------------------------------------------------------
+-- Galleries: named, described collections of photos
+--   (source: FileMaker's $arrayGalleries, e.g. "Thomas Crawley
+--   Knowles: Year One") — distinct from a simple 'Gallery' tag,
+--   these have their own name, summary text, and a designated
+--   lead/cover image.
+-- ------------------------------------------------------------
+CREATE TABLE Galleries (
+    gallery_id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name          TEXT NOT NULL,
+    summary       TEXT,
+    lead_image_id INTEGER REFERENCES Images(image_id)
+);
+
+-- ------------------------------------------------------------
+-- GalleryImages: which Images belong to which Gallery, in order.
+--   sort_order preserves the original display sequence from the
+--   source data (not alphabetical or arbitrary).
+-- ------------------------------------------------------------
+CREATE TABLE GalleryImages (
+    gallery_image_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    gallery_id        INTEGER NOT NULL,
+    image_id          INTEGER NOT NULL,
+    sort_order         INTEGER,
+    CONSTRAINT GalleryImages_Galleries_FK FOREIGN KEY (gallery_id) REFERENCES Galleries(gallery_id),
+    CONSTRAINT GalleryImages_Images_FK    FOREIGN KEY (image_id)   REFERENCES Images(image_id)
+);
+
+-- ------------------------------------------------------------
+-- GalleryLinks: connects Galleries to Persons and/or Families.
+--   Same nullable pattern as ImageLinks/DocumentLinks. A gallery
+--   with no rows here is simply a general gallery, not tied to
+--   any specific person or family — no sentinel value needed.
+-- ------------------------------------------------------------
+CREATE TABLE GalleryLinks (
+    gallery_link_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    gallery_id       INTEGER NOT NULL,
+    person_id        INTEGER,
+    family_id        INTEGER,
+    CONSTRAINT GalleryLinks_Galleries_FK FOREIGN KEY (gallery_id) REFERENCES Galleries(gallery_id),
+    CONSTRAINT GalleryLinks_Persons_FK   FOREIGN KEY (person_id)  REFERENCES Persons(person_id),
+    CONSTRAINT GalleryLinks_Families_FK  FOREIGN KEY (family_id)  REFERENCES Families(family_id)
 );
