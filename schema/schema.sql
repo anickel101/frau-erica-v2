@@ -98,7 +98,8 @@ CREATE TABLE Images (
     height       INTEGER,
     url          TEXT NOT NULL,
     notes        TEXT,
-    is_published INTEGER NOT NULL DEFAULT 0
+    is_published INTEGER NOT NULL DEFAULT 0,
+    title TEXT
 );
 
 -- ------------------------------------------------------------
