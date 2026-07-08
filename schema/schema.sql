@@ -235,3 +235,18 @@ CREATE TABLE GalleryLinks (
     CONSTRAINT GalleryLinks_Persons_FK   FOREIGN KEY (person_id)  REFERENCES Persons(person_id),
     CONSTRAINT GalleryLinks_Families_FK  FOREIGN KEY (family_id)  REFERENCES Families(family_id)
 );
+
+
+-- ------------------------------------------------------------
+-- Lexicon: a glossary of family German phrases, in-jokes, and
+--   terms, with pronunciation and definition. Standalone reference
+--   content, not linked to Persons/Families/Documents.
+-- ------------------------------------------------------------
+CREATE TABLE Lexicon (
+    lexicon_id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    term           TEXT NOT NULL,
+    pronunciation  TEXT,
+    part_of_speech TEXT,
+    definition     TEXT,
+    notes          TEXT
+);
