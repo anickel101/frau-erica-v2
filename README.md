@@ -1,6 +1,33 @@
 # frau-erica-v2
 Redesigned and rebuilt version of the original www.frauerica.org website.
 
+## Repository Practices
+
+This repo uses branch protection to keep `main` safe from accidental
+direct pushes and unreviewed changes.
+
+- **No direct pushes to `main`** — all changes go through a Pull Request,
+  requiring at least one approval before merging. This applies to
+  everyone, including repo admins ("Do not allow bypassing" is enabled).
+- **Automated schema validation** — a GitHub Actions workflow
+  (`.github/workflows/validate-schema.yml`) runs on every PR that touches
+  `schema/schema.sql`. It builds a fresh SQLite database directly from the
+  file and confirms all expected tables exist. This catches broken SQL or
+  an accidentally-dropped table before it can be merged, rather than after.
+- **Branch protection is free here** because this repo is public — GitHub
+  only requires a paid plan for branch protection on *private* repos. This
+  repo is intentionally public since it contains only schema and
+  documentation, no personal family data (see "Where the actual data
+  lives," above).
+
+### Making a schema change
+
+1. Create a branch, make the change in DBeaver, confirm the DDL via the
+   table's DDL tab
+2. Update `schema/schema.sql` to match
+3. Open a Pull Request — the schema-validation check runs automatically
+4. Once approved and the check passes, merge
+
 ## Backups
 
 The live database is backed up automatically to a private AWS S3 bucket
