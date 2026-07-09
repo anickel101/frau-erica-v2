@@ -1,0 +1,24 @@
+name: Validate schema
+
+on:
+  pull_request:
+    paths:
+      - 'schema/schema.sql'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build database from schema.sql
+        run: |
+          sqlite3 test.db < schema/schema.sql
+          echo "Schema applied successfully"
+      - name: Confirm expected tables exist
+        run: |
+          TABLES=$(sqlite3 test.db "SELECT name FROM sqlite_master WHERE type='table';" | wc -l)
+          echo "Found $TABLES tables"
+          if [ "$TABLES" -lt 11 ]; then
+            echo "Expected at least 11 tables, found $TABLES"
+            exit 1
+          fi
