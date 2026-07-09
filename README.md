@@ -8,9 +8,15 @@ The live database is backed up automatically to a private AWS S3 bucket
 against accidental overwrites.
 
 - **How**: a local script on the machine holding the live `.db` file copies
-  it to S3 on a schedule (currently daily), using a dedicated AWS IAM user
-  scoped to write-only access on that one bucket — it can't read, delete,
-  or touch anything else in the AWS account.
+  it to S3 on a schedule (currently daily, via macOS's `launchd`), using a
+  dedicated AWS IAM user scoped to write-only access on that one bucket —
+  it can't read, delete, or touch anything else in the AWS account.
+- **Gotcha worth knowing if recreating this setup**: `launchd` runs scripts
+  with a minimal environment that does *not* include your normal shell
+  `PATH`. The script must call the `aws` CLI using its full path (e.g.
+  `/usr/local/bin/aws`, find yours with `which aws`) — just `aws` on its
+  own will silently fail when run by `launchd`, even though it works fine
+  when you test the script manually in Terminal.
 - **Where the script lives**: locally on that machine only (not in this
   repo), since it's tied to a specific file path and a local AWS CLI
   profile. Not meant to be shared or run from anywhere else.
