@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fe-bg: #EDEDED;
+  --color-fe-accent: #E2672C;
+  --color-fe-accent-dark: #C4551F;
+  --color-fe-brown: #6B3A1B;
+  --color-fe-ink: #1A1A1A;
+
+  --color-fe-gen-grandparent: #C9BFE0;
+  --color-fe-gen-couple: #F0C955;
+  --color-fe-gen-child: #A9C88F;
+}
+
+body {
+  @apply bg-fe-bg text-fe-ink;
+}
