@@ -1,5 +1,4 @@
-# SQLite database files — this is real family data, not code.
-# The database itself lives outside git (see README).
+# Database (existing)
 *.db
 *.db-journal
 *.db-wal
@@ -7,18 +6,24 @@
 *.sqlite
 *.sqlite3
 
-# DBeaver workspace/project files (local connection settings,
-# credentials, cached metadata — specific to each person's machine)
+# DBeaver workspace/project files
 .dbeaver/
 *.dbeaver-data-sources.xml
 
-# OS clutter
+# App (React/Vite site)
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.local
+
+# Editor -- explicitly scoped to app/, since .vscode/* alone won't
+# reach into a nested folder from the root .gitignore
+app/.vscode/*
+!app/.vscode/extensions.json
+!app/.vscode/settings.json
+.idea
+
+# OS
 .DS_Store
-Thumbs.db
-
-# Editor clutter
-.vscode/
-*.swp
-
-# Node modules
-node_modules/

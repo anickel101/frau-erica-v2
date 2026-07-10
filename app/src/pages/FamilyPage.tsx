@@ -23,7 +23,7 @@ export default function FamilyPage() {
             className="w-full h-full object-cover"
           />
         ) : (
-          <p className="text-fe-ink/40 text-sm">No header image</p>
+          <p className="text-fe-ink/40 text-sm">No hello header image</p>
         )}
       </div>
 

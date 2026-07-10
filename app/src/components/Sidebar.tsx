@@ -57,12 +57,15 @@ export default function Sidebar() {
           overflow-y-auto
         `}
       >
-        {/* German flag block */}
-        <div className="w-full h-16 mb-4 flex flex-col rounded-sm overflow-hidden shadow-sm">
-          <div className="flex-1 bg-black" />
-          <div className="flex-1 bg-[#DD0000]" />
-          <div className="flex-1 bg-[#FFCE00]" />
-        </div>
+{/* German flag block -- official ratio is height:width = 3:5,
+    i.e. width:height = 5:3. Using aspect-ratio (not a fixed
+    height) so it stays correctly proportioned at any sidebar
+    width, including the wider mobile drawer. */}
+<div className="w-full aspect-[5/3] mb-4 flex flex-col rounded-sm overflow-hidden shadow-sm">
+  <div className="flex-1 bg-black" />
+  <div className="flex-1 bg-[#DD0000]" />
+  <div className="flex-1 bg-[#FFCE00]" />
+</div>
 
         <p className="text-fe-accent font-bold text-sm leading-tight">
           The Frau Erica Project
