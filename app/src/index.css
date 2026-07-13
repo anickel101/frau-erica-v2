@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 @theme {
+  /* Exact original values from the site's design notes -- these are
+     authoritative (not screenshot-estimated), keep them precise. */
   --color-fe-bg: #EDEDED;
-  --color-fe-accent: #E2672C;
-  --color-fe-accent-dark: #C4551F;
+  --color-fe-accent: #ff6600;
+  --color-fe-accent-dark: #cc5200;
   --color-fe-brown: #6B3A1B;
   --color-fe-ink: #1A1A1A;
 
-  --color-fe-gen-grandparent: #C9BFE0;
-  --color-fe-gen-couple: #F0C955;
-  --color-fe-gen-child: #A9C88F;
+  --color-fe-gen-grandparent: #cc99cc;
+  --color-fe-gen-couple: #ffcc33;
+  --color-fe-gen-child: #99cc99;
 }
 
 body {
