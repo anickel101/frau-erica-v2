@@ -20,14 +20,17 @@ export interface FamilyPageData {
   children: PersonSummary[]
 }
 
-function formatBirthDate(iso?: string): string {
-  if (!iso) return ''
+function formatDate(iso: string): string {
   const [year, month, day] = iso.split('-').map(Number)
   const date = new Date(year, month - 1, day)
-  return `Born ${date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}`
+  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-export { formatBirthDate }
+function formatBirthDate(iso?: string): string {
+  return iso ? `Born ${formatDate(iso)}` : ''
+}
+
+export { formatDate, formatBirthDate }
 
 export const sampleFamily: FamilyPageData = {
   family_id: 19,

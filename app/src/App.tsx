@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import FamilyPage from './pages/FamilyPage'
+import LexiconPage from './pages/LexiconPage'
+import PersonsPage from './pages/PersonsPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 
 export default function App() {
@@ -14,15 +16,21 @@ export default function App() {
       <Route path="/documents/:id" element={<PlaceholderPage title="Document" />} />
       <Route path="/galleries" element={<PlaceholderPage title="Photo galleries" />} />
       <Route path="/galleries/:id" element={<PlaceholderPage title="Gallery" />} />
-      <Route path="/lexicon" element={<PlaceholderPage title="The Mueller Lexicon" />} />
+      <Route path="/lexicon" element={<LexiconPage />} />
       <Route path="/about" element={<PlaceholderPage title="User's guide" />} />
-      <Route path="/contact" element={<PlaceholderPage title="Contact the archivist" />} />
+      <Route
+        path="/contact"
+        element={<PlaceholderPage title="Contact the archivist" />}
+      />
 
       {/* Gated -- Phase 3D/3E */}
-      <Route path="/persons" element={<PlaceholderPage title="Index of persons" />} />
+      <Route path="/persons" element={<PersonsPage />} />
       <Route path="/persons/:id" element={<PlaceholderPage title="Person" />} />
       <Route path="/login" element={<PlaceholderPage title="Log in" />} />
-      <Route path="/request-access" element={<PlaceholderPage title="Request access" />} />
+      <Route
+        path="/request-access"
+        element={<PlaceholderPage title="Request access" />}
+      />
     </Routes>
   )
 }
