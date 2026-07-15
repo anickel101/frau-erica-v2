@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import ContactPage from './pages/ContactPage'
 import FamilyPage from './pages/FamilyPage'
 import GalleriesPage from './pages/GalleriesPage'
 import GalleryPage from './pages/GalleryPage'
@@ -7,6 +8,7 @@ import PersonsPage from './pages/PersonsPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import TextPage from './pages/TextPage'
 import TextsPage from './pages/TextsPage'
+import UsersGuidePage from './pages/UsersGuidePage'
 
 export default function App() {
   return (
@@ -21,11 +23,8 @@ export default function App() {
       <Route path="/galleries" element={<GalleriesPage />} />
       <Route path="/galleries/:id" element={<GalleryPage />} />
       <Route path="/lexicon" element={<LexiconPage />} />
-      <Route path="/about" element={<PlaceholderPage title="User's guide" />} />
-      <Route
-        path="/contact"
-        element={<PlaceholderPage title="Contact the archivist" />}
-      />
+      <Route path="/about" element={<UsersGuidePage />} />
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* Gated -- Phase 3D/3E */}
       <Route path="/persons" element={<PersonsPage />} />
