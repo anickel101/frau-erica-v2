@@ -1,4 +1,5 @@
 import galleriesRaw from '../../data/generated/galleries.json'
+import { resolveImageUrl } from '../../utils/imageUrl'
 
 export interface GalleryPhoto {
   image_id: number
@@ -22,7 +23,13 @@ export interface GalleryData {
 }
 
 const galleries: GalleryData[] = (galleriesRaw as GalleryData[])
-  .slice()
+  .map((gallery) => ({
+    ...gallery,
+    photos: gallery.photos.map((photo) => ({
+      ...photo,
+      url: resolveImageUrl(photo.url),
+    })),
+  }))
   .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
 
 export function listGalleries(): GalleryData[] {

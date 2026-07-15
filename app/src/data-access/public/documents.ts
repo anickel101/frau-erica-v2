@@ -1,6 +1,7 @@
 import documentsDetailRaw from '../../data/generated/documents.json'
 import documentsListRaw from '../../data/generated/documents-list.json'
 import imagesRaw from '../../data/generated/images.json'
+import { resolveImageUrl } from '../../utils/imageUrl'
 
 export interface DocumentListItem {
   document_id: number
@@ -44,7 +45,7 @@ function resolveImagePlaceholders(content: string): string {
   return content.replace(IMAGE_PLACEHOLDER, (_match, idStr: string) => {
     const image = imagesById.get(Number(idStr))
     if (!image) return ''
-    return `![${image.caption ?? ''}](${image.url})`
+    return `![${image.caption ?? ''}](${resolveImageUrl(image.url)})`
   })
 }
 
