@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Frau Erica gated-content API -- read-only Persons/Families/search behind
+  Cognito auth, backed by a read-only SQLite snapshot synced from S3
+  (s3://frau-erica-db-backups/current/frau_erica.db). See
+  api/../CLAUDE.md-adjacent memory "gated-content-architecture" for the
+  full design writeup: page-type-level gating (not per-record), Lambda
+  downloads the snapshot to /tmp on cold start and caches it for warm
+  invocations, canonical writable DB stays on the editor's own machine.
+
+Parameters:
+  CognitoUserPoolId:
+    Type: String
+    Description: >
+      Cognito User Pool ID backing the pending/family/admin groups. Cognito
+      doesn't exist yet as of this scaffolding pass -- leave the
+      placeholder default. Deploys will fail against a real AWS account
+      until this is a real pool id, which is expected.
+    Default: REPLACE_WITH_USER_POOL_ID
+  CognitoUserPoolClientId:
+    Type: String
+    Description: App client ID for the same user pool.
+    Default: REPLACE_WITH_USER_POOL_CLIENT_ID
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        DB_BUCKET: frau-erica-db-backups
+        DB_KEY: current/frau_erica.db
+
+Resources:
+  FrauEricaApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            JwtConfiguration:
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPoolId}
+              audience:
+                - !Ref CognitoUserPoolClientId
+            IdentitySource: $request.header.Authorization
+        DefaultAuthorizer: CognitoAuthorizer
+
+  GetPersonFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/persons.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/persons.handler
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        GetPerson:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /persons/{id}
+            Method: get
+
+  GetFamilyFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/families.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/families.handler
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        GetFamily:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /families/{id}
+            Method: get
+
+  SearchFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/search.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/search.handler
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        Search:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /search
+            Method: get
+
+Outputs:
+  ApiUrl:
+    Description: Base URL for the deployed API
+    Value: !Sub https://${FrauEricaApi}.execute-api.${AWS::Region}.amazonaws.com

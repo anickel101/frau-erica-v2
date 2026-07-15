@@ -1,0 +1,34 @@
+{
+  "name": "frau-erica-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "generate-wasm-asset": "node scripts/generate-wasm-asset.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "ci": "npm run lint && npm run typecheck && npm run format:check && npm run test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.750.0",
+    "sql.js": "^1.14.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/aws-lambda": "^8.10.147",
+    "@types/node": "^24.0.0",
+    "@types/sql.js": "^1.4.11",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^17.7.0",
+    "prettier": "^3.3.3",
+    "typescript": "~6.0.0",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
+  }
+}

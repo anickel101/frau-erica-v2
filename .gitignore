@@ -19,6 +19,9 @@ dist-ssr
 .env.local
 *.tsbuildinfo
 
+# API (Lambda/SAM)
+.aws-sam/
+
 # Editor -- explicitly scoped to app/, since .vscode/* alone won't
 # reach into a nested folder from the root .gitignore
 app/.vscode/*
