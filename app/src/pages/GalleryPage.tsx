@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import GalleryLargeImage from '../components/GalleryLargeImage'
 import GalleryThumbnailStrip from '../components/GalleryThumbnailStrip'
-import { mockGalleries } from '../data/mockGallery'
+import { getGalleryById } from '../data-access/public/galleries'
 import { getLinkedPersons } from '../utils/galleryDisplay'
 import { getFullName, MOCK_FAMILY_LINK } from '../utils/personDisplay'
 
@@ -14,24 +14,26 @@ function wrap(index: number, length: number): number {
 
 export default function GalleryPage() {
   const { id } = useParams<{ id: string }>()
-  const gallery =
-    mockGalleries.find((g) => g.gallery_id === Number(id)) ?? mockGalleries[0]
-  const { photos } = gallery
+  const gallery = getGalleryById(Number(id))
+  const photos = gallery?.photos ?? []
 
-  const initialIndex = Math.max(
-    0,
-    photos.findIndex((p) => p.image_id === gallery.lead_image_id),
-  )
+  const initialIndex = gallery
+    ? Math.max(
+        0,
+        photos.findIndex((p) => p.image_id === gallery.lead_image_id),
+      )
+    : 0
 
+  // All hooks are called unconditionally, before the not-found early
+  // return below -- react-router can reuse this component instance across
+  // navigations within the same route pattern, so the not-found state must
+  // not change how many hooks get called between renders.
   const [activeIndex, setActiveIndex] = useState(initialIndex)
   const [windowStart, setWindowStart] = useState(initialIndex)
 
-  // Navigating between two gallery pages (e.g. via Links, not a full
-  // reload) reuses this component instance -- reset to the new gallery's
-  // own lead photo rather than keeping the previous gallery's index.
-  const [renderedGalleryId, setRenderedGalleryId] = useState(gallery.gallery_id)
-  if (renderedGalleryId !== gallery.gallery_id) {
-    setRenderedGalleryId(gallery.gallery_id)
+  const [renderedGalleryId, setRenderedGalleryId] = useState(gallery?.gallery_id)
+  if (renderedGalleryId !== gallery?.gallery_id) {
+    setRenderedGalleryId(gallery?.gallery_id)
     setActiveIndex(initialIndex)
     setWindowStart(initialIndex)
   }
@@ -50,6 +52,21 @@ export default function GalleryPage() {
 
   function selectPhoto(index: number) {
     setActiveIndex(index)
+  }
+
+  if (!gallery) {
+    return (
+      <Layout>
+        <div className="p-6 max-w-4xl">
+          <p className="text-fe-ink/60 text-sm">
+            Gallery not found.{' '}
+            <Link to="/galleries" className="text-fe-accent hover:text-fe-accent-dark">
+              Back to Index of Galleries
+            </Link>
+          </p>
+        </div>
+      </Layout>
+    )
   }
 
   const linkedPersons = getLinkedPersons(gallery)

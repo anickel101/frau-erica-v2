@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { TextData } from '../data/mockTexts'
+import { DocumentDetail } from '../data-access/public/documents'
 import { filterTextEntries, groupTexts } from './textDisplay'
 
 function text(
-  overrides: Partial<TextData> & Pick<TextData, 'document_id' | 'title'>,
-): TextData {
+  overrides: Partial<DocumentDetail> & Pick<DocumentDetail, 'document_id' | 'title'>,
+): DocumentDetail {
   return {
     series_key: null,
     series_title: null,
@@ -15,7 +15,6 @@ function text(
     content: '',
     genre: null,
     tags: null,
-    notes: null,
     ...overrides,
   }
 }

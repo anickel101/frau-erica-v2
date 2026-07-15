@@ -1,4 +1,4 @@
-import { GalleryPhoto } from '../data/mockGallery'
+import { GalleryPhoto } from '../data-access/public/galleries'
 import ChevronButton from './ChevronButton'
 
 const VISIBLE_COUNT = 6

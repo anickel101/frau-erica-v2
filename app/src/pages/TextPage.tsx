@@ -2,19 +2,30 @@ import ReactMarkdown from 'react-markdown'
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import TextByline from '../components/TextByline'
-import { mockTexts } from '../data/mockTexts'
+import { getDocumentById, getSeriesChapters } from '../data-access/public/documents'
 import { getAuthorPerson } from '../utils/textDisplay'
 
 export default function TextPage() {
   const { id } = useParams<{ id: string }>()
-  const document = mockTexts.find((d) => d.document_id === Number(id)) ?? mockTexts[0]
-  const authorPerson = getAuthorPerson(document)
+  const document = getDocumentById(Number(id))
 
-  const seriesChapters = document.series_key
-    ? mockTexts
-        .filter((d) => d.series_key === document.series_key)
-        .sort((a, b) => (a.series_order ?? 0) - (b.series_order ?? 0))
-    : []
+  if (!document) {
+    return (
+      <Layout>
+        <div className="p-6 max-w-4xl">
+          <p className="text-fe-ink/60 text-sm">
+            Text not found.{' '}
+            <Link to="/documents" className="text-fe-accent hover:text-fe-accent-dark">
+              Back to Index of Texts
+            </Link>
+          </p>
+        </div>
+      </Layout>
+    )
+  }
+
+  const authorPerson = getAuthorPerson(document)
+  const seriesChapters = document.series_key ? getSeriesChapters(document.series_key) : []
 
   return (
     <Layout>

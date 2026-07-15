@@ -3,14 +3,14 @@ import Layout from '../components/Layout'
 import SearchInput from '../components/SearchInput'
 import TextSeriesRow from '../components/TextSeriesRow'
 import TextStandaloneRow from '../components/TextStandaloneRow'
-import { mockTexts } from '../data/mockTexts'
+import { listDocuments } from '../data-access/public/documents'
 import { usePaginatedSearch } from '../hooks/usePaginatedSearch'
 import { TextIndexEntry, filterTextEntries, groupTexts } from '../utils/textDisplay'
 
 const PAGE_SIZE = 14
 
 export default function TextsPage() {
-  const grouped = useMemo(() => groupTexts(mockTexts), [])
+  const grouped = useMemo(() => groupTexts(listDocuments()), [])
   const { query, setQuery, filtered, visible, showAll, setShowAll } = usePaginatedSearch(
     grouped,
     filterTextEntries,

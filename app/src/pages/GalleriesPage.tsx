@@ -1,7 +1,7 @@
 import Layout from '../components/Layout'
 import GalleryIndexCard from '../components/GalleryIndexCard'
 import SearchInput from '../components/SearchInput'
-import { GalleryData, mockGalleries } from '../data/mockGallery'
+import { GalleryData, listGalleries } from '../data-access/public/galleries'
 import { usePaginatedSearch } from '../hooks/usePaginatedSearch'
 import { getLinkedPersons } from '../utils/galleryDisplay'
 import { getFullName } from '../utils/personDisplay'
@@ -21,7 +21,7 @@ function filterGalleries(galleries: GalleryData[], query: string): GalleryData[]
 
 export default function GalleriesPage() {
   const { query, setQuery, filtered, visible, showAll, setShowAll } = usePaginatedSearch(
-    mockGalleries,
+    listGalleries(),
     filterGalleries,
     PAGE_SIZE,
   )

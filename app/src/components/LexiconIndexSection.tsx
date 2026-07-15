@@ -1,4 +1,4 @@
-import { LexiconEntry as LexiconEntryData } from '../data/mockLexicon'
+import { LexiconEntry as LexiconEntryData } from '../data-access/public/lexicon'
 import LexiconEntry from './LexiconEntry'
 
 export default function LexiconIndexSection({

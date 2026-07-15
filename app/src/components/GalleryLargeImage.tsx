@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from 'react'
-import { GalleryPhoto } from '../data/mockGallery'
+import { GalleryPhoto } from '../data-access/public/galleries'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import ChevronButton from './ChevronButton'
 import Modal from './Modal'

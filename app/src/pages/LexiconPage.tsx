@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import Layout from '../components/Layout'
 import LexiconIndexSection from '../components/LexiconIndexSection'
 import SearchInput from '../components/SearchInput'
-import { LexiconEntry, mockLexicon } from '../data/mockLexicon'
+import { LexiconEntry, listLexiconEntries } from '../data-access/public/lexicon'
 import { groupByLetter } from '../utils/groupByLetter'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 
@@ -36,9 +36,8 @@ export default function LexiconPage() {
 
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase()
-    const filtered = q
-      ? mockLexicon.filter((e) => e.term.toLowerCase().includes(q))
-      : mockLexicon
+    const entries = listLexiconEntries()
+    const filtered = q ? entries.filter((e) => e.term.toLowerCase().includes(q)) : entries
     return groupByLetter(filtered, getGroupLetter)
   }, [query])
 

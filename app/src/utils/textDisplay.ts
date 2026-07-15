@@ -1,9 +1,14 @@
-import { TextData } from '../data/mockTexts'
+import { DocumentListItem } from '../data-access/public/documents'
 import { Person, mockPersons } from '../data/mockPersons'
 
 export type TextIndexEntry =
-  | { kind: 'standalone'; document: TextData }
-  | { kind: 'series'; seriesKey: string; seriesTitle: string; chapters: TextData[] }
+  | { kind: 'standalone'; document: DocumentListItem }
+  | {
+      kind: 'series'
+      seriesKey: string
+      seriesTitle: string
+      chapters: DocumentListItem[]
+    }
 
 export interface FilteredTextEntry {
   entry: TextIndexEntry
@@ -11,16 +16,16 @@ export interface FilteredTextEntry {
   autoExpand: boolean
 }
 
-export function getAuthorPerson(document: TextData): Person | undefined {
+export function getAuthorPerson(document: DocumentListItem): Person | undefined {
   if (document.authorPersonId == null) return undefined
   return mockPersons.find((p) => p.person_id === document.authorPersonId)
 }
 
-export function getSeriesRepresentative(chapters: TextData[]): TextData {
+export function getSeriesRepresentative(chapters: DocumentListItem[]): DocumentListItem {
   return chapters.find((c) => c.series_order === 1) ?? chapters[0]
 }
 
-export function groupTexts(documents: TextData[]): TextIndexEntry[] {
+export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
   const entries: TextIndexEntry[] = []
   const seriesByKey = new Map<string, Extract<TextIndexEntry, { kind: 'series' }>>()
 

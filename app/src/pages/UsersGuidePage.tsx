@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { GalleryPhoto, mockGalleries } from '../data/mockGallery'
+import { GalleryPhoto, listGalleries } from '../data-access/public/galleries'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 
 // Picked once at module load (not during render, which must stay pure) --
 // purely decorative, same approach as ContactPage.tsx.
-const allPhotos = mockGalleries.flatMap((gallery) => gallery.photos)
+const allPhotos = listGalleries().flatMap((gallery) => gallery.photos)
 const HEADER_PHOTO: GalleryPhoto | undefined =
   allPhotos.length > 0
     ? allPhotos[Math.floor(Math.random() * allPhotos.length)]

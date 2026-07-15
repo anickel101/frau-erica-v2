@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { TextData } from '../data/mockTexts'
+import { DocumentListItem } from '../data-access/public/documents'
 import { getAuthorPerson } from '../utils/textDisplay'
 import TextByline from './TextByline'
 
-export default function TextStandaloneRow({ document }: { document: TextData }) {
+export default function TextStandaloneRow({ document }: { document: DocumentListItem }) {
   const authorPerson = getAuthorPerson(document)
 
   return (

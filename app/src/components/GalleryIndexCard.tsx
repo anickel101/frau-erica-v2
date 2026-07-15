@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { GalleryData } from '../data/mockGallery'
+import { GalleryData } from '../data-access/public/galleries'
 
 export default function GalleryIndexCard({ gallery }: { gallery: GalleryData }) {
   const thumbnail = gallery.photos[0]

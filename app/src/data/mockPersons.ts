@@ -1,4 +1,4 @@
-import raw from './mockPersons.json'
+import raw from './generated/persons.json'
 
 export interface Person {
   person_id: number
