@@ -17,6 +17,7 @@ dist-ssr
 *.local
 .env
 .env.local
+*.tsbuildinfo
 
 # Editor -- explicitly scoped to app/, since .vscode/* alone won't
 # reach into a nested folder from the root .gitignore
@@ -27,3 +28,4 @@ app/.vscode/*
 
 # OS
 .DS_Store
+
