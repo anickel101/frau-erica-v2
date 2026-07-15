@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Person } from '../data/mockPersons'
-import { MOCK_FAMILY_LINK, getBirthLabel, getDeathLabel, getFullName } from '../utils/personDisplay'
+import {
+  MOCK_FAMILY_LINK,
+  getBirthLabel,
+  getDeathLabel,
+  getFullName,
+} from '../utils/personDisplay'
 
 export default function PersonIndexEntry({ person }: { person: Person }) {
   return (

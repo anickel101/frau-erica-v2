@@ -47,7 +47,7 @@ project; v4 replaced that with defining tokens directly in CSS via
 Classes like `bg-fe-bg` or `text-fe-gen-couple` are generated
 automatically from those `--color-*` custom properties.
 
-The generational color-coding on Family pages is *meaningful*, not
+The generational color-coding on Family pages is _meaningful_, not
 decorative -- purple for grandparents, gold for the featured couple, green
 for children, matching the convention the original site used. Keep this
 consistent as new components are added.

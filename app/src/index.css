@@ -1,13 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Exact original values from the site's design notes -- these are
      authoritative (not screenshot-estimated), keep them precise. */
-  --color-fe-bg: #EDEDED;
+  --color-fe-bg: #ededed;
   --color-fe-accent: #ff6600;
   --color-fe-accent-dark: #cc5200;
-  --color-fe-brown: #6B3A1B;
-  --color-fe-ink: #1A1A1A;
+  --color-fe-brown: #6b3a1b;
+  --color-fe-ink: #1a1a1a;
 
   --color-fe-gen-grandparent: #cc99cc;
   --color-fe-gen-couple: #ffcc33;

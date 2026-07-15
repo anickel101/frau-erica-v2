@@ -40,6 +40,7 @@ Colors are defined as CSS custom properties in `src/index.css`'s
 
 These are the **exact original hex values** from the live site's own
 design notes (not screenshot-estimated) — treat them as authoritative:
+
 - Orange accent: `#ff6600`
 - Grandparent boxes: `#cc99cc`
 - Couple boxes: `#ffcc33`
@@ -66,6 +67,7 @@ The original site's design notes described three additional details
 that were considered and explicitly declined -- these are intentional
 simplifications, not oversights, so don't "fix" them back in without
 checking first:
+
 - The 2x spacing ratio between different generations vs. same-generation
   boxes (original used double spacing between generation rows; this
   site uses uniform spacing throughout)

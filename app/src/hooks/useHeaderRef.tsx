@@ -1,6 +1,8 @@
 import { createContext, useContext, RefObject } from 'react'
 
-export const HeaderRefContext = createContext<RefObject<HTMLDivElement | null> | null>(null)
+export const HeaderRefContext = createContext<RefObject<HTMLDivElement | null> | null>(
+  null,
+)
 
 /** Call this from any page and attach the returned ref to that page's
  * header image wrapper div. Pages with no header image simply don't use

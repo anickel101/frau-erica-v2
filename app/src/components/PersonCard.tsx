@@ -41,7 +41,9 @@ export default function PersonCard({
           {person.first_name} {person.last_name}
         </p>
         {person.date_of_birth && (
-          <p className="text-xs text-fe-ink/70">{formatBirthDate(person.date_of_birth)}</p>
+          <p className="text-xs text-fe-ink/70">
+            {formatBirthDate(person.date_of_birth)}
+          </p>
         )}
       </div>
     </Link>
