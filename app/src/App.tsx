@@ -3,6 +3,7 @@ import ContactPage from './pages/ContactPage'
 import FamilyPage from './pages/FamilyPage'
 import GalleriesPage from './pages/GalleriesPage'
 import GalleryPage from './pages/GalleryPage'
+import HomePage from './pages/HomePage'
 import LexiconPage from './pages/LexiconPage'
 import PersonsPage from './pages/PersonsPage'
 import PlaceholderPage from './pages/PlaceholderPage'
@@ -17,7 +18,7 @@ export default function App() {
       <Route path="/family/:id" element={<FamilyPage />} />
 
       {/* Public content -- Phase 3B */}
-      <Route path="/" element={<PlaceholderPage title="Home" />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/documents" element={<TextsPage />} />
       <Route path="/documents/:id" element={<TextPage />} />
       <Route path="/galleries" element={<GalleriesPage />} />
