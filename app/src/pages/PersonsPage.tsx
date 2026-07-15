@@ -29,7 +29,7 @@ export default function PersonsPage() {
 
   return (
     <Layout>
-      <div className="px-4 sm:px-8 py-12 max-w-3xl mx-auto">
+      <div className="p-6 max-w-3xl">
         <h1 className="text-2xl font-bold mb-4">Index of persons</h1>
         <SearchInput value={query} onChange={setQuery} placeholder="Search by name..." />
         {groups.map(([letter, persons]) => (

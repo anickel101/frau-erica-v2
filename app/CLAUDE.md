@@ -99,13 +99,15 @@ checking first:
 
 ## Data model
 
-`src/data/mockFamily.ts` is currently the only data source (mock data).
-Its shape deliberately mirrors the real database schema field names
-(`person_id`, `date_of_birth`, etc.) — the real schema lives in
-`schema/schema.sql` at the repo root (11 tables: Persons, Relationships,
-Families, Images, Documents, ImageLinks, DocumentLinks, Galleries,
-GalleryImages, GalleryLinks, Lexicon). When wiring real data in (Phase
-3C), match this shape rather than restructuring components.
+`src/data/` holds one mock data module per content type (`mockFamily.ts`,
+`mockPersons.ts`, `mockGallery.ts`, `mockLexicon.ts`, `mockTexts.ts`) —
+there's no real backend yet. Each one's shape deliberately mirrors the
+real database schema field names (`person_id`, `date_of_birth`, etc.) —
+the real schema lives in `schema/schema.sql` at the repo root (11
+tables: Persons, Relationships, Families, Images, Documents, ImageLinks,
+DocumentLinks, Galleries, GalleryImages, GalleryLinks, Lexicon). When
+wiring real data in (Phase 3C), match this shape rather than
+restructuring components.
 
 ## Auth / gating plan (decided, not yet built)
 
@@ -191,8 +193,10 @@ letting it stay unscoped indefinitely.
 - ✅ **Phase 3A** (foundation, design system, mobile-responsive layout,
   Family page component) — complete and visually verified against the
   real site
-- ⏳ **Phase 3B** (Documents, Galleries, Lexicon, Home pages) — next up,
-  currently placeholders
+- ⏳ **Phase 3B** (Documents, Galleries, Lexicon, Home pages) — Documents
+  (Index of Texts + detail page), Galleries, and Lexicon are built (all
+  on mock data); Home, `/about` (User's guide), and `/contact` are still
+  `PlaceholderPage`s
 - ⏳ **Phase 3C** (real data: SQLite → JSON export, wire pages to it)
 - ⏳ **Phase 3D** (Cognito auth implementation)
 - ⏳ **Phase 3E** (gated pages, protected routes, API layer)

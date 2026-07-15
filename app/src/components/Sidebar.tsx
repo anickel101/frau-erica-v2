@@ -17,9 +17,9 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Explorations',
     links: [
-      { label: 'Index of persons', to: '/persons' },
-      { label: 'Photo galleries', to: '/galleries' },
-      { label: 'Index of texts', to: '/documents' },
+      { label: 'Index of Persons', to: '/persons' },
+      { label: 'Index of Galleries', to: '/galleries' },
+      { label: 'Index of Texts', to: '/documents' },
       { label: 'The Mueller Lexicon', to: '/lexicon' },
     ],
   },

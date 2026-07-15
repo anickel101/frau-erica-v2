@@ -1,8 +1,12 @@
 import { Routes, Route } from 'react-router-dom'
 import FamilyPage from './pages/FamilyPage'
+import GalleriesPage from './pages/GalleriesPage'
+import GalleryPage from './pages/GalleryPage'
 import LexiconPage from './pages/LexiconPage'
 import PersonsPage from './pages/PersonsPage'
 import PlaceholderPage from './pages/PlaceholderPage'
+import TextPage from './pages/TextPage'
+import TextsPage from './pages/TextsPage'
 
 export default function App() {
   return (
@@ -12,10 +16,10 @@ export default function App() {
 
       {/* Public content -- Phase 3B */}
       <Route path="/" element={<PlaceholderPage title="Home" />} />
-      <Route path="/documents" element={<PlaceholderPage title="Index of texts" />} />
-      <Route path="/documents/:id" element={<PlaceholderPage title="Document" />} />
-      <Route path="/galleries" element={<PlaceholderPage title="Photo galleries" />} />
-      <Route path="/galleries/:id" element={<PlaceholderPage title="Gallery" />} />
+      <Route path="/documents" element={<TextsPage />} />
+      <Route path="/documents/:id" element={<TextPage />} />
+      <Route path="/galleries" element={<GalleriesPage />} />
+      <Route path="/galleries/:id" element={<GalleryPage />} />
       <Route path="/lexicon" element={<LexiconPage />} />
       <Route path="/about" element={<PlaceholderPage title="User's guide" />} />
       <Route
