@@ -2,19 +2,9 @@ import { useMemo, useState } from 'react'
 import Layout from '../components/Layout'
 import PersonIndexSection from '../components/PersonIndexSection'
 import SearchInput from '../components/SearchInput'
-import { Person, mockPersons } from '../data/mockPersons'
+import { mockPersons } from '../data/mockPersons'
+import { groupByLetter } from '../utils/groupByLetter'
 import { getFullName, getGroupLetter } from '../utils/personDisplay'
-
-function groupByLetter(persons: Person[]): [string, Person[]][] {
-  const groups = new Map<string, Person[]>()
-  for (const person of persons) {
-    const letter = getGroupLetter(person)
-    const group = groups.get(letter)
-    if (group) group.push(person)
-    else groups.set(letter, [person])
-  }
-  return [...groups.entries()]
-}
 
 export default function PersonsPage() {
   const [query, setQuery] = useState('')
@@ -24,7 +14,7 @@ export default function PersonsPage() {
     const filtered = q
       ? mockPersons.filter((p) => getFullName(p).toLowerCase().includes(q))
       : mockPersons
-    return groupByLetter(filtered)
+    return groupByLetter(filtered, getGroupLetter)
   }, [query])
 
   return (

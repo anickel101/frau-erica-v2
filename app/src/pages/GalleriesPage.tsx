@@ -1,36 +1,30 @@
-import { useMemo, useState } from 'react'
 import Layout from '../components/Layout'
 import GalleryIndexCard from '../components/GalleryIndexCard'
 import SearchInput from '../components/SearchInput'
-import { mockGalleries } from '../data/mockGallery'
+import { GalleryData, mockGalleries } from '../data/mockGallery'
+import { usePaginatedSearch } from '../hooks/usePaginatedSearch'
 import { getLinkedPersons } from '../utils/galleryDisplay'
 import { getFullName } from '../utils/personDisplay'
 
 const PAGE_SIZE = 16
 
+function filterGalleries(galleries: GalleryData[], query: string): GalleryData[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return galleries
+  return galleries.filter((gallery) => {
+    if (gallery.name.toLowerCase().includes(q)) return true
+    return getLinkedPersons(gallery).some((person) =>
+      getFullName(person).toLowerCase().includes(q),
+    )
+  })
+}
+
 export default function GalleriesPage() {
-  const [query, setQuery] = useState('')
-  const [showAll, setShowAll] = useState(false)
-
-  // Each new search starts collapsed at PAGE_SIZE again.
-  const [renderedQuery, setRenderedQuery] = useState(query)
-  if (renderedQuery !== query) {
-    setRenderedQuery(query)
-    setShowAll(false)
-  }
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return mockGalleries
-    return mockGalleries.filter((gallery) => {
-      if (gallery.name.toLowerCase().includes(q)) return true
-      return getLinkedPersons(gallery).some((person) =>
-        getFullName(person).toLowerCase().includes(q),
-      )
-    })
-  }, [query])
-
-  const visible = showAll ? filtered : filtered.slice(0, PAGE_SIZE)
+  const { query, setQuery, filtered, visible, showAll, setShowAll } = usePaginatedSearch(
+    mockGalleries,
+    filterGalleries,
+    PAGE_SIZE,
+  )
 
   return (
     <Layout>

@@ -1,9 +1,9 @@
 import ReactMarkdown from 'react-markdown'
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
+import TextByline from '../components/TextByline'
 import { mockTexts } from '../data/mockTexts'
 import { getAuthorPerson } from '../utils/textDisplay'
-import { MOCK_FAMILY_LINK, getFullName } from '../utils/personDisplay'
 
 export default function TextPage() {
   const { id } = useParams<{ id: string }>()
@@ -24,23 +24,11 @@ export default function TextPage() {
         )}
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">{document.title}</h1>
         <p className="text-sm text-fe-ink/70 mb-4">
-          {document.author &&
-            (authorPerson ? (
-              <Link
-                to={MOCK_FAMILY_LINK}
-                className="text-fe-accent hover:text-fe-accent-dark"
-              >
-                {getFullName(authorPerson)}
-              </Link>
-            ) : (
-              <span>{document.author}</span>
-            ))}
-          {document.genre && (
-            <span className={document.author ? 'ml-2 text-fe-ink/40' : 'text-fe-ink/40'}>
-              {document.author ? '· ' : ''}
-              {document.genre}
-            </span>
-          )}
+          <TextByline
+            author={document.author}
+            authorPerson={authorPerson}
+            genre={document.genre}
+          />
         </p>
 
         {document.summary && (

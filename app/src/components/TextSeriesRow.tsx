@@ -6,7 +6,7 @@ import {
   getAuthorPerson,
   getSeriesRepresentative,
 } from '../utils/textDisplay'
-import { MOCK_FAMILY_LINK, getFullName } from '../utils/personDisplay'
+import TextByline from './TextByline'
 
 type SeriesEntry = Extract<TextIndexEntry, { kind: 'series' }>
 
@@ -42,25 +42,11 @@ export default function TextSeriesRow({
         {entry.seriesTitle}
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
-        {representative.author &&
-          (authorPerson ? (
-            <Link
-              to={MOCK_FAMILY_LINK}
-              className="text-fe-accent hover:text-fe-accent-dark"
-            >
-              {getFullName(authorPerson)}
-            </Link>
-          ) : (
-            <span>{representative.author}</span>
-          ))}
-        {representative.genre && (
-          <span
-            className={representative.author ? 'ml-2 text-fe-ink/40' : 'text-fe-ink/40'}
-          >
-            {representative.author ? '· ' : ''}
-            {representative.genre}
-          </span>
-        )}
+        <TextByline
+          author={representative.author}
+          authorPerson={authorPerson}
+          genre={representative.genre}
+        />
       </p>
       {representative.summary && (
         <p className="text-xs text-fe-ink/80 mt-1">{representative.summary}</p>

@@ -4,6 +4,7 @@ import Layout from '../components/Layout'
 import LexiconIndexSection from '../components/LexiconIndexSection'
 import SearchInput from '../components/SearchInput'
 import { LexiconEntry, mockLexicon } from '../data/mockLexicon'
+import { groupByLetter } from '../utils/groupByLetter'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 
 // See FamilyHeader in FamilyPage.tsx for why this is its own component:
@@ -30,17 +31,6 @@ function getGroupLetter(entry: LexiconEntry): string {
   return entry.term[0].toUpperCase()
 }
 
-function groupByLetter(entries: LexiconEntry[]): [string, LexiconEntry[]][] {
-  const groups = new Map<string, LexiconEntry[]>()
-  for (const entry of entries) {
-    const letter = getGroupLetter(entry)
-    const group = groups.get(letter)
-    if (group) group.push(entry)
-    else groups.set(letter, [entry])
-  }
-  return [...groups.entries()]
-}
-
 export default function LexiconPage() {
   const [query, setQuery] = useState('')
 
@@ -49,7 +39,7 @@ export default function LexiconPage() {
     const filtered = q
       ? mockLexicon.filter((e) => e.term.toLowerCase().includes(q))
       : mockLexicon
-    return groupByLetter(filtered)
+    return groupByLetter(filtered, getGroupLetter)
   }, [query])
 
   return (
