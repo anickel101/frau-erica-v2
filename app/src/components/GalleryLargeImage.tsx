@@ -51,12 +51,17 @@ export default function GalleryLargeImage({
         />
       </div>
       <p className="max-w-4xl mt-2 text-sm text-fe-ink/70">
-        <strong className="text-fe-ink">{photo.title}</strong> -- {photo.caption}{' '}
-        <span className="text-fe-ink/50">
-          ({photo.location}
-          {photo.year_taken ? `, ${photo.year_taken}` : ''}
-          {photo.credit ? ` · Photo: ${photo.credit}` : ''})
-        </span>
+        <strong className="text-fe-ink">{photo.title}</strong> -- {photo.caption}
+        {(photo.location || photo.year_taken || photo.credit) && (
+          <>
+            {' '}
+            <span className="text-fe-ink/50">
+              ({photo.location}
+              {photo.year_taken ? `, ${photo.year_taken}` : ''}
+              {photo.credit ? ` · Photo: ${photo.credit}` : ''})
+            </span>
+          </>
+        )}
       </p>
 
       <Modal open={isZoomed} onClose={() => setIsZoomed(false)}>

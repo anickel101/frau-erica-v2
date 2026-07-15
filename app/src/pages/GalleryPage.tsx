@@ -74,7 +74,15 @@ export default function GalleryPage() {
   return (
     <Layout>
       <div className="p-6">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4">{gallery.name}</h1>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold">{gallery.name}</h1>
+          <Link
+            to="/galleries"
+            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
+          >
+            Back to Index of Galleries
+          </Link>
+        </div>
 
         <GalleryLargeImage photo={photos[activeIndex]} onPrev={goPrev} onNext={goNext} />
 
