@@ -116,7 +116,7 @@ restructuring components.
 - **Gated** (family-tree traversal only): Family pages, Person pages —
   anything using `Persons`/`Families`/`Relationships` data
 - **Public**: Documents, Galleries, Lexicon, and eventually a cookbook
-- Cognito-based auth (User Pool with `pending`/`family`/`admin` groups),
+- Cognito-based auth (User Pool with `pending`/`approved`/`admin` groups),
   API Gateway + Lambda for gated data, static S3/CloudFront for public
   content
 - Logged-out visitors hitting a gated link see a teaser (not a blind

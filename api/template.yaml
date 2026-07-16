@@ -13,10 +13,9 @@ Parameters:
   CognitoUserPoolId:
     Type: String
     Description: >
-      Cognito User Pool ID backing the pending/family/admin groups. Cognito
-      doesn't exist yet as of this scaffolding pass -- leave the
-      placeholder default. Deploys will fail against a real AWS account
-      until this is a real pool id, which is expected.
+      Cognito User Pool ID backing the pending/approved/admin groups.
+      Leave the placeholder default here -- the real value is supplied as
+      a deploy-time parameter (`sam deploy --guided`), not hardcoded.
     Default: REPLACE_WITH_USER_POOL_ID
   CognitoUserPoolClientId:
     Type: String
@@ -123,6 +122,28 @@ Resources:
           Properties:
             ApiId: !Ref FrauEricaApi
             Path: /search
+            Method: get
+
+  MeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/me.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/me.handler
+      # No S3 policy -- this route only echoes back JWT claims already
+      # validated by the Cognito authorizer, no database access at all.
+      Events:
+        Me:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /me
             Method: get
 
 Outputs:
