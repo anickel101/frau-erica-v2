@@ -23,3 +23,13 @@ export interface Person {
   date_of_death: string | null
   death_year: number | null
 }
+
+export interface PersonDetail extends Person {
+  // family_id of every Families row where this person is a partner --
+  // can be more than one (widowed then remarried, etc).
+  familyIdsAsPartner: number[]
+  // family_id of the Families row representing this person's own
+  // parents, if one exists. Null if they have no recorded parents, or
+  // their parents were never paired into a shared Families row.
+  familyIdAsChild: number | null
+}

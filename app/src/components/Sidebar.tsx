@@ -41,7 +41,7 @@ interface SidebarProps {
 
 export default function Sidebar({ dividerOffset }: SidebarProps) {
   const [open, setOpen] = useState(false)
-  const { status, email, personName, logout } = useAuth()
+  const { status, email, personName, homeFamilyId, logout } = useAuth()
   const navigate = useNavigate()
 
   const logoBlockHeight =
@@ -114,14 +114,28 @@ export default function Sidebar({ dividerOffset }: SidebarProps) {
         </div>
 
         {/* Account status -- only ever rendered signed in (a signed-out
-            visitor sees nothing here). personName comes from a separate
-            GET /persons/:id lookup AuthProvider does after sign-in (the
-            token itself only carries person_id, no name), so it briefly
-            falls back to email until that resolves. */}
+            visitor sees nothing here). personName/homeFamilyId come from
+            a separate GET /persons/:id lookup AuthProvider does after
+            sign-in (the token itself only carries person_id, neither a
+            name nor a family), so the name briefly falls back to email
+            until that resolves -- the name is only a link once
+            homeFamilyId is known, since a lookup failure or an
+            unlinked/pending account has nowhere to send it to. */}
         {status === 'signedIn' && (
           <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
             <p className="text-sm">
-              Hi, <span className="font-bold text-fe-brown">{personName ?? email}</span>
+              Hi,{' '}
+              {homeFamilyId !== null ? (
+                <Link
+                  to={`/family/${homeFamilyId}`}
+                  onClick={() => setOpen(false)}
+                  className="font-bold text-fe-brown hover:text-fe-accent"
+                >
+                  {personName ?? email}
+                </Link>
+              ) : (
+                <span className="font-bold text-fe-brown">{personName ?? email}</span>
+              )}
             </p>
             <button
               type="button"

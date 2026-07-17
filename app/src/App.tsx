@@ -16,8 +16,8 @@ const GalleryPage = lazy(() => import('./pages/GalleryPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LexiconPage = lazy(() => import('./pages/LexiconPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const PersonPage = lazy(() => import('./pages/PersonPage'))
 const PersonsPage = lazy(() => import('./pages/PersonsPage'))
-const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'))
 const RequestAccessPage = lazy(() => import('./pages/RequestAccessPage'))
 const TextPage = lazy(() => import('./pages/TextPage'))
 const TextsPage = lazy(() => import('./pages/TextsPage'))
@@ -68,7 +68,7 @@ export default function App() {
           path="/persons/:id"
           element={
             <RequireApproved>
-              <PlaceholderPage title="Person" />
+              <PersonPage />
             </RequireApproved>
           }
         />

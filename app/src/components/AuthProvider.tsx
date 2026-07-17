@@ -22,6 +22,7 @@ const SIGNED_OUT_STATE: AuthState = {
   personId: null,
   email: null,
   personName: null,
+  homeFamilyId: null,
 }
 
 function stateFromSession(session: CognitoUserSession): AuthState {
@@ -34,9 +35,10 @@ function stateFromSession(session: CognitoUserSession): AuthState {
     groups,
     personId,
     email: typeof payload.email === 'string' ? payload.email : null,
-    // Not on the token -- resolved by the effect below, once idToken/
-    // personId are in state.
+    // Neither is on the token -- both resolved by the effect below, once
+    // idToken/personId are in state.
     personName: null,
+    homeFamilyId: null,
   }
 }
 
@@ -71,26 +73,36 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  // Resolves the signed-in user's family-tree name via their linked
-  // person_id -- runs once per sign-in (dependencies only change on
-  // status/personId/idToken transitions, not on personName itself
-  // updating). A pending account with no person_id yet, or a lookup
-  // failure, just leaves personName null -- callers fall back to email.
+  // Resolves the signed-in user's family-tree name and "home" family page
+  // via their linked person_id -- runs once per sign-in (dependencies
+  // only change on status/personId/idToken transitions, not on
+  // personName/homeFamilyId themselves updating). A pending account with
+  // no person_id yet, or a lookup failure, just leaves both null --
+  // callers fall back to email, and hide the "go to my family page" link.
   useEffect(() => {
     if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
     let cancelled = false
     getPersonById(state.personId, state.idToken)
       .then((person) => {
         if (cancelled) return
+        // Prefer the family they're a partner in (their own household)
+        // over the family they appear in as a child -- more clearly
+        // "theirs" as a homepage. Falls back to the child family for
+        // anyone not yet a partner in any Families row.
+        const homeFamilyId = person.familyIdsAsPartner[0] ?? person.familyIdAsChild
         setState((prev) =>
           prev.status === 'signedIn'
-            ? { ...prev, personName: `${person.first_name} ${person.last_name}`.trim() }
+            ? {
+                ...prev,
+                personName: `${person.first_name} ${person.last_name}`.trim(),
+                homeFamilyId,
+              }
             : prev,
         )
       })
       .catch(() => {
-        // Name is a nice-to-have -- a failed lookup shouldn't affect
-        // sign-in itself, personName just stays null.
+        // Name/home-family are a nice-to-have -- a failed lookup
+        // shouldn't affect sign-in itself, both just stay null.
       })
     return () => {
       cancelled = true

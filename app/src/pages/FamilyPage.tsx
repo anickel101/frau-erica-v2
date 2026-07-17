@@ -1,8 +1,14 @@
+import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import PersonCard from '../components/PersonCard'
-import { sampleFamily } from '../data/mockFamily'
+import { ApiError } from '../data-access/gated/apiClient'
+import { getFamilyById } from '../data-access/gated/families'
+import { useAuth } from '../hooks/useAuth'
 import { useHeaderRef } from '../hooks/useHeaderRef'
+import { FamilyDetail } from '../types/family'
+import { resolveImageUrl } from '../utils/imageUrl'
 
 // Header image band -- capped at the same max width as the text content
 // below. This matters once real photos are wired in: an unconstrained-width
@@ -28,10 +34,71 @@ function FamilyHeader({ imageUrl }: { imageUrl: string | undefined }) {
   )
 }
 
+// person_1/person_2 are individually nullable (schema.sql allows
+// single-parent Families rows) -- builds "Anson Nickel and Reva Gaur",
+// "Anson Nickel", or "" depending on which are present.
+function familyHeading(family: FamilyDetail): string {
+  return [family.person_1, family.person_2]
+    .filter((p) => p !== null)
+    .map((p) => `${p.first_name} ${p.last_name}`)
+    .join(' and ')
+}
+
+type LoadState =
+  | { status: 'loading' }
+  | { status: 'loaded'; family: FamilyDetail }
+  | { status: 'notFound' }
+  | { status: 'error' }
+
 export default function FamilyPage() {
-  // Phase 3C: replace sampleFamily with data fetched by family_id from
-  // the route params, via the generated JSON / API.
-  const family = sampleFamily
+  const { id } = useParams<{ id: string }>()
+  const { idToken } = useAuth()
+  const [state, setState] = useState<LoadState>({ status: 'loading' })
+
+  useEffect(() => {
+    const familyId = Number(id)
+    if (!idToken || !Number.isInteger(familyId)) return
+    let cancelled = false
+    // Deferred a microtask so this reset doesn't fire synchronously
+    // within the effect body itself (react-hooks/set-state-in-effect) --
+    // needed because navigating between two /family/:id pages via a
+    // PersonCard click reuses this same component instance (id just
+    // changes), so without a reset the previous family would keep
+    // showing until the new fetch resolves.
+    void Promise.resolve().then(() => {
+      if (!cancelled) setState({ status: 'loading' })
+    })
+    getFamilyById(familyId, idToken)
+      .then((family) => {
+        if (!cancelled) setState({ status: 'loaded', family })
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setState({
+            status: err instanceof ApiError && err.status === 404 ? 'notFound' : 'error',
+          })
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [id, idToken])
+
+  if (state.status !== 'loaded') {
+    return (
+      <Layout>
+        <div className="p-6">
+          <p className="text-fe-ink/60 text-sm">
+            {state.status === 'loading' && 'Loading...'}
+            {state.status === 'notFound' && "This family page doesn't exist."}
+            {state.status === 'error' && 'Something went wrong loading this family.'}
+          </p>
+        </div>
+      </Layout>
+    )
+  }
+
+  const { family } = state
 
   return (
     <Layout>
@@ -41,17 +108,20 @@ export default function FamilyPage() {
           construction, rather than as two separately-tuned values that
           can drift apart. */}
       <div className="p-6">
-        <FamilyHeader imageUrl={family.header_image_url} />
+        <FamilyHeader
+          imageUrl={
+            family.header_image_url ? resolveImageUrl(family.header_image_url) : undefined
+          }
+        />
 
         <div className="max-w-4xl mt-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-            {family.person_1.first_name} {family.person_1.last_name} and{' '}
-            {family.person_2.first_name} {family.person_2.last_name}
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4">{familyHeading(family)}</h1>
 
-          <div className="prose prose-sm max-w-none mb-8 text-fe-ink/90">
-            <ReactMarkdown>{family.description}</ReactMarkdown>
-          </div>
+          {family.description && (
+            <div className="prose prose-sm max-w-none mb-8 text-fe-ink/90">
+              <ReactMarkdown>{family.description}</ReactMarkdown>
+            </div>
+          )}
 
           {/* Grandparents: two columns, one per side of the couple */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
@@ -67,8 +137,12 @@ export default function FamilyPage() {
 
           {/* The featured couple */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            <PersonCard person={family.person_1} generation="couple" />
-            <PersonCard person={family.person_2} generation="couple" />
+            {family.person_1 && (
+              <PersonCard person={family.person_1} generation="couple" />
+            )}
+            {family.person_2 && (
+              <PersonCard person={family.person_2} generation="couple" />
+            )}
           </div>
 
           {/* Children, if any */}

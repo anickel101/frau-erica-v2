@@ -1,5 +1,19 @@
 import { API_BASE_URL } from '../../config/cognito'
 
+// Carries the HTTP status alongside the message so callers can
+// distinguish "not found" (404) from other failures (403, 500, network)
+// without parsing the message text -- FamilyPage/PersonPage need this to
+// show "doesn't exist" vs. "something went wrong".
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
+
 // idToken is optional -- /request-access is the one route on this API
 // with no authorizer (the requester has no account yet), so it needs to
 // go through the same fetch/error-handling machinery without a token.
@@ -17,7 +31,7 @@ export async function apiFetch<T>(
     body: options?.body ? JSON.stringify(options.body) : undefined,
   })
   if (!res.ok) {
-    throw new Error(await describeError(path, res))
+    throw new ApiError(res.status, await describeError(path, res))
   }
   return res.json() as Promise<T>
 }

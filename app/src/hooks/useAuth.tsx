@@ -11,6 +11,11 @@ export interface AuthState {
   // lookup resolves, and stays null (falls back to email) if it fails or
   // there's no linked person_id at all.
   personName: string | null
+  // The family page that best represents this person -- their own
+  // marriage/partnership if they have one, else the family they appear
+  // in as a child. Resolved from the same lookup as personName. Null
+  // until resolved, or if the lookup fails/finds no family at all.
+  homeFamilyId: number | null
 }
 
 export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequired' }
