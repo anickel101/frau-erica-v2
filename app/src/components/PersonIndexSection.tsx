@@ -1,4 +1,4 @@
-import { Person } from '../data/mockPersons'
+import { Person } from '../types/person'
 import PersonIndexEntry from './PersonIndexEntry'
 
 export default function PersonIndexSection({

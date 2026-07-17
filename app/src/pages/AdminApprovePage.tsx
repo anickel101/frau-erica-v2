@@ -3,8 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import PersonPicker from '../components/PersonPicker'
 import { approveUser } from '../data-access/gated/adminApprove'
-import { PersonSummary } from '../data-access/gated/search'
 import { useAuth } from '../hooks/useAuth'
+import { PersonSummary } from '../types/person'
 import { buttonClassName, inputClassName } from '../utils/formStyles'
 
 export default function AdminApprovePage() {

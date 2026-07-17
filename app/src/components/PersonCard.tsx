@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { PersonSummary } from '../data/mockFamily'
 import { formatBirthDate } from '../utils/dateDisplay'
+import { PersonSummary } from '../types/person'
 
 type Generation = 'grandparent' | 'couple' | 'child'
 

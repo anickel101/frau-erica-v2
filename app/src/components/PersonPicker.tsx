@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { PersonSummary, searchPersons } from '../data-access/gated/search'
+import { searchPersons } from '../data-access/gated/search'
+import { PersonSummary } from '../types/person'
 import { inputClassName } from '../utils/formStyles'
 
 // Shared search-and-select UI, used by both AdminApprovePage (approving

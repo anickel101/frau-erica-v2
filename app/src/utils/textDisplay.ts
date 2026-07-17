@@ -1,5 +1,6 @@
 import { DocumentListItem } from '../data-access/public/documents'
-import { Person, mockPersons } from '../data/mockPersons'
+import { mockPersons } from '../data/mockPersons'
+import { Person } from '../types/person'
 
 export type TextIndexEntry =
   | { kind: 'standalone'; document: DocumentListItem }

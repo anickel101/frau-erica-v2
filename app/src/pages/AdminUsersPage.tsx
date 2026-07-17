@@ -7,8 +7,8 @@ import {
   listAdminUsers,
   updateUserPersonId,
 } from '../data-access/gated/adminUsers'
-import { PersonSummary } from '../data-access/gated/search'
 import { useAuth } from '../hooks/useAuth'
+import { PersonSummary } from '../types/person'
 import { compactButtonClassName } from '../utils/formStyles'
 
 export default function AdminUsersPage() {

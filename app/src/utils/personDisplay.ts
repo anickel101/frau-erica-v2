@@ -1,6 +1,6 @@
 import { sampleFamily } from '../data/mockFamily'
-import { Person } from '../data/mockPersons'
 import { formatDate } from './dateDisplay'
+import { Person } from '../types/person'
 
 // Until real family-tree data is wired up, every person links to the one
 // mock family page.

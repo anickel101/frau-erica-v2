@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Person } from '../data/mockPersons'
+import { Person } from '../types/person'
 import { MOCK_FAMILY_LINK, getFullName } from '../utils/personDisplay'
 
 // Shared by TextStandaloneRow, TextSeriesRow, and TextPage -- the caller

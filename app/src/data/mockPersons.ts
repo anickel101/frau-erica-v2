@@ -1,16 +1,5 @@
 import raw from './generated/persons.json'
-
-export interface Person {
-  person_id: number
-  first_name: string
-  middle_name: string
-  last_name: string
-  suffix: string
-  date_of_birth: string | null
-  birth_year: number | null
-  date_of_death: string | null
-  death_year: number | null
-}
+import type { Person } from '../types/person'
 
 function sortKey(person: Person): string {
   return (person.last_name || person.first_name).toLowerCase()

@@ -1,5 +1,6 @@
 import { GalleryData } from '../data-access/public/galleries'
-import { Person, mockPersons } from '../data/mockPersons'
+import { mockPersons } from '../data/mockPersons'
+import { Person } from '../types/person'
 
 export function getLinkedPersons(gallery: GalleryData): Person[] {
   return gallery.linkedPersonIds

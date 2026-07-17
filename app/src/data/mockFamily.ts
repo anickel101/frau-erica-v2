@@ -2,12 +2,7 @@
 // Relationships) so swapping this for real data in Phase 3C is a
 // straightforward drop-in, not a redesign.
 
-export interface PersonSummary {
-  person_id: number
-  first_name: string
-  last_name: string
-  date_of_birth?: string // ISO date, e.g. '1987-10-24'
-}
+import type { PersonSummary } from '../types/person'
 
 export interface FamilyPageData {
   family_id: number

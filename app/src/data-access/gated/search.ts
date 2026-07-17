@@ -1,12 +1,5 @@
 import { apiFetch } from './apiClient'
-
-// Matches api/src/lib/types.ts's PersonSummary shape.
-export interface PersonSummary {
-  person_id: number
-  first_name: string
-  last_name: string
-  date_of_birth?: string
-}
+import { PersonSummary } from '../../types/person'
 
 export async function searchPersons(
   query: string,
