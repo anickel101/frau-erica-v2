@@ -27,15 +27,15 @@ describe('me handler', () => {
     expect(body).toEqual({
       sub: 'abc-123',
       email: 'a@b.com',
-      groups: '[admin]',
+      groups: ['admin'],
       personId: 23,
     })
   })
 
-  test('personId is null when the claim is absent', async () => {
+  test('personId is null and groups is empty when the claims are absent', async () => {
     const result = await handler(fakeEvent({ sub: 'abc-123', email: 'a@b.com' }))
     const body = JSON.parse((result as APIGatewayProxyStructuredResultV2).body as string)
     expect(body.personId).toBeNull()
-    expect(body.groups).toBeNull()
+    expect(body.groups).toEqual([])
   })
 })

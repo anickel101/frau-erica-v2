@@ -1,7 +1,7 @@
 import type { Database } from 'sql.js'
 import { toPersonSummary } from '../personHelpers'
 import { PARENT_RELATIONSHIP_TYPES } from '../relationshipTypes'
-import { queryAll, queryOne } from '../sqlHelpers'
+import { inClause, queryAll, queryOne } from '../sqlHelpers'
 import type { FamilyDetail, PersonSummary } from '../types'
 
 interface FamilyRow {
@@ -33,17 +33,14 @@ function getPersonSummary(db: Database, personId: number): PersonSummary | null 
 // person can have e.g. one biological and one step parent on record
 // simultaneously, and both belong on the page.
 function getParents(db: Database, personId: number): PersonSummary[] {
-  const typeCols = PARENT_RELATIONSHIP_TYPES.map((_, i) => `:type${i}`).join(', ')
+  const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const rows = queryAll<PersonSummaryRow>(
     db,
     `SELECT p.person_id, p.first_name, p.last_name, p.date_of_birth
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_1
-     WHERE r.person_id_2 = :childId AND r.relationship_type IN (${typeCols})`,
-    Object.fromEntries([
-      [':childId', personId],
-      ...PARENT_RELATIONSHIP_TYPES.map((t, i) => [`:type${i}`, t]),
-    ]),
+     WHERE r.person_id_2 = :childId AND r.relationship_type IN (${types.sql})`,
+    { ':childId': personId, ...types.params },
   )
   return rows.map(toPersonSummary)
 }
@@ -55,19 +52,16 @@ function getParents(db: Database, personId: number): PersonSummary[] {
 // their own Relationships row pointing at the same child.
 function getChildren(db: Database, parentIds: number[]): PersonSummary[] {
   if (parentIds.length === 0) return []
-  const parentCols = parentIds.map((_, i) => `:parent${i}`).join(', ')
-  const typeCols = PARENT_RELATIONSHIP_TYPES.map((_, i) => `:type${i}`).join(', ')
+  const parents = inClause('parent', parentIds)
+  const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const rows = queryAll<PersonSummaryRow>(
     db,
     `SELECT DISTINCT p.person_id, p.first_name, p.last_name, p.date_of_birth
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_2
-     WHERE r.person_id_1 IN (${parentCols})
-       AND r.relationship_type IN (${typeCols})`,
-    Object.fromEntries([
-      ...parentIds.map((id, i) => [`:parent${i}`, id]),
-      ...PARENT_RELATIONSHIP_TYPES.map((t, i) => [`:type${i}`, t]),
-    ]),
+     WHERE r.person_id_1 IN (${parents.sql})
+       AND r.relationship_type IN (${types.sql})`,
+    { ...parents.params, ...types.params },
   )
   return rows.map(toPersonSummary)
 }

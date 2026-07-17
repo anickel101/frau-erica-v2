@@ -3,6 +3,7 @@ import { createWriteStream, readFileSync } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 import type { Readable } from 'node:stream'
 import initSqlJs, { type Database } from 'sql.js'
+import { requireEnv } from './env'
 import { SQL_WASM_BASE64 } from './sqlWasmBase64'
 
 const LOCAL_DB_PATH = '/tmp/frau_erica.db'
@@ -11,22 +12,24 @@ const s3 = new S3Client({})
 
 // Cached at module scope so a warm Lambda invocation reuses the snapshot
 // already on /tmp instead of re-downloading from S3 on every request --
-// only a cold start pays the download cost.
+// only a cold start pays the download cost. Reset to null on failure (see
+// getDbPath) so a transient S3 error doesn't get replayed forever on an
+// otherwise-healthy warm container.
 let snapshotPath: Promise<string> | null = null
 
 export function getDbPath(): Promise<string> {
   if (!snapshotPath) {
-    snapshotPath = downloadSnapshot()
+    snapshotPath = downloadSnapshot().catch((err: unknown) => {
+      snapshotPath = null
+      throw err
+    })
   }
   return snapshotPath
 }
 
 async function downloadSnapshot(): Promise<string> {
-  const bucket = process.env.DB_BUCKET
-  const key = process.env.DB_KEY
-  if (!bucket || !key) {
-    throw new Error('DB_BUCKET and DB_KEY environment variables are required')
-  }
+  const bucket = requireEnv('DB_BUCKET')
+  const key = requireEnv('DB_KEY')
 
   const response = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }))
   if (!response.Body) {
@@ -39,12 +42,16 @@ async function downloadSnapshot(): Promise<string> {
 
 // Also cached at module scope -- opening the snapshot bytes into a sql.js
 // Database is cheap relative to the S3 download, but there's no reason to
-// redo it on every warm invocation either.
+// redo it on every warm invocation either. Same failure-reset as
+// snapshotPath above.
 let db: Promise<Database> | null = null
 
 export function getDb(): Promise<Database> {
   if (!db) {
-    db = openDb()
+    db = openDb().catch((err: unknown) => {
+      db = null
+      throw err
+    })
   }
   return db
 }

@@ -61,7 +61,5 @@ test('throws when DB_BUCKET or DB_KEY is missing', async () => {
   delete process.env.DB_BUCKET
 
   const { getDbPath } = await import('./db')
-  await expect(getDbPath()).rejects.toThrow(
-    'DB_BUCKET and DB_KEY environment variables are required',
-  )
+  await expect(getDbPath()).rejects.toThrow('DB_BUCKET environment variable is required')
 })

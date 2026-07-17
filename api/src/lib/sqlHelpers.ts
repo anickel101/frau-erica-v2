@@ -26,3 +26,18 @@ export function queryOne<T>(
 ): T | undefined {
   return queryAll<T>(db, sql, params)[0]
 }
+
+// Builds a `:prefix0, :prefix1, ...` placeholder list plus the matching
+// bound params object for a SQL `IN (...)` clause -- the queries in
+// queries/families.ts and queries/persons.ts each independently built
+// this by hand for both relationship-type lists and person-ID lists.
+export function inClause(
+  prefix: string,
+  values: readonly (string | number)[],
+): { sql: string; params: Record<string, string | number> } {
+  const keys = values.map((_, i) => `:${prefix}${i}`)
+  return {
+    sql: keys.join(', '),
+    params: Object.fromEntries(keys.map((key, i) => [key, values[i]])),
+  }
+}

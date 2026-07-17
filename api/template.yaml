@@ -21,21 +21,36 @@ Parameters:
     Type: String
     Description: App client ID for the same user pool.
     Default: REPLACE_WITH_USER_POOL_CLIENT_ID
+  FrontendOrigin:
+    Type: String
+    Description: >
+      Base URL of the frontend -- used for CORS and to build the deep
+      link in the Request Access admin-notification email. No production
+      origin exists yet; defaults to the local dev server.
+    Default: http://localhost:5173
 
 Globals:
   Function:
     Runtime: nodejs22.x
     Timeout: 10
     MemorySize: 256
-    Environment:
-      Variables:
-        DB_BUCKET: frau-erica-db-backups
-        DB_KEY: current/frau_erica.db
 
 Resources:
   FrauEricaApi:
     Type: AWS::Serverless::HttpApi
     Properties:
+      # First real browser -> API Gateway call this project makes (the
+      # login flow talks to Cognito directly, bypassing this entirely).
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref FrontendOrigin
+        AllowMethods:
+          - GET
+          - POST
+          - PATCH
+        AllowHeaders:
+          - Authorization
+          - Content-Type
       Auth:
         Authorizers:
           CognitoAuthorizer:
@@ -58,6 +73,10 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/persons.handler
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
       Policies:
         - Statement:
             - Sid: ReadCurrentSnapshotOnly
@@ -84,6 +103,10 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/families.handler
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
       Policies:
         - Statement:
             - Sid: ReadCurrentSnapshotOnly
@@ -110,6 +133,10 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/search.handler
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
       Policies:
         - Statement:
             - Sid: ReadCurrentSnapshotOnly
@@ -145,6 +172,144 @@ Resources:
             ApiId: !Ref FrauEricaApi
             Path: /me
             Method: get
+
+  RequestAccessFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/requestAccess.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/requestAccess.handler
+      Environment:
+        Variables:
+          RECAPTCHA_SECRET_PARAM: /frau-erica/recaptcha-secret-key
+          FRONTEND_ORIGIN: !Ref FrontendOrigin
+      Policies:
+        - Statement:
+            - Sid: ReadRecaptchaSecret
+              Effect: Allow
+              Action: ssm:GetParameter
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/frau-erica/recaptcha-secret-key
+            # SecureString needs both permissions -- GetParameter alone
+            # returns encrypted ciphertext without this.
+            - Sid: DecryptRecaptchaSecret
+              Effect: Allow
+              Action: kms:Decrypt
+              Resource: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/ssm
+            - Sid: SendAdminNotification
+              Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/FrauErica.archivist@gmail.com
+      Events:
+        RequestAccess:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /request-access
+            Method: post
+            # No account exists yet for the requester -- this route must
+            # not sit behind the pool-wide Cognito authorizer.
+            Auth:
+              Authorizer: NONE
+
+  AdminApproveUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminApproveUser.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminApproveUser.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      # Most sensitive IAM grant in the project -- can create real login
+      # credentials and grant real site access. Scoped to exactly these
+      # two actions on exactly this one user pool, nothing else.
+      Policies:
+        - Statement:
+            - Sid: CreateAndApproveAccounts
+              Effect: Allow
+              Action:
+                - cognito-idp:AdminCreateUser
+                - cognito-idp:AdminAddUserToGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminApproveUser:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/approve
+            Method: post
+
+  AdminListUsersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminListUsers.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminListUsers.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      Policies:
+        - Statement:
+            - Sid: ListExistingUsers
+              Effect: Allow
+              Action: cognito-idp:ListUsersInGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminListUsers:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/users
+            Method: get
+
+  AdminUpdateUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminUpdateUser.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminUpdateUser.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      Policies:
+        - Statement:
+            - Sid: UpdateUserPersonId
+              Effect: Allow
+              Action: cognito-idp:AdminUpdateUserAttributes
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminUpdateUser:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/users
+            Method: patch
 
 Outputs:
   ApiUrl:

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { hasApprovedAccess, parseGroups } from './auth'
+import { hasAdminAccess, hasApprovedAccess, parseGroups } from './auth'
 
 describe('parseGroups', () => {
   test('parses a single group', () => {
@@ -38,5 +38,27 @@ describe('hasApprovedAccess', () => {
 
   test('false when the claim is missing entirely', () => {
     expect(hasApprovedAccess(undefined)).toBe(false)
+  })
+})
+
+describe('hasAdminAccess', () => {
+  test('true for admin', () => {
+    expect(hasAdminAccess('[admin]')).toBe(true)
+  })
+
+  test('false for approved alone -- admin is strictly narrower', () => {
+    expect(hasAdminAccess('[approved]')).toBe(false)
+  })
+
+  test('true when a user has both approved and admin', () => {
+    expect(hasAdminAccess('[approved, admin]')).toBe(true)
+  })
+
+  test('false for pending-only', () => {
+    expect(hasAdminAccess('[pending]')).toBe(false)
+  })
+
+  test('false when the claim is missing entirely', () => {
+    expect(hasAdminAccess(undefined)).toBe(false)
   })
 })
