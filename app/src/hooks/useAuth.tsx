@@ -6,6 +6,11 @@ export interface AuthState {
   groups: string[]
   personId: number | null
   email: string | null
+  // Resolved separately from the token (which only carries person_id, no
+  // name) via a GET /persons/:id lookup once signed in -- null until that
+  // lookup resolves, and stays null (falls back to email) if it fails or
+  // there's no linked person_id at all.
+  personName: string | null
 }
 
 export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequired' }

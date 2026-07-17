@@ -6,6 +6,7 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js'
 import { COGNITO_CLIENT_ID, COGNITO_USER_POOL_ID } from '../config/cognito'
+import { getPersonById } from '../data-access/gated/persons'
 import { parseIdTokenClaims } from '../hooks/authClaims'
 import { AuthContext, AuthContextValue, AuthState, LoginResult } from '../hooks/useAuth'
 
@@ -20,6 +21,7 @@ const SIGNED_OUT_STATE: AuthState = {
   groups: [],
   personId: null,
   email: null,
+  personName: null,
 }
 
 function stateFromSession(session: CognitoUserSession): AuthState {
@@ -32,6 +34,9 @@ function stateFromSession(session: CognitoUserSession): AuthState {
     groups,
     personId,
     email: typeof payload.email === 'string' ? payload.email : null,
+    // Not on the token -- resolved by the effect below, once idToken/
+    // personId are in state.
+    personName: null,
   }
 }
 
@@ -65,6 +70,32 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       setState(stateFromSession(session))
     })
   }, [])
+
+  // Resolves the signed-in user's family-tree name via their linked
+  // person_id -- runs once per sign-in (dependencies only change on
+  // status/personId/idToken transitions, not on personName itself
+  // updating). A pending account with no person_id yet, or a lookup
+  // failure, just leaves personName null -- callers fall back to email.
+  useEffect(() => {
+    if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
+    let cancelled = false
+    getPersonById(state.personId, state.idToken)
+      .then((person) => {
+        if (cancelled) return
+        setState((prev) =>
+          prev.status === 'signedIn'
+            ? { ...prev, personName: `${person.first_name} ${person.last_name}`.trim() }
+            : prev,
+        )
+      })
+      .catch(() => {
+        // Name is a nice-to-have -- a failed lookup shouldn't affect
+        // sign-in itself, personName just stays null.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [state.status, state.personId, state.idToken])
 
   function login(email: string, password: string): Promise<LoginResult> {
     return new Promise((resolve, reject) => {

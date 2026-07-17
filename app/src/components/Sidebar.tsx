@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 interface NavSection {
   title: string
@@ -40,6 +41,8 @@ interface SidebarProps {
 
 export default function Sidebar({ dividerOffset }: SidebarProps) {
   const [open, setOpen] = useState(false)
+  const { status, email, personName, logout } = useAuth()
+  const navigate = useNavigate()
 
   const logoBlockHeight =
     dividerOffset !== null
@@ -109,6 +112,30 @@ export default function Sidebar({ dividerOffset }: SidebarProps) {
             </p>
           </div>
         </div>
+
+        {/* Account status -- only ever rendered signed in (a signed-out
+            visitor sees nothing here). personName comes from a separate
+            GET /persons/:id lookup AuthProvider does after sign-in (the
+            token itself only carries person_id, no name), so it briefly
+            falls back to email until that resolves. */}
+        {status === 'signedIn' && (
+          <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
+            <p className="text-sm">
+              Hi, <span className="font-bold text-fe-brown">{personName ?? email}</span>
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                logout()
+                setOpen(false)
+                navigate('/login')
+              }}
+              className="text-fe-accent hover:text-fe-accent-dark text-sm"
+            >
+              Log out
+            </button>
+          </div>
+        )}
 
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
