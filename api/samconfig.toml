@@ -1,0 +1,15 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "frau-erica-api"
+resolve_s3 = true
+s3_prefix = "frau-erica-api"
+region = "us-east-1"
+profile = "frau-erica-v2-deploy"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "CognitoUserPoolId=\"us-east-1_zCffrjnHW\" CognitoUserPoolClientId=\"2nd0rtvo4er63c6rp8k7l9kgid\""
+image_repositories = []
+
+[default.global.parameters]
+region = "us-east-1"

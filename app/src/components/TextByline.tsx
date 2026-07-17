@@ -1,0 +1,43 @@
+import { Link } from 'react-router-dom'
+import { Person } from '../types/person'
+import { getFullName } from '../utils/personDisplay'
+
+// Shared by TextStandaloneRow, TextSeriesRow, and TextPage -- the caller
+// wraps this in its own <p> (font size/spacing differ between index rows
+// and the detail page), this only owns the author-link-or-plain-text and
+// genre-separator logic that was previously copy-pasted three times.
+export default function TextByline({
+  author,
+  authorPerson,
+  genre,
+}: {
+  author: string | null
+  authorPerson: Person | undefined
+  genre: string | null
+}) {
+  return (
+    <>
+      {author &&
+        (authorPerson ? (
+          authorPerson.linkedFamilyId !== null ? (
+            <Link
+              to={`/family/${authorPerson.linkedFamilyId}`}
+              className="text-fe-accent hover:text-fe-accent-dark"
+            >
+              {getFullName(authorPerson)}
+            </Link>
+          ) : (
+            <span>{getFullName(authorPerson)}</span>
+          )
+        ) : (
+          <span>{author}</span>
+        ))}
+      {genre && (
+        <span className={author ? 'ml-2 text-fe-ink/40' : 'text-fe-ink/40'}>
+          {author ? '· ' : ''}
+          {genre}
+        </span>
+      )}
+    </>
+  )
+}

@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Exact original values from the site's design notes -- these are
+     authoritative (not screenshot-estimated), keep them precise. */
+  --color-fe-bg: #ededed;
+  --color-fe-accent: #ff6600;
+  --color-fe-accent-dark: #cc5200;
+  --color-fe-brown: #6b3a1b;
+  --color-fe-ink: #1a1a1a;
+
+  --color-fe-gen-grandparent: #cc99cc;
+  --color-fe-gen-couple: #ffcc33;
+  --color-fe-gen-child: #99cc99;
+  /* Not from the original design notes -- new for the anniversary
+     calendar's death events, which have no existing generational color
+     to reuse. A muted grey, deliberately distinct from --color-fe-bg. */
+  --color-fe-gen-death: #b3b3b3;
+
+  --font-sans: Verdana, Arial, Helvetica, sans-serif;
+}
+
+body {
+  @apply bg-fe-bg text-fe-ink font-sans;
+  line-height: 20px;
+}

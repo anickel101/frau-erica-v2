@@ -1,0 +1,426 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Frau Erica gated-content API -- read-only Persons/Families/search behind
+  Cognito auth, backed by a read-only SQLite snapshot synced from S3
+  (s3://frau-erica-db-backups/current/frau_erica.db). See
+  api/../CLAUDE.md-adjacent memory "gated-content-architecture" for the
+  full design writeup: page-type-level gating (not per-record), Lambda
+  downloads the snapshot to /tmp on cold start and caches it for warm
+  invocations, canonical writable DB stays on the editor's own machine.
+
+Parameters:
+  CognitoUserPoolId:
+    Type: String
+    Description: >
+      Cognito User Pool ID backing the pending/approved/admin groups.
+      Leave the placeholder default here -- the real value is supplied as
+      a deploy-time parameter (`sam deploy --guided`), not hardcoded.
+    Default: REPLACE_WITH_USER_POOL_ID
+  CognitoUserPoolClientId:
+    Type: String
+    Description: App client ID for the same user pool.
+    Default: REPLACE_WITH_USER_POOL_CLIENT_ID
+  FrontendOrigin:
+    Type: String
+    Description: >
+      Base URL of the frontend -- used for CORS and to build the deep
+      link in the Request Access admin-notification email. No production
+      origin exists yet; defaults to the local dev server.
+    Default: http://localhost:5173
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 10
+    MemorySize: 256
+
+Resources:
+  FrauEricaApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      # First real browser -> API Gateway call this project makes (the
+      # login flow talks to Cognito directly, bypassing this entirely).
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref FrontendOrigin
+        AllowMethods:
+          - GET
+          - POST
+          - PATCH
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            JwtConfiguration:
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPoolId}
+              audience:
+                - !Ref CognitoUserPoolClientId
+            IdentitySource: $request.header.Authorization
+        DefaultAuthorizer: CognitoAuthorizer
+
+  GetPersonFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/persons.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/persons.handler
+      # Bumped from the Globals default of 256 -- Lambda memory scales
+      # CPU/network proportionally, and cold starts here spend most of
+      # their time on the S3 snapshot download + sql.js WASM init, both
+      # of which are CPU/network-bound. Measured via real CloudWatch
+      # data: cold invocations were ~2.9-3.2s, warm ones ~3-200ms.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        GetPerson:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /persons/{id}
+            Method: get
+
+  GetFamilyFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/families.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/families.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        GetFamily:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /families/{id}
+            Method: get
+
+  SearchFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/search.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/search.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        Search:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /search
+            Method: get
+
+  AnniversariesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/anniversaries.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/anniversaries.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        Anniversaries:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /anniversaries
+            Method: get
+
+  MeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/me.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/me.handler
+      # No S3 policy -- this route only echoes back JWT claims already
+      # validated by the Cognito authorizer, no database access at all.
+      Events:
+        Me:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /me
+            Method: get
+
+  RequestAccessFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/requestAccess.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/requestAccess.handler
+      Environment:
+        Variables:
+          RECAPTCHA_SECRET_PARAM: /frau-erica/recaptcha-secret-key
+          FRONTEND_ORIGIN: !Ref FrontendOrigin
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      Policies:
+        - Statement:
+            - Sid: ReadRecaptchaSecret
+              Effect: Allow
+              Action: ssm:GetParameter
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/frau-erica/recaptcha-secret-key
+            # SecureString needs both permissions -- GetParameter alone
+            # returns encrypted ciphertext without this.
+            - Sid: DecryptRecaptchaSecret
+              Effect: Allow
+              Action: kms:Decrypt
+              Resource: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/ssm
+            - Sid: SendAdminNotification
+              Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/FrauErica.archivist@gmail.com
+            # Creates the requester's own account, in 'pending', with no
+            # usable credentials yet (MessageAction: SUPPRESS in the
+            # handler) -- see adminApproveUser.ts for the only place
+            # real login credentials ever get issued.
+            - Sid: CreatePendingAccount
+              Effect: Allow
+              Action:
+                - cognito-idp:AdminCreateUser
+                - cognito-idp:AdminAddUserToGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        RequestAccess:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /request-access
+            Method: post
+            # No account exists yet for the requester -- this route must
+            # not sit behind the pool-wide Cognito authorizer.
+            Auth:
+              Authorizer: NONE
+
+  AdminApproveUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminApproveUser.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminApproveUser.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      # Most sensitive IAM grant in the project -- can create real login
+      # credentials and grant real site access. All five actions are
+      # still scoped to exactly this one user pool, nothing else.
+      # AdminGetUser distinguishes a pending Request Access account
+      # (already exists, just needs person_id + the invite resent) from
+      # a bootstrap approval (create fresh); AdminUpdateUserAttributes
+      # sets person_id on the pending path; AdminRemoveUserFromGroup
+      # moves them out of pending once approved.
+      Policies:
+        - Statement:
+            - Sid: CreateAndApproveAccounts
+              Effect: Allow
+              Action:
+                - cognito-idp:AdminCreateUser
+                - cognito-idp:AdminAddUserToGroup
+                - cognito-idp:AdminGetUser
+                - cognito-idp:AdminUpdateUserAttributes
+                - cognito-idp:AdminRemoveUserFromGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminApproveUser:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/approve
+            Method: post
+
+  AdminListUsersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminListUsers.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminListUsers.handler
+      # Bumped from the Globals default of 256, same reasoning as
+      # GetPersonFunction -- this is the first version of this function
+      # that touches the DB snapshot (to resolve full names), so it now
+      # pays the same S3-download + sql.js-init cold-start cost.
+      MemorySize: 512
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ListExistingUsers
+              Effect: Allow
+              Action: cognito-idp:ListUsersInGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        AdminListUsers:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/users
+            Method: get
+
+  AdminUpdateUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminUpdateUser.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminUpdateUser.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      Policies:
+        - Statement:
+            - Sid: UpdateUserPersonId
+              Effect: Allow
+              Action: cognito-idp:AdminUpdateUserAttributes
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminUpdateUser:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/users
+            Method: patch
+
+  AdminUpdateUserGroupFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminUpdateUserGroup.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminUpdateUserGroup.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      # Separate function from AdminApproveUserFunction/AdminUpdateUserFunction
+      # despite similar-sounding actions -- promoting/demoting admin
+      # status is meaningfully more sensitive than either account
+      # creation or a person_id correction, so it gets its own narrowly
+      # scoped policy rather than accumulating permissions on an
+      # existing function.
+      Policies:
+        - Statement:
+            - Sid: ChangeAdminGroupMembership
+              Effect: Allow
+              Action:
+                - cognito-idp:AdminAddUserToGroup
+                - cognito-idp:AdminRemoveUserFromGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminUpdateUserGroup:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/users/{email}/group
+            Method: patch
+
+Outputs:
+  ApiUrl:
+    Description: Base URL for the deployed API
+    Value: !Sub https://${FrauEricaApi}.execute-api.${AWS::Region}.amazonaws.com
