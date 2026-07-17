@@ -1,0 +1,48 @@
+name: api CI
+
+on:
+  pull_request:
+    paths:
+      - "api/**"
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      # lint, typecheck, format:check, test -- same as running locally,
+      # see api/package.json's "ci" script.
+      - run: npm run ci
+
+  sam-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      # SAM's esbuild BuildMethod looks esbuild up on PATH, not through
+      # node_modules/.bin -- confirmed the hard way locally.
+      - run: npm install -g esbuild
+      - uses: aws-actions/setup-sam@v2
+      - run: sam validate --lint
+      - run: sam build
