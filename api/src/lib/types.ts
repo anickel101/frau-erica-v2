@@ -31,15 +31,34 @@ export interface PersonSummary {
   date_of_birth?: string
 }
 
+// PersonSummary plus the family page this person's own card should link
+// to (same "partner family, else child family" resolution PersonDetail's
+// familyIdsAsPartner/familyIdAsChild expose for a single person) --
+// precomputed here so a Family page's PersonCard boxes can link straight
+// to /family/:id without a separate GET /persons/:id round trip (and its
+// own possible Lambda cold start) per click.
+export interface LinkedPersonSummary extends PersonSummary {
+  linkedFamilyId: number | null
+}
+
+export interface GallerySummary {
+  gallery_id: number
+  name: string
+}
+
 export interface FamilyDetail {
   family_id: number
-  person_1: PersonSummary | null
-  person_2: PersonSummary | null
+  person_1: LinkedPersonSummary | null
+  person_2: LinkedPersonSummary | null
   description: string | null
   header_image_url: string | null
-  grandparents_1: PersonSummary[]
-  grandparents_2: PersonSummary[]
-  children: PersonSummary[]
+  grandparents_1: LinkedPersonSummary[]
+  grandparents_2: LinkedPersonSummary[]
+  children: LinkedPersonSummary[]
+  // Galleries linked to either half of the featured couple (not
+  // grandparents/children) -- empty when there are none, meaning the
+  // frontend should just not render a galleries section at all.
+  galleries: GallerySummary[]
 }
 
 export interface PersonDetail extends Person {
@@ -53,4 +72,22 @@ export interface PersonDetail extends Person {
   // first match, since resolving that ambiguity is a frontend/UX
   // decision, not a data one).
   familyIdAsChild: number | null
+}
+
+export type AnniversaryEventType = 'birth' | 'death' | 'marriage'
+
+// One birth/death/marriage anniversary, flattened into a single shape
+// so the frontend can group/filter/sort a single array client-side
+// rather than requesting one month at a time. date is the full
+// original ISO date (year/month/day of week are all derivable from it
+// client-side -- no need to precompute and ship them separately).
+export interface AnniversaryEvent {
+  type: AnniversaryEventType
+  date: string
+  personId: number
+  personName: string
+  linkedFamilyId: number | null
+  // marriage only
+  spouseId?: number
+  spouseName?: string
 }

@@ -49,7 +49,7 @@ export default function TextSeriesRow({
         />
       </p>
       {representative.summary && (
-        <p className="text-xs text-fe-ink/80 mt-1">{representative.summary}</p>
+        <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">{representative.summary}</p>
       )}
 
       <button

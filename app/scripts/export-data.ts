@@ -75,7 +75,7 @@ await writeJson('images.json', images)
 
 const imagesById = new Map(images.map((img) => [img.image_id, img]))
 
-// ---------- Persons (encoding-fix re-export -- Persons/data-access wiring itself is out of scope) ----------
+// ---------- Persons ----------
 
 interface PersonRow {
   person_id: number
@@ -97,13 +97,72 @@ const personRows = db
   )
   .all() as unknown as PersonRow[]
 
+// linkedFamilyId: which family page this person's Index-of-Persons entry
+// should link to -- their own partner family (lowest family_id if more
+// than one) if they have one, else the family they appear in as a
+// child. Same resolution api/src/lib/queries/families.ts's
+// resolveLinkedFamilyId does live for Family pages, reimplemented here
+// over the full Relationships/Families tables in plain JS (small,
+// ~1,300 persons) rather than a per-person query loop -- this is a
+// batch export, not a live request. Not shared code with api/: app/ and
+// api/ are deliberately separate dependency trees on different SQLite
+// bindings (node:sqlite here, sql.js there).
+interface FamilyLinkRow {
+  family_id: number
+  person_id_1: number | null
+  person_id_2: number | null
+}
+
+const familyLinkRows = db
+  .prepare('SELECT family_id, person_id_1, person_id_2 FROM Families')
+  .all() as unknown as FamilyLinkRow[]
+
+const partnerFamiliesByPerson = new Map<number, number[]>()
+for (const f of familyLinkRows) {
+  for (const personId of [f.person_id_1, f.person_id_2]) {
+    if (personId === null) continue
+    const existing = partnerFamiliesByPerson.get(personId)
+    if (existing) existing.push(f.family_id)
+    else partnerFamiliesByPerson.set(personId, [f.family_id])
+  }
+}
+
+interface ParentLinkRow {
+  person_id_1: number // parent
+  person_id_2: number // child
+}
+
+const parentLinkRows = db
+  .prepare(
+    `SELECT person_id_1, person_id_2 FROM Relationships
+     WHERE relationship_type IN ('biological_parent', 'step_parent', 'adoptive_parent')`,
+  )
+  .all() as unknown as ParentLinkRow[]
+
+const parentsByChild = new Map<number, number[]>()
+for (const r of parentLinkRows) {
+  const existing = parentsByChild.get(r.person_id_2)
+  if (existing) existing.push(r.person_id_1)
+  else parentsByChild.set(r.person_id_2, [r.person_id_1])
+}
+
+function resolveLinkedFamilyId(personId: number): number | null {
+  const partnerFamilies = partnerFamiliesByPerson.get(personId)
+  if (partnerFamilies && partnerFamilies.length > 0) {
+    return Math.min(...partnerFamilies)
+  }
+  const parentIds = parentsByChild.get(personId) ?? []
+  const parentFamilies = parentIds.flatMap((id) => partnerFamiliesByPerson.get(id) ?? [])
+  return parentFamilies.length > 0 ? Math.min(...parentFamilies) : null
+}
+
 // middle_name/suffix are coerced null -> '' to match the existing Person
-// type's non-nullable string fields (mockPersons.ts, unchanged this pass --
-// Persons/data-access restructuring is out of scope).
+// type's non-nullable string fields.
 const persons = personRows.map((p) => ({
   ...p,
   middle_name: p.middle_name ?? '',
   suffix: p.suffix ?? '',
+  linkedFamilyId: resolveLinkedFamilyId(p.person_id),
 }))
 
 await writeJson('persons.json', persons)

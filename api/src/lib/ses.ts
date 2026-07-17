@@ -22,7 +22,10 @@ export function buildRequestEmail(
   details: RequestAccessDetails,
   frontendOrigin: string,
 ): SendEmailCommandInput {
-  const approveUrl = `${frontendOrigin}/admin/approve?email=${encodeURIComponent(details.email)}&name=${encodeURIComponent(details.name)}`
+  // /admin/approve still exists as a redirect (for any already-sent
+  // email still pointing there), but new emails link straight to the
+  // merged admin page (approve form + existing-users table together).
+  const approveUrl = `${frontendOrigin}/admin/users?email=${encodeURIComponent(details.email)}&name=${encodeURIComponent(details.name)}`
 
   return {
     Source: ADMIN_EMAIL,

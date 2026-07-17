@@ -14,7 +14,10 @@ function getPersonRow(db: Database, personId: number): Person | undefined {
 
 // Every Families row where this person is a partner -- can be more than
 // one (widowed then remarried, etc. -- see schema.sql's Families comment).
-function getFamilyIdsAsPartner(db: Database, personId: number): number[] {
+// Exported so queries/families.ts can reuse it to embed each displayed
+// person's own "family page" link directly in a GET /families/:id
+// response, instead of a separate GET /persons/:id round trip per click.
+export function getFamilyIdsAsPartner(db: Database, personId: number): number[] {
   const rows = queryAll<{ family_id: number }>(
     db,
     'SELECT family_id FROM Families WHERE person_id_1 = :id OR person_id_2 = :id',
@@ -29,7 +32,8 @@ function getFamilyIdsAsPartner(db: Database, personId: number): number[] {
 // Families row, or more than one candidate row) -- resolving that is a
 // frontend/UX call, not a data one, but the choice needs to be
 // deterministic rather than whatever order SQLite happens to return.
-function getFamilyIdAsChild(db: Database, personId: number): number | null {
+// Exported for the same reason as getFamilyIdsAsPartner above.
+export function getFamilyIdAsChild(db: Database, personId: number): number | null {
   const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const parentRows = queryAll<{ person_id_1: number }>(
     db,

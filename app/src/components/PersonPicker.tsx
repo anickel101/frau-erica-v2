@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
 import { searchPersons } from '../data-access/gated/search'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { PersonSummary } from '../types/person'
 import { inputClassName } from '../utils/formStyles'
 
+const MIN_QUERY_LENGTH = 2
+const DEBOUNCE_MS = 300
+
 // Shared search-and-select UI, used by both AdminApprovePage (approving
 // a new request) and AdminUsersPage (fixing a wrong person_id) -- avoids
-// duplicating the same search-and-click logic in both places.
+// duplicating the same search-and-click logic in both places. Searches
+// live as you type (debounced, no Search button) -- results render as a
+// dropdown under the input, matching a standard autocomplete.
 export default function PersonPicker({
   idToken,
   initialQuery,
@@ -21,61 +27,71 @@ export default function PersonPicker({
   const [results, setResults] = useState<PersonSummary[]>([])
   const [searching, setSearching] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // debounced's initial value equals `query`'s (no delay on mount), so
+  // an initialQuery from the Request Access deep link still searches
+  // automatically on mount -- this effect covers that case for free,
+  // no separate mount-only effect needed.
+  const debouncedQuery = useDebouncedValue(query, DEBOUNCE_MS)
 
-  async function runSearch(q: string) {
-    if (!q.trim()) {
-      setResults([])
-      return
+  useEffect(() => {
+    const q = debouncedQuery.trim()
+    let cancelled = false
+
+    // Deferred a microtask so none of these setState calls fire
+    // synchronously within the effect body itself
+    // (react-hooks/set-state-in-effect).
+    void Promise.resolve().then(() => {
+      if (cancelled) return
+      if (q.length < MIN_QUERY_LENGTH) {
+        setResults([])
+        return
+      }
+      setSearching(true)
+      setError(null)
+      searchPersons(q, idToken)
+        .then((r) => {
+          if (!cancelled) setResults(r)
+        })
+        .catch(() => {
+          if (!cancelled) setError('Search failed.')
+        })
+        .finally(() => {
+          if (!cancelled) setSearching(false)
+        })
+    })
+
+    return () => {
+      cancelled = true
     }
-    setSearching(true)
-    setError(null)
-    try {
-      setResults(await searchPersons(q, idToken))
-    } catch {
-      setError('Search failed.')
-    } finally {
-      setSearching(false)
-    }
+  }, [debouncedQuery, idToken])
+
+  function handleSelect(person: PersonSummary) {
+    onSelect(person)
+    // Closes the dropdown -- an empty box, ready for a different search,
+    // reads more clearly than leaving the just-picked person's own name
+    // sitting in the input.
+    setQuery('')
+    setResults([])
   }
 
-  // Auto-search once on mount if a name was passed in (the Request
-  // Access email's deep link) -- the admin shouldn't have to retype what
-  // the requester already told them.
-  useEffect(() => {
-    if (!initialQuery) return
-    // Deferred a microtask so runSearch's own setState calls don't fire
-    // synchronously within the effect body itself (react-hooks/set-state-in-effect).
-    void Promise.resolve().then(() => runSearch(initialQuery))
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally once, on mount
-  }, [])
-
   return (
-    <div>
-      <div className="flex gap-2 mb-2">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name..."
-          className={inputClassName}
-        />
-        <button
-          type="button"
-          onClick={() => runSearch(query)}
-          disabled={searching}
-          className="px-3 py-2 border border-fe-brown/40 rounded-sm text-sm bg-white hover:bg-fe-bg disabled:opacity-50 shrink-0"
-        >
-          {searching ? 'Searching...' : 'Search'}
-        </button>
-      </div>
-      {error && <p className="text-sm text-red-700 mb-2">{error}</p>}
+    <div className="relative">
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search by name..."
+        className={inputClassName}
+      />
+      {searching && <p className="text-sm text-fe-ink/60 mt-1">Searching...</p>}
+      {error && <p className="text-sm text-red-700 mt-1">{error}</p>}
       {results.length > 0 && (
-        <ul className="border border-fe-brown/20 rounded-sm divide-y divide-fe-brown/10 mb-2 max-h-48 overflow-y-auto">
+        <ul className="absolute z-10 left-0 right-0 mt-1 bg-white border border-fe-brown/20 rounded-sm shadow-md divide-y divide-fe-brown/10 max-h-48 overflow-y-auto">
           {results.map((person) => (
             <li key={person.person_id}>
               <button
                 type="button"
-                onClick={() => onSelect(person)}
+                onClick={() => handleSelect(person)}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-fe-bg"
               >
                 {person.first_name} {person.last_name}
@@ -88,7 +104,7 @@ export default function PersonPicker({
         </ul>
       )}
       {selected && (
-        <p className="text-sm text-fe-ink/80">
+        <p className="text-sm text-fe-ink/80 mt-2">
           Selected:{' '}
           <strong>
             {selected.first_name} {selected.last_name}

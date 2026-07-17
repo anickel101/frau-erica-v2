@@ -6,8 +6,9 @@ import PersonCard from '../components/PersonCard'
 import { ApiError } from '../data-access/gated/apiClient'
 import { getFamilyById } from '../data-access/gated/families'
 import { useAuth } from '../hooks/useAuth'
+import { useSetFamilyGalleries } from '../hooks/useFamilyGalleries'
 import { useHeaderRef } from '../hooks/useHeaderRef'
-import { FamilyDetail } from '../types/family'
+import { FamilyDetail, GallerySummary } from '../types/family'
 import { resolveImageUrl } from '../utils/imageUrl'
 
 // Header image band -- capped at the same max width as the text content
@@ -32,6 +33,20 @@ function FamilyHeader({ imageUrl }: { imageUrl: string | undefined }) {
       )}
     </div>
   )
+}
+
+// Also rendered inside <Layout>'s children, same reason as FamilyHeader
+// above -- pushes this family's linked galleries out to the sidebar via
+// useSetFamilyGalleries(), clearing them again on unmount (leaving the
+// page) or once a new family's galleries arrive (navigating to a
+// different /family/:id, same component instance).
+function FamilySidebarGalleries({ galleries }: { galleries: GallerySummary[] }) {
+  const setFamilyGalleries = useSetFamilyGalleries()
+  useEffect(() => {
+    setFamilyGalleries(galleries)
+    return () => setFamilyGalleries(null)
+  }, [setFamilyGalleries, galleries])
+  return null
 }
 
 // person_1/person_2 are individually nullable (schema.sql allows
@@ -102,6 +117,7 @@ export default function FamilyPage() {
 
   return (
     <Layout>
+      <FamilySidebarGalleries galleries={family.galleries} />
       {/* Single padded wrapper for the whole content area (image + text),
           using the same p-6 (24px) as the sidebar's own padding -- this
           keeps top and left spacing in sync with the sidebar by
@@ -118,21 +134,26 @@ export default function FamilyPage() {
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">{familyHeading(family)}</h1>
 
           {family.description && (
-            <div className="prose prose-sm max-w-none mb-8 text-fe-ink/90">
+            <div className="max-w-none mb-8 text-[12px] text-fe-ink">
               <ReactMarkdown>{family.description}</ReactMarkdown>
             </div>
           )}
 
-          {/* Grandparents: two columns, one per side of the couple */}
+          {/* Grandparents: two columns, one per side of the couple --
+              grandparents_1 stacks in the left column (above person_1
+              below), grandparents_2 stacks in the right column (above
+              person_2), not interleaved across rows. */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            {family.grandparents_1.map((p) => (
-              <PersonCard key={p.person_id} person={p} generation="grandparent" />
-            ))}
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            {family.grandparents_2.map((p) => (
-              <PersonCard key={p.person_id} person={p} generation="grandparent" />
-            ))}
+            <div className="flex flex-col gap-3">
+              {family.grandparents_1.map((p) => (
+                <PersonCard key={p.person_id} person={p} generation="grandparent" />
+              ))}
+            </div>
+            <div className="flex flex-col gap-3">
+              {family.grandparents_2.map((p) => (
+                <PersonCard key={p.person_id} person={p} generation="grandparent" />
+              ))}
+            </div>
           </div>
 
           {/* The featured couple */}

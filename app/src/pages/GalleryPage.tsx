@@ -6,7 +6,7 @@ import GalleryLargeImage from '../components/GalleryLargeImage'
 import GalleryThumbnailStrip from '../components/GalleryThumbnailStrip'
 import { getGalleryById } from '../data-access/public/galleries'
 import { getLinkedPersons } from '../utils/galleryDisplay'
-import { getFullName, MOCK_FAMILY_LINK } from '../utils/personDisplay'
+import { getFullName } from '../utils/personDisplay'
 
 function wrap(index: number, length: number): number {
   return (index + length) % length
@@ -95,7 +95,7 @@ export default function GalleryPage() {
           onSelect={selectPhoto}
         />
 
-        <div className="max-w-4xl mt-8 prose prose-sm text-fe-ink/90">
+        <div className="max-w-4xl mt-8 text-[12px] text-fe-ink">
           <ReactMarkdown>{gallery.summary}</ReactMarkdown>
         </div>
 
@@ -107,12 +107,16 @@ export default function GalleryPage() {
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               {linkedPersons.map((person) => (
                 <li key={person.person_id}>
-                  <Link
-                    to={MOCK_FAMILY_LINK}
-                    className="text-fe-accent hover:text-fe-accent-dark"
-                  >
-                    {getFullName(person)}
-                  </Link>
+                  {person.linkedFamilyId !== null ? (
+                    <Link
+                      to={`/family/${person.linkedFamilyId}`}
+                      className="text-fe-accent hover:text-fe-accent-dark"
+                    >
+                      {getFullName(person)}
+                    </Link>
+                  ) : (
+                    getFullName(person)
+                  )}
                 </li>
               ))}
             </ul>

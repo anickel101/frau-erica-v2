@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import Sidebar from './Sidebar'
+import { FamilyGalleriesContext } from '../hooks/useFamilyGalleries'
 import { HeaderRefContext } from '../hooks/useHeaderRef'
+import { GallerySummary } from '../types/family'
 
 export default function Layout({ children }: { children: ReactNode }) {
   // headerRef: pages attach this to their header image wrapper (via
@@ -11,6 +13,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const headerRef = useRef<HTMLDivElement | null>(null)
   const contentTopRef = useRef<HTMLDivElement | null>(null)
   const [dividerOffset, setDividerOffset] = useState<number | null>(null)
+  // Pushed out by FamilyPage via useSetFamilyGalleries() once its data
+  // loads (and cleared on unmount/id change) -- null on every other page.
+  const [familyGalleries, setFamilyGalleries] = useState<GallerySummary[] | null>(null)
 
   useEffect(() => {
     function measure() {
@@ -53,10 +58,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="h-6 bg-fe-accent w-full" />
 
       <div ref={contentTopRef} className="flex-1 md:flex">
-        <Sidebar dividerOffset={dividerOffset} />
+        <Sidebar dividerOffset={dividerOffset} familyGalleries={familyGalleries} />
         <main className="flex-1 min-w-0">
           <HeaderRefContext.Provider value={headerRef}>
-            {children}
+            <FamilyGalleriesContext.Provider value={setFamilyGalleries}>
+              {children}
+            </FamilyGalleriesContext.Provider>
           </HeaderRefContext.Provider>
         </main>
       </div>

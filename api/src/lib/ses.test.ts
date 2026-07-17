@@ -29,7 +29,7 @@ describe('buildRequestEmail', () => {
     expect(body).toContain('jane@example.com')
     expect(body).toContain('Great-granddaughter of Georg')
     expect(body).toContain(
-      'http://localhost:5173/admin/approve?email=jane%40example.com&name=Jane%20Smith',
+      'http://localhost:5173/admin/users?email=jane%40example.com&name=Jane%20Smith',
     )
   })
 

@@ -47,7 +47,7 @@ export default function LexiconPage() {
         <LexiconHeader />
         <div className="max-w-4xl mt-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">The Mueller Lexicon</h1>
-          <div className="prose prose-sm max-w-none mb-6 space-y-4 text-fe-ink/90">
+          <div className="max-w-none mb-6 space-y-4 text-[12px] text-fe-ink">
             <ReactMarkdown>{INTRO}</ReactMarkdown>
           </div>
           <hr className="border-fe-brown mb-4" />

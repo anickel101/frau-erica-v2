@@ -8,6 +8,7 @@ import RequireApproved from './components/RequireApproved'
 // SDK and admin-only screens they'll likely never open. Layout/Sidebar
 // and the Require* gates stay eager (small, needed on every route).
 const AdminApprovePage = lazy(() => import('./pages/AdminApprovePage'))
+const AnniversariesPage = lazy(() => import('./pages/AnniversariesPage'))
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const FamilyPage = lazy(() => import('./pages/FamilyPage'))
@@ -56,6 +57,14 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
 
         {/* Gated -- Phase 3D/3E */}
+        <Route
+          path="/anniversaries"
+          element={
+            <RequireApproved>
+              <AnniversariesPage />
+            </RequireApproved>
+          }
+        />
         <Route
           path="/persons"
           element={

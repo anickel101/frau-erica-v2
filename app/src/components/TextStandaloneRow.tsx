@@ -22,7 +22,7 @@ export default function TextStandaloneRow({ document }: { document: DocumentList
         />
       </p>
       {document.summary && (
-        <p className="text-xs text-fe-ink/80 mt-1">{document.summary}</p>
+        <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">{document.summary}</p>
       )}
     </article>
   )

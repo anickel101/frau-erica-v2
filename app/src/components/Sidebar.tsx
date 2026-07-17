@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { GallerySummary } from '../types/family'
 
 interface NavSection {
   title: string
@@ -22,6 +23,7 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Index of Galleries', to: '/galleries' },
       { label: 'Index of Texts', to: '/documents' },
       { label: 'The Mueller Lexicon', to: '/lexicon' },
+      { label: 'Today in Frau Erica', to: '/anniversaries' },
     ],
   },
 ]
@@ -37,11 +39,16 @@ interface SidebarProps {
    * header image's bottom edge, provided by Layout. Null when the
    * current page has no header image to align with. */
   dividerOffset: number | null
+  /** Galleries linked to the featured couple on the current Family page,
+   * pushed out via useSetFamilyGalleries() (see Layout.tsx). Null on
+   * every other page, or an empty array when this family has none --
+   * either way, the section just doesn't render. */
+  familyGalleries: GallerySummary[] | null
 }
 
-export default function Sidebar({ dividerOffset }: SidebarProps) {
+export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps) {
   const [open, setOpen] = useState(false)
-  const { status, email, personName, homeFamilyId, logout } = useAuth()
+  const { status, email, personName, homeFamilyId, groups, logout } = useAuth()
   const navigate = useNavigate()
 
   const logoBlockHeight =
@@ -91,8 +98,10 @@ export default function Sidebar({ dividerOffset }: SidebarProps) {
           {/* German flag block -- official ratio is height:width = 3:5,
               i.e. width:height = 5:3. Using aspect-ratio (not a fixed
               height) so it stays correctly proportioned at any sidebar
-              width, including the wider mobile drawer. */}
-          <div className="w-full aspect-[5/3] mb-4 flex flex-col rounded-sm overflow-hidden shadow-sm">
+              width, including the wider mobile drawer. Shrunk to 2/3 of
+              the original full-width version -- height follows
+              automatically via the aspect ratio. */}
+          <div className="w-2/3 aspect-[5/3] mb-4 flex flex-col rounded-sm overflow-hidden shadow-sm">
             <div className="flex-1 bg-black" />
             <div className="flex-1 bg-[#DD0000]" />
             <div className="flex-1 bg-[#FFCE00]" />
@@ -120,10 +129,16 @@ export default function Sidebar({ dividerOffset }: SidebarProps) {
             name nor a family), so the name briefly falls back to email
             until that resolves -- the name is only a link once
             homeFamilyId is known, since a lookup failure or an
-            unlinked/pending account has nowhere to send it to. */}
+            unlinked/pending account has nowhere to send it to. Also the
+            only nav entry point into /admin/users for an admin --
+            previously only reachable via a bookmarked URL or the
+            one-time Request Access deep-link email. */}
         {status === 'signedIn' && (
           <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
-            <p className="text-sm">
+            {/* mb-2 + space-y-1 below match NAV_SECTIONS' own
+                title-to-links and link-to-link spacing exactly, rather
+                than this section drifting with its own hand-tuned gaps. */}
+            <p className="text-sm mb-2">
               Hi,{' '}
               {homeFamilyId !== null ? (
                 <Link
@@ -137,17 +152,30 @@ export default function Sidebar({ dividerOffset }: SidebarProps) {
                 <span className="font-bold text-fe-brown">{personName ?? email}</span>
               )}
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                logout()
-                setOpen(false)
-                navigate('/login')
-              }}
-              className="text-fe-accent hover:text-fe-accent-dark text-sm"
-            >
-              Log out
-            </button>
+            <div className="space-y-1">
+              {groups.includes('admin') && (
+                <p>
+                  <Link
+                    to="/admin/users"
+                    onClick={() => setOpen(false)}
+                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                  >
+                    Manage users
+                  </Link>
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  logout()
+                  setOpen(false)
+                  navigate('/login')
+                }}
+                className="text-fe-accent hover:text-fe-accent-dark text-sm"
+              >
+                Log out
+              </button>
+            </div>
           </div>
         )}
 
@@ -169,6 +197,29 @@ export default function Sidebar({ dividerOffset }: SidebarProps) {
             </ul>
           </div>
         ))}
+
+        {/* Family page-specific -- only present when the current family's
+            couple has at least one linked gallery (see getLinkedGalleries
+            in api/'s queries/families.ts). Absent entirely everywhere
+            else, including family pages with no linked galleries. */}
+        {familyGalleries && familyGalleries.length > 0 && (
+          <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
+            <p className="font-bold text-sm mb-2 text-fe-brown">Galleries</p>
+            <ul className="space-y-1">
+              {familyGalleries.map((gallery) => (
+                <li key={gallery.gallery_id}>
+                  <Link
+                    to={`/galleries/${gallery.gallery_id}`}
+                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                    onClick={() => setOpen(false)}
+                  >
+                    {gallery.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </aside>
     </>
   )

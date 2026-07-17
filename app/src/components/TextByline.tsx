@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Person } from '../types/person'
-import { MOCK_FAMILY_LINK, getFullName } from '../utils/personDisplay'
+import { getFullName } from '../utils/personDisplay'
 
 // Shared by TextStandaloneRow, TextSeriesRow, and TextPage -- the caller
 // wraps this in its own <p> (font size/spacing differ between index rows
@@ -19,12 +19,16 @@ export default function TextByline({
     <>
       {author &&
         (authorPerson ? (
-          <Link
-            to={MOCK_FAMILY_LINK}
-            className="text-fe-accent hover:text-fe-accent-dark"
-          >
-            {getFullName(authorPerson)}
-          </Link>
+          authorPerson.linkedFamilyId !== null ? (
+            <Link
+              to={`/family/${authorPerson.linkedFamilyId}`}
+              className="text-fe-accent hover:text-fe-accent-dark"
+            >
+              {getFullName(authorPerson)}
+            </Link>
+          ) : (
+            <span>{getFullName(authorPerson)}</span>
+          )
         ) : (
           <span>{author}</span>
         ))}

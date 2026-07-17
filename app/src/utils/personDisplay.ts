@@ -1,10 +1,5 @@
-import { sampleFamily } from '../data/mockFamily'
 import { formatDate } from './dateDisplay'
 import { Person } from '../types/person'
-
-// Until real family-tree data is wired up, every person links to the one
-// mock family page.
-export const MOCK_FAMILY_LINK = `/family/${sampleFamily.family_id}`
 
 export function getFullName(person: Person): string {
   const parts = [person.first_name, person.middle_name, person.last_name].filter(Boolean)

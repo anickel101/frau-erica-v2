@@ -73,6 +73,12 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/persons.handler
+      # Bumped from the Globals default of 256 -- Lambda memory scales
+      # CPU/network proportionally, and cold starts here spend most of
+      # their time on the S3 snapshot download + sql.js WASM init, both
+      # of which are CPU/network-bound. Measured via real CloudWatch
+      # data: cold invocations were ~2.9-3.2s, warm ones ~3-200ms.
+      MemorySize: 512
       Environment:
         Variables:
           DB_BUCKET: frau-erica-db-backups
@@ -103,6 +109,8 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/families.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
       Environment:
         Variables:
           DB_BUCKET: frau-erica-db-backups
@@ -133,6 +141,8 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/search.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
       Environment:
         Variables:
           DB_BUCKET: frau-erica-db-backups
@@ -149,6 +159,38 @@ Resources:
           Properties:
             ApiId: !Ref FrauEricaApi
             Path: /search
+            Method: get
+
+  AnniversariesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/anniversaries.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/anniversaries.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        Anniversaries:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /anniversaries
             Method: get
 
   MeFunction:
@@ -189,6 +231,7 @@ Resources:
         Variables:
           RECAPTCHA_SECRET_PARAM: /frau-erica/recaptcha-secret-key
           FRONTEND_ORIGIN: !Ref FrontendOrigin
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
       Policies:
         - Statement:
             - Sid: ReadRecaptchaSecret
@@ -207,6 +250,16 @@ Resources:
                 - ses:SendEmail
                 - ses:SendRawEmail
               Resource: !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/FrauErica.archivist@gmail.com
+            # Creates the requester's own account, in 'pending', with no
+            # usable credentials yet (MessageAction: SUPPRESS in the
+            # handler) -- see adminApproveUser.ts for the only place
+            # real login credentials ever get issued.
+            - Sid: CreatePendingAccount
+              Effect: Allow
+              Action:
+                - cognito-idp:AdminCreateUser
+                - cognito-idp:AdminAddUserToGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
       Events:
         RequestAccess:
           Type: HttpApi
@@ -235,8 +288,13 @@ Resources:
         Variables:
           COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
       # Most sensitive IAM grant in the project -- can create real login
-      # credentials and grant real site access. Scoped to exactly these
-      # two actions on exactly this one user pool, nothing else.
+      # credentials and grant real site access. All five actions are
+      # still scoped to exactly this one user pool, nothing else.
+      # AdminGetUser distinguishes a pending Request Access account
+      # (already exists, just needs person_id + the invite resent) from
+      # a bootstrap approval (create fresh); AdminUpdateUserAttributes
+      # sets person_id on the pending path; AdminRemoveUserFromGroup
+      # moves them out of pending once approved.
       Policies:
         - Statement:
             - Sid: CreateAndApproveAccounts
@@ -244,6 +302,9 @@ Resources:
               Action:
                 - cognito-idp:AdminCreateUser
                 - cognito-idp:AdminAddUserToGroup
+                - cognito-idp:AdminGetUser
+                - cognito-idp:AdminUpdateUserAttributes
+                - cognito-idp:AdminRemoveUserFromGroup
               Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
       Events:
         AdminApproveUser:
@@ -265,15 +326,26 @@ Resources:
         Sourcemap: false
     Properties:
       Handler: src/handlers/adminListUsers.handler
+      # Bumped from the Globals default of 256, same reasoning as
+      # GetPersonFunction -- this is the first version of this function
+      # that touches the DB snapshot (to resolve full names), so it now
+      # pays the same S3-download + sql.js-init cold-start cost.
+      MemorySize: 512
       Environment:
         Variables:
           COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
       Policies:
         - Statement:
             - Sid: ListExistingUsers
               Effect: Allow
               Action: cognito-idp:ListUsersInGroup
               Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
       Events:
         AdminListUsers:
           Type: HttpApi
@@ -309,6 +381,43 @@ Resources:
           Properties:
             ApiId: !Ref FrauEricaApi
             Path: /admin/users
+            Method: patch
+
+  AdminUpdateUserGroupFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/adminUpdateUserGroup.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/adminUpdateUserGroup.handler
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      # Separate function from AdminApproveUserFunction/AdminUpdateUserFunction
+      # despite similar-sounding actions -- promoting/demoting admin
+      # status is meaningfully more sensitive than either account
+      # creation or a person_id correction, so it gets its own narrowly
+      # scoped policy rather than accumulating permissions on an
+      # existing function.
+      Policies:
+        - Statement:
+            - Sid: ChangeAdminGroupMembership
+              Effect: Allow
+              Action:
+                - cognito-idp:AdminAddUserToGroup
+                - cognito-idp:AdminRemoveUserFromGroup
+              Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        AdminUpdateUserGroup:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /admin/users/{email}/group
             Method: patch
 
 Outputs:

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { formatBirthDate } from '../utils/dateDisplay'
-import { PersonSummary } from '../types/person'
+import { LinkedPersonSummary } from '../types/person'
 
 type Generation = 'grandparent' | 'couple' | 'child'
 
@@ -22,21 +22,35 @@ export default function PersonCard({
   person,
   generation,
 }: {
-  person: PersonSummary
+  person: LinkedPersonSummary
   generation: Generation
 }) {
   const arrow = DIRECTION_ARROW[generation]
+  // linkedFamilyId is precomputed server-side (see api/'s FamilyDetail) --
+  // goes straight to their family page, no /persons/:id resolver hop.
+  // Falls back to the resolver only for the rare case of no linked
+  // family at all (e.g. a person with no recorded parents or partners).
+  const to =
+    person.linkedFamilyId !== null
+      ? `/family/${person.linkedFamilyId}`
+      : `/persons/${person.person_id}`
 
   return (
     <Link
-      to={`/persons/${person.person_id}`}
+      to={to}
       className={`
         flex items-center gap-3 p-4 border border-black/10 rounded-sm
         hover:brightness-95 transition
         ${GENERATION_STYLES[generation]}
       `}
     >
-      {arrow && <span className="text-fe-accent text-xl leading-none">{arrow}</span>}
+      {/* Fixed-width slot, always rendered (even when arrow is null for
+          "couple") so the name text lines up at the same x-position
+          across all three generations -- couple boxes have no arrow but
+          still reserve its space. */}
+      <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 text-center">
+        {arrow}
+      </span>
       <div>
         <p className="font-bold text-sm">
           {person.first_name} {person.last_name}

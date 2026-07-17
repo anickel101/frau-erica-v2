@@ -43,12 +43,12 @@ export default function TextPage() {
         </p>
 
         {document.summary && (
-          <div className="prose prose-sm max-w-none mb-6 text-fe-ink/90">
+          <div className="max-w-none mb-6 text-[12px] text-fe-ink">
             <ReactMarkdown>{document.summary}</ReactMarkdown>
           </div>
         )}
 
-        <div className="prose prose-sm max-w-none text-fe-ink/90">
+        <div className="max-w-none text-[12px] text-fe-ink">
           <ReactMarkdown>{document.content}</ReactMarkdown>
         </div>
 

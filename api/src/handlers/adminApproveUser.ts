@@ -1,8 +1,11 @@
 import {
   AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
+  AdminGetUserCommand,
+  AdminRemoveUserFromGroupCommand,
+  AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
-  UsernameExistsException,
+  UserNotFoundException,
 } from '@aws-sdk/client-cognito-identity-provider'
 import type {
   APIGatewayProxyEventV2WithJWTAuthorizer,
@@ -16,6 +19,18 @@ import { parseJsonBody } from '../lib/parseJsonBody'
 import { jsonResponse } from '../lib/response'
 
 const cognito = new CognitoIdentityProviderClient({})
+
+async function userExists(userPoolId: string, email: string): Promise<boolean> {
+  try {
+    await cognito.send(
+      new AdminGetUserCommand({ UserPoolId: userPoolId, Username: email }),
+    )
+    return true
+  } catch (err) {
+    if (err instanceof UserNotFoundException) return false
+    throw err
+  }
+}
 
 export async function handler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
@@ -36,7 +51,37 @@ export async function handler(
 
   const userPoolId = requireEnv('COGNITO_USER_POOL_ID')
 
-  try {
+  if (await userExists(userPoolId, email)) {
+    // Came through Request Access -- already exists in 'pending', with
+    // custom:requester_name/connection set (see requestAccess.ts) but no
+    // person_id yet and no usable credentials (created with
+    // MessageAction: 'SUPPRESS').
+    await cognito.send(
+      new AdminUpdateUserAttributesCommand({
+        UserPoolId: userPoolId,
+        Username: email,
+        UserAttributes: [{ Name: 'custom:person_id', Value: String(personId) }],
+      }),
+    )
+    // Resends the invitation -- the first time this person actually
+    // receives real login credentials.
+    await cognito.send(
+      new AdminCreateUserCommand({
+        UserPoolId: userPoolId,
+        Username: email,
+        MessageAction: 'RESEND',
+      }),
+    )
+    await cognito.send(
+      new AdminRemoveUserFromGroupCommand({
+        UserPoolId: userPoolId,
+        Username: email,
+        GroupName: GROUPS.PENDING,
+      }),
+    )
+  } else {
+    // No prior request on record -- admin-initiated from scratch (e.g.
+    // bootstrapping the site's own first admin account).
     await cognito.send(
       new AdminCreateUserCommand({
         UserPoolId: userPoolId,
@@ -53,14 +98,6 @@ export async function handler(
         DesiredDeliveryMediums: ['EMAIL'],
       }),
     )
-  } catch (err) {
-    if (!(err instanceof UsernameExistsException)) {
-      throw err
-    }
-    // Account already exists -- most likely a retry after a previous
-    // partial failure (created but never added to the group). Fall
-    // through to the group-add below instead of erroring, so
-    // resubmitting the same request self-heals.
   }
 
   await cognito.send(
