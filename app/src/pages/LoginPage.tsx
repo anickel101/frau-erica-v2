@@ -8,10 +8,8 @@ export default function LoginPage() {
   return (
     <Layout>
       <div className="p-6 max-w-4xl">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-8">Log in</h1>
-
         <div className="grid gap-8 md:grid-cols-2 items-start">
-          <section className="bg-fe-bg border-4 border-fe-brown p-6">
+          <section className="bg-fe-bg p-6">
             <img
               src={resolveImageUrl('FrauErica5.jpg')}
               alt="Portrait of Adelheid Rickmeyer"
@@ -28,6 +26,7 @@ export default function LoginPage() {
           </section>
 
           <section>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-8">Welcome</h1>
             <LoginForm />
             <p className="text-sm text-fe-ink/70 mt-6">
               Not sure if you have access?{' '}
