@@ -1,39 +1,18 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { GalleryPhoto, listGalleries } from '../data-access/public/galleries'
-import { useHeaderRef } from '../hooks/useHeaderRef'
+import RandomHeaderImage from '../components/RandomHeaderImage'
+import { ADELHEID_PARAGRAPHS } from '../content/adelheid'
+import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // Picked once at module load (not during render, which must stay pure) --
 // purely decorative, same approach as ContactPage.tsx.
-const allPhotos = listGalleries().flatMap((gallery) => gallery.photos)
-const HEADER_PHOTO: GalleryPhoto | undefined =
-  allPhotos.length > 0
-    ? allPhotos[Math.floor(Math.random() * allPhotos.length)]
-    : undefined
-
-// See FamilyHeader in FamilyPage.tsx for why this is its own component:
-// useHeaderRef() must be called from within Layout's children.
-function UsersGuideHeader({ photo }: { photo: GalleryPhoto | undefined }) {
-  const headerRef = useHeaderRef()
-  return (
-    <div
-      ref={headerRef}
-      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
-    >
-      {photo ? (
-        <img src={photo.url} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <p className="text-fe-ink/40 text-sm">No header image</p>
-      )}
-    </div>
-  )
-}
+const HEADER_PHOTO = pickRandomPhoto(getAllGalleryPhotos())
 
 export default function UsersGuidePage() {
   return (
     <Layout>
       <div className="p-6">
-        <UsersGuideHeader photo={HEADER_PHOTO} />
+        <RandomHeaderImage photo={HEADER_PHOTO} />
 
         <div className="max-w-4xl mt-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-8">
@@ -45,24 +24,9 @@ export default function UsersGuidePage() {
               Meet Adelheid Rickmeyer
             </h2>
             <div className="space-y-3">
-              <p>
-                Adelheid Rickmeyer was a young woman in her late teens, living in
-                Blumenthal, near Hannover, Germany. She worked as a governess, but was
-                also a writer and poet, publishing under the pen name Frau Erica -- a
-                reference to the heather (<em>Erikablüte</em>) that grew in her beloved
-                meadows.
-              </p>
-              <p>
-                She had become engaged to a young man named Wilhelm Ernst Paul Mueller,
-                eldest son of the owner of the Bosenbüttel estate near Midlum. Before they
-                could marry, however, Wilhelm's father sold the estate and moved the
-                family to America -- that was in the late summer of 1865.
-              </p>
-              <p>
-                Adelheid traveled alone to New York in 1867, boarded a train for the
-                Midwest, and married Wilhelm on November 28th of that year, despite his
-                now much-reduced circumstances. The rest, as they say, is history.
-              </p>
+              {ADELHEID_PARAGRAPHS.map((paragraph, i) => (
+                <p key={i}>{paragraph}</p>
+              ))}
             </div>
           </section>
 

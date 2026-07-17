@@ -1,39 +1,17 @@
 import Layout from '../components/Layout'
-import { GalleryPhoto, listGalleries } from '../data-access/public/galleries'
-import { useHeaderRef } from '../hooks/useHeaderRef'
+import RandomHeaderImage from '../components/RandomHeaderImage'
+import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // Picked once at module load (not during render, which must stay pure) --
 // purely decorative, no connection to the contact content itself. Varies
 // across page reloads, stable across client-side navigation within one.
-const allPhotos = listGalleries().flatMap((gallery) => gallery.photos)
-const HEADER_PHOTO: GalleryPhoto | undefined =
-  allPhotos.length > 0
-    ? allPhotos[Math.floor(Math.random() * allPhotos.length)]
-    : undefined
-
-// See FamilyHeader in FamilyPage.tsx for why this is its own component:
-// useHeaderRef() must be called from within Layout's children.
-function ContactHeader({ photo }: { photo: GalleryPhoto | undefined }) {
-  const headerRef = useHeaderRef()
-  return (
-    <div
-      ref={headerRef}
-      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
-    >
-      {photo ? (
-        <img src={photo.url} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <p className="text-fe-ink/40 text-sm">No header image</p>
-      )}
-    </div>
-  )
-}
+const HEADER_PHOTO = pickRandomPhoto(getAllGalleryPhotos())
 
 export default function ContactPage() {
   return (
     <Layout>
       <div className="p-6">
-        <ContactHeader photo={HEADER_PHOTO} />
+        <RandomHeaderImage photo={HEADER_PHOTO} />
 
         <div className="max-w-4xl mt-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-6">Contact the Archivist</h1>

@@ -1,20 +1,14 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { GalleryPhoto, listGalleries } from '../data-access/public/galleries'
-import { useHeaderRef } from '../hooks/useHeaderRef'
+import RandomHeaderImage from '../components/RandomHeaderImage'
+import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // Picked once at module load (not during render, which must stay pure) --
 // two different photos, same approach as ContactPage.tsx/UsersGuidePage.tsx.
-const allPhotos = listGalleries().flatMap((gallery) => gallery.photos)
-const HEADER_PHOTO: GalleryPhoto | undefined =
-  allPhotos.length > 0
-    ? allPhotos[Math.floor(Math.random() * allPhotos.length)]
-    : undefined
+const allPhotos = getAllGalleryPhotos()
+const HEADER_PHOTO = pickRandomPhoto(allPhotos)
 const remainingPhotos = allPhotos.filter((p) => p.image_id !== HEADER_PHOTO?.image_id)
-const SECOND_PHOTO: GalleryPhoto | undefined =
-  remainingPhotos.length > 0
-    ? remainingPhotos[Math.floor(Math.random() * remainingPhotos.length)]
-    : undefined
+const SECOND_PHOTO = pickRandomPhoto(remainingPhotos)
 
 const EXPLORE_LINKS = [
   { label: 'Index of Persons', to: '/persons' },
@@ -23,29 +17,11 @@ const EXPLORE_LINKS = [
   { label: 'The Mueller Lexicon', to: '/lexicon' },
 ]
 
-// See FamilyHeader in FamilyPage.tsx for why this is its own component:
-// useHeaderRef() must be called from within Layout's children.
-function HomeHeader({ photo }: { photo: GalleryPhoto | undefined }) {
-  const headerRef = useHeaderRef()
-  return (
-    <div
-      ref={headerRef}
-      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
-    >
-      {photo ? (
-        <img src={photo.url} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <p className="text-fe-ink/40 text-sm">No header image</p>
-      )}
-    </div>
-  )
-}
-
 export default function HomePage() {
   return (
     <Layout>
       <div className="p-6">
-        <HomeHeader photo={HEADER_PHOTO} />
+        <RandomHeaderImage photo={HEADER_PHOTO} />
 
         <div className="max-w-4xl mt-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">
