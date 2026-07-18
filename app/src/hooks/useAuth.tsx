@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import { LinkedPersonSummary } from '../types/person'
 
 export interface AuthState {
   status: 'loading' | 'signedOut' | 'signedIn'
@@ -16,6 +17,14 @@ export interface AuthState {
   // in as a child. Resolved from the same lookup as personName. Null
   // until resolved, or if the lookup fails/finds no family at all.
   homeFamilyId: number | null
+  // This person's own biological ancestor person_ids (GET /me/germline),
+  // resolved once per sign-in like personName/homeFamilyId above -- null
+  // until resolved, or if the lookup fails/finds none. A Set, not the
+  // raw array, since PersonCard only ever needs .has() membership checks.
+  germlineIds: Set<number> | null
+  // The single most-generations-back person in that same germline, from
+  // the same lookup -- powers the sidebar's "Furthest Ancestor" link.
+  furthestAncestor: LinkedPersonSummary | null
 }
 
 export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequired' }

@@ -43,6 +43,18 @@ function getGroupsClaim(
     string | undefined
 }
 
+// Shared with handlers/me.ts and handlers/germline.ts -- both need the
+// caller's own person_id off the token. API Gateway's JWT authorizer
+// serializes every custom claim as a string, so this always needs the
+// Number(...) coercion; null when absent (no linked person yet) or not
+// a string.
+export function getPersonIdClaim(
+  event: APIGatewayProxyEventV2WithJWTAuthorizer,
+): number | null {
+  const personIdClaim = event.requestContext.authorizer.jwt.claims['custom:person_id']
+  return typeof personIdClaim === 'string' ? Number(personIdClaim) : null
+}
+
 // Shared shape behind requireApprovedAccess/requireAdminAccess -- both
 // are "extract claim -> check -> 403 or null" with a different check and
 // error message. The Cognito authorizer already guarantees a valid token

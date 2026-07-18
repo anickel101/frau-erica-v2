@@ -24,7 +24,9 @@ interface PersonSummaryRow {
 // embed each displayed person's own "family page" link directly in this
 // response, so the frontend's PersonCard can link straight to
 // /family/:id without a separate GET /persons/:id round trip per click.
-function resolveLinkedFamilyId(db: Database, personId: number): number | null {
+// Exported -- queries/germline.ts's getFurthestAncestor is a second
+// caller, resolving the furthest-back ancestor's own family link.
+export function resolveLinkedFamilyId(db: Database, personId: number): number | null {
   return getFamilyIdsAsPartner(db, personId)[0] ?? getFamilyIdAsChild(db, personId)
 }
 
@@ -151,6 +153,45 @@ function getLinkedGalleries(db: Database, personIds: number[]): GallerySummary[]
   )
 }
 
+// The featured couple's own marriage status, if their spouse
+// Relationships row exists. No existing query looks up "given this
+// known pair, find their Relationships row" -- queries/anniversaries.ts's
+// getMarriages runs the opposite direction (Relationships -> Families)
+// and doesn't select status.
+function getCoupleStatus(
+  db: Database,
+  personId1: number,
+  personId2: number,
+): string | null {
+  const row = queryOne<{ status: string | null }>(
+    db,
+    `SELECT status FROM Relationships
+     WHERE relationship_type = 'spouse'
+       AND ((person_id_1 = :p1 AND person_id_2 = :p2) OR (person_id_1 = :p2 AND person_id_2 = :p1))`,
+    { ':p1': personId1, ':p2': personId2 },
+  )
+  return row?.status ?? null
+}
+
+// The other family_id this person partners in, besides currentFamilyId
+// (widowed/remarried, etc.) -- getFamilyIdsAsPartner already returns
+// every family a person partners in, so this just filters out the
+// current one. MIN() as the tiebreak for 3+ total marriages matches the
+// precedent already established elsewhere in this file
+// (resolveLinkedFamilyIdsBulk's MIN(family_id)) -- only one "other"
+// family ever surfaces, matching the original site's single-triangle
+// design rather than a list of every alternate.
+function getOtherFamilyId(
+  db: Database,
+  personId: number,
+  currentFamilyId: number,
+): number | null {
+  const others = getFamilyIdsAsPartner(db, personId).filter(
+    (id) => id !== currentFamilyId,
+  )
+  return others.length > 0 ? Math.min(...others) : null
+}
+
 export function getFamilyById(db: Database, familyId: number): FamilyDetail | undefined {
   const family = queryOne<FamilyRow>(
     db,
@@ -163,6 +204,20 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
     family.person_id_1 !== null ? getPersonSummary(db, family.person_id_1) : null
   const person2 =
     family.person_id_2 !== null ? getPersonSummary(db, family.person_id_2) : null
+
+  // otherFamilyId/coupleStatus are only meaningful for the featured
+  // couple, not grandparents/children -- computed here rather than in
+  // toLinkedPersonSummary, which has no notion of "the current family."
+  if (person1 && family.person_id_1 !== null) {
+    person1.otherFamilyId = getOtherFamilyId(db, family.person_id_1, family.family_id)
+  }
+  if (person2 && family.person_id_2 !== null) {
+    person2.otherFamilyId = getOtherFamilyId(db, family.person_id_2, family.family_id)
+  }
+  const coupleStatus =
+    family.person_id_1 !== null && family.person_id_2 !== null
+      ? getCoupleStatus(db, family.person_id_1, family.person_id_2)
+      : null
 
   // Header image is linked via ImageLinks.family_id, not Families.
   // image_id -- confirmed against the real DB: Families.image_id is
@@ -198,5 +253,6 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
     grandparents_2: family.person_id_2 !== null ? getParents(db, family.person_id_2) : [],
     children: getChildren(db, parentIds),
     galleries: getLinkedGalleries(db, parentIds),
+    coupleStatus,
   }
 }

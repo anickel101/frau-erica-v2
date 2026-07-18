@@ -49,6 +49,26 @@ function FamilySidebarGalleries({ galleries }: { galleries: GallerySummary[] }) 
   return null
 }
 
+// Fills a grandparent slot with no data on record, so the purple
+// generational box is still visually present (matching PersonCard's own
+// shell -- padding, border, rounded corners, the same reserved glyph
+// slot for alignment) rather than just leaving a gap. Mirrors
+// PersonCard's own two-line text block (name + birth date) exactly,
+// down to a second line reserved with a non-breaking space -- most real
+// boxes show a birth date, so a single-line placeholder would render
+// visibly shorter than a typical filled box.
+function EmptyGrandparentBox() {
+  return (
+    <div className="flex items-center gap-3 p-4 border border-black/10 rounded-sm bg-fe-gen-grandparent">
+      <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 text-center" />
+      <div>
+        <p className="font-bold text-sm text-fe-ink/60 italic">No data available</p>
+        <p className="text-xs text-fe-ink/70">&nbsp;</p>
+      </div>
+    </div>
+  )
+}
+
 // person_1/person_2 are individually nullable (schema.sql allows
 // single-parent Families rows) -- builds "Anson Nickel and Reva Gaur",
 // "Anson Nickel", or "" depending on which are present.
@@ -67,7 +87,7 @@ type LoadState =
 
 export default function FamilyPage() {
   const { id } = useParams<{ id: string }>()
-  const { idToken } = useAuth()
+  const { idToken, germlineIds } = useAuth()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
 
   useEffect(() => {
@@ -114,6 +134,16 @@ export default function FamilyPage() {
   }
 
   const { family } = state
+  const isInGermline = (personId: number) => germlineIds?.has(personId) ?? false
+  // Switching unconditionally to a 3-column [1fr_auto_1fr] template
+  // would add an extra reserved gap for every non-divorced family --
+  // the overwhelming majority -- so the template itself is conditional,
+  // not just the dashes inside it.
+  const isDivorced =
+    family.person_1 !== null &&
+    family.person_2 !== null &&
+    family.coupleStatus === 'divorced'
+  const coupleGridCols = isDivorced ? 'sm:grid-cols-[1fr_auto_1fr]' : 'sm:grid-cols-2'
 
   return (
     <Layout>
@@ -143,26 +173,67 @@ export default function FamilyPage() {
               grandparents_1 stacks in the left column (above person_1
               below), grandparents_2 stacks in the right column (above
               person_2), not interleaved across rows. */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
             <div className="flex flex-col gap-3">
-              {family.grandparents_1.map((p) => (
-                <PersonCard key={p.person_id} person={p} generation="grandparent" />
-              ))}
+              {family.grandparents_1.length > 0 ? (
+                family.grandparents_1.map((p) => (
+                  <PersonCard
+                    key={p.person_id}
+                    person={p}
+                    generation="grandparent"
+                    isInGermline={isInGermline(p.person_id)}
+                  />
+                ))
+              ) : (
+                <EmptyGrandparentBox />
+              )}
             </div>
             <div className="flex flex-col gap-3">
-              {family.grandparents_2.map((p) => (
-                <PersonCard key={p.person_id} person={p} generation="grandparent" />
-              ))}
+              {family.grandparents_2.length > 0 ? (
+                family.grandparents_2.map((p) => (
+                  <PersonCard
+                    key={p.person_id}
+                    person={p}
+                    generation="grandparent"
+                    isInGermline={isInGermline(p.person_id)}
+                  />
+                ))
+              ) : (
+                <EmptyGrandparentBox />
+              )}
             </div>
           </div>
 
-          {/* The featured couple */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+          {/* The featured couple. isDivorced switches the grid to a
+              3-column template with the dashes as a middle item -- see
+              coupleGridCols above for why that's conditional, not
+              unconditional. Desktop only (hidden sm:flex): three
+              *vertical* dashes read correctly between side-by-side
+              boxes, not between mobile's vertically stacked ones. */}
+          <div className={`grid grid-cols-1 ${coupleGridCols} gap-3 mb-6 items-center`}>
             {family.person_1 && (
-              <PersonCard person={family.person_1} generation="couple" />
+              <PersonCard
+                person={family.person_1}
+                generation="couple"
+                isInGermline={isInGermline(family.person_1.person_id)}
+              />
+            )}
+            {isDivorced && (
+              <div
+                className="hidden sm:flex flex-col items-center justify-center gap-1"
+                aria-hidden="true"
+              >
+                <span className="w-0.5 h-2 bg-fe-ink/40" />
+                <span className="w-0.5 h-2 bg-fe-ink/40" />
+                <span className="w-0.5 h-2 bg-fe-ink/40" />
+              </div>
             )}
             {family.person_2 && (
-              <PersonCard person={family.person_2} generation="couple" />
+              <PersonCard
+                person={family.person_2}
+                generation="couple"
+                isInGermline={isInGermline(family.person_2.person_id)}
+              />
             )}
           </div>
 
@@ -170,7 +241,12 @@ export default function FamilyPage() {
           {family.children.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {family.children.map((p) => (
-                <PersonCard key={p.person_id} person={p} generation="child" />
+                <PersonCard
+                  key={p.person_id}
+                  person={p}
+                  generation="child"
+                  isInGermline={isInGermline(p.person_id)}
+                />
               ))}
             </div>
           )}

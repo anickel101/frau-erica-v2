@@ -24,6 +24,7 @@ describe('getFamilyById', () => {
       last_name: 'Mueller',
       date_of_birth: '1950-05-10',
       linkedFamilyId: 1,
+      otherFamilyId: null,
     })
     expect(family?.person_2).toEqual({
       person_id: 4,
@@ -31,6 +32,7 @@ describe('getFamilyById', () => {
       last_name: 'Schmidt',
       date_of_birth: '1949-11-02',
       linkedFamilyId: 1,
+      otherFamilyId: null,
     })
 
     expect(family?.grandparents_1.map((p) => p.person_id).sort()).toEqual([1, 2])
@@ -97,5 +99,36 @@ describe('getFamilyById', () => {
     expect(family?.person_1?.person_id).toBe(1)
     expect(family?.person_2).toBeNull()
     expect(family?.grandparents_2).toEqual([])
+  })
+
+  test("coupleStatus reflects the featured couple's own spouse Relationships row", () => {
+    const divorced = getFamilyById(db, 5)
+    expect(divorced?.coupleStatus).toBe('divorced')
+
+    // Anna and Karl have no spouse Relationships row on record at all.
+    const noRelationshipRow = getFamilyById(db, 1)
+    expect(noRelationshipRow?.coupleStatus).toBeNull()
+  })
+
+  test('coupleStatus is null when the family has only one parent', () => {
+    const family = getFamilyById(db, 4)
+    expect(family?.coupleStatus).toBeNull()
+  })
+
+  test('otherFamilyId resolves to the other Families row for a remarried person, in both directions', () => {
+    // Klaus (13) partners in both family 6 (Wife One) and family 7 (Wife Two).
+    const family7 = getFamilyById(db, 7)
+    expect(family7?.person_1?.person_id).toBe(13)
+    expect(family7?.person_1?.otherFamilyId).toBe(6)
+
+    const family6 = getFamilyById(db, 6)
+    expect(family6?.person_1?.person_id).toBe(13)
+    expect(family6?.person_1?.otherFamilyId).toBe(7)
+  })
+
+  test('otherFamilyId is null for someone with only one family on record', () => {
+    const family = getFamilyById(db, 1)
+    expect(family?.person_1?.otherFamilyId).toBeNull() // Anna
+    expect(family?.person_2?.otherFamilyId).toBeNull() // Karl
   })
 })

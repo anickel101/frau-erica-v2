@@ -22,4 +22,10 @@ export interface FamilyDetail {
   // Galleries linked to either half of the featured couple (not
   // grandparents/children) -- empty when there are none.
   galleries: GallerySummary[]
+  // The featured couple's own spouse Relationships row status, if one
+  // exists -- the raw schema value ('married'/'divorced'/'widowed'/
+  // 'separated'), not narrowed to a boolean. null when either half of
+  // the couple is missing, or no Relationships row is on record. The
+  // only UI behavior built on this today is the divorce dashes.
+  coupleStatus: string | null
 }

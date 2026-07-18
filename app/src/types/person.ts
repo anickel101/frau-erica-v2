@@ -20,6 +20,13 @@ export interface PersonSummary {
 // instead of a separate GET /persons/:id round trip.
 export interface LinkedPersonSummary extends PersonSummary {
   linkedFamilyId: number | null
+  // The OTHER family_id this person partners in, besides the one this
+  // LinkedPersonSummary is embedded in (widowed/remarried, etc.) --
+  // only ever populated for FamilyDetail's person_1/person_2, never
+  // grandparents_1/grandparents_2/children. undefined (not null) for
+  // every other use -- distinguishes "not computed here" from
+  // "computed, and there isn't one" (null).
+  otherFamilyId?: number | null
 }
 
 export interface Person {

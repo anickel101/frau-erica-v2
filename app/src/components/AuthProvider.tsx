@@ -6,6 +6,7 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js'
 import { COGNITO_CLIENT_ID, COGNITO_USER_POOL_ID } from '../config/cognito'
+import { getMyGermline } from '../data-access/gated/germline'
 import { getPersonById } from '../data-access/gated/persons'
 import { parseIdTokenClaims } from '../hooks/authClaims'
 import { AuthContext, AuthContextValue, AuthState, LoginResult } from '../hooks/useAuth'
@@ -23,6 +24,8 @@ const SIGNED_OUT_STATE: AuthState = {
   email: null,
   personName: null,
   homeFamilyId: null,
+  germlineIds: null,
+  furthestAncestor: null,
 }
 
 function stateFromSession(session: CognitoUserSession): AuthState {
@@ -35,10 +38,12 @@ function stateFromSession(session: CognitoUserSession): AuthState {
     groups,
     personId,
     email: typeof payload.email === 'string' ? payload.email : null,
-    // Neither is on the token -- both resolved by the effect below, once
-    // idToken/personId are in state.
+    // None of these are on the token -- all resolved by the effects
+    // below, once idToken/personId are in state.
     personName: null,
     homeFamilyId: null,
+    germlineIds: null,
+    furthestAncestor: null,
   }
 }
 
@@ -103,6 +108,33 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       .catch(() => {
         // Name/home-family are a nice-to-have -- a failed lookup
         // shouldn't affect sign-in itself, both just stay null.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [state.status, state.personId, state.idToken])
+
+  // Resolves this user's germline (their own biological ancestor
+  // person_ids, plus the single furthest-back one) -- same "resolve
+  // once per sign-in, tolerate failure by leaving null" shape as the
+  // personName/homeFamilyId effect above, kept separate since it's a
+  // different endpoint/concern with no reason to couple their
+  // success/failure or block one on the other.
+  useEffect(() => {
+    if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
+    let cancelled = false
+    getMyGermline(state.idToken)
+      .then(({ personIds, furthestAncestor }) => {
+        if (cancelled) return
+        setState((prev) =>
+          prev.status === 'signedIn'
+            ? { ...prev, germlineIds: new Set(personIds), furthestAncestor }
+            : prev,
+        )
+      })
+      .catch(() => {
+        // Germline is a nice-to-have (marker highlighting, a sidebar
+        // link) -- a failed lookup shouldn't affect sign-in itself.
       })
     return () => {
       cancelled = true
