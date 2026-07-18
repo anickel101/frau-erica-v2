@@ -39,6 +39,15 @@ export interface PersonSummary {
 // own possible Lambda cold start) per click.
 export interface LinkedPersonSummary extends PersonSummary {
   linkedFamilyId: number | null
+  // The OTHER family_id this person partners in, besides the one this
+  // LinkedPersonSummary is already embedded in (widowed/remarried,
+  // etc.) -- only ever populated for FamilyDetail's person_1/person_2
+  // (the featured couple), never grandparents_1/grandparents_2/children,
+  // since only the couple's box shows the alternate-family triangle.
+  // undefined (not null) for every other LinkedPersonSummary use --
+  // distinguishes "not computed here" from "computed, and there isn't
+  // one" (null).
+  otherFamilyId?: number | null
 }
 
 export interface GallerySummary {
@@ -59,6 +68,14 @@ export interface FamilyDetail {
   // grandparents/children) -- empty when there are none, meaning the
   // frontend should just not render a galleries section at all.
   galleries: GallerySummary[]
+  // The featured couple's own spouse Relationships row status, if one
+  // exists -- the raw schema value ('married'/'divorced'/'widowed'/
+  // 'separated'), not narrowed to a boolean, so a future non-divorce
+  // treatment doesn't need another backend round trip. null when either
+  // half of the couple is missing, or no Relationships row is on record
+  // for them. The only UI behavior built on this today is the divorce
+  // dashes.
+  coupleStatus: string | null
 }
 
 export interface PersonDetail extends Person {

@@ -44,6 +44,14 @@ export async function createTestDb(): Promise<Database> {
 //   happens to be a partner in". Wilhelm (9) also gets a spouse
 //   Relationships row, to Frieda Standalone (12), with no matching
 //   Families row at all -- the linkedFamilyId: null case for marriages.
+//   StepDad Guy (17) is Lena's step-parent (not biological) -- the only
+//   step_parent/adoptive_parent row in these fixtures, for
+//   germline.ts's biological-only exclusion test.
+//   Erik Voss (18) and Marta Voss (19), family_id 5 (free -- an earlier
+//   revision moved off it, see the Klaus Twice comment above), are a
+//   divorced couple for getCoupleStatus's test -- deliberately not
+//   Anna/Karl (family_id 1), to keep this change's blast radius to zero
+//   on that family's existing extensive test coverage.
 export async function seedFixtures(db: Database): Promise<void> {
   const persons: Array<[number, string, string, string | null]> = [
     [1, 'Hans', 'Mueller', '1920-03-01'],
@@ -70,6 +78,14 @@ export async function seedFixtures(db: Database): Promise<void> {
     // anniversaries.ts's "only full dates are placeable on a specific
     // day-of-month" exclusion.
     [16, 'YearOnly', 'Standalone', null],
+    // Lena's step-parent (see the step_parent Relationships row below)
+    // -- born before Lena so check_parent_birth_order doesn't reject
+    // the insert. Exercises germline.ts's biological_parent-only
+    // filter: must never appear in Lena's germline despite being a
+    // recorded parent-type relationship.
+    [17, 'StepDad', 'Guy', '1945-01-01'],
+    [18, 'Erik', 'Voss', '1940-06-12'],
+    [19, 'Marta', 'Voss', '1942-11-03'],
   ]
   for (const [id, first, last, dob] of persons) {
     db.run(
@@ -102,6 +118,12 @@ export async function seedFixtures(db: Database): Promise<void> {
     )
   }
 
+  // StepDad Guy (17) -> Lena (7): the fixture file's only
+  // step_parent/adoptive_parent row, for germline.ts's exclusion test.
+  db.run(
+    "INSERT INTO Relationships (person_id_1, person_id_2, relationship_type) VALUES (17, 7, 'step_parent')",
+  )
+
   db.run("INSERT INTO Images (image_id, url, is_published) VALUES (1, 'family1.jpg', 1)")
   // Unpublished -- linked to family 3 below to exercise the
   // is_published filter on the header-image lookup.
@@ -131,6 +153,10 @@ export async function seedFixtures(db: Database): Promise<void> {
     'INSERT INTO Families (family_id, person_id_1, person_id_2, description) VALUES (7, 13, 15, ?)',
     ['Klaus and Wife Two'],
   )
+  db.run(
+    'INSERT INTO Families (family_id, person_id_1, person_id_2, description) VALUES (5, 18, 19, ?)',
+    ['Erik and Marta, divorced'],
+  )
 
   // Spouse relationships, for the anniversaries "marriage" event tests.
   // Klaus is a partner in two Families rows (6 and 7 above) -- this
@@ -145,6 +171,11 @@ export async function seedFixtures(db: Database): Promise<void> {
   db.run(
     `INSERT INTO Relationships (person_id_1, person_id_2, relationship_type, status, start_date)
      VALUES (9, 12, 'spouse', 'married', '1945-09-01')`,
+  )
+  // Erik and Marta: divorced, for getCoupleStatus's test.
+  db.run(
+    `INSERT INTO Relationships (person_id_1, person_id_2, relationship_type, status, start_date, end_date)
+     VALUES (18, 19, 'spouse', 'divorced', '1965-04-10', '1978-09-01')`,
   )
 
   // Header images are linked via ImageLinks.family_id, not

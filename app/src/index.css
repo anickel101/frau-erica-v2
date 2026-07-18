@@ -11,6 +11,7 @@
 
   --color-fe-gen-grandparent: #cc99cc;
   --color-fe-gen-couple: #ffcc33;
+  --color-fe-gen-couple-dark: #cca329;
   --color-fe-gen-child: #99cc99;
   /* Not from the original design notes -- new for the anniversary
      calendar's death events, which have no existing generational color

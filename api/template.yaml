@@ -215,6 +215,38 @@ Resources:
             Path: /me
             Method: get
 
+  GermlineFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/germline.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/germline.handler
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        Germline:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /me/germline
+            Method: get
+
   RequestAccessFunction:
     Type: AWS::Serverless::Function
     Metadata:

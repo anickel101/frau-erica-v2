@@ -48,7 +48,8 @@ interface SidebarProps {
 
 export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps) {
   const [open, setOpen] = useState(false)
-  const { status, email, personName, homeFamilyId, groups, logout } = useAuth()
+  const { status, email, personName, homeFamilyId, groups, furthestAncestor, logout } =
+    useAuth()
   const navigate = useNavigate()
 
   const logoBlockHeight =
@@ -161,6 +162,26 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                     className="text-fe-accent hover:text-fe-accent-dark text-sm"
                   >
                     Manage users
+                  </Link>
+                </p>
+              )}
+              {/* The single most-generations-back person in this user's
+                  own biological ancestry (see hooks/useAuth.tsx's
+                  furthestAncestor) -- absent until that lookup resolves,
+                  or if this person has no recorded biological parents at
+                  all. */}
+              {furthestAncestor && (
+                <p>
+                  <Link
+                    to={
+                      furthestAncestor.linkedFamilyId !== null
+                        ? `/family/${furthestAncestor.linkedFamilyId}`
+                        : `/persons/${furthestAncestor.person_id}`
+                    }
+                    onClick={() => setOpen(false)}
+                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                  >
+                    Furthest Ancestor
                   </Link>
                 </p>
               )}

@@ -2,7 +2,7 @@ import type {
   APIGatewayProxyEventV2WithJWTAuthorizer,
   APIGatewayProxyResultV2,
 } from 'aws-lambda'
-import { parseGroups } from '../lib/auth'
+import { getPersonIdClaim, parseGroups } from '../lib/auth'
 import { jsonResponse } from '../lib/response'
 
 // No database access needed -- this route only echoes back what the
@@ -13,7 +13,6 @@ export async function handler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const claims = event.requestContext.authorizer.jwt.claims
-  const personIdClaim = claims['custom:person_id']
 
   return jsonResponse(200, {
     sub: claims.sub,
@@ -22,6 +21,6 @@ export async function handler(
     // Java-toString() the authorizer hands us) so this matches the shape
     // adminListUsers.ts already returns for the same underlying claim.
     groups: parseGroups(claims['cognito:groups'] as string | undefined),
-    personId: typeof personIdClaim === 'string' ? Number(personIdClaim) : null,
+    personId: getPersonIdClaim(event),
   })
 }

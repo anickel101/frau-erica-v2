@@ -6,6 +6,7 @@ import SearchInput from '../components/SearchInput'
 import { LexiconEntry, listLexiconEntries } from '../data-access/public/lexicon'
 import { groupByLetter } from '../utils/groupByLetter'
 import { useHeaderRef } from '../hooks/useHeaderRef'
+import { resolveImageUrl } from '../utils/imageUrl'
 
 // See FamilyHeader in FamilyPage.tsx for why this is its own component:
 // useHeaderRef() must be called from within Layout's children.
@@ -14,9 +15,17 @@ function LexiconHeader() {
   return (
     <div
       ref={headerRef}
-      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center"
+      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
     >
-      <p className="text-fe-ink/40 text-sm">No header image</p>
+      {/* Already uploaded to our own image bucket (confirmed via
+          `aws s3 ls`) -- a one-off page header graphic, not a
+          Persons/Documents/Galleries Images row, same as LoginPage.tsx's
+          FrauErica5.jpg. */}
+      <img
+        src={resolveImageUrl('hdr.Streuwwelpeter.jpg')}
+        alt="A Mueller Lexicon"
+        className="w-full h-full object-cover"
+      />
     </div>
   )
 }
