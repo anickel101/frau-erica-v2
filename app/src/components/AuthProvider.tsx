@@ -25,7 +25,7 @@ const SIGNED_OUT_STATE: AuthState = {
   personName: null,
   homeFamilyId: null,
   germlineIds: null,
-  furthestAncestor: null,
+  ancestralLines: null,
 }
 
 function stateFromSession(session: CognitoUserSession): AuthState {
@@ -43,7 +43,7 @@ function stateFromSession(session: CognitoUserSession): AuthState {
     personName: null,
     homeFamilyId: null,
     germlineIds: null,
-    furthestAncestor: null,
+    ancestralLines: null,
   }
 }
 
@@ -115,26 +115,26 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [state.status, state.personId, state.idToken])
 
   // Resolves this user's germline (their own biological ancestor
-  // person_ids, plus the single furthest-back one) -- same "resolve
-  // once per sign-in, tolerate failure by leaving null" shape as the
-  // personName/homeFamilyId effect above, kept separate since it's a
-  // different endpoint/concern with no reason to couple their
-  // success/failure or block one on the other.
+  // person_ids, plus one furthest-ancestor line per immediate parent) --
+  // same "resolve once per sign-in, tolerate failure by leaving null"
+  // shape as the personName/homeFamilyId effect above, kept separate
+  // since it's a different endpoint/concern with no reason to couple
+  // their success/failure or block one on the other.
   useEffect(() => {
     if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
     let cancelled = false
     getMyGermline(state.idToken)
-      .then(({ personIds, furthestAncestor }) => {
+      .then(({ personIds, ancestralLines }) => {
         if (cancelled) return
         setState((prev) =>
           prev.status === 'signedIn'
-            ? { ...prev, germlineIds: new Set(personIds), furthestAncestor }
+            ? { ...prev, germlineIds: new Set(personIds), ancestralLines }
             : prev,
         )
       })
       .catch(() => {
-        // Germline is a nice-to-have (marker highlighting, a sidebar
-        // link) -- a failed lookup shouldn't affect sign-in itself.
+        // Germline is a nice-to-have (marker highlighting, sidebar
+        // links) -- a failed lookup shouldn't affect sign-in itself.
       })
     return () => {
       cancelled = true

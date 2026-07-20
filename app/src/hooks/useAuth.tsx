@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { LinkedPersonSummary } from '../types/person'
+import { AncestralLine } from '../data-access/gated/germline'
 
 export interface AuthState {
   status: 'loading' | 'signedOut' | 'signedIn'
@@ -22,9 +22,13 @@ export interface AuthState {
   // until resolved, or if the lookup fails/finds none. A Set, not the
   // raw array, since PersonCard only ever needs .has() membership checks.
   germlineIds: Set<number> | null
-  // The single most-generations-back person in that same germline, from
-  // the same lookup -- powers the sidebar's "Furthest Ancestor" link.
-  furthestAncestor: LinkedPersonSummary | null
+  // One entry per immediate biological parent on record, each with the
+  // furthest known ancestor down that specific line -- powers the
+  // sidebar's "Furthest Ancestor (via {name})" links. From the same
+  // lookup as germlineIds above. null until resolved (matching
+  // germlineIds' own null-until-resolved convention); an empty array
+  // means "resolved, no biological parents on record."
+  ancestralLines: AncestralLine[] | null
 }
 
 export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequired' }

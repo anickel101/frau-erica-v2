@@ -1,6 +1,6 @@
 import type { Database } from 'sql.js'
 import { PERSON_COLUMNS, toPersonSummary } from '../personHelpers'
-import { inClause, queryAll } from '../sqlHelpers'
+import { inClause, queryAll, queryOne } from '../sqlHelpers'
 import type { LinkedPersonSummary } from '../types'
 import { resolveLinkedFamilyId } from './families'
 
@@ -107,4 +107,76 @@ export function getFurthestAncestor(
     ...toPersonSummary(winner),
     linkedFamilyId: resolveLinkedFamilyId(db, winner.person_id),
   }
+}
+
+// This person's own immediate biological parents -- one hop, not the
+// recursive germline walk. biological_parent only (unlike
+// queries/persons.ts's getFamilyIdAsChild, which uses all three parent
+// types and collapses straight to a family_id) -- there's no existing
+// function anywhere that returns this list directly. Whatever's
+// actually on record: 0, 1, or 2 ids, never assumed to be exactly 2.
+export function getBiologicalParentIds(db: Database, personId: number): number[] {
+  const rows = queryAll<{ person_id_1: number }>(
+    db,
+    `SELECT person_id_1 FROM Relationships
+     WHERE person_id_2 = :childId AND relationship_type = 'biological_parent'`,
+    { ':childId': personId },
+  )
+  return rows.map((row) => row.person_id_1)
+}
+
+// Like getFurthestAncestor, but for "the furthest known point on this
+// parent's own line" rather than "the furthest ancestor of this
+// person" -- the difference matters at the edge: if a parent has no
+// further recorded ancestors of their own, getFurthestAncestor
+// correctly returns null (they're not their own ancestor), but here
+// the parent themselves IS the meaningful answer -- they're the
+// furthest known point on this specific line, even though the word
+// "ancestor" doesn't technically apply to them.
+export function getFurthestAncestorInLine(
+  db: Database,
+  startPersonId: number,
+): LinkedPersonSummary {
+  const ancestor = getFurthestAncestor(db, startPersonId)
+  if (ancestor) return ancestor
+
+  const row = queryOne<CandidateRow>(
+    db,
+    `SELECT ${PERSON_COLUMNS} FROM Persons WHERE person_id = :id`,
+    { ':id': startPersonId },
+  )
+  // startPersonId always comes from getBiologicalParentIds, i.e. always
+  // a real person_id already known to exist.
+  return {
+    ...toPersonSummary(row as CandidateRow),
+    linkedFamilyId: resolveLinkedFamilyId(db, startPersonId),
+  }
+}
+
+export interface AncestralLine {
+  parentId: number
+  // Just the first name -- matches the agreed sidebar link text
+  // exactly ("Furthest Ancestor (via Hans)"), not a full name.
+  parentName: string
+  furthestAncestor: LinkedPersonSummary
+}
+
+// One entry per immediate biological parent on record (0, 1, or 2 --
+// never hardcoded to 2), each with the furthest known point on that
+// parent's own line. The only function the handler calls directly --
+// handler stays thin, matching api/CLAUDE.md's "Handler = thin, logic
+// in lib/" convention.
+export function getAncestralLines(db: Database, personId: number): AncestralLine[] {
+  return getBiologicalParentIds(db, personId).map((parentId) => {
+    const row = queryOne<{ first_name: string }>(
+      db,
+      'SELECT first_name FROM Persons WHERE person_id = :id',
+      { ':id': parentId },
+    )
+    return {
+      parentId,
+      parentName: row?.first_name ?? '',
+      furthestAncestor: getFurthestAncestorInLine(db, parentId),
+    }
+  })
 }

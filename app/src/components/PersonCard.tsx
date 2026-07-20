@@ -26,6 +26,24 @@ const DIRECTION_ARROW: Record<Generation, '▲' | '▼' | null> = {
   child: '▼',
 }
 
+// An SVG shape, not the Unicode ◆ character -- confirmed live (twice)
+// that the plain-glyph approach doesn't reliably center: ◆'s rendered
+// position within its own character cell varies by whatever font
+// actually ends up supplying the glyph (Verdana has no diamond glyph,
+// so this falls back to different system fonts on different
+// browsers/OSes, each with different internal padding/baseline
+// metrics), which no amount of CSS centering on the *container* can
+// compensate for. An SVG polygon has an exact, deterministic bounding
+// box regardless of font -- ▲/▼ stay plain Unicode since they've never
+// had this problem.
+function DiamondGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" aria-hidden="true">
+      <polygon points="12,2 22,12 12,22 2,12" />
+    </svg>
+  )
+}
+
 export default function PersonCard({
   person,
   generation,
@@ -42,7 +60,6 @@ export default function PersonCard({
   // Family page.
   isInGermline?: boolean
 }) {
-  const glyph = isInGermline ? '◆' : DIRECTION_ARROW[generation]
   // linkedFamilyId is precomputed server-side (see api/'s FamilyDetail) --
   // goes straight to their family page, no /persons/:id resolver hop.
   // Falls back to the resolver only for the rare case of no linked
@@ -67,12 +84,15 @@ export default function PersonCard({
           ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}
         `}
       >
-        {/* Fixed-width slot, always rendered (even when glyph is null for
-            a non-germline "couple") so the name text lines up at the same
-            x-position across all three generations -- couple boxes have
-            no arrow but still reserve its space. */}
-        <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 text-center">
-          {glyph}
+        {/* Fixed-width slot, always rendered (even when there's nothing
+            to show for a non-germline "couple") so the name text lines
+            up at the same x-position across all three generations --
+            couple boxes have no arrow but still reserve its space. flex
+            centering (not text-align/line-height) so the SVG diamond
+            centers on its own bounding box, not on font-dependent glyph
+            metrics. */}
+        <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 flex items-center justify-center">
+          {isInGermline ? <DiamondGlyph /> : DIRECTION_ARROW[generation]}
         </span>
         <div>
           <p className="font-bold text-sm">
@@ -95,7 +115,7 @@ export default function PersonCard({
         <Link
           to={`/family/${person.otherFamilyId}`}
           aria-label={`${person.first_name}'s other family`}
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-accent text-lg leading-none hover:text-fe-accent-dark"
+          className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-accent text-3xl leading-none hover:text-fe-accent-dark"
         >
           ▶
         </Link>

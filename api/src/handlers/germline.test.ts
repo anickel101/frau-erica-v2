@@ -60,7 +60,7 @@ describe('germline handler with no linked person', () => {
     expect(result.statusCode).toBe(200)
     expect(JSON.parse(result.body as string)).toEqual({
       personIds: [],
-      furthestAncestor: null,
+      ancestralLines: [],
     })
     expect(getDbMock).not.toHaveBeenCalled()
   })
