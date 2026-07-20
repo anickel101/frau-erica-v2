@@ -12,8 +12,8 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'About the site',
     links: [
-      { label: "User's guide", to: '/about' },
-      { label: 'Contact the archivist', to: '/contact' },
+      { label: "User's Guide", to: '/about' },
+      { label: 'Contact the Archivist', to: '/contact' },
     ],
   },
   {
@@ -48,7 +48,7 @@ interface SidebarProps {
 
 export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps) {
   const [open, setOpen] = useState(false)
-  const { status, email, personName, homeFamilyId, groups, furthestAncestor, logout } =
+  const { status, email, personName, homeFamilyId, groups, ancestralLines, logout } =
     useAuth()
   const navigate = useNavigate()
 
@@ -165,26 +165,29 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                   </Link>
                 </p>
               )}
-              {/* The single most-generations-back person in this user's
-                  own biological ancestry (see hooks/useAuth.tsx's
-                  furthestAncestor) -- absent until that lookup resolves,
-                  or if this person has no recorded biological parents at
-                  all. */}
-              {furthestAncestor && (
-                <p>
+              {/* One link per immediate biological parent on record (see
+                  hooks/useAuth.tsx's ancestralLines) -- 0, 1, or 2 links,
+                  never hardcoded to 2. There's no gender field anywhere
+                  in the schema, so this can't say "father's side"/
+                  "mother's side" -- each line is labeled by that
+                  parent's own name instead. Absent entirely until the
+                  lookup resolves, or if this person has no recorded
+                  biological parents at all. */}
+              {ancestralLines?.map((line) => (
+                <p key={line.parentId}>
                   <Link
                     to={
-                      furthestAncestor.linkedFamilyId !== null
-                        ? `/family/${furthestAncestor.linkedFamilyId}`
-                        : `/persons/${furthestAncestor.person_id}`
+                      line.furthestAncestor.linkedFamilyId !== null
+                        ? `/family/${line.furthestAncestor.linkedFamilyId}`
+                        : `/persons/${line.furthestAncestor.person_id}`
                     }
                     onClick={() => setOpen(false)}
                     className="text-fe-accent hover:text-fe-accent-dark text-sm"
                   >
-                    Furthest Ancestor
+                    Furthest Ancestor (via {line.parentName})
                   </Link>
                 </p>
-              )}
+              ))}
               <button
                 type="button"
                 onClick={() => {

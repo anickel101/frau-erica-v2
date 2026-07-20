@@ -189,9 +189,3 @@ Enterprise/paid tier of anything.
   hosting is actually planned (the project is deliberately staying
   local-only for now — see the root-level project memory, not this
   file, for that decision).
-- `/admin/users` only lets an admin fix a wrong `custom:person_id` —
-  there's no UI for changing someone's _group_ (revoking access,
-  promoting to admin). Still an AWS-CLI-only action.
-- Germline/ancestry highlighting (a real, planned feature — see
-  `app/CLAUDE.md`'s "Feature gaps" section) has no query or route yet.
-  `custom:person_id` being wired end-to-end unblocks it in principle.

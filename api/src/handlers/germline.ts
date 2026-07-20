@@ -4,7 +4,7 @@ import type {
 } from 'aws-lambda'
 import { getPersonIdClaim, requireApprovedAccess } from '../lib/auth'
 import { getDb } from '../lib/db'
-import { getFurthestAncestor, getGermlineIds } from '../lib/queries/germline'
+import { getAncestralLines, getGermlineIds } from '../lib/queries/germline'
 import { jsonResponse } from '../lib/response'
 
 export async function handler(
@@ -15,12 +15,12 @@ export async function handler(
 
   const personId = getPersonIdClaim(event)
   if (personId === null) {
-    return jsonResponse(200, { personIds: [], furthestAncestor: null })
+    return jsonResponse(200, { personIds: [], ancestralLines: [] })
   }
 
   const db = await getDb()
   return jsonResponse(200, {
     personIds: getGermlineIds(db, personId),
-    furthestAncestor: getFurthestAncestor(db, personId),
+    ancestralLines: getAncestralLines(db, personId),
   })
 }
