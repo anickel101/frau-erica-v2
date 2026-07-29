@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { GallerySummary } from '../types/family'
+import { getYearsSinceArrival } from '../utils/arrivalAnniversary'
 
 interface NavSection {
   title: string
@@ -39,6 +40,12 @@ const NAV_SECTIONS: NavSection[] = [
 // the height calculation below is right here to update alongside it.
 const SIDEBAR_TOP_PADDING = 24 // p-6
 const MARGIN_BEFORE_DIVIDER = 16 // mt-4 on the first nav section
+
+// Guaranteed minimum gap between the end of the logo text and the
+// divider that follows it, on pages with no header image to align with
+// (see logoBlockHeight below -- there's no measured offset to size the
+// logo block against in that case).
+const MIN_GAP_WITHOUT_HEADER_IMAGE = 200
 
 interface SidebarProps {
   /** Live-measured distance from the shared content top edge to the
@@ -92,12 +99,13 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
           overflow-y-auto
         `}
       >
-        {/* Logo block: flag + title + subtitle. Height is live-measured
-            (via Layout, see HeaderRefContext) to match whatever the
-            current page's header image bottom edge actually is -- no
-            more hardcoded numbers to keep in sync by hand. Falls back
-            to natural sizing (no forced height) on pages with no header
-            image at all. */}
+        {/* Logo block: flag + title + subtitle, top-aligned (the text
+            sits right under the flag), then a spacer that absorbs
+            whatever room is left. Height is live-measured (via Layout,
+            see HeaderRefContext) to match whatever the current page's
+            header image bottom edge actually is -- no more hardcoded
+            numbers to keep in sync by hand. Falls back to natural sizing
+            (no forced height) on pages with no header image at all. */}
         <div
           className="flex flex-col"
           style={logoBlockHeight !== undefined ? { height: logoBlockHeight } : undefined}
@@ -105,28 +113,39 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
           {/* German flag block -- official ratio is height:width = 3:5,
               i.e. width:height = 5:3. Using aspect-ratio (not a fixed
               height) so it stays correctly proportioned at any sidebar
-              width, including the wider mobile drawer. Shrunk to 2/3 of
-              the original full-width version -- height follows
-              automatically via the aspect ratio. */}
-          <div className="w-2/3 aspect-[5/3] mb-4 flex flex-col rounded-sm overflow-hidden shadow-sm">
+              width, including the wider mobile drawer. 4/9 of the
+              original full-width version: previously shrunk to 2/3, then
+              shrunk by a further 1/3 of that (2/3 * 2/3) -- height
+              follows automatically via the aspect ratio. */}
+          <div className="w-[calc(100%*4/9)] aspect-[5/3] mb-4 flex flex-col rounded-sm overflow-hidden shadow-sm">
             <div className="flex-1 bg-black" />
             <div className="flex-1 bg-[#DD0000]" />
             <div className="flex-1 bg-[#FFCE00]" />
           </div>
 
-          {/* mt-auto pushes this block to the bottom of the container
-              above, so the text sits flush against the divider that
-              follows, regardless of the flag's height. */}
-          <div className="mt-auto">
+          <div>
             <p className="text-fe-accent font-bold text-sm leading-tight">
               The Frau Erica Project
             </p>
             <p className="text-fe-brown font-bold text-sm leading-tight">
               Muellers in America:
               <br />
-              The First 160 Years
+              The First {getYearsSinceArrival()} Years
             </p>
           </div>
+
+          {/* Spacer, not the text block itself, absorbs the leftover
+              room -- keeps the flag+text pinned together at the top
+              instead of being stretched apart. With a header image,
+              flex-1 fills up to the measured height above so the divider
+              that follows this whole div still lands exactly at the
+              header image's bottom edge; without one, a fixed minimum
+              keeps the divider from crowding the logo text. */}
+          {logoBlockHeight !== undefined ? (
+            <div className="flex-1" />
+          ) : (
+            <div style={{ height: MIN_GAP_WITHOUT_HEADER_IMAGE }} />
+          )}
         </div>
 
         {/* Account status -- only ever rendered signed in (a signed-out
