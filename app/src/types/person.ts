@@ -9,8 +9,10 @@
 export interface PersonSummary {
   person_id: number
   first_name: string
+  middle_name?: string
   last_name: string
   date_of_birth?: string // ISO date, e.g. '1987-10-24'
+  date_of_death?: string
 }
 
 // PersonSummary plus the family page this person's own PersonCard box

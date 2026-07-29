@@ -65,13 +65,19 @@ export default function GalleryLargeImage({
       </p>
 
       <Modal open={isZoomed} onClose={() => setIsZoomed(false)}>
-        <div className="relative max-w-[90vw] max-h-[90vh] cursor-zoom-out">
+        {/* The caption used to sit in an absolutely-positioned bar over
+            the bottom of the image -- on a large photo or a long caption,
+            that shaded bar covered real photo content instead of framing
+            it. Stacked below the image instead, with a real gap, so it
+            never overlaps -- max-h on the image leaves room within the
+            90vh modal budget for the caption block underneath it. */}
+        <div className="flex flex-col max-w-[90vw] max-h-[90vh] cursor-zoom-out">
           <img
             src={photo.url}
             alt={photo.title}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
+            className="max-w-[90vw] max-h-[calc(90vh-6rem)] object-contain"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-4">
+          <div className="mt-3 bg-black/60 text-white p-4 rounded-sm">
             <p className="font-bold">{photo.title}</p>
             <p className="text-sm text-white/80">{photo.caption}</p>
           </div>

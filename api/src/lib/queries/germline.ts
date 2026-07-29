@@ -67,6 +67,7 @@ interface CandidateRow {
   suffix: string
   date_of_birth: string | null
   birth_year: number | null
+  date_of_death: string | null
 }
 
 // The single most-generations-back biological ancestor. Ties (more than

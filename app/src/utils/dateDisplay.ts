@@ -16,8 +16,18 @@ export function formatDate(iso: string): string {
   })
 }
 
-export function formatBirthDate(iso?: string): string {
-  return iso ? `Born ${formatDate(iso)}` : ''
+// Dad's requested formats: a full range when both dates are known
+// ("January 1, 1865 – December 16, 1923"), a labeled single date when
+// only one is ("Born January 1, 1906" / "Died December 16, 1923") --
+// many older ancestors are missing one or the other -- and nothing at
+// all when neither is on record.
+export function formatLifespan(dateOfBirth?: string, dateOfDeath?: string): string {
+  if (dateOfBirth && dateOfDeath) {
+    return `${formatDate(dateOfBirth)} – ${formatDate(dateOfDeath)}`
+  }
+  if (dateOfBirth) return `Born ${formatDate(dateOfBirth)}`
+  if (dateOfDeath) return `Died ${formatDate(dateOfDeath)}`
+  return ''
 }
 
 // The actual historical day of week for this date (e.g. July 1 1851

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { formatBirthDate } from '../utils/dateDisplay'
+import { formatLifespan } from '../utils/dateDisplay'
 import { LinkedPersonSummary } from '../types/person'
 
 type Generation = 'grandparent' | 'couple' | 'child'
@@ -96,13 +96,18 @@ export default function PersonCard({
         </span>
         <div>
           <p className="font-bold text-sm">
-            {person.first_name} {person.last_name}
+            {[person.first_name, person.middle_name, person.last_name]
+              .filter(Boolean)
+              .join(' ')}
           </p>
-          {person.date_of_birth && (
-            <p className="text-xs text-fe-ink/70">
-              {formatBirthDate(person.date_of_birth)}
-            </p>
-          )}
+          {/* Always rendered, even with no date on record -- a non-breaking
+              space reserves the same second line every other box gets, so
+              boxes stay the same height whether or not this person has a
+              dateline (previously a box with no date rendered visibly
+              shorter than its neighbors). */}
+          <p className="text-xs text-fe-ink/70">
+            {formatLifespan(person.date_of_birth, person.date_of_death) || ' '}
+          </p>
         </div>
       </Link>
       {/* Only ever set for the featured couple (person_1/person_2) --

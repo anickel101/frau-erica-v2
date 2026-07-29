@@ -10,14 +10,18 @@ export const PERSON_COLUMNS = `person_id, first_name, COALESCE(middle_name, '') 
 export function toPersonSummary(person: {
   person_id: number
   first_name: string
+  middle_name?: string | null
   last_name: string
   date_of_birth: string | null
+  date_of_death?: string | null
 }): PersonSummary {
   return {
     person_id: person.person_id,
     first_name: person.first_name,
     last_name: person.last_name,
+    ...(person.middle_name ? { middle_name: person.middle_name } : {}),
     ...(person.date_of_birth ? { date_of_birth: person.date_of_birth } : {}),
+    ...(person.date_of_death ? { date_of_death: person.date_of_death } : {}),
   }
 }
 

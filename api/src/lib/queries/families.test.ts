@@ -38,7 +38,10 @@ describe('getFamilyById', () => {
     expect(family?.grandparents_1.map((p) => p.person_id).sort()).toEqual([1, 2])
     expect(family?.grandparents_2.map((p) => p.person_id).sort()).toEqual([5, 6])
 
-    expect(family?.children.map((p) => p.person_id).sort()).toEqual([7, 8])
+    // Not sorted before comparing -- children come back firstborn-to-last
+    // (Lena, born 1980-02-20, before Max, born 1982-06-18), matching the
+    // old site's behavior.
+    expect(family?.children.map((p) => p.person_id)).toEqual([7, 8])
   })
 
   test('embeds a linkedFamilyId on every shown person for one-hop navigation', () => {

@@ -38,6 +38,29 @@ if (!existsSync(dbPath)) {
 
 const db = new DatabaseSync(dbPath, { readOnly: true })
 
+// Old FileMaker/Word-authored text occasionally carries UTF-8 curly-quote
+// or dash bytes that got re-interpreted as MacRoman somewhere in this
+// project's editing history (BBEdit, most likely) -- a real ’ round-trips
+// to ‚Äô, an em dash to ‚Äî, etc. (confirmed against the real export: e.g.
+// "Molly‚Äôs wedding" instead of "Molly's wedding"). Idempotent -- these
+// exact byte sequences don't occur in ordinary prose, so running this on
+// already-clean text is a no-op. Applied at export time (not just a
+// one-off fix to the committed JSON) so this doesn't quietly reappear the
+// next time someone re-runs this script against the real database, since
+// the underlying FileMaker-era text field itself isn't being touched.
+function fixMojibake(text: string): string
+function fixMojibake(text: string | null): string | null
+function fixMojibake(text: string | null): string | null {
+  if (text === null) return null
+  return text
+    .replaceAll('‚Äô', '’') // ’
+    .replaceAll('‚Äì', '–') // –
+    .replaceAll('‚Äî', '—') // —
+    .replaceAll('‚Äò', '‘') // ‘
+    .replaceAll('‚Äú', '“') // “
+    .replaceAll('‚Äù', '”') // ”
+}
+
 async function writeJson(filename: string, data: unknown): Promise<void> {
   // Formatted through Prettier's own API (not just JSON.stringify) so the
   // output always already satisfies `npm run format:check` -- Prettier's
@@ -64,12 +87,20 @@ interface ImageRow {
   url: string
 }
 
-const images = db
-  .prepare(
-    `SELECT image_id, title, caption, credit, year_taken, location, width, height, url
-     FROM Images WHERE is_published = 1`,
-  )
-  .all() as unknown as ImageRow[]
+const images = (
+  db
+    .prepare(
+      `SELECT image_id, title, caption, credit, year_taken, location, width, height, url
+       FROM Images WHERE is_published = 1`,
+    )
+    .all() as unknown as ImageRow[]
+).map((img) => ({
+  ...img,
+  title: fixMojibake(img.title),
+  caption: fixMojibake(img.caption),
+  credit: fixMojibake(img.credit),
+  location: fixMojibake(img.location),
+}))
 
 await writeJson('images.json', images)
 
@@ -160,8 +191,10 @@ function resolveLinkedFamilyId(personId: number): number | null {
 // type's non-nullable string fields.
 const persons = personRows.map((p) => ({
   ...p,
-  middle_name: p.middle_name ?? '',
-  suffix: p.suffix ?? '',
+  first_name: fixMojibake(p.first_name),
+  middle_name: fixMojibake(p.middle_name ?? ''),
+  last_name: fixMojibake(p.last_name),
+  suffix: fixMojibake(p.suffix ?? ''),
   linkedFamilyId: resolveLinkedFamilyId(p.person_id),
 }))
 
@@ -169,9 +202,23 @@ await writeJson('persons.json', persons)
 
 // ---------- Lexicon ----------
 
-const lexicon = db
-  .prepare(`SELECT term, pronunciation, part_of_speech, definition FROM Lexicon`)
-  .all()
+interface LexiconRow {
+  term: string
+  pronunciation: string | null
+  part_of_speech: string | null
+  definition: string | null
+}
+
+const lexicon = (
+  db
+    .prepare(`SELECT term, pronunciation, part_of_speech, definition FROM Lexicon`)
+    .all() as unknown as LexiconRow[]
+).map((row) => ({
+  term: fixMojibake(row.term),
+  pronunciation: fixMojibake(row.pronunciation),
+  part_of_speech: fixMojibake(row.part_of_speech),
+  definition: fixMojibake(row.definition),
+}))
 
 await writeJson('lexicon.json', lexicon)
 
@@ -189,13 +236,21 @@ interface DocumentRow {
   tags: string | null
 }
 
-const documentRows = db
-  .prepare(
-    `SELECT document_id, series_key, series_title, series_order, title,
-            summary, content, genre, tags
-     FROM Documents WHERE is_published = 1`,
-  )
-  .all() as unknown as DocumentRow[]
+const documentRows = (
+  db
+    .prepare(
+      `SELECT document_id, series_key, series_title, series_order, title,
+              summary, content, genre, tags
+       FROM Documents WHERE is_published = 1`,
+    )
+    .all() as unknown as DocumentRow[]
+).map((row) => ({
+  ...row,
+  series_title: fixMojibake(row.series_title),
+  title: fixMojibake(row.title),
+  summary: fixMojibake(row.summary),
+  content: fixMojibake(row.content),
+}))
 
 // Documents.author is unused in real data (verified: 0/227 non-null) and
 // there's no reliable author -> person linkage anywhere in the schema
@@ -287,8 +342,8 @@ const galleries = galleryRows
 
     return {
       gallery_id: gallery.gallery_id,
-      name: gallery.name,
-      summary: gallery.summary ?? '',
+      name: fixMojibake(gallery.name),
+      summary: fixMojibake(gallery.summary ?? ''),
       lead_image_id: gallery.lead_image_id ?? photos[0]?.image_id ?? 0,
       photos,
       linkedPersonIds,

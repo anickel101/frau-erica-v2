@@ -32,18 +32,19 @@ export default function DocumentEmbeddedImage({
         </figcaption>
       )}
       <Modal open={isZoomed} onClose={() => setIsZoomed(false)}>
-        {/* Same relative-wrapper + bottom overlay-bar pattern as
+        {/* Same stacked-below-the-image caption pattern as
             GalleryLargeImage.tsx's zoomed view, so a caption reads the
             same way whether it came from a gallery photo or an embedded
-            document image. */}
-        <div className="relative max-w-[90vw] max-h-[90vh] cursor-zoom-out">
+            document image -- previously an overlay bar sat on top of the
+            image and could obscure the bottom of it on a large photo. */}
+        <div className="flex flex-col max-w-[90vw] max-h-[90vh] cursor-zoom-out">
           <img
             src={src}
             alt={alt ?? ''}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
+            className={`max-w-[90vw] object-contain ${alt ? 'max-h-[calc(90vh-6rem)]' : 'max-h-[90vh]'}`}
           />
           {alt && (
-            <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-4">
+            <div className="mt-3 bg-black/60 text-white p-4 rounded-sm">
               <p className="text-sm text-white/80">{alt}</p>
             </div>
           )}

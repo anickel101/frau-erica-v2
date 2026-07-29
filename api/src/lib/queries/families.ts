@@ -15,8 +15,10 @@ interface FamilyRow {
 interface PersonSummaryRow {
   person_id: number
   first_name: string
+  middle_name: string
   last_name: string
   date_of_birth: string | null
+  date_of_death: string | null
 }
 
 // Same resolution PersonDetail's familyIdsAsPartner/familyIdAsChild
@@ -82,7 +84,9 @@ function toLinkedPersonSummary(db: Database, row: PersonSummaryRow): LinkedPerso
 function getPersonSummary(db: Database, personId: number): LinkedPersonSummary | null {
   const row = queryOne<PersonSummaryRow>(
     db,
-    'SELECT person_id, first_name, last_name, date_of_birth FROM Persons WHERE person_id = :id',
+    `SELECT person_id, first_name, COALESCE(middle_name, '') AS middle_name,
+            last_name, date_of_birth, date_of_death
+     FROM Persons WHERE person_id = :id`,
     { ':id': personId },
   )
   return row ? toLinkedPersonSummary(db, row) : null
@@ -96,7 +100,8 @@ function getParents(db: Database, personId: number): LinkedPersonSummary[] {
   const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const rows = queryAll<PersonSummaryRow>(
     db,
-    `SELECT p.person_id, p.first_name, p.last_name, p.date_of_birth
+    `SELECT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
+            p.last_name, p.date_of_birth, p.date_of_death
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_1
      WHERE r.person_id_2 = :childId AND r.relationship_type IN (${types.sql})`,
@@ -105,24 +110,45 @@ function getParents(db: Database, personId: number): LinkedPersonSummary[] {
   return rows.map((row) => toLinkedPersonSummary(db, row))
 }
 
+interface ChildRow extends PersonSummaryRow {
+  birth_year: number | null
+}
+
 // Children of this Families pairing -- anyone whose parent (per
 // Relationships) is person_id_1 or person_id_2, per schema.sql's own
 // documented convention of deriving children rather than storing them
 // redundantly on Families. DISTINCT because both parents typically have
 // their own Relationships row pointing at the same child.
+//
+// Sorted firstborn-to-last, matching the old site's behavior -- date_of_birth
+// falls back to birth_year (as Jan 1 of that year) when only the year is
+// known, same fallback queries/germline.ts's getFurthestAncestor already
+// uses; a child with neither sorts last, then ties break by person_id for
+// determinism.
 function getChildren(db: Database, parentIds: number[]): LinkedPersonSummary[] {
   if (parentIds.length === 0) return []
   const parents = inClause('parent', parentIds)
   const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
-  const rows = queryAll<PersonSummaryRow>(
+  const rows = queryAll<ChildRow>(
     db,
-    `SELECT DISTINCT p.person_id, p.first_name, p.last_name, p.date_of_birth
+    `SELECT DISTINCT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
+            p.last_name, p.date_of_birth, p.date_of_death, p.birth_year
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_2
      WHERE r.person_id_1 IN (${parents.sql})
        AND r.relationship_type IN (${types.sql})`,
     { ...parents.params, ...types.params },
   )
+  rows.sort((a, b) => {
+    const dateA = a.date_of_birth ?? (a.birth_year ? `${a.birth_year}-01-01` : null)
+    const dateB = b.date_of_birth ?? (b.birth_year ? `${b.birth_year}-01-01` : null)
+    if (dateA !== dateB) {
+      if (dateA === null) return 1
+      if (dateB === null) return -1
+      return dateA < dateB ? -1 : 1
+    }
+    return a.person_id - b.person_id
+  })
   return rows.map((row) => toLinkedPersonSummary(db, row))
 }
 
