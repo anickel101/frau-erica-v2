@@ -68,15 +68,31 @@ export default function TextPage() {
         </p>
 
         {document.summary && (
-          // flow-root -- not overflow-hidden -- contains the floated
-          // DocumentEmbeddedImage figures without clipping anything,
-          // so this div's own height still includes a trailing image
-          // taller than the text next to it.
-          <div className="max-w-none mb-6 text-[12px] text-fe-ink flow-root">
-            <ReactMarkdown components={IMAGE_COMPONENTS}>
-              {document.summary}
-            </ReactMarkdown>
-          </div>
+          <>
+            {/* flow-root -- not overflow-hidden -- contains the floated
+                DocumentEmbeddedImage figures without clipping anything,
+                so this div's own height still includes a trailing image
+                taller than the text next to it. flow-root also creates a
+                new block-formatting context, though, which stops the
+                last paragraph's own mb-4 (see IMAGE_COMPONENTS' p
+                override) from collapsing into this div's mb-6 the way it
+                normally would -- without [&>*:last-child]:mb-0 both
+                margins applied on top of each other (40px, not the
+                intended 24px). This div's mb-6 is the single source of
+                truth for the gap below the summary; the last child's own
+                trailing margin is zeroed instead of relied on, so the
+                gap stays correct no matter what markdown block the
+                summary happens to end on. */}
+            <div className="max-w-none mb-6 text-[12px] text-fe-ink flow-root [&>*:last-child]:mb-0">
+              <ReactMarkdown components={IMAGE_COMPONENTS}>
+                {document.summary}
+              </ReactMarkdown>
+            </div>
+            {/* Same rule style as the sidebar's own section dividers
+                (border-t-[1.5px] border-fe-brown), separating the
+                summary from the main text below it. */}
+            <hr className="border-t-[1.5px] border-fe-brown mb-6" />
+          </>
         )}
 
         <div className="max-w-none text-[12px] text-fe-ink flow-root">

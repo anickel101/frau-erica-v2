@@ -9,6 +9,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useSetFamilyGalleries } from '../hooks/useFamilyGalleries'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import { FamilyDetail, GallerySummary } from '../types/family'
+import { LinkedPersonSummary } from '../types/person'
 import { resolveImageUrl } from '../utils/imageUrl'
 
 // Header image band -- capped at the same max width as the text content
@@ -67,6 +68,39 @@ function EmptyGrandparentBox() {
       </div>
     </div>
   )
+}
+
+// One grandparent column's worth of boxes for one side of the couple.
+// Two rules, both from real review feedback:
+//  - If this side's parent (person_1/person_2) doesn't exist at all (a
+//    single-parent Families row), there's no spouse to have parents of
+//    their own -- render nothing, not even a placeholder.
+//  - Otherwise always show two boxes, real data first: 0 known parents
+//    means two "No data available" boxes, 1 known means the real box
+//    plus one placeholder for the missing second parent. (More than 2
+//    is possible -- e.g. one biological plus one step-parent on record
+//    simultaneously -- in which case there's no missing slot to fill,
+//    so every real box just renders with no padding.)
+function renderGrandparentColumn(
+  person: LinkedPersonSummary | null,
+  grandparents: LinkedPersonSummary[],
+  isInGermline: (personId: number) => boolean,
+) {
+  if (!person) return null
+  const slotCount = Math.max(2, grandparents.length)
+  return Array.from({ length: slotCount }, (_, i) => {
+    const p = grandparents[i]
+    return p ? (
+      <PersonCard
+        key={p.person_id}
+        person={p}
+        generation="grandparent"
+        isInGermline={isInGermline(p.person_id)}
+      />
+    ) : (
+      <EmptyGrandparentBox key={`empty-${i}`} />
+    )
+  })
 }
 
 // person_1/person_2 are individually nullable (schema.sql allows
@@ -172,34 +206,22 @@ export default function FamilyPage() {
           {/* Grandparents: two columns, one per side of the couple --
               grandparents_1 stacks in the left column (above person_1
               below), grandparents_2 stacks in the right column (above
-              person_2), not interleaved across rows. */}
+              person_2), not interleaved across rows. See
+              renderGrandparentColumn for the no-spouse-means-no-boxes /
+              always-pad-to-two rules. */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
             <div className="flex flex-col gap-3">
-              {family.grandparents_1.length > 0 ? (
-                family.grandparents_1.map((p) => (
-                  <PersonCard
-                    key={p.person_id}
-                    person={p}
-                    generation="grandparent"
-                    isInGermline={isInGermline(p.person_id)}
-                  />
-                ))
-              ) : (
-                <EmptyGrandparentBox />
+              {renderGrandparentColumn(
+                family.person_1,
+                family.grandparents_1,
+                isInGermline,
               )}
             </div>
             <div className="flex flex-col gap-3">
-              {family.grandparents_2.length > 0 ? (
-                family.grandparents_2.map((p) => (
-                  <PersonCard
-                    key={p.person_id}
-                    person={p}
-                    generation="grandparent"
-                    isInGermline={isInGermline(p.person_id)}
-                  />
-                ))
-              ) : (
-                <EmptyGrandparentBox />
+              {renderGrandparentColumn(
+                family.person_2,
+                family.grandparents_2,
+                isInGermline,
               )}
             </div>
           </div>

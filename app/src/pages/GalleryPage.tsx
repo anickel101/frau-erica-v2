@@ -102,7 +102,7 @@ export default function GalleryPage() {
         {linkedPersons.length > 0 && (
           <div className="max-w-4xl mt-6">
             <h2 className="font-bold text-sm text-fe-brown mb-2">
-              People in this gallery
+              Family pages for people in this gallery
             </h2>
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               {linkedPersons.map((person) => (

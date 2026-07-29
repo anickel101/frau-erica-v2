@@ -8,6 +8,12 @@ interface NavSection {
   links: { label: string; to: string }[]
 }
 
+// Shared by every clickable link in this sidebar (nav sections, account
+// links, galleries) -- one canonical string instead of four independently
+// drifting copies. Bold + a size step down from the old text-sm, per
+// Dad's review notes.
+const NAV_LINK_CLASS = 'font-bold text-fe-accent hover:text-fe-accent-dark text-xs'
+
 const NAV_SECTIONS: NavSection[] = [
   {
     title: 'About the site',
@@ -136,7 +142,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
             one-time Request Access deep-link email. */}
         {status === 'signedIn' && (
           <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
-            {/* mb-2 + space-y-1 below match NAV_SECTIONS' own
+            {/* mb-2 + space-y-0.5 below match NAV_SECTIONS' own
                 title-to-links and link-to-link spacing exactly, rather
                 than this section drifting with its own hand-tuned gaps. */}
             <p className="text-sm mb-2">
@@ -153,13 +159,13 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                 <span className="font-bold text-fe-brown">{personName ?? email}</span>
               )}
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {groups.includes('admin') && (
                 <p>
                   <Link
                     to="/admin/users"
                     onClick={() => setOpen(false)}
-                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                    className={NAV_LINK_CLASS}
                   >
                     Manage users
                   </Link>
@@ -182,7 +188,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                         : `/persons/${line.furthestAncestor.person_id}`
                     }
                     onClick={() => setOpen(false)}
-                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                    className={NAV_LINK_CLASS}
                   >
                     Furthest Ancestor (via {line.parentName})
                   </Link>
@@ -195,7 +201,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                   setOpen(false)
                   navigate('/login')
                 }}
-                className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                className={NAV_LINK_CLASS}
               >
                 Log out
               </button>
@@ -206,12 +212,12 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
             <p className="font-bold text-sm mb-2 text-fe-brown">{section.title}</p>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {section.links.map((link) => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                    className={NAV_LINK_CLASS}
                     onClick={() => setOpen(false)}
                   >
                     {link.label}
@@ -229,12 +235,12 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
         {familyGalleries && familyGalleries.length > 0 && (
           <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
             <p className="font-bold text-sm mb-2 text-fe-brown">Galleries</p>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {familyGalleries.map((gallery) => (
                 <li key={gallery.gallery_id}>
                   <Link
                     to={`/galleries/${gallery.gallery_id}`}
-                    className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                    className={NAV_LINK_CLASS}
                     onClick={() => setOpen(false)}
                   >
                     {gallery.name}

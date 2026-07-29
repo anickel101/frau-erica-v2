@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Person } from '../types/person'
-import { getBirthLabel, getDeathLabel, getFullName } from '../utils/personDisplay'
+import { getFullName } from '../utils/personDisplay'
 
 export default function PersonIndexEntry({ person }: { person: Person }) {
   // linkedFamilyId is baked into the export (see scripts/export-data.ts).
@@ -12,11 +12,14 @@ export default function PersonIndexEntry({ person }: { person: Person }) {
       : `/persons/${person.person_id}`
 
   return (
-    <p className="text-sm">
+    // break-inside-avoid keeps a name from splitting across a column break
+    // in PersonIndexSection's multi-column layout. Dates dropped -- they
+    // already appear on this person's own Family page, and repeating them
+    // here just adds noise to a page whose only job is finding a name fast.
+    <p className="text-xs break-inside-avoid mb-1">
       <Link to={to} className="text-fe-accent hover:text-fe-accent-dark">
         {getFullName(person)}
-      </Link>{' '}
-      (<em>{getBirthLabel(person)}</em> - <em>{getDeathLabel(person)}</em>)
+      </Link>
     </p>
   )
 }

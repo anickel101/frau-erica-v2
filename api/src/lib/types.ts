@@ -27,8 +27,10 @@ export interface Person {
 export interface PersonSummary {
   person_id: number
   first_name: string
+  middle_name?: string
   last_name: string
   date_of_birth?: string
+  date_of_death?: string
 }
 
 // PersonSummary plus the family page this person's own card should link
