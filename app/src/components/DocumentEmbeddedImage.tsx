@@ -4,30 +4,39 @@ import Modal from './Modal'
 // Custom ReactMarkdown <img> renderer for Document content -- markdown
 // image syntax (![caption](url), resolved from {{image:ID}} shortcodes
 // by data-access/public/documents.ts's resolveImagePlaceholders) renders
-// through this instead of a bare, unstyled <img>. Floats at a fixed
-// 300px so paragraph text wraps around it instead of the image sitting
+// through this instead of a bare, unstyled <img>. Floats right (not
+// left) so paragraph text wraps around it instead of the image sitting
 // on its own full-width row, with a real visible caption underneath --
 // the caption text already lives in `alt` (resolveImagePlaceholders sets
 // it from Images.caption), just never rendered visibly until now. Every
 // embedded image gets the same click-to-zoom Modal GalleryLargeImage.tsx
-// uses.
+// uses. width is a per-image pixel value (see TextPage.tsx's rotating
+// size sequence) rather than a fixed Tailwind class, so images read as
+// varied rather than a uniform stacked column; defaults to 300 (the
+// previous fixed size) for any caller that doesn't pass one.
 export default function DocumentEmbeddedImage({
   src,
   alt,
+  width = 300,
 }: {
   src?: string
   alt?: string
+  width?: number
 }) {
   const [isZoomed, setIsZoomed] = useState(false)
   if (!src) return null
 
   return (
-    <figure className="float-left w-75 mr-4 mb-2">
+    <figure className="float-right ml-4 mb-2" style={{ width }}>
       <div onClick={() => setIsZoomed(true)} className="cursor-zoom-in">
         <img src={src} alt={alt ?? ''} className="w-full h-auto rounded-sm shadow-sm" />
       </div>
       {alt && (
-        <figcaption className="mt-2 text-xs italic text-fe-ink/60 text-center">
+        // Roman (not italic), flush left with a small indent from the
+        // image's own left edge (~1 pica), one point size smaller than
+        // the surrounding 12px body text -- all per review feedback;
+        // previously italic and centered.
+        <figcaption className="mt-2 pl-4 text-[11px] text-fe-ink/60 text-left">
           {alt}
         </figcaption>
       )}
