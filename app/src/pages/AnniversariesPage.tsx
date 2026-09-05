@@ -98,6 +98,11 @@ export default function AnniversariesPage() {
   // re-render entirely, so an effect depending only on [month, state]
   // would never re-run and the scroll would silently do nothing.
   const [jumpSignal, setJumpSignal] = useState(0)
+  // Fires the same scroll-to-today mechanism as the button below, but
+  // automatically, once, the first time real data is in -- landing on
+  // the correct month (month's own useState default, above) isn't the
+  // same as landing scrolled to today's own entry within it.
+  const hasAutoScrolledToToday = useRef(false)
 
   useEffect(() => {
     if (!idToken) return
@@ -113,6 +118,13 @@ export default function AnniversariesPage() {
       cancelled = true
     }
   }, [idToken])
+
+  useEffect(() => {
+    if (state.status !== 'loaded' || hasAutoScrolledToToday.current) return
+    hasAutoScrolledToToday.current = true
+    scrollTargetDay.current = CURRENT_DAY
+    setJumpSignal((n) => n + 1)
+  }, [state.status])
 
   useEffect(() => {
     if (scrollTargetDay.current === null) return
