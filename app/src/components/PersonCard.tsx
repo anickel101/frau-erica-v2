@@ -36,9 +36,12 @@ const DIRECTION_ARROW: Record<Generation, '▲' | '▼' | null> = {
 // compensate for. An SVG polygon has an exact, deterministic bounding
 // box regardless of font -- ▲/▼ stay plain Unicode since they've never
 // had this problem.
+// w-6 h-6, not w-5 h-5 -- scaled up alongside the triangles' text-3xl ->
+// text-4xl bump below, keeping the same ~2:3 size ratio between them
+// that was originally tuned to make the two glyphs match visually.
 function DiamondGlyph() {
   return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" aria-hidden="true">
       <polygon points="12,2 22,12 12,22 2,12" />
     </svg>
   )
@@ -91,7 +94,7 @@ export default function PersonCard({
             centering (not text-align/line-height) so the SVG diamond
             centers on its own bounding box, not on font-dependent glyph
             metrics. */}
-        <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 flex items-center justify-center">
+        <span className="text-fe-accent text-4xl leading-none w-8 shrink-0 flex items-center justify-center">
           {isInGermline ? <DiamondGlyph /> : DIRECTION_ARROW[generation]}
         </span>
         <div>

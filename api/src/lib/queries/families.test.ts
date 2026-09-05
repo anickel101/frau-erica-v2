@@ -66,14 +66,21 @@ describe('getFamilyById', () => {
     expect(family?.header_image_url).toBe('family1.jpg')
   })
 
+  test('resolves header_image_caption alongside it', () => {
+    const family = getFamilyById(db, 1)
+    expect(family?.header_image_caption).toBe('**A caption** with markdown')
+  })
+
   test('handles a family with no header image', () => {
     const family = getFamilyById(db, 2)
     expect(family?.header_image_url).toBeNull()
+    expect(family?.header_image_caption).toBeNull()
   })
 
   test('excludes an unpublished linked image', () => {
     const family = getFamilyById(db, 3)
     expect(family?.header_image_url).toBeNull()
+    expect(family?.header_image_caption).toBeNull()
   })
 
   test('only includes galleries linked to the couple, not grandparents, and only if published', () => {

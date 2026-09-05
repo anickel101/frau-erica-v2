@@ -255,9 +255,9 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
   // schema.sql's Images.url comment ("the website builds the actual
   // link at display time"), same convention app/'s existing Documents/
   // Galleries data-access layer already follows via resolveImageUrl().
-  const headerImage = queryOne<{ url: string }>(
+  const headerImage = queryOne<{ url: string; caption: string | null }>(
     db,
-    `SELECT i.url FROM ImageLinks il
+    `SELECT i.url, i.caption FROM ImageLinks il
      JOIN Images i ON i.image_id = il.image_id
      WHERE il.family_id = :familyId AND i.is_published = 1`,
     { ':familyId': familyId },
@@ -275,6 +275,7 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
     person_2: person2,
     description: family.description,
     header_image_url: headerImage?.url ?? null,
+    header_image_caption: headerImage?.caption ?? null,
     grandparents_1: family.person_id_1 !== null ? getParents(db, family.person_id_1) : [],
     grandparents_2: family.person_id_2 !== null ? getParents(db, family.person_id_2) : [],
     children: getChildren(db, parentIds),

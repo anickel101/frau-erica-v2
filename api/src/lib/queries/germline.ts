@@ -157,7 +157,7 @@ export function getFurthestAncestorInLine(
 export interface AncestralLine {
   parentId: number
   // Just the first name -- matches the agreed sidebar link text
-  // exactly ("Furthest Ancestor (via Hans)"), not a full name.
+  // exactly ("First Bigelow (via Hans)"), not a full name.
   parentName: string
   furthestAncestor: LinkedPersonSummary
 }

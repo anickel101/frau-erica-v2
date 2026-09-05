@@ -4,7 +4,7 @@ import { LinkedPersonSummary } from '../../types/person'
 export interface AncestralLine {
   parentId: number
   // Just the first name -- matches the sidebar link text exactly
-  // ("Furthest Ancestor (via Hans)"), not a full name.
+  // ("First Bigelow (via Hans)"), not a full name.
   parentName: string
   furthestAncestor: LinkedPersonSummary
 }

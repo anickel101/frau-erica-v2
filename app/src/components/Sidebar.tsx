@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { RefObject, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { GallerySummary } from '../types/family'
@@ -57,9 +57,20 @@ interface SidebarProps {
    * every other page, or an empty array when this family has none --
    * either way, the section just doesn't render. */
   familyGalleries: GallerySummary[] | null
+  /** Layout measures this against the header image's right edge to
+   * position the Family-page-only width-matched top accent bar (see
+   * useNarrowTopBar.tsx). Attached here rather than passed as a
+   * computed value, matching the same live-measurement approach as
+   * dividerOffset above -- the logo's actual left edge is what matters,
+   * not a hardcoded padding assumption. */
+  logoRef: RefObject<HTMLDivElement | null>
 }
 
-export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps) {
+export default function Sidebar({
+  dividerOffset,
+  familyGalleries,
+  logoRef,
+}: SidebarProps) {
   const [open, setOpen] = useState(false)
   const { status, email, personName, homeFamilyId, groups, ancestralLines, logout } =
     useAuth()
@@ -72,9 +83,19 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
 
   return (
     <>
-      {/* Mobile toggle -- visible only below the md breakpoint */}
+      {/* Mobile toggle -- visible only below the md breakpoint. Flush with
+          the true top-left corner (not top-3/left-3, which left a gap)
+          and the same bg-fe-accent as the top accent bar, so the two
+          blocks read as one continuous shape rather than a separate
+          floating pill. Only the bottom-right corner rounds off -- top
+          (against the bar) and left (against the page's own edge) both
+          stay square, since those are the two sides actually touching
+          something else; rounding them would put small notches of page
+          background right at the browser's own edges. Bottom-right is
+          the only side that's genuinely "free," floating into the page
+          content. */}
       <button
-        className="md:hidden fixed top-3 left-3 z-50 bg-fe-brown text-white rounded px-3 py-2 text-lg shadow"
+        className="md:hidden fixed top-0 left-0 z-50 w-14 h-14 flex items-center justify-center bg-fe-accent text-white text-3xl rounded-br-xl"
         aria-label="Toggle navigation"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
@@ -107,6 +128,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
             numbers to keep in sync by hand. Falls back to natural sizing
             (no forced height) on pages with no header image at all. */}
         <div
+          ref={logoRef}
           className="flex flex-col"
           style={logoBlockHeight !== undefined ? { height: logoBlockHeight } : undefined}
         >
@@ -192,12 +214,20 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
               )}
               {/* One link per immediate biological parent on record (see
                   hooks/useAuth.tsx's ancestralLines) -- 0, 1, or 2 links,
-                  never hardcoded to 2. There's no gender field anywhere
-                  in the schema, so this can't say "father's side"/
-                  "mother's side" -- each line is labeled by that
-                  parent's own name instead. Absent entirely until the
-                  lookup resolves, or if this person has no recorded
-                  biological parents at all. */}
+                  never hardcoded to 2. Labeled "First {Surname}" after
+                  the furthest known ancestor on that line -- computed
+                  straight from data we already have, no manual surname
+                  curation needed (the old site hand-tagged this per
+                  person). "(via {parentName})" stays alongside it: not
+                  just for the "no gender field" reason it was originally
+                  added for, but because it's the only thing keeping two
+                  lines' text apart on the ~0.6% of real pages where both
+                  lines happen to converge on the same furthest ancestor
+                  (confirmed against the real data -- a handful of people
+                  whose parents are both descended from the same
+                  patriarch). Absent entirely until the lookup resolves,
+                  or if this person has no recorded biological parents at
+                  all. */}
               {ancestralLines?.map((line) => (
                 <p key={line.parentId}>
                   <Link
@@ -209,7 +239,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                     onClick={() => setOpen(false)}
                     className={NAV_LINK_CLASS}
                   >
-                    Furthest Ancestor (via {line.parentName})
+                    First {line.furthestAncestor.last_name} (via {line.parentName})
                   </Link>
                 </p>
               ))}
