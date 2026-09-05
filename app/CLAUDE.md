@@ -22,6 +22,15 @@ deliberate, not accidental, unless told otherwise.
   provided they have the Prettier extension (`.vscode/extensions.json`
   recommends it).
 - **react-router-dom v7**, **react-markdown v10**
+- **`aws-amplify` v6** (specifically `aws-amplify/auth`) for the Cognito
+  login/session system in `AuthProvider.tsx` — actively maintained
+  (migrated off `amazon-cognito-identity-js` in 2026-09, which AWS put
+  into maintenance mode). Only the `Auth` category is imported, not the
+  full `aws-amplify` package, keeping the same already-decided scope as
+  before the migration: SRP sign-in, no Hosted UI, no other Amplify
+  categories (Storage/API/DataStore) — see `AuthProvider.tsx` for the
+  actual `signIn`/`confirmSignIn`/`fetchAuthSession`/`resetPassword`/
+  `confirmResetPassword` calls.
 - All dependencies were deliberately bumped to current major versions
   early in the project (see git history / commit messages around the
   first major dependency upgrade). If `npx npm-check-updates -u` is
