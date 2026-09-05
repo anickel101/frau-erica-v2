@@ -50,7 +50,7 @@ export default function GalleryLargeImage({
           className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-70"
         />
       </div>
-      <p className="max-w-4xl mt-2 text-sm text-fe-ink/70">
+      <p className="max-w-4xl mt-2 text-sm text-fe-ink/70 text-right">
         <strong className="text-fe-ink">{photo.title}</strong> -- {photo.caption}
         {(photo.location || photo.year_taken || photo.credit) && (
           <>

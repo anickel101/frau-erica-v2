@@ -10,11 +10,15 @@ export default function GalleryIndexCard({ gallery }: { gallery: GalleryData }) 
       className="block hover:opacity-80 transition"
     >
       <div className="aspect-square bg-fe-brown/20 overflow-hidden">
+        {/* object-top -- see GalleryThumbnailStrip.tsx's own comment.
+            Same square-crop-of-a-non-square-photo problem, same fix:
+            anchor to the top so a centered crop doesn't eat into
+            whatever's near the top of the frame (usually a head). */}
         {thumbnail && (
           <img
             src={thumbnail.url}
             alt={gallery.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
           />
         )}
       </div>

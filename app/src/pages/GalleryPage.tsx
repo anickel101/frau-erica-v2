@@ -74,16 +74,6 @@ export default function GalleryPage() {
   return (
     <Layout>
       <div className="p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
-          <h1 className="text-2xl sm:text-3xl font-bold">{gallery.name}</h1>
-          <Link
-            to="/galleries"
-            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
-          >
-            Back to Index of Galleries
-          </Link>
-        </div>
-
         <GalleryLargeImage photo={photos[activeIndex]} onPrev={goPrev} onNext={goNext} />
 
         <GalleryThumbnailStrip
@@ -95,7 +85,26 @@ export default function GalleryPage() {
           onSelect={selectPhoto}
         />
 
-        <div className="max-w-4xl mt-8 text-[12px] text-fe-ink">
+        {/* Headline + back link now sit below the image/caption/thumbnails,
+            functioning as a header for the text that follows (summary,
+            linked people) rather than a page title crowding the very top. */}
+        <div className="max-w-4xl mt-6 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
+          {/* text-xl/2xl, not text-2xl/3xl -- see FamilyPage.tsx's own
+              comment on this: gives a long gallery name more room. */}
+          <h1 className="text-xl sm:text-2xl font-bold">{gallery.name}</h1>
+          <Link
+            to="/galleries"
+            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
+          >
+            Back to Index of Galleries
+          </Link>
+        </div>
+
+        {/* pl-8: a deliberate indent, not an alignment target the way the
+            Family page's summary indent lines up with box text -- Gallery
+            pages have no equivalent boxes to match, so this is just a
+            plain, visible indent per Dad's review notes. */}
+        <div className="max-w-4xl pl-8 text-[12px] text-fe-ink">
           <ReactMarkdown>{gallery.summary}</ReactMarkdown>
         </div>
 
