@@ -1,0 +1,185 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Route53 hosted zone for frauerica.org. Deployed FIRST, before any
+  hosting resources: ACM's automatic certificate validation (in site.yaml)
+  only works once this zone is actually the domain's authoritative DNS,
+  which requires a manual nameserver change at Network Solutions.
+
+  Every record below replicates what Network Solutions was already
+  serving, captured with dig against ns3.worldnic.com on 2026-09-06.
+  That is deliberate and load-bearing: the moment the nameservers change,
+  Route53 becomes the only source of truth, and anything not represented
+  here simply stops existing. Email in particular is live and fully
+  configured -- MX, SPF, and three mail-related CNAMEs -- so omitting any
+  of it would silently break mail rather than fail loudly.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: frauerica.org
+  LegacySiteIPv4:
+    Type: String
+    Description: >
+      The existing EC2 instance (i-0c4ed2e0ef1fdc840) still serving the
+      old Laravel site. The apex and www point here until the cutover.
+    Default: 52.22.167.47
+  CloudFrontDomain:
+    Type: String
+    Description: >
+      Empty until cutover. Once site.yaml has been deployed, redeploy this
+      stack with its DistributionDomainName output (dxxxxxxxx.cloudfront.net)
+      and the apex/www records flip from the legacy EC2 A records to
+      CloudFront ALIAS records. That redeploy IS the go-live moment --
+      and setting this back to empty is a complete, one-parameter
+      rollback to the old site.
+    Default: ''
+
+Conditions:
+  CutOverToCloudFront: !Not [!Equals [!Ref CloudFrontDomain, '']]
+
+Resources:
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: !Ref DomainName
+
+  # --- The site itself: legacy EC2 today, CloudFront after cutover ---
+  # Short TTL (300s, vs the 7200 Network Solutions was serving) so the
+  # cutover takes effect in minutes and, more importantly, so rolling it
+  # back also takes minutes rather than two hours of stale caches.
+  ApexRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Ref DomainName
+      Type: A
+      TTL: !If [CutOverToCloudFront, !Ref 'AWS::NoValue', 300]
+      ResourceRecords:
+        !If [CutOverToCloudFront, !Ref 'AWS::NoValue', [!Ref LegacySiteIPv4]]
+      AliasTarget: !If
+        - CutOverToCloudFront
+        - DNSName: !Ref CloudFrontDomain
+          # Fixed, global, documented constant for every CloudFront
+          # distribution -- not this account's zone id.
+          HostedZoneId: Z2FDTNDATAQYW2
+          EvaluateTargetHealth: false
+        - !Ref 'AWS::NoValue'
+
+  WwwRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub www.${DomainName}
+      Type: A
+      TTL: !If [CutOverToCloudFront, !Ref 'AWS::NoValue', 300]
+      ResourceRecords:
+        !If [CutOverToCloudFront, !Ref 'AWS::NoValue', [!Ref LegacySiteIPv4]]
+      AliasTarget: !If
+        - CutOverToCloudFront
+        - DNSName: !Ref CloudFrontDomain
+          HostedZoneId: Z2FDTNDATAQYW2
+          EvaluateTargetHealth: false
+        - !Ref 'AWS::NoValue'
+
+  # IPv6, and only after cutover -- the legacy EC2 instance is IPv4-only,
+  # so there is nothing to point an AAAA record at until CloudFront is
+  # serving. CloudFront has IPv6 enabled, which does nothing for visitors
+  # unless these exist.
+  ApexRecordIPv6:
+    Type: AWS::Route53::RecordSet
+    Condition: CutOverToCloudFront
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Ref DomainName
+      Type: AAAA
+      AliasTarget:
+        DNSName: !Ref CloudFrontDomain
+        HostedZoneId: Z2FDTNDATAQYW2
+        EvaluateTargetHealth: false
+
+  WwwRecordIPv6:
+    Type: AWS::Route53::RecordSet
+    Condition: CutOverToCloudFront
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub www.${DomainName}
+      Type: AAAA
+      AliasTarget:
+        DNSName: !Ref CloudFrontDomain
+        HostedZoneId: Z2FDTNDATAQYW2
+        EvaluateTargetHealth: false
+
+  # --- Email. Untouched by the cutover; copied verbatim from the ---
+  # --- Network Solutions zone so mail keeps flowing throughout.   ---
+  MxRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Ref DomainName
+      Type: MX
+      TTL: 3600
+      ResourceRecords:
+        - 10 mx001.netsol.xion.oxcs.net.
+        - 10 mx002.netsol.xion.oxcs.net.
+        - 10 mx003.netsol.xion.oxcs.net.
+        - 10 mx004.netsol.xion.oxcs.net.
+
+  # SPF. Without this, mail sent from the domain starts failing sender
+  # checks (soft-fail, so it degrades into spam folders rather than
+  # bouncing -- which makes it easy to miss and slow to diagnose).
+  SpfRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Ref DomainName
+      Type: TXT
+      TTL: 3600
+      ResourceRecords:
+        - '"v=spf1 include:spf.registeredsite.com include:spf.cloudus.oxcs.net ~all"'
+
+  MailRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub mail.${DomainName}
+      Type: CNAME
+      TTL: 3600
+      ResourceRecords:
+        - !Sub mail.${DomainName}.netsolmail.net.
+
+  SmtpRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub smtp.${DomainName}
+      Type: CNAME
+      TTL: 3600
+      ResourceRecords:
+        - !Sub smtp.${DomainName}.netsolmail.net.
+
+  # Outlook/Exchange client auto-setup. Only used when someone adds the
+  # mailbox to a desktop client, so breakage here would surface weeks
+  # later and look unrelated -- worth carrying over even though nothing
+  # queries it day to day.
+  AutodiscoverRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub autodiscover.${DomainName}
+      Type: CNAME
+      TTL: 3600
+      ResourceRecords:
+        - autodiscover.hostingplatform.com.
+
+Outputs:
+  HostedZoneId:
+    Description: Pass to site.yaml so ACM can self-validate the certificate.
+    Value: !Ref HostedZone
+    Export:
+      Name: FrauEricaHostedZoneId
+  NameServers:
+    Description: >
+      Set these four as the nameservers for frauerica.org at Network
+      Solutions. Nothing else in the go-live sequence works until this is
+      done and has propagated.
+    Value: !Join [', ', !GetAtt HostedZone.NameServers]

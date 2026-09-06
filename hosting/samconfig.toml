@@ -1,0 +1,33 @@
+version = 0.1
+
+# Two stacks, deployed from two templates in this directory, in order:
+#
+#   1. dns        -- the Route53 hosted zone. Deploy, then change the
+#                    nameservers at Network Solutions, then wait for
+#                    propagation (dig NS frauerica.org).
+#   2. site       -- S3 + CloudFront + the ACM certificate. Only works
+#                    once step 1's zone is authoritative, because ACM
+#                    validates the certificate by writing into it.
+#   3. dns again  -- redeploy with CloudFrontDomain set to site's
+#                    DistributionDomainName output. That redeploy is the
+#                    actual cutover; clearing the parameter rolls back.
+#
+# Same AWS profile and region as api/ -- one account, one place.
+
+[dns.deploy.parameters]
+template_file = "dns.yaml"
+stack_name = "frau-erica-dns"
+region = "us-east-1"
+profile = "frau-erica-v2-deploy"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+
+[site.deploy.parameters]
+template_file = "site.yaml"
+stack_name = "frau-erica-hosting"
+region = "us-east-1"
+profile = "frau-erica-v2-deploy"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+resolve_s3 = true
+s3_prefix = "frau-erica-hosting"
