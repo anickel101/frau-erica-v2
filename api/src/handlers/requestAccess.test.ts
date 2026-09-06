@@ -130,4 +130,55 @@ describe('requestAccess handler', () => {
     expect(sendMock).toHaveBeenCalledTimes(1)
     expect(sendAdminNotificationMock).toHaveBeenCalledTimes(1)
   })
+
+  // The three below all guard the same real failure: anything Cognito
+  // rejects used to 500 *after* the account attempt and *before* the
+  // admin notification, so a mistyped address or an over-long answer
+  // meant the archivist never learned the person had asked at all.
+  test('400 on a malformed email, before anything irreversible happens', async () => {
+    verifyRecaptchaMock.mockResolvedValue({ success: true, score: 0.9 })
+    const result = (await handler(
+      fakeEvent({
+        name: 'Jane',
+        email: 'jane at example dot com',
+        connection: 'x',
+        recaptchaToken: 't',
+      }),
+    )) as APIGatewayProxyStructuredResultV2
+    expect(result.statusCode).toBe(400)
+    expect(sendMock).not.toHaveBeenCalled()
+    expect(sendAdminNotificationMock).not.toHaveBeenCalled()
+  })
+
+  test('400 when the connection answer exceeds Cognito attribute limits', async () => {
+    verifyRecaptchaMock.mockResolvedValue({ success: true, score: 0.9 })
+    const result = (await handler(
+      fakeEvent({
+        name: 'Jane',
+        email: 'jane@example.com',
+        connection: 'x'.repeat(1501),
+        recaptchaToken: 't',
+      }),
+    )) as APIGatewayProxyStructuredResultV2
+    expect(result.statusCode).toBe(400)
+    expect(sendMock).not.toHaveBeenCalled()
+  })
+
+  test('an unexpected Cognito failure still notifies the archivist first', async () => {
+    verifyRecaptchaMock.mockResolvedValue({ success: true, score: 0.9 })
+    sendMock.mockRejectedValueOnce(new Error('InvalidParameterException'))
+    await expect(
+      handler(
+        fakeEvent({
+          name: 'Jane',
+          email: 'jane@example.com',
+          connection: 'x',
+          recaptchaToken: 't',
+        }),
+      ),
+    ).rejects.toThrow('InvalidParameterException')
+    // The point of the whole change: the request is never lost silently,
+    // even when account creation itself fails.
+    expect(sendAdminNotificationMock).toHaveBeenCalledTimes(1)
+  })
 })

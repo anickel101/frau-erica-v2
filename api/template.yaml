@@ -60,6 +60,26 @@ Resources:
                 - !Ref CognitoUserPoolClientId
             IdentitySource: $request.header.Authorization
         DefaultAuthorizer: CognitoAuthorizer
+      # Throttling, added before going live on a public domain. The
+      # default here is generous -- every other route sits behind the
+      # Cognito authorizer, so abuse requires a real approved account.
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 20
+        ThrottlingBurstLimit: 40
+      # POST /request-access is the exception that actually needs this:
+      # it's the one route with Authorizer: NONE, and each call does an
+      # SSM read + KMS decrypt, a Google siteverify round trip, a real
+      # Cognito AdminCreateUser, and an SES send. reCAPTCHA v3 scores
+      # rather than challenges, so it won't stop a scripted caller on its
+      # own. Left unthrottled, a loop would fill the pool with junk
+      # pending accounts and burn the SES sandbox's 200-message daily cap
+      # -- after which genuine access requests silently stop arriving.
+      # 1/sec sustained is far above real human use of a form submitted a
+      # handful of times a year.
+      RouteSettings:
+        'POST /request-access':
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 5
 
   GetPersonFunction:
     Type: AWS::Serverless::Function
