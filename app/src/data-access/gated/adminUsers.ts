@@ -34,3 +34,12 @@ export async function updateUserGroup(
     body: { action },
   })
 }
+
+// Denying a request and deleting an account are the same operation --
+// a denied request is just an account nobody approved. The API refuses
+// to delete an admin (demote first) or the caller themselves.
+export async function deleteUser(email: string): Promise<void> {
+  await apiFetch(`/admin/users/${encodeURIComponent(email)}`, {
+    method: 'DELETE',
+  })
+}

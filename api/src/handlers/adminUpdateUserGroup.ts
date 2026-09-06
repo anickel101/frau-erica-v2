@@ -7,7 +7,7 @@ import type {
   APIGatewayProxyEventV2WithJWTAuthorizer,
   APIGatewayProxyResultV2,
 } from 'aws-lambda'
-import { requireAdminAccess } from '../lib/auth'
+import { isSelf, requireAdminAccess } from '../lib/auth'
 import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
 import { parseJsonBody } from '../lib/parseJsonBody'
@@ -40,12 +40,10 @@ export async function handler(
 
   // Self-protection: an admin can't change their own group through this
   // route -- avoids a stray click locking the only admin out of the
-  // admin pages entirely. Email is this pool's Cognito username (the
-  // sole sign-in identifier), so comparing it against the caller's own
-  // token claim is the same identity assumption adminApproveUser.ts
-  // already makes.
-  const callerEmail = event.requestContext.authorizer.jwt.claims.email
-  if (callerEmail === email) {
+  // admin pages entirely. See isSelf for why the comparison is
+  // case-insensitive; it used to be a raw ===, which this pool's
+  // case-insensitive usernames made bypassable.
+  if (isSelf(event, email)) {
     return jsonResponse(400, { error: 'You cannot change your own group' })
   }
 

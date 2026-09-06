@@ -7,6 +7,7 @@ import PersonPicker from '../components/PersonPicker'
 import SearchInput from '../components/SearchInput'
 import {
   AdminUserSummary,
+  deleteUser,
   listAdminUsers,
   updateUserGroup,
   updateUserPersonId,
@@ -49,6 +50,8 @@ export default function AdminUsersPage() {
   const [saving, setSaving] = useState(false)
   const [confirmingGroupEmail, setConfirmingGroupEmail] = useState<string | null>(null)
   const [changingGroup, setChangingGroup] = useState(false)
+  const [deletingEmail, setDeletingEmail] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [showAllPending, setShowAllPending] = useState(false)
   // The deep link in the Request Access admin-notification email sets
   // this via ?email=&name= on first load; clicking "Review & approve" on
@@ -93,6 +96,20 @@ export default function AdminUsersPage() {
     }
   }
 
+  async function handleDelete(email: string) {
+    setDeleting(true)
+    try {
+      await deleteUser(email)
+      setUsers((prev) => prev.filter((u) => u.email !== email))
+      setDeletingEmail(null)
+      setError(null)
+    } catch {
+      setError('Could not delete that account.')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   async function handleGroupChange(email: string, action: 'promote' | 'demote') {
     setChangingGroup(true)
     try {
@@ -127,6 +144,10 @@ export default function AdminUsersPage() {
   const confirmingUser =
     existingUsers.find((u) => u.email === confirmingGroupEmail) ?? null
   const confirmingIsAdmin = confirmingUser?.groups.includes('admin') ?? false
+  // Looked up across all users, not just the existing ones -- the same
+  // modal serves both the pending list and the existing-users table.
+  const deletingUser = users.find((u) => u.email === deletingEmail) ?? null
+  const deletingIsPending = deletingUser?.groups.includes('pending') ?? false
 
   const {
     query: existingQuery,
@@ -187,6 +208,18 @@ export default function AdminUsersPage() {
                       className="text-fe-accent hover:text-fe-accent-dark text-sm mt-2"
                     >
                       Review &amp; approve
+                    </button>
+                    {/* Denying is deleting -- a request nobody approved
+                        is just an unused account. Deliberately styled as
+                        quiet text rather than a red button: it sits
+                        beside the action that's taken far more often,
+                        and shouldn't compete for the eye. */}
+                    <button
+                      type="button"
+                      onClick={() => setDeletingEmail(user.email)}
+                      className="text-fe-ink/50 hover:text-red-700 text-sm mt-2 ml-4"
+                    >
+                      Deny &amp; delete
                     </button>
                   </li>
                 ))}
@@ -280,6 +313,22 @@ export default function AdminUsersPage() {
                                   {isAdmin ? 'Demote to approved' : 'Promote to admin'}
                                 </button>
                               )}
+                              {/* Hidden on your own row and on admins,
+                                  mirroring the two guards the API
+                                  enforces anyway -- an admin must be
+                                  demoted before deletion. Offering a
+                                  button that can only ever return an
+                                  error would just be a worse way to
+                                  learn the same rule. */}
+                              {user.email !== ownEmail && !isAdmin && (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingEmail(user.email)}
+                                  className="text-fe-ink/50 hover:text-red-700 text-sm"
+                                >
+                                  Delete account
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -366,6 +415,54 @@ export default function AdminUsersPage() {
             <button
               type="button"
               onClick={() => setConfirmingGroupEmail(null)}
+              className="px-4 py-2 rounded-sm text-sm border border-fe-brown/40"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Deletion is the only irreversible action on this page, so the
+          copy names who is affected and says plainly that it can't be
+          undone -- and the confirm button is red, unlike every other
+          button here. */}
+      <Modal open={deletingEmail !== null} onClose={() => setDeletingEmail(null)}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-fe-bg rounded-sm p-6 max-w-md w-full"
+        >
+          <h3 className="text-lg font-bold mb-2">
+            {deletingIsPending ? 'Deny this request?' : 'Delete this account?'}
+          </h3>
+          <p className="text-sm mb-2">
+            {deletingIsPending ? (
+              <>
+                The request from{' '}
+                <strong>{deletingUser?.requesterName ?? deletingUser?.email}</strong> (
+                {deletingUser?.email}) will be removed. They aren't told, and they can
+                always ask again later.
+              </>
+            ) : (
+              <>
+                <strong>{deletingUser?.fullName ?? deletingUser?.email}</strong> (
+                {deletingUser?.email}) will lose access and their account will be removed.
+              </>
+            )}
+          </p>
+          <p className="text-sm text-fe-ink/70 mb-4">This can't be undone.</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => deletingEmail && handleDelete(deletingEmail)}
+              disabled={deleting}
+              className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-sm text-sm font-bold disabled:opacity-60"
+            >
+              {deleting ? 'Deleting...' : deletingIsPending ? 'Deny & delete' : 'Delete'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeletingEmail(null)}
               className="px-4 py-2 rounded-sm text-sm border border-fe-brown/40"
             >
               Cancel
