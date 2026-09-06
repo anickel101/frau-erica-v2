@@ -24,9 +24,21 @@ Parameters:
   FrontendOrigin:
     Type: String
     Description: >
-      Base URL of the frontend -- used for CORS and to build the deep
-      link in the Request Access admin-notification email. No production
-      origin exists yet; defaults to the local dev server.
+      The single canonical origin, used to build the deep link in the
+      Request Access admin-notification email. Must be one specific URL
+      (a link can only point one place), which is why this stays separate
+      from CorsAllowedOrigins below.
+    Default: http://localhost:5173
+  CorsAllowedOrigins:
+    Type: CommaDelimitedList
+    Description: >
+      Every origin a browser may call this API from. Deliberately a list,
+      not the single FrontendOrigin above: production serves the site at
+      both the apex (frauerica.org) and www, via two Route53 ALIAS records
+      pointing at one CloudFront distribution, and an origin missing here
+      fails every gated request with a CORS error rather than anything
+      that looks like an auth problem. In production set this to
+      "https://www.frauerica.org,https://frauerica.org".
     Default: http://localhost:5173
 
 Globals:
@@ -42,8 +54,7 @@ Resources:
       # First real browser -> API Gateway call this project makes (the
       # login flow talks to Cognito directly, bypassing this entirely).
       CorsConfiguration:
-        AllowOrigins:
-          - !Ref FrontendOrigin
+        AllowOrigins: !Ref CorsAllowedOrigins
         AllowMethods:
           - GET
           - POST
