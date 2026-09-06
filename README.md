@@ -15,10 +15,32 @@ direct pushes and unreviewed changes.
   file and confirms all expected tables exist. This catches broken SQL or
   an accidentally-dropped table before it can be merged, rather than after.
 - **Branch protection is free here** because this repo is public — GitHub
-  only requires a paid plan for branch protection on *private* repos. This
-  repo is intentionally public since it contains only schema and
-  documentation, no personal family data (see "Where the actual data
-  lives," above).
+  only requires a paid plan for branch protection on *private* repos.
+
+### What being a public repo actually means here
+
+Public is a deliberate choice, and it's worth being precise about what
+that exposes, because this repo does contain real family data — not just
+schema and code.
+
+`app/src/data/generated/persons.json` holds roughly 1,320 people from the
+family tree: names, birth dates, and death dates. That includes **full,
+exact dates of birth for several hundred people who are still living**,
+not just birth years. The same file is also part of the JavaScript bundle
+served to every visitor of the site, because public Document and Gallery
+pages use it to turn person references into readable names — so this data
+is reachable without an account regardless of the repo's visibility, and
+the login gate on Family and Person pages does not cover it.
+
+That tradeoff is accepted knowingly: this is a genealogy archive, and
+names and dates are the substance of it. It's recorded here so the choice
+stays visible rather than becoming an accidental assumption later. Note
+also that the file is in this repo's git history, so changing course
+later would mean rewriting history, not just deleting the file.
+
+What is deliberately *not* here: the live database itself (see "Backups"
+below), which holds more than the site publishes — unpublished records,
+internal notes fields, and anything not marked for publication.
 
 ### Making a schema change
 
@@ -47,8 +69,10 @@ against accidental overwrites.
 - **Where the script lives**: locally on that machine only (not in this
   repo), since it's tied to a specific file path and a local AWS CLI
   profile. Not meant to be shared or run from anywhere else.
-- **Bucket access**: private, not public — this data includes real names
-  and birthdates for living people, unlike the schema in this repo.
+- **Bucket access**: private, not public. The live database holds
+  everything the published site does *plus* unpublished records and notes
+  fields, so it stays private even though the published subset is not
+  (see "What being a public repo actually means here," above).
 - **Retrieving a backup**: any team member with appropriate AWS access can
   list and download backups via `aws s3 ls s3://frau-erica-db-backups` /
   `aws s3 cp`. Ask Anson if you need this set up on a new machine.
