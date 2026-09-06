@@ -1,13 +1,19 @@
 name: api CI
 
+# schema/** is here deliberately, not just api/**: src/lib/testFixtures.ts
+# builds its in-memory test database directly from schema/schema.sql, so a
+# schema-only change can break every query test in this package. Without
+# this path, that PR would run only validate-schema.yml and show green.
 on:
   pull_request:
     paths:
       - "api/**"
+      - "schema/**"
   push:
     branches: [main]
     paths:
       - "api/**"
+      - "schema/**"
 
 jobs:
   ci:
