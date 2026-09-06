@@ -23,6 +23,13 @@ Parameters:
       The existing EC2 instance (i-0c4ed2e0ef1fdc840) still serving the
       old Laravel site. The apex and www point here until the cutover.
     Default: 52.22.167.47
+  ArchivistEmail:
+    Type: String
+    Description: >
+      Where bounce and complaint notifications go. Matches ADMIN_EMAIL in
+      api/src/lib/ses.ts -- a real, monitored mailbox, unlike the
+      archivist@frauerica.org address mail is sent *from*.
+    Default: FrauErica.archivist@gmail.com
   CloudFrontDomain:
     Type: String
     Description: >
@@ -160,6 +167,81 @@ Resources:
       EmailIdentity: !Ref DomainName
       DkimSigningAttributes:
         NextSigningKeyLength: RSA_2048_BIT
+      # Attaching the configuration set to the *identity* rather than to
+      # individual send calls means everything sending from this domain
+      # is covered automatically -- the admin notification today, and
+      # Cognito's invitations once the pool points at SES, with nothing
+      # to remember to configure on the Cognito side.
+      ConfigurationSetAttributes:
+        ConfigurationSetName: !Ref EmailConfigurationSet
+
+  # --- Bounce and complaint monitoring ---
+  #
+  # SES's Acceptable Use Policy requires a process for handling bounce and
+  # complaint notifications, and until now there wasn't one -- the honest
+  # description was "the archivist might notice". At this volume a real
+  # pipeline would be overkill, but an email when something bounces is a
+  # genuine process and costs nothing.
+  #
+  # Complaints matter more than bounces here: a relative marking an
+  # invitation as spam is both the likeliest failure and the one that
+  # quietly degrades deliverability for everyone else on the domain.
+  EmailConfigurationSet:
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: frau-erica-default
+
+  BounceNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: Frau Erica email issues
+
+  # SNS email subscriptions require the recipient to click a confirmation
+  # link before anything is delivered -- until that happens this topic
+  # publishes into the void.
+  BounceNotificationSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref BounceNotificationTopic
+      Protocol: email
+      Endpoint: !Ref ArchivistEmail
+
+  BounceTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref BounceNotificationTopic
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowSesToPublish
+            Effect: Allow
+            Principal:
+              Service: ses.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref BounceNotificationTopic
+            # Scoped to this account's SES only, so the topic can't be
+            # published to by anyone else's SES.
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref "AWS::AccountId"
+
+  EmailEventDestination:
+    Type: AWS::SES::ConfigurationSetEventDestination
+    Properties:
+      ConfigurationSetName: !Ref EmailConfigurationSet
+      EventDestination:
+        Name: bounces-and-complaints
+        Enabled: true
+        # Deliberately not 'send' or 'delivery' -- every successful email
+        # would page the archivist, and an alert that fires constantly is
+        # one nobody reads. Only the three states worth acting on.
+        MatchingEventTypes:
+          - bounce
+          - complaint
+          - reject
+        SnsDestination:
+          TopicARN: !Ref BounceNotificationTopic
 
   DkimRecord1:
     Type: AWS::Route53::RecordSet
