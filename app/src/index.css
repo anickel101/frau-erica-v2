@@ -20,6 +20,18 @@
      white-on-orange buttons, all of which are fine as they are. */
   --color-fe-link: #b34700;
   --color-fe-link-dark: #8f3900;
+
+  /* The generational navigation glyphs (triangles and germline diamonds).
+     A separate token from the link colours because the constraint is
+     genuinely different: these sit on the pastel generational boxes, not
+     the page background. In the brand orange they measured 1.26:1 on the
+     lilac grandparent boxes -- effectively invisible, on the very control
+     app/CLAUDE.md calls "the key to navigation".
+     Non-text UI needs 3:1. This clears it on all three boxes with room to
+     spare (lilac 4.00, green 5.09, gold 6.19) rather than scraping past;
+     the lightest link shade would have managed only 2.36 on lilac, and
+     the darker one 3.27. */
+  --color-fe-glyph: #7a3000;
   --color-fe-brown: #6b3a1b;
   --color-fe-ink: #1a1a1a;
 

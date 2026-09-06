@@ -94,7 +94,7 @@ export default function PersonCard({
             centering (not text-align/line-height) so the SVG diamond
             centers on its own bounding box, not on font-dependent glyph
             metrics. */}
-        <span className="text-fe-accent text-4xl leading-none w-8 shrink-0 flex items-center justify-center">
+        <span className="text-fe-glyph text-4xl leading-none w-8 shrink-0 flex items-center justify-center">
           {isInGermline ? <DiamondGlyph /> : DIRECTION_ARROW[generation]}
         </span>
         <div>
@@ -123,7 +123,7 @@ export default function PersonCard({
         <Link
           to={`/family/${person.otherFamilyId}`}
           aria-label={`${person.first_name}'s other family`}
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-accent text-3xl leading-none hover:text-fe-accent-dark"
+          className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-glyph text-3xl leading-none hover:text-fe-ink"
         >
           ▶
         </Link>

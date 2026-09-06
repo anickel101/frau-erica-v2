@@ -141,7 +141,7 @@ function FamilyNarrowTopBar() {
 function EmptyGrandparentBox() {
   return (
     <div className="flex items-center gap-3 p-4 border border-black/10 rounded-sm bg-fe-gen-grandparent">
-      <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 text-center" />
+      <span className="text-fe-glyph text-3xl leading-none w-8 shrink-0 text-center" />
       <div>
         <p className="font-bold text-sm text-fe-ink/60 italic">No data available</p>
         <p className="text-xs text-fe-ink/70">&nbsp;</p>

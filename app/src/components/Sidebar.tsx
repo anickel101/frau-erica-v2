@@ -146,7 +146,7 @@ export default function Sidebar({
           </div>
 
           <div>
-            <p className="text-fe-accent font-bold text-sm leading-tight">
+            <p className="text-fe-link font-bold text-sm leading-tight">
               The Frau Erica Project
             </p>
             <p className="text-fe-brown font-bold text-sm leading-tight">
