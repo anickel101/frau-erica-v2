@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
 import RequireAdmin from './components/RequireAdmin'
 import RequireApproved from './components/RequireApproved'
 
@@ -17,6 +18,7 @@ const GalleryPage = lazy(() => import('./pages/GalleryPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LexiconPage = lazy(() => import('./pages/LexiconPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const PersonPage = lazy(() => import('./pages/PersonPage'))
 const PersonsPage = lazy(() => import('./pages/PersonsPage'))
 const RequestAccessPage = lazy(() => import('./pages/RequestAccessPage'))
@@ -34,74 +36,84 @@ function RouteLoading() {
 
 export default function App() {
   return (
-    <Suspense fallback={<RouteLoading />}>
-      <Routes>
-        {/* Signature page type -- built out first to validate the design system */}
-        <Route
-          path="/family/:id"
-          element={
-            <RequireApproved>
-              <FamilyPage />
-            </RequireApproved>
-          }
-        />
+    // Outside Suspense, deliberately: the failure this most needs to catch
+    // is a lazy() chunk import rejecting after a deploy, which surfaces as
+    // a thrown error from the Suspense boundary itself, not inside it.
+    <ErrorBoundary>
+      <Suspense fallback={<RouteLoading />}>
+        <Routes>
+          {/* Signature page type -- built out first to validate the design system */}
+          <Route
+            path="/family/:id"
+            element={
+              <RequireApproved>
+                <FamilyPage />
+              </RequireApproved>
+            }
+          />
 
-        {/* Public content -- Phase 3B */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/documents" element={<TextsPage />} />
-        <Route path="/documents/:id" element={<TextPage />} />
-        <Route path="/galleries" element={<GalleriesPage />} />
-        <Route path="/galleries/:id" element={<GalleryPage />} />
-        <Route path="/lexicon" element={<LexiconPage />} />
-        <Route path="/about" element={<UsersGuidePage />} />
-        <Route path="/contact" element={<ContactPage />} />
+          {/* Public content -- Phase 3B */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/documents" element={<TextsPage />} />
+          <Route path="/documents/:id" element={<TextPage />} />
+          <Route path="/galleries" element={<GalleriesPage />} />
+          <Route path="/galleries/:id" element={<GalleryPage />} />
+          <Route path="/lexicon" element={<LexiconPage />} />
+          <Route path="/about" element={<UsersGuidePage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
-        {/* Gated -- Phase 3D/3E */}
-        <Route
-          path="/anniversaries"
-          element={
-            <RequireApproved>
-              <AnniversariesPage />
-            </RequireApproved>
-          }
-        />
-        <Route
-          path="/persons"
-          element={
-            <RequireApproved>
-              <PersonsPage />
-            </RequireApproved>
-          }
-        />
-        <Route
-          path="/persons/:id"
-          element={
-            <RequireApproved>
-              <PersonPage />
-            </RequireApproved>
-          }
-        />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/request-access" element={<RequestAccessPage />} />
+          {/* Gated -- Phase 3D/3E */}
+          <Route
+            path="/anniversaries"
+            element={
+              <RequireApproved>
+                <AnniversariesPage />
+              </RequireApproved>
+            }
+          />
+          <Route
+            path="/persons"
+            element={
+              <RequireApproved>
+                <PersonsPage />
+              </RequireApproved>
+            }
+          />
+          <Route
+            path="/persons/:id"
+            element={
+              <RequireApproved>
+                <PersonPage />
+              </RequireApproved>
+            }
+          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/request-access" element={<RequestAccessPage />} />
 
-        {/* Admin only */}
-        <Route
-          path="/admin/approve"
-          element={
-            <RequireAdmin>
-              <AdminApprovePage />
-            </RequireAdmin>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <RequireAdmin>
-              <AdminUsersPage />
-            </RequireAdmin>
-          }
-        />
-      </Routes>
-    </Suspense>
+          {/* Admin only */}
+          <Route
+            path="/admin/approve"
+            element={
+              <RequireAdmin>
+                <AdminApprovePage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <RequireAdmin>
+                <AdminUsersPage />
+              </RequireAdmin>
+            }
+          />
+
+          {/* Catch-all -- must stay last. Without it an unmatched URL
+            renders nothing at all, which is what an old bookmark from
+            the previous site's URL scheme would land on. */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   )
 }
