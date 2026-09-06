@@ -46,6 +46,7 @@ aws s3 sync dist/ "s3://$BUCKET" \
   --profile "$PROFILE" --region "$REGION" \
   --delete \
   --exclude "index.html" \
+  --exclude "robots.txt" \
   --cache-control "public,max-age=31536000,immutable"
 
 echo "==> Uploading index.html and robots.txt (no cache)"

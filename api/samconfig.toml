@@ -8,7 +8,21 @@ region = "us-east-1"
 profile = "frau-erica-v2-deploy"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "CognitoUserPoolId=\"us-east-1_zCffrjnHW\" CognitoUserPoolClientId=\"2nd0rtvo4er63c6rp8k7l9kgid\""
+# CorsAllowedOrigins carries four entries on purpose:
+#   - the two real hostnames, since Route53 serves the site at both the
+#     apex and www and a missing one fails every gated request with a
+#     CORS error that looks nothing like an auth problem;
+#   - the CloudFront domain, so the site can be exercised end to end
+#     (login included) before DNS is cut over, and afterwards whenever
+#     something needs testing against production without touching the
+#     live domain;
+#   - localhost, so local development keeps working against the real API.
+#     Low risk: every gated route still requires a valid Cognito JWT, and
+#     CORS grants no credentials by itself -- anyone able to serve a page
+#     from your localhost already has code execution on your machine.
+# FrontendOrigin stays singular: it builds the Request Access email's
+# deep link, and a link can only point one place.
+parameter_overrides = "CognitoUserPoolId=\"us-east-1_zCffrjnHW\" CognitoUserPoolClientId=\"2nd0rtvo4er63c6rp8k7l9kgid\" FrontendOrigin=\"https://www.frauerica.org\" CorsAllowedOrigins=\"https://www.frauerica.org,https://frauerica.org,https://d1i3m727t42pv3.cloudfront.net,http://localhost:5173\""
 image_repositories = []
 
 [default.global.parameters]
