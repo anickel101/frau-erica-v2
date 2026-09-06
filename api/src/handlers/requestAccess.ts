@@ -38,6 +38,17 @@ const MAX_CONNECTION_LENGTH = 1500
 // no dot in the domain), which is what a typo actually looks like.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// Below Google's documented 0.5 default, deliberately. reCAPTCHA is not
+// the security boundary on this route -- every request lands in 'pending'
+// with no usable credentials and a human reviews it before any access is
+// granted. So the two kinds of mistake are wildly asymmetric: a false
+// positive is one junk row the archivist ignores, while a false negative
+// turns a real relative away with an error implying they did something
+// wrong. Two actual family members hit exactly that on launch day.
+// Scores are logged below, so this can be tuned against real data rather
+// than guessed at again.
+const RECAPTCHA_SCORE_THRESHOLD = 0.3
+
 // No authorizer on this route (see template.yaml's Auth: Authorizer: NONE
 // override) -- the requester has no account yet, so this is a plain
 // APIGatewayProxyEventV2, not the JWT-authorizer variant every other
@@ -74,8 +85,31 @@ export async function handler(
 
   const secret = await getRecaptchaSecret()
   const result = await verifyRecaptcha(recaptchaToken, secret)
-  if (!isVerificationAcceptable(result)) {
-    return jsonResponse(400, { error: 'reCAPTCHA verification failed' })
+  if (!isVerificationAcceptable(result, RECAPTCHA_SCORE_THRESHOLD)) {
+    // The one place in this codebase that logs. Diagnosing the launch-day
+    // failures meant inferring from indirect evidence and landing on the
+    // wrong theory twice, because nothing recorded *why* Google said no.
+    // None of these fields are personal data -- no token, no email.
+    console.warn('reCAPTCHA rejected', {
+      success: result.success,
+      score: result.score,
+      action: result.action,
+      hostname: result.hostname,
+      errorCodes: result['error-codes'],
+      threshold: RECAPTCHA_SCORE_THRESHOLD,
+    })
+    // Distinguishes "Google declined you" from "this site is
+    // misconfigured", which the previous single message conflated -- a
+    // domain misconfiguration told real relatives that *they* had failed
+    // verification, with no hint it was our problem and not theirs.
+    const misconfigured = (result['error-codes'] ?? []).some((c) =>
+      ['invalid-input-secret', 'bad-request', 'invalid-keys'].includes(c),
+    )
+    return jsonResponse(400, {
+      error: misconfigured
+        ? "Something is misconfigured on our end, and it's not your fault -- please email the Archivist at FrauErica.archivist@gmail.com and we'll sort it out."
+        : "We couldn't verify this request automatically. Please try again, or email the Archivist at FrauErica.archivist@gmail.com and we'll set you up directly.",
+    })
   }
 
   const userPoolId = requireEnv('COGNITO_USER_POOL_ID')

@@ -2,7 +2,12 @@ import { describe, expect, test } from 'vitest'
 import { buildRequestEmail } from './ses'
 
 describe('buildRequestEmail', () => {
-  test('sends from and to the admin address', () => {
+  // Sends FROM the domain but replies go to the real inbox. The From
+  // address deliberately has no mailbox behind it -- SES only needs the
+  // domain verified to send -- so without Reply-To, answering a
+  // notification would bounce. Sending as @gmail.com (the previous
+  // behaviour) fails DKIM/SPF alignment and is what put these in spam.
+  test('sends from the verified domain, with replies going to the archivist', () => {
     const email = buildRequestEmail(
       {
         name: 'Jane Smith',
@@ -11,8 +16,10 @@ describe('buildRequestEmail', () => {
       },
       'http://localhost:5173',
     )
-    expect(email.Source).toBe('FrauErica.archivist@gmail.com')
+    expect(email.Source).toContain('@frauerica.org')
+    expect(email.Source).not.toContain('@gmail.com')
     expect(email.Destination?.ToAddresses).toEqual(['FrauErica.archivist@gmail.com'])
+    expect(email.ReplyToAddresses).toEqual(['FrauErica.archivist@gmail.com'])
   })
 
   test('body includes the requester details and a working deep link', () => {

@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   Route53 hosted zone for frauerica.org. Deployed FIRST, before any
   hosting resources: ACM's automatic certificate validation (in site.yaml)
@@ -32,10 +32,10 @@ Parameters:
       CloudFront ALIAS records. That redeploy IS the go-live moment --
       and setting this back to empty is a complete, one-parameter
       rollback to the old site.
-    Default: ''
+    Default: ""
 
 Conditions:
-  CutOverToCloudFront: !Not [!Equals [!Ref CloudFrontDomain, '']]
+  CutOverToCloudFront: !Not [!Equals [!Ref CloudFrontDomain, ""]]
 
 Resources:
   HostedZone:
@@ -53,9 +53,9 @@ Resources:
       HostedZoneId: !Ref HostedZone
       Name: !Ref DomainName
       Type: A
-      TTL: !If [CutOverToCloudFront, !Ref 'AWS::NoValue', 300]
+      TTL: !If [CutOverToCloudFront, !Ref "AWS::NoValue", 300]
       ResourceRecords:
-        !If [CutOverToCloudFront, !Ref 'AWS::NoValue', [!Ref LegacySiteIPv4]]
+        !If [CutOverToCloudFront, !Ref "AWS::NoValue", [!Ref LegacySiteIPv4]]
       AliasTarget: !If
         - CutOverToCloudFront
         - DNSName: !Ref CloudFrontDomain
@@ -63,7 +63,7 @@ Resources:
           # distribution -- not this account's zone id.
           HostedZoneId: Z2FDTNDATAQYW2
           EvaluateTargetHealth: false
-        - !Ref 'AWS::NoValue'
+        - !Ref "AWS::NoValue"
 
   WwwRecord:
     Type: AWS::Route53::RecordSet
@@ -71,15 +71,15 @@ Resources:
       HostedZoneId: !Ref HostedZone
       Name: !Sub www.${DomainName}
       Type: A
-      TTL: !If [CutOverToCloudFront, !Ref 'AWS::NoValue', 300]
+      TTL: !If [CutOverToCloudFront, !Ref "AWS::NoValue", 300]
       ResourceRecords:
-        !If [CutOverToCloudFront, !Ref 'AWS::NoValue', [!Ref LegacySiteIPv4]]
+        !If [CutOverToCloudFront, !Ref "AWS::NoValue", [!Ref LegacySiteIPv4]]
       AliasTarget: !If
         - CutOverToCloudFront
         - DNSName: !Ref CloudFrontDomain
           HostedZoneId: Z2FDTNDATAQYW2
           EvaluateTargetHealth: false
-        - !Ref 'AWS::NoValue'
+        - !Ref "AWS::NoValue"
 
   # IPv6, and only after cutover -- the legacy EC2 instance is IPv4-only,
   # so there is nothing to point an AAAA record at until CloudFront is
@@ -127,6 +127,11 @@ Resources:
   # SPF. Without this, mail sent from the domain starts failing sender
   # checks (soft-fail, so it degrades into spam folders rather than
   # bouncing -- which makes it easy to miss and slow to diagnose).
+  #
+  # amazonses.com is appended to, not substituted for, the two Network
+  # Solutions includes: those still authorise whatever mail their platform
+  # sends for this domain, and dropping them to make room for SES would
+  # quietly break it. Three includes is well inside SPF's ten-lookup limit.
   SpfRecord:
     Type: AWS::Route53::RecordSet
     Properties:
@@ -135,7 +140,72 @@ Resources:
       Type: TXT
       TTL: 3600
       ResourceRecords:
-        - '"v=spf1 include:spf.registeredsite.com include:spf.cloudus.oxcs.net ~all"'
+        - '"v=spf1 include:spf.registeredsite.com include:spf.cloudus.oxcs.net include:amazonses.com ~all"'
+
+  # --- Email authentication, so mail we send lands in inboxes ---
+  #
+  # Cognito's default sender (no-reply@verificationemail.com) is shared
+  # across every default-configured user pool on AWS, has no relationship
+  # to this domain, and Gmail files it as spam -- which is exactly what
+  # happened to the first real approval emails. Fixing that means sending
+  # from frauerica.org itself, which requires the domain to be a verified
+  # SES identity with DKIM published here.
+  #
+  # CloudFormation creates the identity, reads back the three DKIM tokens
+  # SES generates, and publishes them as records below -- so there are no
+  # tokens to copy by hand and nothing lives outside version control.
+  EmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref DomainName
+      DkimSigningAttributes:
+        NextSigningKeyLength: RSA_2048_BIT
+
+  DkimRecord1:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !GetAtt EmailIdentity.DkimDNSTokenName1
+      Type: CNAME
+      TTL: 3600
+      ResourceRecords:
+        - !GetAtt EmailIdentity.DkimDNSTokenValue1
+
+  DkimRecord2:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !GetAtt EmailIdentity.DkimDNSTokenName2
+      Type: CNAME
+      TTL: 3600
+      ResourceRecords:
+        - !GetAtt EmailIdentity.DkimDNSTokenValue2
+
+  DkimRecord3:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !GetAtt EmailIdentity.DkimDNSTokenName3
+      Type: CNAME
+      TTL: 3600
+      ResourceRecords:
+        - !GetAtt EmailIdentity.DkimDNSTokenValue3
+
+  # DMARC at p=none: publishes a policy (which receivers like Gmail treat
+  # as a positive signal) while instructing them to enforce nothing, so it
+  # cannot affect mail Network Solutions sends for this domain. No rua=
+  # reporting address on purpose -- aggregate reports arrive as daily XML
+  # attachments, which would be noise in the archivist's inbox rather than
+  # something anyone acts on. Add one later if visibility is ever wanted.
+  DmarcRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      Name: !Sub _dmarc.${DomainName}
+      Type: TXT
+      TTL: 3600
+      ResourceRecords:
+        - '"v=DMARC1; p=none;"'
 
   MailRecord:
     Type: AWS::Route53::RecordSet
@@ -182,4 +252,4 @@ Outputs:
       Set these four as the nameservers for frauerica.org at Network
       Solutions. Nothing else in the go-live sequence works until this is
       done and has propagated.
-    Value: !Join [', ', !GetAtt HostedZone.NameServers]
+    Value: !Join [", ", !GetAtt HostedZone.NameServers]

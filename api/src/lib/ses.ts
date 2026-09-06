@@ -6,6 +6,22 @@ import {
 
 const ADMIN_EMAIL = 'FrauErica.archivist@gmail.com'
 
+// Sending as @gmail.com from SES is actively bad for deliverability:
+// Gmail sees mail claiming to be from one of its own domains that didn't
+// originate at Google, fails DKIM/SPF alignment, and treats it as
+// spoofing-shaped -- which is why these notifications kept landing in
+// spam. Sending from the domain we control, with DKIM published in our
+// own Route53 zone, is what actually earns inbox placement.
+//
+// No mailbox exists at this address and none is needed: SES only
+// requires the *domain* to be a verified identity in order to send from
+// it. Replies are steered to the real inbox via Reply-To below.
+//
+// Requires the EmailIdentity in hosting/dns.yaml to be verified first --
+// deploying this before that exists would break the notification
+// entirely rather than merely filing it in spam.
+const FROM_ADDRESS = 'The Frau Erica Project <archivist@frauerica.org>'
+
 const ses = new SESClient({})
 
 export interface RequestAccessDetails {
@@ -14,10 +30,10 @@ export interface RequestAccessDetails {
   connection: string
 }
 
-// Pure -- testable without touching SES. The admin emails themselves
-// (Source and ToAddresses both ADMIN_EMAIL), which sidesteps needing SES
-// production access: sandbox mode only requires verified sender AND
-// recipient, and here they're the same single verified address.
+// Pure -- testable without touching SES. Recipient stays the archivist's
+// real inbox; only the sender moves to the domain. Still fine in SES
+// sandbox, which requires the recipient to be verified -- and
+// FrauErica.archivist@gmail.com already is.
 export function buildRequestEmail(
   details: RequestAccessDetails,
   frontendOrigin: string,
@@ -28,8 +44,10 @@ export function buildRequestEmail(
   const approveUrl = `${frontendOrigin}/admin/users?email=${encodeURIComponent(details.email)}&name=${encodeURIComponent(details.name)}`
 
   return {
-    Source: ADMIN_EMAIL,
+    Source: FROM_ADDRESS,
     Destination: { ToAddresses: [ADMIN_EMAIL] },
+    // Hitting reply on a notification should reach a mailbox that exists.
+    ReplyToAddresses: [ADMIN_EMAIL],
     Message: {
       Subject: { Data: `Frau Erica: access request from ${details.name}` },
       Body: {
