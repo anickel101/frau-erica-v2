@@ -86,7 +86,7 @@ export default class ErrorBoundary extends Component<{ children: ReactNode }, St
           </p>
           <p className="text-sm text-fe-ink/70">
             If it keeps happening, please{' '}
-            <Link to="/contact" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/contact" className="text-fe-link hover:text-fe-link-dark">
               contact the Archivist
             </Link>
             .

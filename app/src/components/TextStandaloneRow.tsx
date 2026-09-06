@@ -10,7 +10,7 @@ export default function TextStandaloneRow({ document }: { document: DocumentList
     <article className="py-3 border-b border-fe-brown/20">
       <Link
         to={`/documents/${document.document_id}`}
-        className="text-base font-bold text-fe-ink hover:text-fe-accent-dark"
+        className="text-base font-bold text-fe-ink hover:text-fe-link-dark"
       >
         {document.title}
       </Link>

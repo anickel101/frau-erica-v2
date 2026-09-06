@@ -60,7 +60,7 @@ export default function GalleryPage() {
         <div className="p-6 max-w-4xl">
           <p className="text-fe-ink/60 text-sm">
             Gallery not found.{' '}
-            <Link to="/galleries" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/galleries" className="text-fe-link hover:text-fe-link-dark">
               Back to Index of Galleries
             </Link>
           </p>
@@ -94,7 +94,7 @@ export default function GalleryPage() {
           <h1 className="text-xl sm:text-2xl font-bold">{gallery.name}</h1>
           <Link
             to="/galleries"
-            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
+            className="text-sm text-fe-link hover:text-fe-link-dark shrink-0"
           >
             Back to Index of Galleries
           </Link>
@@ -119,7 +119,7 @@ export default function GalleryPage() {
                   {person.linkedFamilyId !== null ? (
                     <Link
                       to={`/family/${person.linkedFamilyId}`}
-                      className="text-fe-accent hover:text-fe-accent-dark"
+                      className="text-fe-link hover:text-fe-link-dark"
                     >
                       {getFullName(person)}
                     </Link>

@@ -205,7 +205,7 @@ export default function AdminUsersPage() {
                           connection: user.connection ?? undefined,
                         })
                       }
-                      className="text-fe-accent hover:text-fe-accent-dark text-sm mt-2"
+                      className="text-fe-link hover:text-fe-link-dark text-sm mt-2"
                     >
                       Review &amp; approve
                     </button>
@@ -296,7 +296,7 @@ export default function AdminUsersPage() {
                               <button
                                 type="button"
                                 onClick={() => setEditingEmail(user.email)}
-                                className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                                className="text-fe-link hover:text-fe-link-dark text-sm"
                               >
                                 Edit person_id
                               </button>
@@ -308,7 +308,7 @@ export default function AdminUsersPage() {
                                 <button
                                   type="button"
                                   onClick={() => setConfirmingGroupEmail(user.email)}
-                                  className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                                  className="text-fe-link hover:text-fe-link-dark text-sm"
                                 >
                                   {isAdmin ? 'Demote to approved' : 'Promote to admin'}
                                 </button>

@@ -23,7 +23,7 @@ function LoginTeaser() {
         </p>
         <p className="text-sm text-fe-ink/70">
           Not sure if you have access?{' '}
-          <Link to="/about" className="text-fe-accent hover:text-fe-accent-dark">
+          <Link to="/about" className="text-fe-link hover:text-fe-link-dark">
             See who has access and how to request it
           </Link>
           .
@@ -44,7 +44,7 @@ function PendingNotice() {
         </p>
         <p className="text-sm text-fe-ink/70">
           If this seems like it's taking a while,{' '}
-          <Link to="/contact" className="text-fe-accent hover:text-fe-accent-dark">
+          <Link to="/contact" className="text-fe-link hover:text-fe-link-dark">
             contact the Archivist
           </Link>
           .

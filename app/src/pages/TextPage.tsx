@@ -131,7 +131,7 @@ export default function TextPage() {
         <div className="p-6 max-w-4xl">
           <p className="text-fe-ink/60 text-sm">
             Text not found.{' '}
-            <Link to="/documents" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/documents" className="text-fe-link hover:text-fe-link-dark">
               Back to Index of Texts
             </Link>
           </p>
@@ -212,7 +212,7 @@ export default function TextPage() {
                   <li key={chapter.document_id}>
                     <Link
                       to={`/documents/${chapter.document_id}`}
-                      className="text-fe-accent hover:text-fe-accent-dark"
+                      className="text-fe-link hover:text-fe-link-dark"
                     >
                       {chapter.series_order}. {chapter.title}
                     </Link>

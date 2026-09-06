@@ -70,7 +70,7 @@ function CredentialsStep({
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-sm text-fe-accent hover:text-fe-accent-dark"
+          className="text-sm text-fe-link hover:text-fe-link-dark"
         >
           Forgot password?
         </button>
@@ -160,7 +160,7 @@ function ForgotPasswordRequestStep({
         <button
           type="button"
           onClick={onBack}
-          className="text-sm text-fe-accent hover:text-fe-accent-dark"
+          className="text-sm text-fe-link hover:text-fe-link-dark"
         >
           Back to log in
         </button>

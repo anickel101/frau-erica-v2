@@ -75,7 +75,7 @@ export default function UsersGuidePage() {
                 If you believe you're on a branch of the Mueller family tree,{' '}
                 <Link
                   to="/request-access"
-                  className="text-fe-accent hover:text-fe-accent-dark"
+                  className="text-fe-link hover:text-fe-link-dark"
                 >
                   request access
                 </Link>{' '}
@@ -85,7 +85,7 @@ export default function UsersGuidePage() {
               </p>
               <p>
                 Have questions before you request access, or need help with anything else?{' '}
-                <Link to="/contact" className="text-fe-accent hover:text-fe-accent-dark">
+                <Link to="/contact" className="text-fe-link hover:text-fe-link-dark">
                   Contact the Archivist
                 </Link>{' '}
                 directly -- we're happy to help.

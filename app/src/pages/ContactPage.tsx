@@ -20,7 +20,7 @@ export default function ContactPage() {
             <span className="font-bold">e-mail:</span>{' '}
             <a
               href="mailto:FrauErica.archivist@gmail.com"
-              className="text-fe-accent hover:text-fe-accent-dark"
+              className="text-fe-link hover:text-fe-link-dark"
             >
               FrauErica.archivist@gmail.com
             </a>

@@ -17,29 +17,29 @@ export default function NotFoundPage() {
         </p>
         <ul className="mb-6 space-y-1 text-sm">
           <li>
-            <Link to="/" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/" className="text-fe-link hover:text-fe-link-dark">
               Home
             </Link>
           </li>
           <li>
-            <Link to="/documents" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/documents" className="text-fe-link hover:text-fe-link-dark">
               Index of Texts
             </Link>
           </li>
           <li>
-            <Link to="/galleries" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/galleries" className="text-fe-link hover:text-fe-link-dark">
               Index of Galleries
             </Link>
           </li>
           <li>
-            <Link to="/persons" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/persons" className="text-fe-link hover:text-fe-link-dark">
               Index of Persons
             </Link>
           </li>
         </ul>
         <p className="text-sm text-fe-ink/70">
           Looking for something specific?{' '}
-          <Link to="/contact" className="text-fe-accent hover:text-fe-accent-dark">
+          <Link to="/contact" className="text-fe-link hover:text-fe-link-dark">
             Contact the Archivist
           </Link>
           .

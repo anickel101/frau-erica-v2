@@ -39,7 +39,7 @@ function PersonLink({
   const to =
     linkedFamilyId !== null ? `/family/${linkedFamilyId}` : `/persons/${personId}`
   return (
-    <Link to={to} className="font-bold text-fe-accent hover:text-fe-accent-dark">
+    <Link to={to} className="font-bold text-fe-link hover:text-fe-link-dark">
       {name}
     </Link>
   )
@@ -155,7 +155,7 @@ export default function AnniversariesPage() {
           <button
             type="button"
             onClick={jumpToToday}
-            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
+            className="text-sm text-fe-link hover:text-fe-link-dark shrink-0"
           >
             Jump to today
           </button>

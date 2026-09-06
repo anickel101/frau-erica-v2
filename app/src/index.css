@@ -6,6 +6,20 @@
   --color-fe-bg: #ededed;
   --color-fe-accent: #ff6600;
   --color-fe-accent-dark: #cc5200;
+
+  /* Link text only. The accent orange above is the brand colour and stays
+     exactly as the original design notes specify -- but as *text* on the
+     page background it measures 2.51:1, where WCAG AA wants 4.5:1 for
+     normal-sized text (accent-dark is 3.76:1, also short, and only ever
+     appeared on hover). At the 12px most links here are set in, for an
+     audience skewing elderly, that's a real readability problem rather
+     than a checkbox.
+     These are the darkest shades still recognisably the same orange:
+     4.70:1 and 6.52:1. Accent stays in charge of everything that isn't
+     body-sized text -- the top bars, the generational glyphs, and
+     white-on-orange buttons, all of which are fine as they are. */
+  --color-fe-link: #b34700;
+  --color-fe-link-dark: #8f3900;
   --color-fe-brown: #6b3a1b;
   --color-fe-ink: #1a1a1a;
 

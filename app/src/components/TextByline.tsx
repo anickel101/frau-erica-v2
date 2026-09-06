@@ -22,7 +22,7 @@ export default function TextByline({
           authorPerson.linkedFamilyId !== null ? (
             <Link
               to={`/family/${authorPerson.linkedFamilyId}`}
-              className="text-fe-accent hover:text-fe-accent-dark"
+              className="text-fe-link hover:text-fe-link-dark"
             >
               {getFullName(authorPerson)}
             </Link>

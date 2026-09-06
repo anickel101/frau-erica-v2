@@ -13,7 +13,7 @@ interface NavSection {
 // links, galleries) -- one canonical string instead of four independently
 // drifting copies. Bold + a size step down from the old text-sm, per
 // Dad's review notes.
-const NAV_LINK_CLASS = 'font-bold text-fe-accent hover:text-fe-accent-dark text-xs'
+const NAV_LINK_CLASS = 'font-bold text-fe-link hover:text-fe-link-dark text-xs'
 
 const NAV_SECTIONS: NavSection[] = [
   {
@@ -192,7 +192,7 @@ export default function Sidebar({
                 <Link
                   to={`/family/${homeFamilyId}`}
                   onClick={() => setOpen(false)}
-                  className="font-bold text-fe-brown hover:text-fe-accent"
+                  className="font-bold text-fe-brown hover:text-fe-link"
                 >
                   {personName ?? email}
                 </Link>
