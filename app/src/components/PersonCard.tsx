@@ -39,10 +39,21 @@ const DIRECTION_ARROW: Record<Generation, '▲' | '▼' | null> = {
 // w-6 h-6, not w-5 h-5 -- scaled up alongside the triangles' text-3xl ->
 // text-4xl bump below, keeping the same ~2:3 size ratio between them
 // that was originally tuned to make the two glyphs match visually.
+// The stroke is the SVG half of the .glyph-outline utility (see
+// index.css for why these glyphs are outlined at all) -- -webkit-text-stroke
+// only applies to text, so the diamond has to carry its own. 2.5 rather
+// than the triangles' 2px because paint-order halves what shows outside
+// the shape and these are user units in a 24-unit box rendered at 24px;
+// matched by eye against the triangles, not by arithmetic.
 function DiamondGlyph() {
   return (
     <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" aria-hidden="true">
-      <polygon points="12,2 22,12 12,22 2,12" />
+      <polygon
+        points="12,2 22,12 12,22 2,12"
+        stroke="var(--color-fe-brown)"
+        strokeWidth="2.5"
+        paintOrder="stroke"
+      />
     </svg>
   )
 }
@@ -94,7 +105,7 @@ export default function PersonCard({
             centering (not text-align/line-height) so the SVG diamond
             centers on its own bounding box, not on font-dependent glyph
             metrics. */}
-        <span className="text-fe-glyph text-4xl leading-none w-8 shrink-0 flex items-center justify-center">
+        <span className="text-fe-accent glyph-outline text-4xl leading-none w-8 shrink-0 flex items-center justify-center">
           {isInGermline ? <DiamondGlyph /> : DIRECTION_ARROW[generation]}
         </span>
         <div>
@@ -123,7 +134,7 @@ export default function PersonCard({
         <Link
           to={`/family/${person.otherFamilyId}`}
           aria-label={`${person.first_name}'s other family`}
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-glyph text-3xl leading-none hover:text-fe-ink"
+          className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-accent glyph-outline text-3xl leading-none hover:text-fe-accent-dark"
         >
           ▶
         </Link>
