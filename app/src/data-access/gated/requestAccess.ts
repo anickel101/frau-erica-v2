@@ -11,7 +11,8 @@ export function requestAccess(
   connection: string,
   recaptchaToken: string,
 ): Promise<void> {
-  return apiFetch('/request-access', undefined, {
+  return apiFetch('/request-access', {
+    authenticated: false,
     method: 'POST',
     body: { name, email, connection, recaptchaToken },
   })

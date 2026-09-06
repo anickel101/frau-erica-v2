@@ -13,12 +13,10 @@ const DEBOUNCE_MS = 300
 // live as you type (debounced, no Search button) -- results render as a
 // dropdown under the input, matching a standard autocomplete.
 export default function PersonPicker({
-  idToken,
   initialQuery,
   selected,
   onSelect,
 }: {
-  idToken: string
   initialQuery?: string
   selected: PersonSummary | null
   onSelect: (person: PersonSummary) => void
@@ -48,7 +46,7 @@ export default function PersonPicker({
       }
       setSearching(true)
       setError(null)
-      searchPersons(q, idToken)
+      searchPersons(q)
         .then((r) => {
           if (!cancelled) setResults(r)
         })
@@ -63,7 +61,7 @@ export default function PersonPicker({
     return () => {
       cancelled = true
     }
-  }, [debouncedQuery, idToken])
+  }, [debouncedQuery])
 
   function handleSelect(person: PersonSummary) {
     onSelect(person)

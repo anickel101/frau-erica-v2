@@ -18,6 +18,6 @@ export interface GermlineResponse {
   ancestralLines: AncestralLine[]
 }
 
-export function getMyGermline(idToken: string): Promise<GermlineResponse> {
-  return apiFetch('/me/germline', idToken)
+export function getMyGermline(): Promise<GermlineResponse> {
+  return apiFetch('/me/germline')
 }

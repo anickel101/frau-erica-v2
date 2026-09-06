@@ -87,7 +87,7 @@ type LoadState =
   | { status: 'error' }
 
 export default function AnniversariesPage() {
-  const { idToken } = useAuth()
+  const { status } = useAuth()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
   const [month, setMonth] = useState(CURRENT_MONTH)
   const scrollTargetDay = useRef<number | null>(null)
@@ -105,9 +105,9 @@ export default function AnniversariesPage() {
   const hasAutoScrolledToToday = useRef(false)
 
   useEffect(() => {
-    if (!idToken) return
+    if (status !== 'signedIn') return
     let cancelled = false
-    getAnniversaries(idToken)
+    getAnniversaries()
       .then(({ events }) => {
         if (!cancelled) setState({ status: 'loaded', events })
       })
@@ -117,7 +117,7 @@ export default function AnniversariesPage() {
     return () => {
       cancelled = true
     }
-  }, [idToken])
+  }, [status])
 
   useEffect(() => {
     if (state.status !== 'loaded' || hasAutoScrolledToToday.current) return

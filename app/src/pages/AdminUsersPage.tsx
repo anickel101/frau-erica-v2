@@ -39,7 +39,7 @@ function filterExistingUsers(
 }
 
 export default function AdminUsersPage() {
-  const { idToken, email: ownEmail } = useAuth()
+  const { status, email: ownEmail } = useAuth()
   const [searchParams] = useSearchParams()
   const [users, setUsers] = useState<AdminUserSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,12 +61,12 @@ export default function AdminUsersPage() {
   })
 
   const refreshUsers = useCallback(() => {
-    if (!idToken) return
-    listAdminUsers(idToken)
+    if (status !== 'signedIn') return
+    listAdminUsers()
       .then(setUsers)
       .catch(() => setError('Could not load users.'))
       .finally(() => setLoading(false))
-  }, [idToken])
+  }, [status])
 
   useEffect(() => {
     refreshUsers()
@@ -78,10 +78,10 @@ export default function AdminUsersPage() {
   }
 
   async function handleSave(email: string) {
-    if (!idToken || !selected) return
+    if (!selected) return
     setSaving(true)
     try {
-      await updateUserPersonId(email, selected.person_id, idToken)
+      await updateUserPersonId(email, selected.person_id)
       setUsers((prev) =>
         prev.map((u) => (u.email === email ? { ...u, personId: selected.person_id } : u)),
       )
@@ -94,10 +94,9 @@ export default function AdminUsersPage() {
   }
 
   async function handleGroupChange(email: string, action: 'promote' | 'demote') {
-    if (!idToken) return
     setChangingGroup(true)
     try {
-      await updateUserGroup(email, action, idToken)
+      await updateUserGroup(email, action)
       setUsers((prev) =>
         prev.map((u) =>
           u.email === email
@@ -138,7 +137,7 @@ export default function AdminUsersPage() {
     setShowAll: setShowAllExisting,
   } = usePaginatedSearch(existingUsers, filterExistingUsers, EXISTING_USERS_PAGE_SIZE)
 
-  if (!idToken) return null
+  if (status !== 'signedIn') return null
 
   return (
     <Layout>
@@ -212,7 +211,6 @@ export default function AdminUsersPage() {
           <h2 className="text-xl font-bold mb-4">Approve a new request</h2>
           <ApproveRequestForm
             key={approveTarget.email}
-            idToken={idToken}
             initialEmail={approveTarget.email}
             initialName={approveTarget.name}
             initialConnection={approveTarget.connection}
@@ -316,7 +314,7 @@ export default function AdminUsersPage() {
         >
           <h3 className="text-lg font-bold mb-1">Edit person_id</h3>
           <p className="text-sm text-fe-ink/70 mb-4">{editingUser?.email}</p>
-          <PersonPicker idToken={idToken} selected={selected} onSelect={setSelected} />
+          <PersonPicker selected={selected} onSelect={setSelected} />
           <div className="flex gap-2 mt-4">
             <button
               type="button"

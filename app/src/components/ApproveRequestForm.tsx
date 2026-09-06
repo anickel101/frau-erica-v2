@@ -12,13 +12,11 @@ import { buttonClassName, inputClassName } from '../utils/formStyles'
 // approving is "open the email or the pending row, confirm, click
 // Approve," nothing else.
 export default function ApproveRequestForm({
-  idToken,
   initialEmail = '',
   initialName,
   initialConnection,
   onApproved,
 }: {
-  idToken: string
   initialEmail?: string
   initialName?: string
   initialConnection?: string
@@ -36,7 +34,7 @@ export default function ApproveRequestForm({
     setSubmitting(true)
     setError(null)
     try {
-      await approveUser(email, selected.person_id, idToken)
+      await approveUser(email, selected.person_id)
       setDone(email)
       setEmail('')
       setSelected(null)
@@ -86,7 +84,6 @@ export default function ApproveRequestForm({
         <div>
           <label className="block text-sm font-bold mb-1">Who is this?</label>
           <PersonPicker
-            idToken={idToken}
             initialQuery={initialName}
             selected={selected}
             onSelect={setSelected}

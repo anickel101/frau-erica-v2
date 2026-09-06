@@ -202,12 +202,12 @@ type LoadState =
 
 export default function FamilyPage() {
   const { id } = useParams<{ id: string }>()
-  const { idToken, germlineIds } = useAuth()
+  const { status: authStatus, germlineIds } = useAuth()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
 
   useEffect(() => {
     const familyId = Number(id)
-    if (!idToken || !Number.isInteger(familyId)) return
+    if (authStatus !== 'signedIn' || !Number.isInteger(familyId)) return
     let cancelled = false
     // Deferred a microtask so this reset doesn't fire synchronously
     // within the effect body itself (react-hooks/set-state-in-effect) --
@@ -218,7 +218,7 @@ export default function FamilyPage() {
     void Promise.resolve().then(() => {
       if (!cancelled) setState({ status: 'loading' })
     })
-    getFamilyById(familyId, idToken)
+    getFamilyById(familyId)
       .then((family) => {
         if (!cancelled) setState({ status: 'loaded', family })
       })
@@ -232,7 +232,7 @@ export default function FamilyPage() {
     return () => {
       cancelled = true
     }
-  }, [id, idToken])
+  }, [id, authStatus])
 
   if (state.status !== 'loaded') {
     return (

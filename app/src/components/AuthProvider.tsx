@@ -10,6 +10,7 @@ import {
   signOut,
 } from 'aws-amplify/auth'
 import { COGNITO_CLIENT_ID, COGNITO_USER_POOL_ID } from '../config/cognito'
+import { setUnauthorizedHandler } from '../data-access/gated/apiClient'
 import { getMyGermline } from '../data-access/gated/germline'
 import { getPersonById } from '../data-access/gated/persons'
 import { parseIdTokenClaims } from '../hooks/authClaims'
@@ -26,7 +27,6 @@ Amplify.configure({
 
 const SIGNED_OUT_STATE: AuthState = {
   status: 'signedOut',
-  idToken: null,
   groups: [],
   personId: null,
   email: null,
@@ -43,12 +43,11 @@ function stateFromSession(session: AuthSession): AuthState {
   const { groups, personId } = parseIdTokenClaims(payload)
   return {
     status: 'signedIn',
-    idToken: idToken.toString(),
     groups,
     personId,
     email: typeof payload.email === 'string' ? payload.email : null,
     // None of these are on the token -- all resolved by the effects
-    // below, once idToken/personId are in state.
+    // below, once personId is in state.
     personName: null,
     homeFamilyId: null,
     germlineIds: null,
@@ -83,6 +82,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // A 401 from any gated request means the refresh token itself is gone
+  // or expired (tokens are now read fresh per request, so a merely-stale
+  // access token can't cause this). Resetting to signed-out makes the
+  // Require* gates render the login teaser on the next paint, which is a
+  // far better answer than every gated page showing a generic error with
+  // no hint that logging in again would fix it.
+  useEffect(() => {
+    setUnauthorizedHandler(() => setState(SIGNED_OUT_STATE))
+    return () => setUnauthorizedHandler(null)
+  }, [])
+
   // Resolves the signed-in user's family-tree name and "home" family page
   // via their linked person_id -- runs once per sign-in (dependencies
   // only change on status/personId/idToken transitions, not on
@@ -90,9 +100,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // no person_id yet, or a lookup failure, just leaves both null --
   // callers fall back to email, and hide the "go to my family page" link.
   useEffect(() => {
-    if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
+    if (state.status !== 'signedIn' || state.personId === null) return
     let cancelled = false
-    getPersonById(state.personId, state.idToken)
+    getPersonById(state.personId)
       .then((person) => {
         if (cancelled) return
         // Prefer the family they're a partner in (their own household)
@@ -117,7 +127,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [state.status, state.personId, state.idToken])
+  }, [state.status, state.personId])
 
   // Resolves this user's germline (their own biological ancestor
   // person_ids, plus one furthest-ancestor line per immediate parent) --
@@ -126,9 +136,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // since it's a different endpoint/concern with no reason to couple
   // their success/failure or block one on the other.
   useEffect(() => {
-    if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
+    if (state.status !== 'signedIn' || state.personId === null) return
     let cancelled = false
-    getMyGermline(state.idToken)
+    getMyGermline()
       .then(({ personIds, ancestralLines }) => {
         if (cancelled) return
         setState((prev) =>
@@ -144,7 +154,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [state.status, state.personId, state.idToken])
+  }, [state.status, state.personId])
 
   async function login(email: string, password: string): Promise<LoginResult> {
     const { nextStep } = await signIn({ username: email, password })

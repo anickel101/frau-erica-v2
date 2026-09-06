@@ -18,14 +18,14 @@ type ResolveState =
 // rather than duplicating that resolution at every call site.
 export default function PersonPage() {
   const { id } = useParams<{ id: string }>()
-  const { idToken } = useAuth()
+  const { status } = useAuth()
   const [state, setState] = useState<ResolveState>({ kind: 'loading' })
 
   useEffect(() => {
     const personId = Number(id)
-    if (!idToken || !Number.isInteger(personId)) return
+    if (status !== 'signedIn' || !Number.isInteger(personId)) return
     let cancelled = false
-    getPersonById(personId, idToken)
+    getPersonById(personId)
       .then((person) => {
         if (cancelled) return
         const familyId = person.familyIdsAsPartner[0] ?? person.familyIdAsChild
@@ -39,7 +39,7 @@ export default function PersonPage() {
     return () => {
       cancelled = true
     }
-  }, [id, idToken])
+  }, [id, status])
 
   if (state.kind === 'redirect') {
     return <Navigate to={`/family/${state.familyId}`} replace />

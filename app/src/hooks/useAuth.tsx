@@ -3,7 +3,12 @@ import { AncestralLine } from '../data-access/gated/germline'
 
 export interface AuthState {
   status: 'loading' | 'signedOut' | 'signedIn'
-  idToken: string | null
+  // Deliberately no idToken here. It used to be cached at sign-in and
+  // reused for every subsequent request, which silently broke every
+  // gated page once Cognito's 60-minute token lifetime elapsed in a
+  // long-lived tab. The token is now read fresh per request inside
+  // apiFetch (data-access/gated/apiClient.ts) -- don't reintroduce a
+  // stored copy.
   groups: string[]
   personId: number | null
   email: string | null
