@@ -135,7 +135,7 @@ verification instead.
    at it with `LoggingConfig.LogGroup` — copy any existing pair. Skipping
    this doesn't break anything visibly, which is the problem: the
    function silently falls back to an auto-created log group that keeps
-   logs *forever*.
+   logs _forever_.
 3. Tests: a `lib/` unit test for any new pure logic, a handler test
    proving the auth guard short-circuits (if gated).
 4. `npm run ci` (lint, typecheck, format, test) — then `sam build` to
@@ -222,7 +222,7 @@ line already carries duration, memory and cold-start time.
 
 | Service                      | Used for                                                                                                                                                                                                                                                                                                | Why this one                                                                                                                                                                                                                                    |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Lambda**                   | All compute — the 12 functions in `template.yaml`                                                                                                                                                                                                                                                        | Pay-per-request, near-zero cost for a low-traffic family site; matches the project's original plan over an always-on server                                                                                                                     |
+| **Lambda**                   | All compute — the 12 functions in `template.yaml`                                                                                                                                                                                                                                                       | Pay-per-request, near-zero cost for a low-traffic family site; matches the project's original plan over an always-on server                                                                                                                     |
 | **API Gateway (HTTP API)**   | Routing, the Cognito JWT authorizer, CORS                                                                                                                                                                                                                                                               | Cheaper and simpler than REST API; this project has no need for REST API's extra features                                                                                                                                                       |
 | **Cognito**                  | User accounts, `pending`/`approved`/`admin` groups, the `custom:person_id` link to the family database, SRP login, password reset, and the account-creation invitation email                                                                                                                            | Fully managed auth with groups and custom attributes built in — avoids hand-rolling password storage/reset/session handling                                                                                                                     |
 | **S3**                       | `frau-erica-db-backups` (nightly SQLite snapshots + a `current/` pointer the Lambda reads); `frau-erica-images-*` (public photos, fronted by CloudFront, not touched by `api/` directly)                                                                                                                | Durable, cheap object storage; the natural place to stage a periodically-refreshed read-only DB snapshot for Lambda to pull                                                                                                                     |
@@ -233,14 +233,14 @@ line already carries duration, memory and cold-start time.
 | **IAM**                      | A role per Lambda function (auto-created by `sam deploy` from each function's `Policies` block); a deploy user (`frau-erica-v2-deploy`, broad access, used only from the developer's machine); a separate backup user (`frau-erica-backup-user`, S3-write-only, used only by the nightly backup script) | Least-privilege per function; deliberately never reusing the backup user's narrow credentials for deploy work or vice versa                                                                                                                     |
 | **CloudFormation** (via SAM) | The entire `api/` stack as infrastructure-as-code                                                                                                                                                                                                                                                       | Reproducible, reviewable infra changes instead of manual console clicks; `sam` is just a thinner syntax over this                                                                                                                               |
 
-**Not used**: Route53 or ACM *for this stack* — the API is still used at
+**Not used**: Route53 or ACM _for this stack_ — the API is still used at
 its default `*.execute-api.amazonaws.com` URL. (The domain itself is now
 in Route53 with an ACM cert, but that lives in `hosting/`, not here.) No
 Enterprise/paid tier of anything.
 
 **Changed since this table was first written**: SES is no longer in the
 sandbox — the project has production access, sends from a verified
-*domain* identity (`archivist@frauerica.org`) with DKIM/SPF/DMARC, and
+_domain_ identity (`archivist@frauerica.org`) with DKIM/SPF/DMARC, and
 Cognito's own account emails go out through it too. See the project
 memory for the full deliverability story.
 

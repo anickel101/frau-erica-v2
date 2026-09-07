@@ -41,7 +41,10 @@ export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequir
 export interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<LoginResult>
   completeNewPassword: (newPassword: string) => Promise<void>
-  logout: () => void
+  // Async, like every other action here. It was typed `() => void` while
+  // the implementation was async, which quietly told every call site
+  // there was nothing to await and no rejection to handle.
+  logout: () => Promise<void>
   requestPasswordReset: (email: string) => Promise<void>
   confirmPasswordReset: (
     email: string,

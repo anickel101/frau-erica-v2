@@ -69,6 +69,28 @@ export default function GalleryPage() {
     )
   }
 
+  // A gallery with no photos at all would index photos[activeIndex] to
+  // undefined and crash GalleryLargeImage on a required prop. No such
+  // gallery exists in the current data (checked directly against the
+  // snapshot, not assumed), but galleries are created by hand in the
+  // database and an empty one is a perfectly natural intermediate state
+  // while assembling it.
+  if (photos.length === 0) {
+    return (
+      <Layout>
+        <div className="p-6 max-w-4xl">
+          <h1 className="text-xl font-bold mb-2">{gallery.name}</h1>
+          <p className="text-fe-ink/60 text-sm">
+            This gallery doesn't have any photos yet.{' '}
+            <Link to="/galleries" className="text-fe-link hover:text-fe-link-dark">
+              Back to Index of Galleries
+            </Link>
+          </p>
+        </div>
+      </Layout>
+    )
+  }
+
   const linkedPersons = getLinkedPersons(gallery)
 
   return (

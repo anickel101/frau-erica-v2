@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ApproveRequestForm from '../components/ApproveRequestForm'
 import Layout from '../components/Layout'
@@ -63,16 +63,44 @@ export default function AdminUsersPage() {
     return email ? { email, name: name ?? undefined } : { email: '' }
   })
 
+  // Only the newest request is allowed to land. refreshUsers is called
+  // both from the effect below and directly after every mutation, so a
+  // plain `cancelled` boolean scoped to the effect wouldn't cover the
+  // manual calls -- and those are the ones that overlap, since approving
+  // or deleting fires a refresh while a previous one may still be in
+  // flight. Out of order, the older response wins and the row the admin
+  // just changed reappears unchanged, which reads as the action having
+  // silently failed.
+  const latestRequest = useRef(0)
+
   const refreshUsers = useCallback(() => {
     if (status !== 'signedIn') return
+    const requestId = ++latestRequest.current
     listAdminUsers()
-      .then(setUsers)
-      .catch(() => setError('Could not load users.'))
-      .finally(() => setLoading(false))
+      .then((loaded) => {
+        if (requestId !== latestRequest.current) return
+        setUsers(loaded)
+        // Clear a previous failure on success -- otherwise a single
+        // transient error stayed on screen for the rest of the session,
+        // contradicting the freshly-loaded list right below it.
+        setError(null)
+      })
+      .catch(() => {
+        if (requestId !== latestRequest.current) return
+        setError('Could not load users.')
+      })
+      .finally(() => {
+        if (requestId === latestRequest.current) setLoading(false)
+      })
   }, [status])
 
   useEffect(() => {
     refreshUsers()
+    // Bumping the counter on unmount retires whatever is in flight, so
+    // nothing calls setState on a page that's gone.
+    return () => {
+      latestRequest.current += 1
+    }
   }, [refreshUsers])
 
   function closeEditModal() {

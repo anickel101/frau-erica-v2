@@ -111,12 +111,36 @@ export default function Sidebar({
         />
       )}
 
+      {/* invisible (not just translated off-screen) when the mobile
+          drawer is closed. A transform alone moves the panel out of
+          sight but leaves it in the tab order, so on a phone the first
+          ~15 tab presses walked through links nobody could see -- the
+          focus ring appearing to vanish into the left edge of the
+          screen. visibility:hidden removes it from the tab order;
+          md:visible brings it back on desktop, where the drawer is
+          always open regardless of `open`, so this can't be driven off
+          that state alone.
+
+          visibility is in the transition list so it flips only after the
+          slide-out finishes -- without that the panel disappears
+          instantly instead of sliding away.
+
+          The list has to name `translate` explicitly, not just
+          `transform`: Tailwind v4 implements -translate-x-full via the
+          separate CSS `translate` property, and its own
+          `transition-transform` shorthand covers transform/translate/
+          scale/rotate together. Writing transition-[transform,visibility]
+          silently dropped `translate` and made the drawer snap rather
+          than slide -- caught by reading the computed style, since it
+          still looked plausible in the class list. */}
       <aside
         className={`
           fixed md:static top-0 left-0 h-full md:h-auto w-72 md:w-64
           bg-fe-bg p-6 z-40
-          transform transition-transform duration-200 ease-in-out
-          ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+          transform transition-[transform,translate,scale,rotate,visibility]
+          duration-200 ease-in-out
+          ${open ? 'translate-x-0' : '-translate-x-full invisible'}
+          md:translate-x-0 md:visible
           overflow-y-auto
         `}
       >
@@ -246,7 +270,12 @@ export default function Sidebar({
               <button
                 type="button"
                 onClick={() => {
-                  logout()
+                  // logout() clears local state in a finally block, so
+                  // it resolves even when the Cognito call fails --
+                  // navigating without awaiting is safe, and awaiting
+                  // would leave the person on the page they just asked
+                  // to leave until a network round-trip finished.
+                  void logout()
                   setOpen(false)
                   navigate('/login')
                 }}

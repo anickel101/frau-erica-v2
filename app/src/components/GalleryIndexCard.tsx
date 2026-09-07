@@ -17,7 +17,11 @@ export default function GalleryIndexCard({ gallery }: { gallery: GalleryData }) 
         {thumbnail && (
           <img
             src={thumbnail.url}
-            alt={gallery.name}
+            /* Empty alt on purpose: the gallery name is already rendered
+               as visible text directly below, inside the same link. A
+               descriptive alt here makes a screen reader announce the
+               same name twice for one card. */
+            alt=""
             className="w-full h-full object-cover object-top"
           />
         )}

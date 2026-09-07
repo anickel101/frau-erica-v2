@@ -175,8 +175,25 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout(): Promise<void> {
-    await signOut()
-    setState(SIGNED_OUT_STATE)
+    try {
+      await signOut()
+    } catch {
+      // Clearing local state matters more than the remote call
+      // succeeding. signOut() rejects when it can't reach Cognito --
+      // offline, or a captive-portal wifi -- and previously that threw
+      // before setState ever ran, leaving someone who deliberately
+      // pressed Log out still signed in, with the sidebar greeting them
+      // by name. On a shared family computer that's the one moment where
+      // failing closed actually matters.
+      //
+      // Not verified: whether Amplify's own credential store is fully
+      // cleared when signOut() rejects partway through. If it isn't, a
+      // reload could restore the session even though the UI showed
+      // signed-out. Worth checking against a real offline session if
+      // this ever comes up as a report.
+    } finally {
+      setState(SIGNED_OUT_STATE)
+    }
   }
 
   // Sends a verification code to the account's verified email via
