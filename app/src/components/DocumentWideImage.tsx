@@ -14,9 +14,15 @@ export default function DocumentWideImage({ src, alt }: { src?: string; alt?: st
 
   return (
     <figure className="mb-6">
-      <div onClick={() => setIsZoomed(true)} className="cursor-zoom-in">
+      {/* See DocumentEmbeddedImage for why this is a button. */}
+      <button
+        type="button"
+        onClick={() => setIsZoomed(true)}
+        className="block w-full cursor-zoom-in"
+        aria-label={alt ? `Zoom in on ${alt}` : 'Zoom in on this image'}
+      >
         <img src={src} alt={alt ?? ''} className="w-full h-auto rounded-sm shadow-sm" />
-      </div>
+      </button>
       {alt && (
         <figcaption className="mt-2 text-[11px] text-fe-ink/60 text-left">
           {alt}

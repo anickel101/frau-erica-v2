@@ -207,8 +207,29 @@ export default function FamilyPage() {
 
   useEffect(() => {
     const familyId = Number(id)
-    if (authStatus !== 'signedIn' || !Number.isInteger(familyId)) return
     let cancelled = false
+
+    // A malformed id resolves to notFound rather than falling through to
+    // the bail-out below. These two conditions were previously a single
+    // `return`, which left state at 'loading' forever -- /family/abc, or
+    // a link that picked up a stray character on its way through an
+    // email client, rendered "Loading..." with nothing ever arriving to
+    // replace it. The old site used entirely different URLs, so
+    // malformed links here are a normal occurrence, not an edge case.
+    if (!Number.isInteger(familyId)) {
+      // Deferred for the same reason as the reset below.
+      void Promise.resolve().then(() => {
+        if (!cancelled) setState({ status: 'notFound' })
+      })
+      return () => {
+        cancelled = true
+      }
+    }
+
+    // Not signed in yet is genuinely still loading -- AuthProvider
+    // resolves the session asynchronously on mount, and this effect
+    // re-runs when it lands. Unlike a bad id, this one does resolve.
+    if (authStatus !== 'signedIn') return
     // Deferred a microtask so this reset doesn't fire synchronously
     // within the effect body itself (react-hooks/set-state-in-effect) --
     // needed because navigating between two /family/:id pages via a

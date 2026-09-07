@@ -97,6 +97,19 @@ verification instead.
   schema** (`src/lib/testFixtures.ts`, using `schema/schema.sql`
   directly) rather than mocking query results — catches real SQL bugs,
   not just wiring bugs.
+- **Logging: structured, deliberate, and never credentials.** Use
+  `log.info/warn/error` from `src/lib/log.ts`, never a bare
+  `console.log` — it emits one JSON object per line, which CloudWatch
+  Logs Insights parses into queryable fields (verified against the live
+  stack, not assumed). The `event` name is a stable dotted identifier
+  (`request-access.rejected`), because that's what queries filter on.
+  Every handler is already wrapped by `withLogging` (`src/lib/withLogging.ts`),
+  which records failures and any 4xx/5xx with the route, the caller's
+  `sub`, and the path params — so a new handler gets that for free and
+  should only add lines for things the wrapper can't know. Log an email
+  or a name **only where the person is the subject of the event** (an
+  access request, an admin acting on an account); never a token, JWT,
+  password, or request body.
 - **Secrets never go in `template.yaml`/`samconfig.toml`** (both are
   committed to git). Only non-secret config lives there (Cognito pool
   ID, API URLs, S3 bucket/key names). The one real secret this project
@@ -110,6 +123,7 @@ verification instead.
 1. Handler file in `src/handlers/`, following the existing pattern:
    parse input, call `requireApprovedAccess`/`requireAdminAccess` first
    if it's gated, delegate to `lib/`, return via `jsonResponse()`.
+   Export the handler wrapped: `export const handler = withLogging('route-name', baseHandler)`.
 2. New `AWS::Serverless::Function` block in `template.yaml` — copy the
    shape of an existing one (`Metadata.BuildMethod: esbuild` block,
    `Handler`, `Policies` scoped to exactly what this route needs,
@@ -117,6 +131,11 @@ verification instead.
    if the route genuinely has no account yet (like
    `/request-access`) — everything else inherits the pool-wide
    authorizer automatically.
+   **Also add a matching `AWS::Logs::LogGroup`** and point the function
+   at it with `LoggingConfig.LogGroup` — copy any existing pair. Skipping
+   this doesn't break anything visibly, which is the problem: the
+   function silently falls back to an auto-created log group that keeps
+   logs *forever*.
 3. Tests: a `lib/` unit test for any new pure logic, a handler test
    proving the auth guard short-circuits (if gated).
 4. `npm run ci` (lint, typecheck, format, test) — then `sam build` to
@@ -160,11 +179,50 @@ once established.
   `DesiredDeliveryMediums` default that would have silently sent
   invitations nowhere). Trust a live check over an assumption.
 
+## How to read the logs
+
+Log groups are named after the route, not the generated function name:
+`/aws/lambda/frau-erica-api-request-access`, `-get-family`, and so on.
+Retention is **30 days** on all of them (see the comment above the
+`LogGroup` resources in `template.yaml` for why that number).
+
+Tail one live:
+
+```
+aws logs tail /aws/lambda/frau-erica-api-request-access --follow \
+  --profile frau-erica-v2-deploy --region us-east-1
+```
+
+Query across them in the CloudWatch console (Logs Insights). Every field
+below is a real, queryable field — Lambda prefixes each line with its own
+timestamp/request id, but Insights still parses the JSON payload:
+
+```
+# Why is nobody's registration going through?
+fields @timestamp, event, reason, email, score, hostname
+| filter event like /request-access|recaptcha/
+| sort @timestamp desc
+
+# Tune RECAPTCHA_SCORE_THRESHOLD against what real people actually score
+fields @timestamp, score, hostname | filter event = 'recaptcha.rejected'
+
+# Everything that 500'd, with the caller and the route
+fields @timestamp, route, sub, errorName, errorMessage
+| filter event = 'request.failed' | sort @timestamp desc
+
+# Audit trail: who changed whose access
+fields @timestamp, event, actor, target, action, personId
+| filter event like /^admin\./ | sort @timestamp desc
+```
+
+Successful requests are deliberately not logged — Lambda's own `REPORT`
+line already carries duration, memory and cold-start time.
+
 ## AWS services used, and why
 
 | Service                      | Used for                                                                                                                                                                                                                                                                                                | Why this one                                                                                                                                                                                                                                    |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Lambda**                   | All compute — the 8 functions in `template.yaml`                                                                                                                                                                                                                                                        | Pay-per-request, near-zero cost for a low-traffic family site; matches the project's original plan over an always-on server                                                                                                                     |
+| **Lambda**                   | All compute — the 12 functions in `template.yaml`                                                                                                                                                                                                                                                        | Pay-per-request, near-zero cost for a low-traffic family site; matches the project's original plan over an always-on server                                                                                                                     |
 | **API Gateway (HTTP API)**   | Routing, the Cognito JWT authorizer, CORS                                                                                                                                                                                                                                                               | Cheaper and simpler than REST API; this project has no need for REST API's extra features                                                                                                                                                       |
 | **Cognito**                  | User accounts, `pending`/`approved`/`admin` groups, the `custom:person_id` link to the family database, SRP login, password reset, and the account-creation invitation email                                                                                                                            | Fully managed auth with groups and custom attributes built in — avoids hand-rolling password storage/reset/session handling                                                                                                                     |
 | **S3**                       | `frau-erica-db-backups` (nightly SQLite snapshots + a `current/` pointer the Lambda reads); `frau-erica-images-*` (public photos, fronted by CloudFront, not touched by `api/` directly)                                                                                                                | Durable, cheap object storage; the natural place to stage a periodically-refreshed read-only DB snapshot for Lambda to pull                                                                                                                     |
@@ -175,17 +233,23 @@ once established.
 | **IAM**                      | A role per Lambda function (auto-created by `sam deploy` from each function's `Policies` block); a deploy user (`frau-erica-v2-deploy`, broad access, used only from the developer's machine); a separate backup user (`frau-erica-backup-user`, S3-write-only, used only by the nightly backup script) | Least-privilege per function; deliberately never reusing the backup user's narrow credentials for deploy work or vice versa                                                                                                                     |
 | **CloudFormation** (via SAM) | The entire `api/` stack as infrastructure-as-code                                                                                                                                                                                                                                                       | Reproducible, reviewable infra changes instead of manual console clicks; `sam` is just a thinner syntax over this                                                                                                                               |
 
-**Not used**: Route53 or ACM (no custom domain/certificate yet — the
-API is used at its default `*.execute-api.amazonaws.com` URL; revisit
-once real hosting/domain work happens), SES production access (sandbox
-tier is sufficient at this project's real email volume), any
+**Not used**: Route53 or ACM *for this stack* — the API is still used at
+its default `*.execute-api.amazonaws.com` URL. (The domain itself is now
+in Route53 with an ACM cert, but that lives in `hosting/`, not here.) No
 Enterprise/paid tier of anything.
+
+**Changed since this table was first written**: SES is no longer in the
+sandbox — the project has production access, sends from a verified
+*domain* identity (`archivist@frauerica.org`) with DKIM/SPF/DMARC, and
+Cognito's own account emails go out through it too. See the project
+memory for the full deliverability story.
 
 ## Known limitations / open items
 
-- No production frontend origin exists yet — `template.yaml`'s
-  `FrontendOrigin` parameter (used for CORS and the Request Access
-  email's deep link) defaults to `http://localhost:5173`. Revisit once
-  hosting is actually planned (the project is deliberately staying
-  local-only for now — see the root-level project memory, not this
-  file, for that decision).
+- The site is **live at frauerica.org** (since 2026-09-06). CORS is
+  driven by `CorsAllowedOrigins`, a `CommaDelimitedList` covering both
+  the apex and `www`; the CloudFront distribution's own domain is still
+  in that list from cutover testing and could be dropped.
+- `Timeout` is 10s and `MemorySize` 512 on the DB-backed functions —
+  cold starts run ~2s including the S3 snapshot download. Provisioned
+  concurrency was considered and deliberately deferred.

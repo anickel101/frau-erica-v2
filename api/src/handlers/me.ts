@@ -4,12 +4,13 @@ import type {
 } from 'aws-lambda'
 import { getPersonIdClaim, parseGroups } from '../lib/auth'
 import { jsonResponse } from '../lib/response'
+import { withLogging } from '../lib/withLogging'
 
 // No database access needed -- this route only echoes back what the
 // Cognito JWT authorizer already validated and attached to the request.
 // Exists to prove identity/claims wiring (e.g. custom:person_id) in
 // isolation, independent of the query layer.
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const claims = event.requestContext.authorizer.jwt.claims
@@ -24,3 +25,5 @@ export async function handler(
     personId: getPersonIdClaim(event),
   })
 }
+
+export const handler = withLogging('me', baseHandler)

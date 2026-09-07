@@ -44,6 +44,56 @@ async function currentIdToken(): Promise<string | null> {
 
 const SESSION_EXPIRED = 'Your session has expired -- please log in again.'
 
+// Without this a stalled connection never settles: fetch has no default
+// timeout, so the promise simply never resolves and the calling page sits
+// on "Loading..." indefinitely with no error and no way to retry short of
+// a manual reload. Dropped connections on flaky mobile networks are the
+// usual cause, and they leave no trace in the console.
+//
+// 20s is deliberately well clear of a slow-but-working request rather
+// than tuned tightly: the API's Lambdas are capped at 10s (template.yaml's
+// Globals.Function.Timeout), so API Gateway returns a 504 of its own
+// before this fires. Anything still outstanding at 20s is a stalled
+// connection, not a slow query -- including the worst legitimate case, a
+// cold start with an S3 snapshot download, which real CloudWatch timings
+// put around 2s.
+const REQUEST_TIMEOUT_MS = 20_000
+
+// AbortController + setTimeout rather than the tidier
+// AbortSignal.timeout(): that static needs Safari 16+/Chrome 103+, and
+// this site's audience skews elderly and toward older devices, where an
+// unhandled TypeError would break every gated page rather than degrade.
+// The manual version works everywhere fetch does.
+async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => {
+    controller.abort()
+  }, REQUEST_TIMEOUT_MS)
+  try {
+    return await fetch(url, { ...init, signal: controller.signal })
+  } catch (err) {
+    // An abort is indistinguishable from any other network failure by
+    // the time it reaches the caller, so it's translated here into
+    // something a reader can act on. 408 rather than 0 so callers can
+    // treat it as the transient, retry-worthy failure it usually is.
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new ApiError(
+        408,
+        'This is taking longer than expected -- please check your connection and try again.',
+      )
+    }
+    // fetch rejects with a bare TypeError for any network-level failure
+    // (offline, DNS, CORS). "Failed to fetch" is not a useful thing to
+    // show someone.
+    if (err instanceof TypeError) {
+      throw new ApiError(0, "Couldn't reach the archive -- please check your connection.")
+    }
+    throw err
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 export async function apiFetch<T>(
   path: string,
   options?: {
@@ -67,7 +117,7 @@ export async function apiFetch<T>(
     }
   }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
     method: options?.method ?? 'GET',
     headers: {
       ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),

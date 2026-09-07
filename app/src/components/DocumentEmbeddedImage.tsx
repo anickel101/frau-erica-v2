@@ -28,9 +28,19 @@ export default function DocumentEmbeddedImage({
 
   return (
     <figure className="float-right ml-4 mb-2" style={{ width }}>
-      <div onClick={() => setIsZoomed(true)} className="cursor-zoom-in">
+      {/* A real <button>, not a <div onClick>. The div gave the zoom no
+          tab stop and no Enter/Space handling, so on a public page every
+          embedded photo was unreachable without a mouse. block w-full
+          keeps the button from shrink-wrapping the way an inline-block
+          button would, so the layout is identical to the div's. */}
+      <button
+        type="button"
+        onClick={() => setIsZoomed(true)}
+        className="block w-full cursor-zoom-in"
+        aria-label={alt ? `Zoom in on ${alt}` : 'Zoom in on this image'}
+      >
         <img src={src} alt={alt ?? ''} className="w-full h-auto rounded-sm shadow-sm" />
-      </div>
+      </button>
       {alt && (
         // Roman (not italic), flush left with a small indent from the
         // image's own left edge (~1 pica), one point size smaller than

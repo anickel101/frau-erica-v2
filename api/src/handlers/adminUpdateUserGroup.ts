@@ -7,11 +7,13 @@ import type {
   APIGatewayProxyEventV2WithJWTAuthorizer,
   APIGatewayProxyResultV2,
 } from 'aws-lambda'
-import { isSelf, requireAdminAccess } from '../lib/auth'
+import { getCallerEmail, isSelf, requireAdminAccess } from '../lib/auth'
 import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
+import { log } from '../lib/log'
 import { parseJsonBody } from '../lib/parseJsonBody'
 import { jsonResponse } from '../lib/response'
+import { withLogging } from '../lib/withLogging'
 
 const cognito = new CognitoIdentityProviderClient({})
 
@@ -27,7 +29,7 @@ interface UpdateGroupBody {
 // power is a meaningfully more sensitive action than fixing a
 // data-entry mistake, and gets its own explicit, auditable action
 // rather than being folded into that body shape.
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const denied = requireAdminAccess(event)
@@ -72,5 +74,15 @@ export async function handler(
     )
   }
 
+  // Granting or revoking admin power is the most consequential thing
+  // any route here does, and the only record of it was previously
+  // whatever the acting admin remembered.
+  log.info('admin.group-changed', {
+    actor: getCallerEmail(event),
+    target: email,
+    action: body.action,
+  })
   return jsonResponse(200, { ok: true })
 }
+
+export const handler = withLogging('admin-update-user-group', baseHandler)

@@ -8,10 +8,12 @@ import type {
   APIGatewayProxyEventV2WithJWTAuthorizer,
   APIGatewayProxyResultV2,
 } from 'aws-lambda'
-import { isSelf, requireAdminAccess } from '../lib/auth'
+import { getCallerEmail, isSelf, requireAdminAccess } from '../lib/auth'
 import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
+import { log } from '../lib/log'
 import { jsonResponse } from '../lib/response'
+import { withLogging } from '../lib/withLogging'
 
 const cognito = new CognitoIdentityProviderClient({})
 
@@ -27,7 +29,7 @@ const cognito = new CognitoIdentityProviderClient({})
 // UsernameExistsException and still emails the archivist, so a denied
 // person resubmitting notifies them regardless. That leaves a state to
 // reason about everywhere, for a record nobody reads.
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const denied = requireAdminAccess(event)
@@ -82,5 +84,10 @@ export async function handler(
     if (!(err instanceof UserNotFoundException)) throw err
   }
 
+  // A hard delete with no recovery path -- the audit line is the only
+  // thing that will ever say this account existed.
+  log.info('admin.user-deleted', { actor: getCallerEmail(event), target: email })
   return jsonResponse(200, { ok: true })
 }
+
+export const handler = withLogging('admin-delete-user', baseHandler)

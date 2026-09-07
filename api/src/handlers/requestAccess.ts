@@ -7,11 +7,13 @@ import {
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
+import { log } from '../lib/log'
 import { parseJsonBody } from '../lib/parseJsonBody'
 import { isVerificationAcceptable, verifyRecaptcha } from '../lib/recaptcha'
 import { jsonResponse } from '../lib/response'
 import { getRecaptchaSecret } from '../lib/secrets'
 import { sendAdminNotification } from '../lib/ses'
+import { withLogging } from '../lib/withLogging'
 
 const cognito = new CognitoIdentityProviderClient({})
 
@@ -53,7 +55,7 @@ const RECAPTCHA_SCORE_THRESHOLD = 0.3
 // override) -- the requester has no account yet, so this is a plain
 // APIGatewayProxyEventV2, not the JWT-authorizer variant every other
 // handler in this project uses.
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2> {
   const body = parseJsonBody<RequestBody>(event.body)
@@ -62,22 +64,47 @@ export async function handler(
   }
 
   const { name, email, connection, recaptchaToken } = body
+
+  // Every rejection below is logged before it's returned. A 400 here is
+  // a relative who tried to get in and didn't -- from the archivist's
+  // side that is indistinguishable from nobody having tried at all,
+  // since no notification is sent for a request that never got created.
+  // The log line is the only trace such an attempt leaves.
   if (!name || !email || !connection || !recaptchaToken) {
+    log.warn('request-access.invalid', {
+      reason: 'missing-fields',
+      // Which fields, not their values -- enough to tell a broken form
+      // from a broken submitter without copying the body into the log.
+      missing: Object.entries({ name, email, connection, recaptchaToken })
+        .filter(([, v]) => !v)
+        .map(([k]) => k),
+    })
     return jsonResponse(400, {
       error: 'name, email, connection, and recaptchaToken are all required',
     })
   }
   if (!EMAIL_PATTERN.test(email)) {
+    log.warn('request-access.invalid', { reason: 'malformed-email', email })
     return jsonResponse(400, {
       error: "That email address doesn't look right -- please check it and try again.",
     })
   }
   if (name.length > MAX_NAME_LENGTH) {
+    log.warn('request-access.invalid', {
+      reason: 'name-too-long',
+      email,
+      length: name.length,
+    })
     return jsonResponse(400, {
       error: `Please keep the name under ${MAX_NAME_LENGTH} characters.`,
     })
   }
   if (connection.length > MAX_CONNECTION_LENGTH) {
+    log.warn('request-access.invalid', {
+      reason: 'connection-too-long',
+      email,
+      length: connection.length,
+    })
     return jsonResponse(400, {
       error: `Please keep the description of how you're connected under ${MAX_CONNECTION_LENGTH} characters.`,
     })
@@ -86,11 +113,13 @@ export async function handler(
   const secret = await getRecaptchaSecret()
   const result = await verifyRecaptcha(recaptchaToken, secret)
   if (!isVerificationAcceptable(result, RECAPTCHA_SCORE_THRESHOLD)) {
-    // The one place in this codebase that logs. Diagnosing the launch-day
-    // failures meant inferring from indirect evidence and landing on the
-    // wrong theory twice, because nothing recorded *why* Google said no.
-    // None of these fields are personal data -- no token, no email.
-    console.warn('reCAPTCHA rejected', {
+    // Diagnosing the launch-day failures meant inferring from indirect
+    // evidence and landing on the wrong theory twice, because nothing
+    // recorded *why* Google said no. The score in particular is what
+    // RECAPTCHA_SCORE_THRESHOLD should be tuned against -- never the
+    // token, which is a credential.
+    log.warn('recaptcha.rejected', {
+      email,
       success: result.success,
       score: result.score,
       action: result.action,
@@ -143,24 +172,43 @@ export async function handler(
       }),
     )
   } catch (err) {
-    if (!(err instanceof UsernameExistsException)) {
+    if (err instanceof UsernameExistsException) {
+      // Already requested before (or already has an account entirely) --
+      // resubmitting shouldn't look like an error to the requester.
+      // Deliberately doesn't touch existing group membership: someone
+      // who's already approved re-submitting this form must not be
+      // silently added back to 'pending'.
+      // Logged at info because it is genuinely routine, but it's worth
+      // recording: a relative resubmitting repeatedly is usually a
+      // person who thinks nothing happened the first time and is one
+      // useful nudge away from giving up.
+      log.info('request-access.duplicate', { email })
+    } else {
       // Held rather than rethrown: whatever went wrong with Cognito, the
       // archivist still needs to hear that someone asked for access --
       // that notification is the only signal a request ever happened, and
       // losing it means the person waits forever on a request nobody
       // knows about. Rethrown below, after the email is away.
       cognitoError = err
+      log.error('request-access.cognito-failed', err, { email })
     }
-    // Already requested before (or already has an account entirely) --
-    // resubmitting shouldn't look like an error to the requester.
-    // Deliberately doesn't touch existing group membership: someone
-    // who's already approved re-submitting this form must not be
-    // silently added back to 'pending'.
   }
 
   const frontendOrigin = requireEnv('FRONTEND_ORIGIN')
 
-  await sendAdminNotification({ name, email, connection }, frontendOrigin)
+  try {
+    await sendAdminNotification({ name, email, connection }, frontendOrigin)
+  } catch (err) {
+    // The worst failure this route has, and previously the quietest: the
+    // account now exists in 'pending' but nothing told the archivist to
+    // go approve it, so the request lands in a state where the requester
+    // is waiting and nobody knows to act. Rethrown (the requester should
+    // not be told this worked), but logged first with the details needed
+    // to approve them by hand -- this line is the notification when the
+    // notification itself is what broke.
+    log.error('request-access.notification-failed', err, { email, name, connection })
+    throw err
+  }
 
   // Surfaced only after the archivist has been notified. The requester
   // does need to see a failure here -- without a Cognito account, the
@@ -168,5 +216,8 @@ export async function handler(
   // or manual intervention rather than a falsely reassuring 200.
   if (cognitoError) throw cognitoError
 
+  log.info('request-access.accepted', { email })
   return jsonResponse(200, { ok: true })
 }
+
+export const handler = withLogging('request-access', baseHandler)

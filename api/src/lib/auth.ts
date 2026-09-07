@@ -72,9 +72,21 @@ export function isSelf(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
   email: string,
 ): boolean {
-  const callerEmail = event.requestContext.authorizer.jwt.claims.email
-  if (typeof callerEmail !== 'string') return false
+  const callerEmail = getCallerEmail(event)
+  if (callerEmail === null) return false
   return callerEmail.toLowerCase() === email.toLowerCase()
+}
+
+// The acting admin's own email, for the audit lines on the routes that
+// change someone's access. The Cognito `sub` would identify them just as
+// uniquely, but an audit trail is read by a person asking "who did
+// this?" -- an opaque uuid means a second lookup every time, and these
+// are the four routes where that question is most likely to be asked.
+export function getCallerEmail(
+  event: APIGatewayProxyEventV2WithJWTAuthorizer,
+): string | null {
+  const callerEmail = event.requestContext.authorizer.jwt.claims.email
+  return typeof callerEmail === 'string' ? callerEmail : null
 }
 
 // Shared shape behind requireApprovedAccess/requireAdminAccess -- both

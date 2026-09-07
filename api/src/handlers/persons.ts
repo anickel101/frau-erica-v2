@@ -6,8 +6,9 @@ import { requireApprovedAccess } from '../lib/auth'
 import { getDb } from '../lib/db'
 import { getPersonById } from '../lib/queries/persons'
 import { jsonResponse } from '../lib/response'
+import { withLogging } from '../lib/withLogging'
 
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const denied = requireApprovedAccess(event)
@@ -26,3 +27,5 @@ export async function handler(
 
   return jsonResponse(200, person)
 }
+
+export const handler = withLogging('persons', baseHandler)
