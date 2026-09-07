@@ -64,6 +64,15 @@ function callerSub(event: AnyEvent): string | undefined {
   return typeof sub === 'string' ? sub : undefined
 }
 
+// The cognito:groups claim exactly as the JWT authorizer handed it over,
+// with no parsing applied. Typed unknown deliberately: the whole point is
+// to see what it actually is when it isn't what the code assumes.
+function rawGroups(event: AnyEvent): unknown {
+  const requestContext = event.requestContext as
+    { authorizer?: { jwt?: { claims?: Record<string, unknown> } } } | undefined
+  return requestContext?.authorizer?.jwt?.claims?.['cognito:groups']
+}
+
 export function withLogging<E extends AnyEvent>(
   route: string,
   inner: (event: E) => Promise<APIGatewayProxyResultV2>,
@@ -86,8 +95,15 @@ export function withLogging<E extends AnyEvent>(
       // my account isn't approved" is a support question this answers
       // instantly, by showing whether the request arrived with the
       // groups claim the user expects.
+      //
+      // The RAW claim string, not the parsed result. A refusal is almost
+      // always a disagreement between what Cognito holds and what this
+      // Lambda sees, and the parsed form hides exactly the detail that
+      // matters when parsing itself is the bug -- which is precisely
+      // what the multi-group 403 turned out to be. Group names are not
+      // personal data.
       if (status !== undefined && status >= 400) {
-        log.warn('request.refused', { ...context, status })
+        log.warn('request.refused', { ...context, status, groupsClaim: rawGroups(event) })
       }
       return result
     } catch (err) {
