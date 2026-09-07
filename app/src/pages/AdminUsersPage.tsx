@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ApproveRequestForm from '../components/ApproveRequestForm'
 import Layout from '../components/Layout'
@@ -7,6 +7,7 @@ import PersonPicker from '../components/PersonPicker'
 import SearchInput from '../components/SearchInput'
 import {
   AdminUserSummary,
+  deleteUser,
   listAdminUsers,
   updateUserGroup,
   updateUserPersonId,
@@ -39,7 +40,7 @@ function filterExistingUsers(
 }
 
 export default function AdminUsersPage() {
-  const { idToken, email: ownEmail } = useAuth()
+  const { status, email: ownEmail } = useAuth()
   const [searchParams] = useSearchParams()
   const [users, setUsers] = useState<AdminUserSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -49,6 +50,8 @@ export default function AdminUsersPage() {
   const [saving, setSaving] = useState(false)
   const [confirmingGroupEmail, setConfirmingGroupEmail] = useState<string | null>(null)
   const [changingGroup, setChangingGroup] = useState(false)
+  const [deletingEmail, setDeletingEmail] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [showAllPending, setShowAllPending] = useState(false)
   // The deep link in the Request Access admin-notification email sets
   // this via ?email=&name= on first load; clicking "Review & approve" on
@@ -60,16 +63,44 @@ export default function AdminUsersPage() {
     return email ? { email, name: name ?? undefined } : { email: '' }
   })
 
+  // Only the newest request is allowed to land. refreshUsers is called
+  // both from the effect below and directly after every mutation, so a
+  // plain `cancelled` boolean scoped to the effect wouldn't cover the
+  // manual calls -- and those are the ones that overlap, since approving
+  // or deleting fires a refresh while a previous one may still be in
+  // flight. Out of order, the older response wins and the row the admin
+  // just changed reappears unchanged, which reads as the action having
+  // silently failed.
+  const latestRequest = useRef(0)
+
   const refreshUsers = useCallback(() => {
-    if (!idToken) return
-    listAdminUsers(idToken)
-      .then(setUsers)
-      .catch(() => setError('Could not load users.'))
-      .finally(() => setLoading(false))
-  }, [idToken])
+    if (status !== 'signedIn') return
+    const requestId = ++latestRequest.current
+    listAdminUsers()
+      .then((loaded) => {
+        if (requestId !== latestRequest.current) return
+        setUsers(loaded)
+        // Clear a previous failure on success -- otherwise a single
+        // transient error stayed on screen for the rest of the session,
+        // contradicting the freshly-loaded list right below it.
+        setError(null)
+      })
+      .catch(() => {
+        if (requestId !== latestRequest.current) return
+        setError('Could not load users.')
+      })
+      .finally(() => {
+        if (requestId === latestRequest.current) setLoading(false)
+      })
+  }, [status])
 
   useEffect(() => {
     refreshUsers()
+    // Bumping the counter on unmount retires whatever is in flight, so
+    // nothing calls setState on a page that's gone.
+    return () => {
+      latestRequest.current += 1
+    }
   }, [refreshUsers])
 
   function closeEditModal() {
@@ -78,10 +109,10 @@ export default function AdminUsersPage() {
   }
 
   async function handleSave(email: string) {
-    if (!idToken || !selected) return
+    if (!selected) return
     setSaving(true)
     try {
-      await updateUserPersonId(email, selected.person_id, idToken)
+      await updateUserPersonId(email, selected.person_id)
       setUsers((prev) =>
         prev.map((u) => (u.email === email ? { ...u, personId: selected.person_id } : u)),
       )
@@ -93,11 +124,24 @@ export default function AdminUsersPage() {
     }
   }
 
+  async function handleDelete(email: string) {
+    setDeleting(true)
+    try {
+      await deleteUser(email)
+      setUsers((prev) => prev.filter((u) => u.email !== email))
+      setDeletingEmail(null)
+      setError(null)
+    } catch {
+      setError('Could not delete that account.')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   async function handleGroupChange(email: string, action: 'promote' | 'demote') {
-    if (!idToken) return
     setChangingGroup(true)
     try {
-      await updateUserGroup(email, action, idToken)
+      await updateUserGroup(email, action)
       setUsers((prev) =>
         prev.map((u) =>
           u.email === email
@@ -128,6 +172,10 @@ export default function AdminUsersPage() {
   const confirmingUser =
     existingUsers.find((u) => u.email === confirmingGroupEmail) ?? null
   const confirmingIsAdmin = confirmingUser?.groups.includes('admin') ?? false
+  // Looked up across all users, not just the existing ones -- the same
+  // modal serves both the pending list and the existing-users table.
+  const deletingUser = users.find((u) => u.email === deletingEmail) ?? null
+  const deletingIsPending = deletingUser?.groups.includes('pending') ?? false
 
   const {
     query: existingQuery,
@@ -138,7 +186,7 @@ export default function AdminUsersPage() {
     setShowAll: setShowAllExisting,
   } = usePaginatedSearch(existingUsers, filterExistingUsers, EXISTING_USERS_PAGE_SIZE)
 
-  if (!idToken) return null
+  if (status !== 'signedIn') return null
 
   return (
     <Layout>
@@ -185,9 +233,21 @@ export default function AdminUsersPage() {
                           connection: user.connection ?? undefined,
                         })
                       }
-                      className="text-fe-accent hover:text-fe-accent-dark text-sm mt-2"
+                      className="text-fe-link hover:text-fe-link-dark text-sm mt-2"
                     >
                       Review &amp; approve
+                    </button>
+                    {/* Denying is deleting -- a request nobody approved
+                        is just an unused account. Deliberately styled as
+                        quiet text rather than a red button: it sits
+                        beside the action that's taken far more often,
+                        and shouldn't compete for the eye. */}
+                    <button
+                      type="button"
+                      onClick={() => setDeletingEmail(user.email)}
+                      className="text-fe-ink/50 hover:text-red-700 text-sm mt-2 ml-4"
+                    >
+                      Deny &amp; delete
                     </button>
                   </li>
                 ))}
@@ -212,7 +272,6 @@ export default function AdminUsersPage() {
           <h2 className="text-xl font-bold mb-4">Approve a new request</h2>
           <ApproveRequestForm
             key={approveTarget.email}
-            idToken={idToken}
             initialEmail={approveTarget.email}
             initialName={approveTarget.name}
             initialConnection={approveTarget.connection}
@@ -265,7 +324,7 @@ export default function AdminUsersPage() {
                               <button
                                 type="button"
                                 onClick={() => setEditingEmail(user.email)}
-                                className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                                className="text-fe-link hover:text-fe-link-dark text-sm"
                               >
                                 Edit person_id
                               </button>
@@ -277,9 +336,25 @@ export default function AdminUsersPage() {
                                 <button
                                   type="button"
                                   onClick={() => setConfirmingGroupEmail(user.email)}
-                                  className="text-fe-accent hover:text-fe-accent-dark text-sm"
+                                  className="text-fe-link hover:text-fe-link-dark text-sm"
                                 >
                                   {isAdmin ? 'Demote to approved' : 'Promote to admin'}
+                                </button>
+                              )}
+                              {/* Hidden on your own row and on admins,
+                                  mirroring the two guards the API
+                                  enforces anyway -- an admin must be
+                                  demoted before deletion. Offering a
+                                  button that can only ever return an
+                                  error would just be a worse way to
+                                  learn the same rule. */}
+                              {user.email !== ownEmail && !isAdmin && (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingEmail(user.email)}
+                                  className="text-fe-ink/50 hover:text-red-700 text-sm"
+                                >
+                                  Delete account
                                 </button>
                               )}
                             </div>
@@ -316,7 +391,7 @@ export default function AdminUsersPage() {
         >
           <h3 className="text-lg font-bold mb-1">Edit person_id</h3>
           <p className="text-sm text-fe-ink/70 mb-4">{editingUser?.email}</p>
-          <PersonPicker idToken={idToken} selected={selected} onSelect={setSelected} />
+          <PersonPicker selected={selected} onSelect={setSelected} />
           <div className="flex gap-2 mt-4">
             <button
               type="button"
@@ -368,6 +443,54 @@ export default function AdminUsersPage() {
             <button
               type="button"
               onClick={() => setConfirmingGroupEmail(null)}
+              className="px-4 py-2 rounded-sm text-sm border border-fe-brown/40"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Deletion is the only irreversible action on this page, so the
+          copy names who is affected and says plainly that it can't be
+          undone -- and the confirm button is red, unlike every other
+          button here. */}
+      <Modal open={deletingEmail !== null} onClose={() => setDeletingEmail(null)}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-fe-bg rounded-sm p-6 max-w-md w-full"
+        >
+          <h3 className="text-lg font-bold mb-2">
+            {deletingIsPending ? 'Deny this request?' : 'Delete this account?'}
+          </h3>
+          <p className="text-sm mb-2">
+            {deletingIsPending ? (
+              <>
+                The request from{' '}
+                <strong>{deletingUser?.requesterName ?? deletingUser?.email}</strong> (
+                {deletingUser?.email}) will be removed. They aren't told, and they can
+                always ask again later.
+              </>
+            ) : (
+              <>
+                <strong>{deletingUser?.fullName ?? deletingUser?.email}</strong> (
+                {deletingUser?.email}) will lose access and their account will be removed.
+              </>
+            )}
+          </p>
+          <p className="text-sm text-fe-ink/70 mb-4">This can't be undone.</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => deletingEmail && handleDelete(deletingEmail)}
+              disabled={deleting}
+              className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-sm text-sm font-bold disabled:opacity-60"
+            >
+              {deleting ? 'Deleting...' : deletingIsPending ? 'Deny & delete' : 'Delete'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeletingEmail(null)}
               className="px-4 py-2 rounded-sm text-sm border border-fe-brown/40"
             >
               Cancel

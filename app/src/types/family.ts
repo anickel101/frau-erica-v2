@@ -16,6 +16,10 @@ export interface FamilyDetail {
   person_2: LinkedPersonSummary | null
   description: string | null
   header_image_url: string | null
+  // Markdown -- the source data uses **bold** for a date/event lead-in,
+  // same convention as Documents/Galleries captions. null whenever
+  // header_image_url is, or when that image has no caption on record.
+  header_image_caption: string | null
   grandparents_1: LinkedPersonSummary[]
   grandparents_2: LinkedPersonSummary[]
   children: LinkedPersonSummary[]

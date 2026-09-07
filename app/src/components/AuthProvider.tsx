@@ -1,24 +1,32 @@
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
+import { Amplify } from 'aws-amplify'
 import {
-  AuthenticationDetails,
-  CognitoUser,
-  CognitoUserPool,
-  CognitoUserSession,
-} from 'amazon-cognito-identity-js'
+  AuthSession,
+  confirmResetPassword,
+  confirmSignIn,
+  fetchAuthSession,
+  resetPassword,
+  signIn,
+  signOut,
+} from 'aws-amplify/auth'
 import { COGNITO_CLIENT_ID, COGNITO_USER_POOL_ID } from '../config/cognito'
+import { setUnauthorizedHandler } from '../data-access/gated/apiClient'
 import { getMyGermline } from '../data-access/gated/germline'
 import { getPersonById } from '../data-access/gated/persons'
 import { parseIdTokenClaims } from '../hooks/authClaims'
 import { AuthContext, AuthContextValue, AuthState, LoginResult } from '../hooks/useAuth'
 
-const pool = new CognitoUserPool({
-  UserPoolId: COGNITO_USER_POOL_ID,
-  ClientId: COGNITO_CLIENT_ID,
+Amplify.configure({
+  Auth: {
+    Cognito: {
+      userPoolId: COGNITO_USER_POOL_ID,
+      userPoolClientId: COGNITO_CLIENT_ID,
+    },
+  },
 })
 
 const SIGNED_OUT_STATE: AuthState = {
   status: 'signedOut',
-  idToken: null,
   groups: [],
   personId: null,
   email: null,
@@ -28,18 +36,18 @@ const SIGNED_OUT_STATE: AuthState = {
   ancestralLines: null,
 }
 
-function stateFromSession(session: CognitoUserSession): AuthState {
-  const idToken = session.getIdToken()
-  const payload = idToken.decodePayload() as Record<string, unknown>
+function stateFromSession(session: AuthSession): AuthState {
+  const idToken = session.tokens?.idToken
+  if (!idToken) return SIGNED_OUT_STATE
+  const payload = idToken.payload as Record<string, unknown>
   const { groups, personId } = parseIdTokenClaims(payload)
   return {
     status: 'signedIn',
-    idToken: idToken.getJwtToken(),
     groups,
     personId,
     email: typeof payload.email === 'string' ? payload.email : null,
     // None of these are on the token -- all resolved by the effects
-    // below, once idToken/personId are in state.
+    // below, once personId is in state.
     personName: null,
     homeFamilyId: null,
     germlineIds: null,
@@ -47,35 +55,42 @@ function stateFromSession(session: CognitoUserSession): AuthState {
   }
 }
 
-// Synchronous check, used as useState's lazy initializer -- if there's
-// no cached user at all, we already know the answer (signedOut) without
-// needing an effect. If one exists, initial state stays 'loading' while
-// the effect below asynchronously validates/refreshes the session.
-function initialAuthState(): AuthState {
-  return pool.getCurrentUser()
-    ? { ...SIGNED_OUT_STATE, status: 'loading' }
-    : SIGNED_OUT_STATE
-}
-
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>(initialAuthState)
-
-  // Holds the CognitoUser instance between login() and completeNewPassword()
-  // -- the NEW_PASSWORD_REQUIRED challenge session lives on that specific
-  // instance, so the same object must be reused, not recreated.
-  const pendingUserRef = useRef<CognitoUser | null>(null)
+  // Amplify's fetchAuthSession() is always async (no synchronous
+  // "is there a cached user at all" check the way
+  // amazon-cognito-identity-js's pool.getCurrentUser() offered) -- every
+  // visitor briefly passes through 'loading' below, resolving to
+  // 'signedOut' almost immediately (no network call needed) when there's
+  // nothing in storage. A brief, one-frame loading state instead of an
+  // instant signedOut render, not a real regression.
+  const [state, setState] = useState<AuthState>({
+    ...SIGNED_OUT_STATE,
+    status: 'loading',
+  })
 
   useEffect(() => {
-    const currentUser = pool.getCurrentUser()
-    if (!currentUser) return
+    let cancelled = false
+    fetchAuthSession()
+      .then((session) => {
+        if (!cancelled) setState(stateFromSession(session))
+      })
+      .catch(() => {
+        if (!cancelled) setState(SIGNED_OUT_STATE)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
-    currentUser.getSession((err: Error | null, session: CognitoUserSession | null) => {
-      if (err || !session || !session.isValid()) {
-        setState(SIGNED_OUT_STATE)
-        return
-      }
-      setState(stateFromSession(session))
-    })
+  // A 401 from any gated request means the refresh token itself is gone
+  // or expired (tokens are now read fresh per request, so a merely-stale
+  // access token can't cause this). Resetting to signed-out makes the
+  // Require* gates render the login teaser on the next paint, which is a
+  // far better answer than every gated page showing a generic error with
+  // no hint that logging in again would fix it.
+  useEffect(() => {
+    setUnauthorizedHandler(() => setState(SIGNED_OUT_STATE))
+    return () => setUnauthorizedHandler(null)
   }, [])
 
   // Resolves the signed-in user's family-tree name and "home" family page
@@ -85,9 +100,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // no person_id yet, or a lookup failure, just leaves both null --
   // callers fall back to email, and hide the "go to my family page" link.
   useEffect(() => {
-    if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
+    if (state.status !== 'signedIn' || state.personId === null) return
     let cancelled = false
-    getPersonById(state.personId, state.idToken)
+    getPersonById(state.personId)
       .then((person) => {
         if (cancelled) return
         // Prefer the family they're a partner in (their own household)
@@ -112,7 +127,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [state.status, state.personId, state.idToken])
+  }, [state.status, state.personId])
 
   // Resolves this user's germline (their own biological ancestor
   // person_ids, plus one furthest-ancestor line per immediate parent) --
@@ -121,9 +136,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // since it's a different endpoint/concern with no reason to couple
   // their success/failure or block one on the other.
   useEffect(() => {
-    if (state.status !== 'signedIn' || state.personId === null || !state.idToken) return
+    if (state.status !== 'signedIn' || state.personId === null) return
     let cancelled = false
-    getMyGermline(state.idToken)
+    getMyGermline()
       .then(({ personIds, ancestralLines }) => {
         if (cancelled) return
         setState((prev) =>
@@ -139,82 +154,61 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [state.status, state.personId, state.idToken])
+  }, [state.status, state.personId])
 
-  function login(email: string, password: string): Promise<LoginResult> {
-    return new Promise((resolve, reject) => {
-      const cognitoUser = new CognitoUser({ Username: email, Pool: pool })
-      pendingUserRef.current = cognitoUser
-      cognitoUser.authenticateUser(
-        new AuthenticationDetails({ Username: email, Password: password }),
-        {
-          onSuccess: (session) => {
-            setState(stateFromSession(session))
-            resolve({ outcome: 'success' })
-          },
-          onFailure: (err) => reject(err),
-          newPasswordRequired: () => resolve({ outcome: 'newPasswordRequired' }),
-        },
-      )
-    })
+  async function login(email: string, password: string): Promise<LoginResult> {
+    const { nextStep } = await signIn({ username: email, password })
+    if (nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+      return { outcome: 'newPasswordRequired' }
+    }
+    setState(stateFromSession(await fetchAuthSession()))
+    return { outcome: 'success' }
   }
 
-  function completeNewPassword(newPassword: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const cognitoUser = pendingUserRef.current
-      if (!cognitoUser) {
-        reject(new Error('No sign-in in progress'))
-        return
-      }
-      cognitoUser.completeNewPasswordChallenge(
-        newPassword,
-        {},
-        {
-          onSuccess: (session) => {
-            setState(stateFromSession(session))
-            resolve()
-          },
-          onFailure: (err) => reject(err),
-        },
-      )
-    })
+  // No held CognitoUser instance needed (unlike amazon-cognito-identity-js,
+  // where the NEW_PASSWORD_REQUIRED challenge lived on a specific client
+  // object) -- Amplify tracks the in-flight sign-in challenge internally,
+  // keyed by username, so confirmSignIn() just resumes it.
+  async function completeNewPassword(newPassword: string): Promise<void> {
+    await confirmSignIn({ challengeResponse: newPassword })
+    setState(stateFromSession(await fetchAuthSession()))
   }
 
-  function logout() {
-    pool.getCurrentUser()?.signOut()
-    pendingUserRef.current = null
-    setState(SIGNED_OUT_STATE)
+  async function logout(): Promise<void> {
+    try {
+      await signOut()
+    } catch {
+      // Clearing local state matters more than the remote call
+      // succeeding. signOut() rejects when it can't reach Cognito --
+      // offline, or a captive-portal wifi -- and previously that threw
+      // before setState ever ran, leaving someone who deliberately
+      // pressed Log out still signed in, with the sidebar greeting them
+      // by name. On a shared family computer that's the one moment where
+      // failing closed actually matters.
+      //
+      // Not verified: whether Amplify's own credential store is fully
+      // cleared when signOut() rejects partway through. If it isn't, a
+      // reload could restore the session even though the UI showed
+      // signed-out. Worth checking against a real offline session if
+      // this ever comes up as a report.
+    } finally {
+      setState(SIGNED_OUT_STATE)
+    }
   }
 
   // Sends a verification code to the account's verified email via
   // Cognito's own delivery (same mechanism as the admin-approval
-  // invitation). Reuses pendingUserRef -- confirmPasswordReset below
-  // calls confirmPassword() on this same CognitoUser instance.
-  function requestPasswordReset(email: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const cognitoUser = new CognitoUser({ Username: email, Pool: pool })
-      pendingUserRef.current = cognitoUser
-      cognitoUser.forgotPassword({
-        onSuccess: () => resolve(),
-        onFailure: (err) => reject(err),
-        inputVerificationCode: () => resolve(),
-      })
-    })
+  // invitation).
+  async function requestPasswordReset(email: string): Promise<void> {
+    await resetPassword({ username: email })
   }
 
-  function confirmPasswordReset(
+  async function confirmPasswordReset(
     email: string,
     code: string,
     newPassword: string,
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const cognitoUser =
-        pendingUserRef.current ?? new CognitoUser({ Username: email, Pool: pool })
-      cognitoUser.confirmPassword(code, newPassword, {
-        onSuccess: () => resolve(),
-        onFailure: (err) => reject(err),
-      })
-    })
+    await confirmResetPassword({ username: email, confirmationCode: code, newPassword })
   }
 
   const value: AuthContextValue = {

@@ -4,30 +4,49 @@ import Modal from './Modal'
 // Custom ReactMarkdown <img> renderer for Document content -- markdown
 // image syntax (![caption](url), resolved from {{image:ID}} shortcodes
 // by data-access/public/documents.ts's resolveImagePlaceholders) renders
-// through this instead of a bare, unstyled <img>. Floats at a fixed
-// 300px so paragraph text wraps around it instead of the image sitting
+// through this instead of a bare, unstyled <img>. Floats right (not
+// left) so paragraph text wraps around it instead of the image sitting
 // on its own full-width row, with a real visible caption underneath --
 // the caption text already lives in `alt` (resolveImagePlaceholders sets
 // it from Images.caption), just never rendered visibly until now. Every
 // embedded image gets the same click-to-zoom Modal GalleryLargeImage.tsx
-// uses.
+// uses. width is a per-image pixel value (see TextPage.tsx's rotating
+// size sequence) rather than a fixed Tailwind class, so images read as
+// varied rather than a uniform stacked column; defaults to 300 (the
+// previous fixed size) for any caller that doesn't pass one.
 export default function DocumentEmbeddedImage({
   src,
   alt,
+  width = 300,
 }: {
   src?: string
   alt?: string
+  width?: number
 }) {
   const [isZoomed, setIsZoomed] = useState(false)
   if (!src) return null
 
   return (
-    <figure className="float-left w-75 mr-4 mb-2">
-      <div onClick={() => setIsZoomed(true)} className="cursor-zoom-in">
+    <figure className="float-right ml-4 mb-2" style={{ width }}>
+      {/* A real <button>, not a <div onClick>. The div gave the zoom no
+          tab stop and no Enter/Space handling, so on a public page every
+          embedded photo was unreachable without a mouse. block w-full
+          keeps the button from shrink-wrapping the way an inline-block
+          button would, so the layout is identical to the div's. */}
+      <button
+        type="button"
+        onClick={() => setIsZoomed(true)}
+        className="block w-full cursor-zoom-in"
+        aria-label={alt ? `Zoom in on ${alt}` : 'Zoom in on this image'}
+      >
         <img src={src} alt={alt ?? ''} className="w-full h-auto rounded-sm shadow-sm" />
-      </div>
+      </button>
       {alt && (
-        <figcaption className="mt-2 text-xs italic text-fe-ink/60 text-center">
+        // Roman (not italic), flush left with a small indent from the
+        // image's own left edge (~1 pica), one point size smaller than
+        // the surrounding 12px body text -- all per review feedback;
+        // previously italic and centered.
+        <figcaption className="mt-2 pl-4 text-[11px] text-fe-ink/60 text-left">
           {alt}
         </figcaption>
       )}

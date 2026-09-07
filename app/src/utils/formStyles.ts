@@ -8,8 +8,3 @@ export const inputClassName =
 
 export const buttonClassName =
   'bg-fe-accent hover:bg-fe-accent-dark text-white px-4 py-2 rounded-sm text-sm font-bold disabled:opacity-50'
-
-// Compact variant for inline/in-table actions (AdminUsersPage's
-// Save/Cancel row) where the full-size button would be too large.
-export const compactButtonClassName =
-  'bg-fe-accent hover:bg-fe-accent-dark text-white px-3 py-1.5 rounded-sm text-sm font-bold disabled:opacity-50'

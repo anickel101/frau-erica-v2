@@ -124,7 +124,9 @@ export async function seedFixtures(db: Database): Promise<void> {
     "INSERT INTO Relationships (person_id_1, person_id_2, relationship_type) VALUES (17, 7, 'step_parent')",
   )
 
-  db.run("INSERT INTO Images (image_id, url, is_published) VALUES (1, 'family1.jpg', 1)")
+  db.run(
+    "INSERT INTO Images (image_id, url, is_published, caption) VALUES (1, 'family1.jpg', 1, '**A caption** with markdown')",
+  )
   // Unpublished -- linked to family 3 below to exercise the
   // is_published filter on the header-image lookup.
   db.run("INSERT INTO Images (image_id, url, is_published) VALUES (2, 'unpub.jpg', 0)")

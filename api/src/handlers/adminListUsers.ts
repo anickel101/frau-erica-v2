@@ -13,6 +13,7 @@ import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
 import { jsonResponse } from '../lib/response'
 import { inClause, queryAll } from '../lib/sqlHelpers'
+import { withLogging } from '../lib/withLogging'
 
 const cognito = new CognitoIdentityProviderClient({})
 
@@ -70,7 +71,7 @@ async function resolveFullNames(personIds: number[]): Promise<Map<number, string
   return new Map(rows.map((row) => [row.person_id, `${row.first_name} ${row.last_name}`]))
 }
 
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const denied = requireAdminAccess(event)
@@ -123,3 +124,5 @@ export async function handler(
 
   return jsonResponse(200, { users: Array.from(byEmail.values()) })
 }
+
+export const handler = withLogging('admin-list-users', baseHandler)

@@ -47,3 +47,19 @@ describe('search handler authorization', () => {
     expect(getDbMock).not.toHaveBeenCalled()
   })
 })
+
+describe('search handler query validation', () => {
+  // The bug this guards: `?q=%20` is truthy, so it passed the presence
+  // check, and searchPersons then trimmed it to an empty needle that
+  // every name contains -- returning the entire archive in one response.
+  test.each([' ', '   ', '\t', 'a'])(
+    'rejects %j without touching the database',
+    async (q) => {
+      const result = (await handler(
+        fakeEvent('[approved]', q),
+      )) as APIGatewayProxyStructuredResultV2
+      expect(result.statusCode).toBe(400)
+      expect(getDbMock).not.toHaveBeenCalled()
+    },
+  )
+})

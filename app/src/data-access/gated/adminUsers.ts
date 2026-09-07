@@ -13,17 +13,13 @@ export interface AdminUserSummary {
   connection: string | null
 }
 
-export async function listAdminUsers(idToken: string): Promise<AdminUserSummary[]> {
-  const { users } = await apiFetch<{ users: AdminUserSummary[] }>('/admin/users', idToken)
+export async function listAdminUsers(): Promise<AdminUserSummary[]> {
+  const { users } = await apiFetch<{ users: AdminUserSummary[] }>('/admin/users')
   return users
 }
 
-export async function updateUserPersonId(
-  email: string,
-  personId: number,
-  idToken: string,
-): Promise<void> {
-  await apiFetch('/admin/users', idToken, {
+export async function updateUserPersonId(email: string, personId: number): Promise<void> {
+  await apiFetch('/admin/users', {
     method: 'PATCH',
     body: { email, personId },
   })
@@ -32,10 +28,18 @@ export async function updateUserPersonId(
 export async function updateUserGroup(
   email: string,
   action: 'promote' | 'demote',
-  idToken: string,
 ): Promise<void> {
-  await apiFetch(`/admin/users/${encodeURIComponent(email)}/group`, idToken, {
+  await apiFetch(`/admin/users/${encodeURIComponent(email)}/group`, {
     method: 'PATCH',
     body: { action },
+  })
+}
+
+// Denying a request and deleting an account are the same operation --
+// a denied request is just an account nobody approved. The API refuses
+// to delete an admin (demote first) or the caller themselves.
+export async function deleteUser(email: string): Promise<void> {
+  await apiFetch(`/admin/users/${encodeURIComponent(email)}`, {
+    method: 'DELETE',
   })
 }

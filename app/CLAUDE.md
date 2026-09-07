@@ -14,7 +14,7 @@ deliberate, not accidental, unless told otherwise.
   block, NOT `tailwind.config.js` (v4 removed that file entirely; don't
   recreate it). Paired with `@tailwindcss/vite`, not the old PostCSS
   plugin.
-- **ESLint 9 (flat config, `eslint.config.js`)** + **Prettier**, with
+- **ESLint 10 (flat config, `eslint.config.js`)** + **Prettier**, with
   `eslint-config-prettier` disabling any ESLint rules that would
   conflict with Prettier's formatting. Format-on-save is configured via
   `.vscode/settings.json`, committed to the repo (not a personal
@@ -22,6 +22,15 @@ deliberate, not accidental, unless told otherwise.
   provided they have the Prettier extension (`.vscode/extensions.json`
   recommends it).
 - **react-router-dom v7**, **react-markdown v10**
+- **`aws-amplify` v6** (specifically `aws-amplify/auth`) for the Cognito
+  login/session system in `AuthProvider.tsx` — actively maintained
+  (migrated off `amazon-cognito-identity-js` in 2026-09, which AWS put
+  into maintenance mode). Only the `Auth` category is imported, not the
+  full `aws-amplify` package, keeping the same already-decided scope as
+  before the migration: SRP sign-in, no Hosted UI, no other Amplify
+  categories (Storage/API/DataStore) — see `AuthProvider.tsx` for the
+  actual `signIn`/`confirmSignIn`/`fetchAuthSession`/`resetPassword`/
+  `confirmResetPassword` calls.
 - All dependencies were deliberately bumped to current major versions
   early in the project (see git history / commit messages around the
   first major dependency upgrade). If `npx npm-check-updates -u` is
@@ -101,17 +110,25 @@ checking first:
 
 ## Data model
 
-`src/data/` holds one mock data module per content type (`mockFamily.ts`,
-`mockPersons.ts`, `mockGallery.ts`, `mockLexicon.ts`, `mockTexts.ts`) —
-there's no real backend yet. Each one's shape deliberately mirrors the
-real database schema field names (`person_id`, `date_of_birth`, etc.) —
-the real schema lives in `schema/schema.sql` at the repo root (11
-tables: Persons, Relationships, Families, Images, Documents, ImageLinks,
-DocumentLinks, Galleries, GalleryImages, GalleryLinks, Lexicon). When
-wiring real data in (Phase 3C), match this shape rather than
-restructuring components.
+Real data, two paths — see the root `CLAUDE.md` for the full picture:
 
-## Auth / gating plan (decided, not yet built)
+- **Public content** (Documents, Galleries, Lexicon) is exported from
+  the canonical SQLite database to static JSON in
+  `src/data/generated/`, imported directly. No network call.
+- **Gated content** (Persons, Families, germline, search) goes through
+  the live API in `api/` via `src/data-access/gated/`.
+
+`src/data/mockPersons.ts` is the one surviving module with "mock" in its
+name and it is **not** mock data — it's a thin wrapper over the real
+committed `generated/persons.json`, used for the Index of Persons and
+for resolving names on public pages. The other mock modules
+(`mockFamily`, `mockGallery`, `mockLexicon`, `mockTexts`) are gone.
+
+Shapes mirror the real schema field names (`person_id`,
+`date_of_birth`, etc.); the schema lives in `schema/schema.sql` at the
+repo root.
+
+## Auth / gating (built and live)
 
 - **Gated** (family-tree traversal only): Family pages, Person pages —
   anything using `Persons`/`Families`/`Relationships` data
@@ -129,14 +146,16 @@ restructuring components.
 - Per-record gating is explicitly NOT needed — gating is by page type
   only, no schema flag for it
 
-## Feature gaps from the original site (not yet scoped into any phase)
+## Features carried over from the original site — all four now built
 
 Dad's own design notes (4 documents, reviewed but not reproduced here
 in full -- ask if they're needed again) surfaced four real features the
-original site had that aren't in the Phase 3A-3G plan above. These are
-genuine, valuable functionality -- not nice-to-haves to silently drop.
+original site had that weren't in the Phase 3A-3G plan. **All four are
+implemented now**; what follows is kept for the design rationale and the
+data-model reasoning behind each, which is still the authoritative
+explanation of _why_ they work the way they do.
 
-### 1. Germline / Ancestry highlighting (belongs in Phase 3E, gated)
+### 1. Germline / Ancestry highlighting (built — gated)
 
 The single most distinctive feature of the original site. Every
 logged-in user has a precomputed "germline" -- the full list of their
@@ -159,7 +178,7 @@ explicitly distinguishes `biological_parent` from `step_parent`/
 `biological_parent` chain from the logged-in user's own `Persons` row)
 computed at login or on the fly, not a data model change.
 
-### 2. Alternate-family indicator (Phase 3E)
+### 2. Alternate-family indicator (built)
 
 A sideways-pointing triangle on a couple's box, shown when that person
 has another marriage/partnership on record (widowed-then-remarried,
@@ -169,14 +188,14 @@ underlying data already exists (one person can appear in multiple
 another Families row besides the current one") plus a small UI
 affordance that doesn't exist yet.
 
-### 3. Divorce indicator (cheap, do alongside normal Relationships wiring)
+### 3. Divorce indicator (built — see FamilyPage's coupleGridCols)
 
 Three small vertical dashes between the couple's two boxes when
 `Relationships.status = 'divorced'` for that pair. Purely a rendering
 detail once real relationship data is wired in (Phase 3C) -- no new
 data needed.
 
-### 4. "Today in Frau Erica" anniversary calendar (not yet placed in any phase -- needs a decision)
+### 4. "Today in Frau Erica" anniversary calendar (built — AnniversariesPage)
 
 A genuinely new page type, not a fix to an existing one. 12 monthly
 pages, each listing every known birth/death/marriage anniversary
@@ -192,18 +211,29 @@ letting it stay unscoped indefinitely.
 
 ## Current phase status
 
-- ✅ **Phase 3A** (foundation, design system, mobile-responsive layout,
-  Family page component) — complete and visually verified against the
-  real site
-- ⏳ **Phase 3B** (Documents, Galleries, Lexicon, Home pages) — Documents
-  (Index of Texts + detail page), Galleries, and Lexicon are built (all
-  on mock data); Home, `/about` (User's guide), and `/contact` are still
-  `PlaceholderPage`s
-- ⏳ **Phase 3C** (real data: SQLite → JSON export, wire pages to it)
-- ⏳ **Phase 3D** (Cognito auth implementation)
-- ⏳ **Phase 3E** (gated pages, protected routes, API layer)
-- ⏳ **Phase 3F** (admin approval page for the site's sole approver)
-- ⏳ **Phase 3G** (hosting, domain)
+**All of Phase 3 is done. The site is live at https://frauerica.org
+(since 2026-09-06).**
+
+- ✅ **3A** foundation, design system, mobile-responsive layout
+- ✅ **3B** Documents, Galleries, Lexicon, Home — no `PlaceholderPage`
+  remains; `/about` (User's guide) and `/contact` are real pages
+- ✅ **3C** real data (SQLite → JSON export for public content)
+- ✅ **3D** Cognito auth
+- ✅ **3E** gated pages, protected routes, API layer, germline
+- ✅ **3F** admin approval — plus deny/delete, on `/admin/users`
+- ✅ **3G** hosting and domain — S3 + CloudFront + Route53, deployed
+  with `hosting/deploy-app.sh`
+
+Built since, beyond the original plan: the anniversary calendar
+("Today in Frau Erica"), an error boundary with stale-chunk recovery, a
+404 route, and the accessibility/contrast work.
+
+All four items from the "feature gaps from the original site" section
+below are now built: germline highlighting, the alternate-family
+indicator, the divorce dashes (`FamilyPage.tsx`, which switches the
+couple grid to a 3-column template only when divorced), and the
+anniversary calendar. That section is kept for the design rationale it
+records, not as a to-do list.
 
 ## House style
 

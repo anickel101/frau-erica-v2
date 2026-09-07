@@ -17,7 +17,7 @@ export default function PersonIndexEntry({ person }: { person: Person }) {
     // already appear on this person's own Family page, and repeating them
     // here just adds noise to a page whose only job is finding a name fast.
     <p className="text-xs break-inside-avoid mb-1">
-      <Link to={to} className="text-fe-accent hover:text-fe-accent-dark">
+      <Link to={to} className="text-fe-link hover:text-fe-link-dark">
         {getFullName(person)}
       </Link>
     </p>

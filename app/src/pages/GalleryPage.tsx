@@ -60,7 +60,29 @@ export default function GalleryPage() {
         <div className="p-6 max-w-4xl">
           <p className="text-fe-ink/60 text-sm">
             Gallery not found.{' '}
-            <Link to="/galleries" className="text-fe-accent hover:text-fe-accent-dark">
+            <Link to="/galleries" className="text-fe-link hover:text-fe-link-dark">
+              Back to Index of Galleries
+            </Link>
+          </p>
+        </div>
+      </Layout>
+    )
+  }
+
+  // A gallery with no photos at all would index photos[activeIndex] to
+  // undefined and crash GalleryLargeImage on a required prop. No such
+  // gallery exists in the current data (checked directly against the
+  // snapshot, not assumed), but galleries are created by hand in the
+  // database and an empty one is a perfectly natural intermediate state
+  // while assembling it.
+  if (photos.length === 0) {
+    return (
+      <Layout>
+        <div className="p-6 max-w-4xl">
+          <h1 className="text-xl font-bold mb-2">{gallery.name}</h1>
+          <p className="text-fe-ink/60 text-sm">
+            This gallery doesn't have any photos yet.{' '}
+            <Link to="/galleries" className="text-fe-link hover:text-fe-link-dark">
               Back to Index of Galleries
             </Link>
           </p>
@@ -74,16 +96,6 @@ export default function GalleryPage() {
   return (
     <Layout>
       <div className="p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
-          <h1 className="text-2xl sm:text-3xl font-bold">{gallery.name}</h1>
-          <Link
-            to="/galleries"
-            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
-          >
-            Back to Index of Galleries
-          </Link>
-        </div>
-
         <GalleryLargeImage photo={photos[activeIndex]} onPrev={goPrev} onNext={goNext} />
 
         <GalleryThumbnailStrip
@@ -95,7 +107,26 @@ export default function GalleryPage() {
           onSelect={selectPhoto}
         />
 
-        <div className="max-w-4xl mt-8 text-[12px] text-fe-ink">
+        {/* Headline + back link now sit below the image/caption/thumbnails,
+            functioning as a header for the text that follows (summary,
+            linked people) rather than a page title crowding the very top. */}
+        <div className="max-w-4xl mt-6 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
+          {/* text-xl/2xl, not text-2xl/3xl -- see FamilyPage.tsx's own
+              comment on this: gives a long gallery name more room. */}
+          <h1 className="text-xl sm:text-2xl font-bold">{gallery.name}</h1>
+          <Link
+            to="/galleries"
+            className="text-sm text-fe-link hover:text-fe-link-dark shrink-0"
+          >
+            Back to Index of Galleries
+          </Link>
+        </div>
+
+        {/* pl-8: a deliberate indent, not an alignment target the way the
+            Family page's summary indent lines up with box text -- Gallery
+            pages have no equivalent boxes to match, so this is just a
+            plain, visible indent per Dad's review notes. */}
+        <div className="max-w-4xl pl-8 text-[12px] text-fe-ink">
           <ReactMarkdown>{gallery.summary}</ReactMarkdown>
         </div>
 
@@ -110,7 +141,7 @@ export default function GalleryPage() {
                   {person.linkedFamilyId !== null ? (
                     <Link
                       to={`/family/${person.linkedFamilyId}`}
-                      className="text-fe-accent hover:text-fe-accent-dark"
+                      className="text-fe-link hover:text-fe-link-dark"
                     >
                       {getFullName(person)}
                     </Link>

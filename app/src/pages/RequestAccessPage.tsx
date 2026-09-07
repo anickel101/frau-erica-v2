@@ -1,9 +1,9 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import { RECAPTCHA_SITE_KEY } from '../config/recaptcha'
 import { requestAccess } from '../data-access/gated/requestAccess'
 import { buttonClassName, inputClassName } from '../utils/formStyles'
-import { executeRecaptcha } from '../utils/recaptcha'
+import { executeRecaptcha, loadRecaptchaScript } from '../utils/recaptcha'
 
 export default function RequestAccessPage() {
   const [name, setName] = useState('')
@@ -12,6 +12,14 @@ export default function RequestAccessPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
+
+  // Load reCAPTCHA as soon as the form is on screen so it can observe the
+  // session before scoring it. Previously the script was fetched inside
+  // the submit handler, which gave Google nothing to judge and scored
+  // real people as bots -- see loadRecaptchaScript's own comment.
+  useEffect(() => {
+    loadRecaptchaScript(RECAPTCHA_SITE_KEY)
+  }, [])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()

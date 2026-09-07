@@ -12,11 +12,13 @@ import type {
   APIGatewayProxyResultV2,
 } from 'aws-lambda'
 import { parsePersonIdUpdateBody, type PersonIdUpdateBody } from '../lib/adminUserBody'
-import { requireAdminAccess } from '../lib/auth'
+import { getCallerEmail, requireAdminAccess } from '../lib/auth'
 import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
+import { log } from '../lib/log'
 import { parseJsonBody } from '../lib/parseJsonBody'
 import { jsonResponse } from '../lib/response'
+import { withLogging } from '../lib/withLogging'
 
 const cognito = new CognitoIdentityProviderClient({})
 
@@ -32,7 +34,7 @@ async function userExists(userPoolId: string, email: string): Promise<boolean> {
   }
 }
 
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const denied = requireAdminAccess(event)
@@ -51,7 +53,9 @@ export async function handler(
 
   const userPoolId = requireEnv('COGNITO_USER_POOL_ID')
 
-  if (await userExists(userPoolId, email)) {
+  const hadPriorRequest = await userExists(userPoolId, email)
+
+  if (hadPriorRequest) {
     // Came through Request Access -- already exists in 'pending', with
     // custom:requester_name/connection set (see requestAccess.ts) but no
     // person_id yet and no usable credentials (created with
@@ -108,5 +112,18 @@ export async function handler(
     }),
   )
 
+  // The moment someone gains access to the gated family data. Records
+  // which of the two paths ran, because they differ in a way that
+  // matters when an approval is reported as not having worked:
+  // hadPriorRequest resends an existing invitation, the other branch
+  // creates the account and sends a first one.
+  log.info('admin.user-approved', {
+    actor: getCallerEmail(event),
+    target: email,
+    personId,
+    hadPriorRequest,
+  })
   return jsonResponse(200, { ok: true })
 }
+
+export const handler = withLogging('admin-approve-user', baseHandler)

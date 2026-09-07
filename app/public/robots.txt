@@ -1,0 +1,7 @@
+# The Frau Erica Project is a private family archive. It is deliberately
+# excluded from search engines entirely -- the public tier (Documents,
+# Galleries, Lexicon) included, not just the login-gated family tree.
+# This pairs with the site-wide <meta name="robots" content="noindex,
+# nofollow"> in index.html; both halves are intentional.
+User-agent: *
+Disallow: /

@@ -93,14 +93,22 @@ function getPersonSummary(db: Database, personId: number): LinkedPersonSummary |
 }
 
 // A person's own parents -- "grandparents" from the featured couple's
-// perspective. Not deduped across biological/step/adoptive on purpose: a
-// person can have e.g. one biological and one step parent on record
+// perspective. Different parents are never collapsed together: someone
+// can have e.g. one biological and one step parent on record
 // simultaneously, and both belong on the page.
+//
+// DISTINCT only deduplicates the same *person* appearing twice, which is
+// a different thing and possible because Relationships has no UNIQUE
+// constraint -- one person recorded as both biological_parent and
+// adoptive_parent of the same child (a step-parent who later adopts)
+// would otherwise render as two identical boxes. Currently zero
+// occurrences in the real data, checked directly; it's a guard for a
+// database that's edited by hand, matching what getChildren already does.
 function getParents(db: Database, personId: number): LinkedPersonSummary[] {
   const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const rows = queryAll<PersonSummaryRow>(
     db,
-    `SELECT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
+    `SELECT DISTINCT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
             p.last_name, p.date_of_birth, p.date_of_death
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_1
@@ -189,11 +197,17 @@ function getCoupleStatus(
   personId1: number,
   personId2: number,
 ): string | null {
+  // ORDER BY so a pair with more than one spouse row (remarried to the
+  // same person, or a correction entered as a second row rather than an
+  // edit) resolves the same way every time instead of leaving SQLite to
+  // pick. Lowest relationship_id -- the earliest recorded -- purely
+  // because it's stable; no such pair exists in the data today.
   const row = queryOne<{ status: string | null }>(
     db,
     `SELECT status FROM Relationships
      WHERE relationship_type = 'spouse'
-       AND ((person_id_1 = :p1 AND person_id_2 = :p2) OR (person_id_1 = :p2 AND person_id_2 = :p1))`,
+       AND ((person_id_1 = :p1 AND person_id_2 = :p2) OR (person_id_1 = :p2 AND person_id_2 = :p1))
+     ORDER BY relationship_id`,
     { ':p1': personId1, ':p2': personId2 },
   )
   return row?.status ?? null
@@ -255,9 +269,9 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
   // schema.sql's Images.url comment ("the website builds the actual
   // link at display time"), same convention app/'s existing Documents/
   // Galleries data-access layer already follows via resolveImageUrl().
-  const headerImage = queryOne<{ url: string }>(
+  const headerImage = queryOne<{ url: string; caption: string | null }>(
     db,
-    `SELECT i.url FROM ImageLinks il
+    `SELECT i.url, i.caption FROM ImageLinks il
      JOIN Images i ON i.image_id = il.image_id
      WHERE il.family_id = :familyId AND i.is_published = 1`,
     { ':familyId': familyId },
@@ -275,6 +289,7 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
     person_2: person2,
     description: family.description,
     header_image_url: headerImage?.url ?? null,
+    header_image_caption: headerImage?.caption ?? null,
     grandparents_1: family.person_id_1 !== null ? getParents(db, family.person_id_1) : [],
     grandparents_2: family.person_id_2 !== null ? getParents(db, family.person_id_2) : [],
     children: getChildren(db, parentIds),

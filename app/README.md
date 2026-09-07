@@ -1,9 +1,8 @@
-# Frau Erica -- Website (Phase 3A scaffold)
+# Frau Erica -- Website
 
-React + TypeScript + Tailwind, built with Vite. This is the beginning of
-the public-facing site described in the project plan doc, replicating the
-visual identity of the original frauerica.org while fixing mobile
-responsiveness, which the old site lacked.
+React 19 + TypeScript + Tailwind v4, built with Vite. The public-facing
+rebuild of frauerica.org, replicating the original site's visual identity
+while fixing mobile responsiveness, which the old site lacked.
 
 ## Running locally
 
@@ -14,29 +13,57 @@ npm run dev
 
 Then open the URL Vite prints (typically `http://localhost:5173`).
 
-## What's here so far (Phase 3A)
+Note that gated pages talk to the **real deployed API** even in local
+development -- the API base URL and Cognito pool are hardcoded in
+`src/config/cognito.ts` (deliberately: none of it is secret). So logging
+in locally uses real accounts against the real user pool, not a mock.
 
-- Vite + React + TypeScript + Tailwind v4, configured
-- Design tokens defined in `src/index.css` via Tailwind v4's `@theme`
-  block, extracted from screenshots of the live site (colors,
-  generational color-coding for Family pages)
-- `Layout` + `Sidebar` components, with a working mobile hamburger menu
-  (the old site did not render well on mobile -- this is a deliberate fix)
-- `FamilyPage` built out as the signature page type, using mock data
-  (`src/data/mockFamily.ts`) shaped to match the real database schema, so
-  swapping in real data later is a drop-in, not a redesign
-- Placeholder pages for every other route, so nothing 404s during
-  development
+## What's here
 
-## What's NOT here yet
+Public (no account needed):
 
-- Real data -- everything currently renders from `mockFamily.ts`. Phase 3C
-  will add a build step exporting the SQLite database to JSON and wire
-  pages up to it.
-- Authentication / gating -- Phase 3D. Right now every route is reachable;
-  nothing is actually protected yet.
-- The other public page types (Documents, Galleries, Lexicon) -- Phase 3B,
-  currently just placeholders.
+- **Home**, **User's Guide**, **Contact the Archivist**
+- **Index of Texts** + document pages -- long-form archival text with
+  embedded photos via the `{{image:ID}}` shortcode (see
+  `data-access/public/documents.ts`; `:wide` and `:300`-style modifiers
+  control layout)
+- **Index of Galleries** + gallery pages
+- **The Mueller Lexicon**
+
+Gated (Cognito account in the `approved` or `admin` group):
+
+- **Family pages** -- the signature page type, including germline
+  (direct-ancestor) diamond markers for the logged-in user's own line
+- **Index of Persons**, and person links that resolve to the right family
+- **Today in Frau Erica** -- the anniversary calendar
+- **Admin** -- approve access requests, manage users (`admin` group only)
+
+Auth is live: SRP sign-in via `aws-amplify` v6 (`components/AuthProvider.tsx`),
+route gating via `RequireApproved` / `RequireAdmin`, and a full
+self-service account lifecycle (request access → admin approval →
+first-sign-in password set → forgot password).
+
+## Where the data comes from
+
+Two different paths, deliberately:
+
+- **Public content** (Documents, Galleries, Lexicon) is exported from the
+  canonical SQLite database to static JSON in `src/data/generated/`,
+  committed to the repo, and imported directly -- no network call. Run
+  `npm run export-data` to regenerate after editing the database.
+- **Gated content** (Persons, Families, search, germline, anniversaries)
+  is fetched at runtime from the `api/` Lambda, which authorizes the
+  caller's Cognito token before returning anything.
+
+## Scripts
+
+| Script                | What it does                                                    |
+| --------------------- | --------------------------------------------------------------- |
+| `npm run dev`         | Vite dev server                                                 |
+| `npm run build`       | Typecheck + production build to `dist/`                         |
+| `npm run preview`     | Serve the production build locally                              |
+| `npm run export-data` | Regenerate `src/data/generated/*.json` from the SQLite database |
+| `npm run ci`          | lint + typecheck + format:check + test + build (what CI runs)   |
 
 ## Design tokens
 
@@ -52,22 +79,12 @@ decorative -- purple for grandparents, gold for the featured couple, green
 for children, matching the convention the original site used. Keep this
 consistent as new components are added.
 
-## A note on mock data
-
-`src/data/mockFamily.ts` is intentionally shaped to mirror the real
-`Persons` / `Families` / `Relationships` schema field names
-(`person_id`, `date_of_birth`, etc.) so that wiring real data in later
-doesn't require restructuring the components that consume it.
-
 ## Dependency versions
 
 All dependencies were deliberately upgraded to their latest major
 versions early in the project (before much code existed, to keep the
-upgrade cheap). This included React 18→19, Tailwind 3→4, Vite 5→8, and
-several others simultaneously -- confirmed working with zero visual
-regression against the original site screenshots. If dependencies drift
-out of date again later, `npx npm-check-updates -u` will bump
-`package.json`, but note it does NOT check cross-package compatibility --
-expect to manually resolve peer-dependency conflicts (it does not remember
-constraints like "typescript must stay below the version @typescript-eslint
-supports") after running it, the same way we had to this time.
+upgrade cheap). This included React 18→19, Tailwind 3→4, and Vite 5→8.
+If dependencies drift out of date later, `npx npm-check-updates -u` will
+bump `package.json`, but note it does NOT check cross-package
+compatibility -- expect to manually resolve peer-dependency conflicts
+afterward, the same way we had to that time.

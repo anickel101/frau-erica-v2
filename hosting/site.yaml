@@ -1,0 +1,182 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Static hosting for the frauerica.org front end: a private S3 bucket, a
+  CloudFront distribution reaching it via Origin Access Control, and the
+  ACM certificate covering both the apex and www.
+
+  Deploy this only AFTER dns.yaml's nameservers are live at the registrar.
+  The certificate validates by having CloudFormation write a record into
+  the Route53 zone -- which only proves anything if that zone is actually
+  authoritative for the domain. Deployed too early, the stack sits in
+  CREATE_IN_PROGRESS until ACM gives up (roughly an hour), then rolls back.
+
+  Creating this changes nothing for visitors. The distribution is reachable
+  at its own *.cloudfront.net name, but the domain keeps pointing at the
+  legacy EC2 instance until dns.yaml is redeployed with CloudFrontDomain
+  set. That redeploy is the cutover.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: frauerica.org
+
+Resources:
+  # Private. No public-read policy, no S3 static-website hosting (that
+  # older feature requires a public bucket). CloudFront is the only way
+  # in, matching how the existing frau-erica-images bucket is already
+  # locked down.
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub frau-erica-site-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub frau-erica-site-oac-${AWS::AccountId}
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Sub www.${DomainName}
+      ValidationMethod: DNS
+      # Naming the hosted zone is what makes validation hands-off:
+      # CloudFormation writes the _acme-style CNAME into the zone itself
+      # and waits. Without these, the stack would stall waiting for a
+      # record a human had to add by hand.
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !ImportValue FrauEricaHostedZoneId
+        - DomainName: !Sub www.${DomainName}
+          HostedZoneId: !ImportValue FrauEricaHostedZoneId
+
+  # The old Laravel site sent X-Frame-Options, X-Content-Type-Options and
+  # X-XSS-Protection (confirmed against its live response headers).
+  # A static bucket sends none of that on its own, so without this policy
+  # the rebuild would ship with a weaker posture than the site it replaces.
+  #
+  # HSTS deliberately omits includeSubDomains: mail.frauerica.org and
+  # friends are Network Solutions' mail platform, not ours, and forcing
+  # HTTPS onto hostnames we don't control could break webmail access in a
+  # way that's stubborn to undo (browsers cache HSTS for the full max-age).
+  SecurityHeaders:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub frau-erica-security-headers-${AWS::AccountId}
+        SecurityHeadersConfig:
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: false
+            Preload: false
+            Override: true
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            FrameOption: SAMEORIGIN
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin
+            Override: true
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: frauerica.org static site
+        Aliases:
+          - !Ref DomainName
+          - !Sub www.${DomainName}
+        DefaultRootObject: index.html
+        # US/Canada/Europe. The archive's audience is overwhelmingly
+        # North American; widen to PriceClass_All if relatives elsewhere
+        # ever report it feeling slow.
+        PriceClass: PriceClass_100
+        IPV6Enabled: true
+        HttpVersion: http2and3
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Origins:
+          - Id: SiteBucketOrigin
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            # Required to be present and empty when using OAC -- this is
+            # the field the older Origin Access Identity used.
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          TargetOriginId: SiteBucketOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          # AWS-managed CachingOptimized.
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          ResponseHeadersPolicyId: !Ref SecurityHeaders
+        # Client-side routing: React Router owns paths like /documents/228,
+        # which don't exist as objects in the bucket. A private bucket
+        # answers a missing key with 403 (not 404 -- it won't admit whether
+        # the key exists), so both have to be caught, and both must return
+        # index.html with a 200 so the router can take over and render
+        # either the real page or NotFoundPage.
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+
+  # Grants read to this distribution only -- not to CloudFront broadly.
+  # Declared after the distribution so the SourceArn condition can name
+  # it; the distribution itself depends only on the bucket, so there's no
+  # circular reference.
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowThisDistributionOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub ${SiteBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}
+
+Outputs:
+  BucketName:
+    Description: Sync the built site here (app/dist -> this bucket).
+    Value: !Ref SiteBucket
+  DistributionId:
+    Description: Needed to invalidate the cache after each deploy.
+    Value: !Ref Distribution
+  DistributionDomainName:
+    Description: >
+      Pass this to dns.yaml's CloudFrontDomain parameter to cut over.
+      Also usable directly, over https, to test the real site before any
+      DNS changes.
+    Value: !GetAtt Distribution.DomainName

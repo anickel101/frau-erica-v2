@@ -3,7 +3,12 @@ import { AncestralLine } from '../data-access/gated/germline'
 
 export interface AuthState {
   status: 'loading' | 'signedOut' | 'signedIn'
-  idToken: string | null
+  // Deliberately no idToken here. It used to be cached at sign-in and
+  // reused for every subsequent request, which silently broke every
+  // gated page once Cognito's 60-minute token lifetime elapsed in a
+  // long-lived tab. The token is now read fresh per request inside
+  // apiFetch (data-access/gated/apiClient.ts) -- don't reintroduce a
+  // stored copy.
   groups: string[]
   personId: number | null
   email: string | null
@@ -36,7 +41,10 @@ export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequir
 export interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<LoginResult>
   completeNewPassword: (newPassword: string) => Promise<void>
-  logout: () => void
+  // Async, like every other action here. It was typed `() => void` while
+  // the implementation was async, which quietly told every call site
+  // there was nothing to await and no rejection to handle.
+  logout: () => Promise<void>
   requestPasswordReset: (email: string) => Promise<void>
   confirmPasswordReset: (
     email: string,

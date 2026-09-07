@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { RefObject, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { GallerySummary } from '../types/family'
@@ -13,7 +13,7 @@ interface NavSection {
 // links, galleries) -- one canonical string instead of four independently
 // drifting copies. Bold + a size step down from the old text-sm, per
 // Dad's review notes.
-const NAV_LINK_CLASS = 'font-bold text-fe-accent hover:text-fe-accent-dark text-xs'
+const NAV_LINK_CLASS = 'font-bold text-fe-link hover:text-fe-link-dark text-xs'
 
 const NAV_SECTIONS: NavSection[] = [
   {
@@ -57,9 +57,20 @@ interface SidebarProps {
    * every other page, or an empty array when this family has none --
    * either way, the section just doesn't render. */
   familyGalleries: GallerySummary[] | null
+  /** Layout measures this against the header image's right edge to
+   * position the Family-page-only width-matched top accent bar (see
+   * useNarrowTopBar.tsx). Attached here rather than passed as a
+   * computed value, matching the same live-measurement approach as
+   * dividerOffset above -- the logo's actual left edge is what matters,
+   * not a hardcoded padding assumption. */
+  logoRef: RefObject<HTMLDivElement | null>
 }
 
-export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps) {
+export default function Sidebar({
+  dividerOffset,
+  familyGalleries,
+  logoRef,
+}: SidebarProps) {
   const [open, setOpen] = useState(false)
   const { status, email, personName, homeFamilyId, groups, ancestralLines, logout } =
     useAuth()
@@ -72,9 +83,19 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
 
   return (
     <>
-      {/* Mobile toggle -- visible only below the md breakpoint */}
+      {/* Mobile toggle -- visible only below the md breakpoint. Flush with
+          the true top-left corner (not top-3/left-3, which left a gap)
+          and the same bg-fe-accent as the top accent bar, so the two
+          blocks read as one continuous shape rather than a separate
+          floating pill. Only the bottom-right corner rounds off -- top
+          (against the bar) and left (against the page's own edge) both
+          stay square, since those are the two sides actually touching
+          something else; rounding them would put small notches of page
+          background right at the browser's own edges. Bottom-right is
+          the only side that's genuinely "free," floating into the page
+          content. */}
       <button
-        className="md:hidden fixed top-3 left-3 z-50 bg-fe-brown text-white rounded px-3 py-2 text-lg shadow"
+        className="md:hidden fixed top-0 left-0 z-50 w-14 h-14 flex items-center justify-center bg-fe-accent text-white text-3xl rounded-br-xl"
         aria-label="Toggle navigation"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
@@ -90,12 +111,36 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
         />
       )}
 
+      {/* invisible (not just translated off-screen) when the mobile
+          drawer is closed. A transform alone moves the panel out of
+          sight but leaves it in the tab order, so on a phone the first
+          ~15 tab presses walked through links nobody could see -- the
+          focus ring appearing to vanish into the left edge of the
+          screen. visibility:hidden removes it from the tab order;
+          md:visible brings it back on desktop, where the drawer is
+          always open regardless of `open`, so this can't be driven off
+          that state alone.
+
+          visibility is in the transition list so it flips only after the
+          slide-out finishes -- without that the panel disappears
+          instantly instead of sliding away.
+
+          The list has to name `translate` explicitly, not just
+          `transform`: Tailwind v4 implements -translate-x-full via the
+          separate CSS `translate` property, and its own
+          `transition-transform` shorthand covers transform/translate/
+          scale/rotate together. Writing transition-[transform,visibility]
+          silently dropped `translate` and made the drawer snap rather
+          than slide -- caught by reading the computed style, since it
+          still looked plausible in the class list. */}
       <aside
         className={`
           fixed md:static top-0 left-0 h-full md:h-auto w-72 md:w-64
           bg-fe-bg p-6 z-40
-          transform transition-transform duration-200 ease-in-out
-          ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+          transform transition-[transform,translate,scale,rotate,visibility]
+          duration-200 ease-in-out
+          ${open ? 'translate-x-0' : '-translate-x-full invisible'}
+          md:translate-x-0 md:visible
           overflow-y-auto
         `}
       >
@@ -107,6 +152,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
             numbers to keep in sync by hand. Falls back to natural sizing
             (no forced height) on pages with no header image at all. */}
         <div
+          ref={logoRef}
           className="flex flex-col"
           style={logoBlockHeight !== undefined ? { height: logoBlockHeight } : undefined}
         >
@@ -124,7 +170,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
           </div>
 
           <div>
-            <p className="text-fe-accent font-bold text-sm leading-tight">
+            <p className="text-fe-link font-bold text-sm leading-tight">
               The Frau Erica Project
             </p>
             <p className="text-fe-brown font-bold text-sm leading-tight">
@@ -170,7 +216,7 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                 <Link
                   to={`/family/${homeFamilyId}`}
                   onClick={() => setOpen(false)}
-                  className="font-bold text-fe-brown hover:text-fe-accent"
+                  className="font-bold text-fe-brown hover:text-fe-link"
                 >
                   {personName ?? email}
                 </Link>
@@ -192,12 +238,20 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
               )}
               {/* One link per immediate biological parent on record (see
                   hooks/useAuth.tsx's ancestralLines) -- 0, 1, or 2 links,
-                  never hardcoded to 2. There's no gender field anywhere
-                  in the schema, so this can't say "father's side"/
-                  "mother's side" -- each line is labeled by that
-                  parent's own name instead. Absent entirely until the
-                  lookup resolves, or if this person has no recorded
-                  biological parents at all. */}
+                  never hardcoded to 2. Labeled "First {Surname}" after
+                  the furthest known ancestor on that line -- computed
+                  straight from data we already have, no manual surname
+                  curation needed (the old site hand-tagged this per
+                  person). "(via {parentName})" stays alongside it: not
+                  just for the "no gender field" reason it was originally
+                  added for, but because it's the only thing keeping two
+                  lines' text apart on the ~0.6% of real pages where both
+                  lines happen to converge on the same furthest ancestor
+                  (confirmed against the real data -- a handful of people
+                  whose parents are both descended from the same
+                  patriarch). Absent entirely until the lookup resolves,
+                  or if this person has no recorded biological parents at
+                  all. */}
               {ancestralLines?.map((line) => (
                 <p key={line.parentId}>
                   <Link
@@ -209,14 +263,19 @@ export default function Sidebar({ dividerOffset, familyGalleries }: SidebarProps
                     onClick={() => setOpen(false)}
                     className={NAV_LINK_CLASS}
                   >
-                    Furthest Ancestor (via {line.parentName})
+                    First {line.furthestAncestor.last_name} (via {line.parentName})
                   </Link>
                 </p>
               ))}
               <button
                 type="button"
                 onClick={() => {
-                  logout()
+                  // logout() clears local state in a finally block, so
+                  // it resolves even when the Cognito call fails --
+                  // navigating without awaiting is safe, and awaiting
+                  // would leave the person on the page they just asked
+                  // to leave until a network round-trip finished.
+                  void logout()
                   setOpen(false)
                   navigate('/login')
                 }}

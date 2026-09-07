@@ -31,26 +31,50 @@ export default function GalleryLargeImage({
 
   return (
     <div>
+      {/* The zoom target is a button nested *beside* the chevrons rather
+          than wrapping them: a <button> cannot legally contain other
+          buttons, so making the whole outer box clickable (as it was)
+          and keyboard-accessible are mutually exclusive. The outer div
+          keeps the ref, the sizing and the `group` for hover, and the
+          chevrons become siblings layered over the image button. */}
       <div
         ref={headerRef}
-        onClick={() => setIsZoomed(true)}
-        className="group relative max-w-4xl h-64 sm:h-96 bg-fe-brown/20 flex items-center justify-center cursor-zoom-in overflow-hidden"
+        className="group relative max-w-4xl h-64 sm:h-96 bg-fe-brown/20 overflow-hidden"
       >
-        <img src={photo.url} alt={photo.title} className="w-full h-full object-contain" />
+        <button
+          type="button"
+          onClick={() => setIsZoomed(true)}
+          className="w-full h-full flex items-center justify-center cursor-zoom-in"
+          // photo.title is genuinely empty for some real gallery rows,
+          // which produced a dangling "Zoom in on " -- a screen reader
+          // announces that as a button with no subject. Verified against
+          // the live data rather than assumed.
+          aria-label={photo.title ? `Zoom in on ${photo.title}` : 'Zoom in on this photo'}
+        >
+          <img
+            src={photo.url}
+            alt={photo.title}
+            className="w-full h-full object-contain"
+          />
+        </button>
+        {/* focus-visible alongside group-hover -- these are invisible
+            until hover, which a keyboard user never triggers, so without
+            it they'd be focusable but unseeable: the tab order would
+            appear to stop on nothing. */}
         <ChevronButton
           direction="left"
           onClick={handlePrev}
           label="Previous photo"
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-70"
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-70 focus-visible:opacity-100"
         />
         <ChevronButton
           direction="right"
           onClick={handleNext}
           label="Next photo"
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-70"
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-70 focus-visible:opacity-100"
         />
       </div>
-      <p className="max-w-4xl mt-2 text-sm text-fe-ink/70">
+      <p className="max-w-4xl mt-2 text-sm text-fe-ink/70 text-right">
         <strong className="text-fe-ink">{photo.title}</strong> -- {photo.caption}
         {(photo.location || photo.year_taken || photo.credit) && (
           <>

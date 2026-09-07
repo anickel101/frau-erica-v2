@@ -7,11 +7,13 @@ import type {
   APIGatewayProxyEventV2WithJWTAuthorizer,
   APIGatewayProxyResultV2,
 } from 'aws-lambda'
-import { requireAdminAccess } from '../lib/auth'
+import { getCallerEmail, isSelf, requireAdminAccess } from '../lib/auth'
 import { requireEnv } from '../lib/env'
 import { GROUPS } from '../lib/groups'
+import { log } from '../lib/log'
 import { parseJsonBody } from '../lib/parseJsonBody'
 import { jsonResponse } from '../lib/response'
+import { withLogging } from '../lib/withLogging'
 
 const cognito = new CognitoIdentityProviderClient({})
 
@@ -27,7 +29,7 @@ interface UpdateGroupBody {
 // power is a meaningfully more sensitive action than fixing a
 // data-entry mistake, and gets its own explicit, auditable action
 // rather than being folded into that body shape.
-export async function handler(
+async function baseHandler(
   event: APIGatewayProxyEventV2WithJWTAuthorizer,
 ): Promise<APIGatewayProxyResultV2> {
   const denied = requireAdminAccess(event)
@@ -40,12 +42,10 @@ export async function handler(
 
   // Self-protection: an admin can't change their own group through this
   // route -- avoids a stray click locking the only admin out of the
-  // admin pages entirely. Email is this pool's Cognito username (the
-  // sole sign-in identifier), so comparing it against the caller's own
-  // token claim is the same identity assumption adminApproveUser.ts
-  // already makes.
-  const callerEmail = event.requestContext.authorizer.jwt.claims.email
-  if (callerEmail === email) {
+  // admin pages entirely. See isSelf for why the comparison is
+  // case-insensitive; it used to be a raw ===, which this pool's
+  // case-insensitive usernames made bypassable.
+  if (isSelf(event, email)) {
     return jsonResponse(400, { error: 'You cannot change your own group' })
   }
 
@@ -74,5 +74,15 @@ export async function handler(
     )
   }
 
+  // Granting or revoking admin power is the most consequential thing
+  // any route here does, and the only record of it was previously
+  // whatever the acting admin remembered.
+  log.info('admin.group-changed', {
+    actor: getCallerEmail(event),
+    target: email,
+    action: body.action,
+  })
   return jsonResponse(200, { ok: true })
 }
+
+export const handler = withLogging('admin-update-user-group', baseHandler)

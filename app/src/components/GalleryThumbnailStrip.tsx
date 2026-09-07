@@ -44,10 +44,17 @@ export default function GalleryThumbnailStrip({
               index === activeIndex ? 'border-fe-accent' : 'border-transparent'
             }`}
           >
+            {/* object-top, not the object-cover default of center -- a
+                square crop of a non-square photo has to cut something,
+                and centering that crop eats into whatever's near the
+                top of the frame, which for a portrait is usually a
+                head. Anchoring to the top instead trades cropping more
+                off the bottom (feet, background) for keeping faces
+                intact -- the standard fix for this in any photo grid. */}
             <img
               src={photo.url}
               alt={photo.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top"
             />
           </button>
         ))}

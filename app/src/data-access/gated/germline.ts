@@ -4,7 +4,7 @@ import { LinkedPersonSummary } from '../../types/person'
 export interface AncestralLine {
   parentId: number
   // Just the first name -- matches the sidebar link text exactly
-  // ("Furthest Ancestor (via Hans)"), not a full name.
+  // ("First Bigelow (via Hans)"), not a full name.
   parentName: string
   furthestAncestor: LinkedPersonSummary
 }
@@ -18,6 +18,6 @@ export interface GermlineResponse {
   ancestralLines: AncestralLine[]
 }
 
-export function getMyGermline(idToken: string): Promise<GermlineResponse> {
-  return apiFetch('/me/germline', idToken)
+export function getMyGermline(): Promise<GermlineResponse> {
+  return apiFetch('/me/germline')
 }

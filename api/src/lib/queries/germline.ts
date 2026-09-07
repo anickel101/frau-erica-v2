@@ -103,7 +103,16 @@ export function getFurthestAncestor(
     return a.person_id - b.person_id
   })
 
+  // candidateIds came from Relationships, so a row pointing at a
+  // person_id with no matching Persons row yields nothing here and
+  // leaves candidates empty. FK enforcement needs PRAGMA foreign_keys =
+  // ON at write time, which a hand-edited database can't be assumed to
+  // have had. No orphans exist today (checked against the snapshot), but
+  // the cost of being wrong was a crash on a gated page rather than a
+  // missing ancestral line.
   const winner = candidates[0]
+  if (!winner) return null
+
   return {
     ...toPersonSummary(winner),
     linkedFamilyId: resolveLinkedFamilyId(db, winner.person_id),
@@ -157,7 +166,7 @@ export function getFurthestAncestorInLine(
 export interface AncestralLine {
   parentId: number
   // Just the first name -- matches the agreed sidebar link text
-  // exactly ("Furthest Ancestor (via Hans)"), not a full name.
+  // exactly ("First Bigelow (via Hans)"), not a full name.
   parentName: string
   furthestAncestor: LinkedPersonSummary
 }

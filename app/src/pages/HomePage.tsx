@@ -55,7 +55,7 @@ export default function HomePage() {
           <ul className="space-y-1">
             {EXPLORE_LINKS.map((link) => (
               <li key={link.to}>
-                <Link to={link.to} className="text-fe-accent hover:text-fe-accent-dark">
+                <Link to={link.to} className="text-fe-link hover:text-fe-link-dark">
                   {link.label}
                 </Link>
               </li>

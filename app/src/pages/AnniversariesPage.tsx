@@ -39,7 +39,7 @@ function PersonLink({
   const to =
     linkedFamilyId !== null ? `/family/${linkedFamilyId}` : `/persons/${personId}`
   return (
-    <Link to={to} className="font-bold text-fe-accent hover:text-fe-accent-dark">
+    <Link to={to} className="font-bold text-fe-link hover:text-fe-link-dark">
       {name}
     </Link>
   )
@@ -87,7 +87,7 @@ type LoadState =
   | { status: 'error' }
 
 export default function AnniversariesPage() {
-  const { idToken } = useAuth()
+  const { status } = useAuth()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
   const [month, setMonth] = useState(CURRENT_MONTH)
   const scrollTargetDay = useRef<number | null>(null)
@@ -98,11 +98,16 @@ export default function AnniversariesPage() {
   // re-render entirely, so an effect depending only on [month, state]
   // would never re-run and the scroll would silently do nothing.
   const [jumpSignal, setJumpSignal] = useState(0)
+  // Fires the same scroll-to-today mechanism as the button below, but
+  // automatically, once, the first time real data is in -- landing on
+  // the correct month (month's own useState default, above) isn't the
+  // same as landing scrolled to today's own entry within it.
+  const hasAutoScrolledToToday = useRef(false)
 
   useEffect(() => {
-    if (!idToken) return
+    if (status !== 'signedIn') return
     let cancelled = false
-    getAnniversaries(idToken)
+    getAnniversaries()
       .then(({ events }) => {
         if (!cancelled) setState({ status: 'loaded', events })
       })
@@ -112,7 +117,14 @@ export default function AnniversariesPage() {
     return () => {
       cancelled = true
     }
-  }, [idToken])
+  }, [status])
+
+  useEffect(() => {
+    if (state.status !== 'loaded' || hasAutoScrolledToToday.current) return
+    hasAutoScrolledToToday.current = true
+    scrollTargetDay.current = CURRENT_DAY
+    setJumpSignal((n) => n + 1)
+  }, [state.status])
 
   useEffect(() => {
     if (scrollTargetDay.current === null) return
@@ -143,7 +155,7 @@ export default function AnniversariesPage() {
           <button
             type="button"
             onClick={jumpToToday}
-            className="text-sm text-fe-accent hover:text-fe-accent-dark shrink-0"
+            className="text-sm text-fe-link hover:text-fe-link-dark shrink-0"
           >
             Jump to today
           </button>

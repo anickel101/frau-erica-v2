@@ -55,6 +55,40 @@ export function getPersonIdClaim(
   return typeof personIdClaim === 'string' ? Number(personIdClaim) : null
 }
 
+// "Is this admin acting on themselves?" -- the guard behind both the
+// self-demotion and self-deletion checks, either of which could lock the
+// only admin out of the admin pages.
+//
+// Case-insensitive deliberately: this pool has UsernameConfiguration
+// CaseSensitive=false, so Admin@example.com and admin@example.com are
+// genuinely the same account. A raw === comparison let an admin walk
+// straight through their own protection by varying the capitalisation of
+// the address they typed.
+//
+// Email is the Cognito username here (the sole sign-in identifier), so
+// comparing it against the caller's own token claim is the same identity
+// assumption adminApproveUser.ts already relies on.
+export function isSelf(
+  event: APIGatewayProxyEventV2WithJWTAuthorizer,
+  email: string,
+): boolean {
+  const callerEmail = getCallerEmail(event)
+  if (callerEmail === null) return false
+  return callerEmail.toLowerCase() === email.toLowerCase()
+}
+
+// The acting admin's own email, for the audit lines on the routes that
+// change someone's access. The Cognito `sub` would identify them just as
+// uniquely, but an audit trail is read by a person asking "who did
+// this?" -- an opaque uuid means a second lookup every time, and these
+// are the four routes where that question is most likely to be asked.
+export function getCallerEmail(
+  event: APIGatewayProxyEventV2WithJWTAuthorizer,
+): string | null {
+  const callerEmail = event.requestContext.authorizer.jwt.claims.email
+  return typeof callerEmail === 'string' ? callerEmail : null
+}
+
 // Shared shape behind requireApprovedAccess/requireAdminAccess -- both
 // are "extract claim -> check -> 403 or null" with a different check and
 // error message. The Cognito authorizer already guarantees a valid token

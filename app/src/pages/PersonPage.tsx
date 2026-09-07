@@ -8,6 +8,11 @@ type ResolveState =
   | { kind: 'loading' }
   | { kind: 'redirect'; familyId: number }
   | { kind: 'noFamily' }
+  // Distinct from 'error': the id in the URL isn't a number at all, so
+  // nothing was ever attempted. Telling someone "something went wrong"
+  // when the real answer is "that address isn't a person" sends them
+  // chasing a fault that isn't there.
+  | { kind: 'notFound' }
   | { kind: 'error' }
 
 // There's no standalone Person detail page by design -- every place a
@@ -18,14 +23,27 @@ type ResolveState =
 // rather than duplicating that resolution at every call site.
 export default function PersonPage() {
   const { id } = useParams<{ id: string }>()
-  const { idToken } = useAuth()
+  const { status } = useAuth()
   const [state, setState] = useState<ResolveState>({ kind: 'loading' })
 
   useEffect(() => {
     const personId = Number(id)
-    if (!idToken || !Number.isInteger(personId)) return
     let cancelled = false
-    getPersonById(personId, idToken)
+
+    // See FamilyPage's matching comment: a malformed id used to share a
+    // `return` with the not-signed-in case and hang on "Loading..."
+    // permanently. Only one of the two ever resolves on its own.
+    if (!Number.isInteger(personId)) {
+      void Promise.resolve().then(() => {
+        if (!cancelled) setState({ kind: 'notFound' })
+      })
+      return () => {
+        cancelled = true
+      }
+    }
+    if (status !== 'signedIn') return
+
+    getPersonById(personId)
       .then((person) => {
         if (cancelled) return
         const familyId = person.familyIdsAsPartner[0] ?? person.familyIdAsChild
@@ -39,7 +57,7 @@ export default function PersonPage() {
     return () => {
       cancelled = true
     }
-  }, [id, idToken])
+  }, [id, status])
 
   if (state.kind === 'redirect') {
     return <Navigate to={`/family/${state.familyId}`} replace />
@@ -51,6 +69,7 @@ export default function PersonPage() {
         <p className="text-fe-ink/60 text-sm">
           {state.kind === 'loading' && 'Loading...'}
           {state.kind === 'noFamily' && "This person isn't linked to a family page yet."}
+          {state.kind === 'notFound' && "This person page doesn't exist."}
           {state.kind === 'error' && 'Something went wrong loading this page.'}
         </p>
       </div>

@@ -7,9 +7,7 @@ export default function InlineMarkdown({ children }: { children: string }) {
     <ReactMarkdown
       components={{
         p: 'span',
-        a: (props) => (
-          <a {...props} className="text-fe-accent hover:text-fe-accent-dark" />
-        ),
+        a: (props) => <a {...props} className="text-fe-link hover:text-fe-link-dark" />,
       }}
     >
       {children}

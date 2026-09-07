@@ -39,14 +39,27 @@ const imagesById = new Map(
 // website, not by the database"). An id with no matching (e.g.
 // unpublished) image is stripped rather than left as literal placeholder
 // text.
-const IMAGE_PLACEHOLDER = /\{\{image:(\d+)\}\}/g
+//
+// An optional `:modifier` suffix -- {{image:ID:wide}} or {{image:ID:300}}
+// -- carries display intent past markdown's own image syntax by riding
+// along in the (otherwise-unused, by every image in this app) markdown
+// title slot: `![caption](url "modifier")`. TextPage.tsx's img renderer
+// reads that title back out to pick a full-width, non-floated treatment
+// ("wide") or an explicit pixel width overriding the default rotation
+// (a bare number), instead of the usual floated/rotating-width image.
+const IMAGE_PLACEHOLDER = /\{\{image:(\d+)(?::(\w+))?\}\}/g
 
 function resolveImagePlaceholders(content: string): string {
-  return content.replace(IMAGE_PLACEHOLDER, (_match, idStr: string) => {
-    const image = imagesById.get(Number(idStr))
-    if (!image) return ''
-    return `![${image.caption ?? ''}](${resolveImageUrl(image.url)})`
-  })
+  return content.replace(
+    IMAGE_PLACEHOLDER,
+    (_match, idStr: string, modifier: string | undefined) => {
+      const image = imagesById.get(Number(idStr))
+      if (!image) return ''
+      const caption = image.caption ?? ''
+      const url = resolveImageUrl(image.url)
+      return modifier ? `![${caption}](${url} "${modifier}")` : `![${caption}](${url})`
+    },
+  )
 }
 
 export function listDocuments(): DocumentListItem[] {

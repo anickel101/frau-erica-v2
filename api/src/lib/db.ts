@@ -1,9 +1,10 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { createWriteStream, readFileSync } from 'node:fs'
+import { createWriteStream, readFileSync, rmSync } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 import type { Readable } from 'node:stream'
 import initSqlJs, { type Database } from 'sql.js'
 import { requireEnv } from './env'
+import { log } from './log'
 import { SQL_WASM_BASE64 } from './sqlWasmBase64'
 
 const LOCAL_DB_PATH = '/tmp/frau_erica.db'
@@ -21,6 +22,10 @@ export function getDbPath(): Promise<string> {
   if (!snapshotPath) {
     snapshotPath = downloadSnapshot().catch((err: unknown) => {
       snapshotPath = null
+      log.error('db.snapshot-download-failed', err, {
+        bucket: process.env.DB_BUCKET,
+        key: process.env.DB_KEY,
+      })
       throw err
     })
   }
@@ -37,6 +42,7 @@ async function downloadSnapshot(): Promise<string> {
   }
 
   await pipeline(response.Body as Readable, createWriteStream(LOCAL_DB_PATH))
+  log.info('db.snapshot-downloaded', { bucket, key })
   return LOCAL_DB_PATH
 }
 
@@ -50,6 +56,30 @@ export function getDb(): Promise<Database> {
   if (!db) {
     db = openDb().catch((err: unknown) => {
       db = null
+      // snapshotPath is cleared too, not just db.
+      //
+      // These are two separate caches, and only the download failure
+      // path used to clear the download cache. So a snapshot that
+      // downloaded *successfully* but was corrupt (a truncated upload,
+      // a half-written backup) failed here in openDb, cleared db, and
+      // left snapshotPath resolved to the bad /tmp file. Every
+      // subsequent request on that warm container then re-read the same
+      // corrupt bytes and failed identically -- including after the
+      // problem was fixed in S3, since nothing would ever re-download.
+      // A container can live for hours, so this outlasted the outage
+      // that caused it.
+      //
+      // Deleting the file as well means the next attempt genuinely
+      // starts over rather than trusting whatever is on disk.
+      snapshotPath = null
+      try {
+        rmSync(LOCAL_DB_PATH, { force: true })
+      } catch {
+        // Best-effort. If the file can't be removed the redownload
+        // overwrites it anyway; failing to clean up must not replace
+        // the real error below.
+      }
+      log.error('db.snapshot-open-failed', err, { path: LOCAL_DB_PATH })
       throw err
     })
   }
