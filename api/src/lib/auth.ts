@@ -5,15 +5,33 @@ import type {
 import { GROUPS } from './groups'
 import { jsonResponse } from './response'
 
-// API Gateway HTTP API's JWT authorizer serializes the cognito:groups
-// claim as a Java-style toString() of the list -- e.g. "[admin]" or
-// "[approved, admin]" -- not a real JSON array. Confirmed empirically
-// against a live deployed authorizer, not assumed from docs.
+// API Gateway HTTP API's JWT authorizer flattens the cognito:groups
+// claim into a bracketed string rather than passing a real JSON array.
+// Multiple groups are separated by a SPACE, not a comma:
+//
+//   one group   -> "[approved]"
+//   two groups  -> "[approved admin]"
+//
+// Captured from a live 403 (the groupsClaim field on request.refused in
+// withLogging.ts), not inferred.
+//
+// This function previously split on ',' alone, with a comment asserting
+// the multi-group form was "[approved, admin]" and that it had been
+// confirmed against a live authorizer. The single-group case had been;
+// the comma had not. The consequence was that anyone in *two* groups
+// parsed as the single bogus group "approved admin", matching neither
+// name, and was refused from every route in the API -- including the
+// admin routes they'd just been granted. It went unnoticed because
+// nobody was in two groups until an approved user was promoted to admin,
+// and promotion adds `admin` without removing `approved`.
+//
+// Splitting on any run of whitespace or commas accepts both forms, so a
+// future change to the separator can't resurrect this.
 export function parseGroups(groupsClaim: string | undefined): string[] {
   if (!groupsClaim) return []
   return groupsClaim
     .replace(/^\[|\]$/g, '')
-    .split(',')
+    .split(/[\s,]+/)
     .map((g) => g.trim())
     .filter(Boolean)
 }
