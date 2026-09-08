@@ -46,7 +46,7 @@ export default function DocumentEmbeddedImage({
         // image's own left edge (~1 pica), one point size smaller than
         // the surrounding 12px body text -- all per review feedback;
         // previously italic and centered.
-        <figcaption className="mt-2 pl-4 text-[11px] text-fe-ink/60 text-left">
+        <figcaption className="mt-2 pl-4 text-[11px] leading-tight text-fe-ink/60 text-left">
           {alt}
         </figcaption>
       )}

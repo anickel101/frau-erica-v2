@@ -71,7 +71,15 @@ export default function TextSeriesRow({
                 to={`/documents/${chapter.document_id}`}
                 className="text-fe-link hover:text-fe-link-dark"
               >
-                {chapter.series_order}. {chapter.title}
+                {/* series_order 0 marks a series overview -- the piece that
+                    introduces the rest rather than a chapter of it. Printing
+                    its number gave "0. Fritz Mueller's Journal of the Voyage
+                    to America" above a list starting at 1, which Opa asked to
+                    drop. Falsy check rather than === 0 so a null order (a
+                    chapter with none recorded) is unnumbered too, instead of
+                    rendering "null.". */}
+                {chapter.series_order ? `${chapter.series_order}. ` : ''}
+                {chapter.title}
               </Link>
             </li>
           ))}

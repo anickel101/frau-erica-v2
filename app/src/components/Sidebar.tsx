@@ -15,14 +15,17 @@ interface NavSection {
 // Dad's review notes.
 const NAV_LINK_CLASS = 'font-bold text-fe-link hover:text-fe-link-dark text-xs'
 
+// "About the site" is deliberately NOT in this list. Per Opa's review it
+// now leads the sidebar and carries the signed-in identity, Manage users
+// and Log out alongside its two static links -- a mix of dynamic and
+// static entries that the plain title+links shape here can't express, so
+// it's rendered explicitly below instead.
+const ABOUT_LINKS: { label: string; to: string }[] = [
+  { label: "User's Guide", to: '/about' },
+  { label: 'Contact the Archivist', to: '/contact' },
+]
+
 const NAV_SECTIONS: NavSection[] = [
-  {
-    title: 'About the site',
-    links: [
-      { label: "User's Guide", to: '/about' },
-      { label: 'Contact the Archivist', to: '/contact' },
-    ],
-  },
   {
     title: 'Explorations',
     links: [
@@ -194,24 +197,27 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* Account status -- only ever rendered signed in (a signed-out
-            visitor sees nothing here). personName/homeFamilyId come from
-            a separate GET /persons/:id lookup AuthProvider does after
-            sign-in (the token itself only carries person_id, neither a
-            name nor a family), so the name briefly falls back to email
-            until that resolves -- the name is only a link once
-            homeFamilyId is known, since a lookup failure or an
-            unlinked/pending account has nowhere to send it to. Also the
-            only nav entry point into /admin/users for an admin --
-            previously only reachable via a bookmarked URL or the
-            one-time Request Access deep-link email. */}
-        {status === 'signedIn' && (
-          <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
-            {/* mb-2 + space-y-0.5 below match NAV_SECTIONS' own
-                title-to-links and link-to-link spacing exactly, rather
-                than this section drifting with its own hand-tuned gaps. */}
+        {/* "About the site" leads the sidebar and carries the signed-in
+            identity and Log out, per Opa's review -- previously the
+            account block sat above an "About the site" section that held
+            only two static links, and Log out was buried among the
+            ancestry links.
+
+            "Logged in: {name}" rather than "Hi, {name}", also his call:
+            a greeting is warm the first couple of times and then just
+            takes up space in something people use as navigation.
+
+            personName/homeFamilyId come from a separate GET /persons/:id
+            lookup AuthProvider does after sign-in (the token carries
+            person_id, neither a name nor a family), so the name briefly
+            falls back to email until that resolves -- and is only a link
+            once homeFamilyId is known, since a lookup failure or an
+            unlinked/pending account has nowhere to send it. */}
+        <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
+          <p className="font-bold text-sm mb-2 text-fe-brown">About the site</p>
+          {status === 'signedIn' && (
             <p className="text-sm mb-2">
-              Hi,{' '}
+              Logged in:{' '}
               {homeFamilyId !== null ? (
                 <Link
                   to={`/family/${homeFamilyId}`}
@@ -224,68 +230,55 @@ export default function Sidebar({
                 <span className="font-bold text-fe-brown">{personName ?? email}</span>
               )}
             </p>
-            <div className="space-y-0.5">
-              {groups.includes('admin') && (
-                <p>
-                  <Link
-                    to="/admin/users"
-                    onClick={() => setOpen(false)}
-                    className={NAV_LINK_CLASS}
-                  >
-                    Manage users
-                  </Link>
-                </p>
-              )}
-              {/* One link per immediate biological parent on record (see
-                  hooks/useAuth.tsx's ancestralLines) -- 0, 1, or 2 links,
-                  never hardcoded to 2. Labeled "First {Surname}" after
-                  the furthest known ancestor on that line -- computed
-                  straight from data we already have, no manual surname
-                  curation needed (the old site hand-tagged this per
-                  person). "(via {parentName})" stays alongside it: not
-                  just for the "no gender field" reason it was originally
-                  added for, but because it's the only thing keeping two
-                  lines' text apart on the ~0.6% of real pages where both
-                  lines happen to converge on the same furthest ancestor
-                  (confirmed against the real data -- a handful of people
-                  whose parents are both descended from the same
-                  patriarch). Absent entirely until the lookup resolves,
-                  or if this person has no recorded biological parents at
-                  all. */}
-              {ancestralLines?.map((line) => (
-                <p key={line.parentId}>
-                  <Link
-                    to={
-                      line.furthestAncestor.linkedFamilyId !== null
-                        ? `/family/${line.furthestAncestor.linkedFamilyId}`
-                        : `/persons/${line.furthestAncestor.person_id}`
-                    }
-                    onClick={() => setOpen(false)}
-                    className={NAV_LINK_CLASS}
-                  >
-                    First {line.furthestAncestor.last_name} (via {line.parentName})
-                  </Link>
-                </p>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  // logout() clears local state in a finally block, so
-                  // it resolves even when the Cognito call fails --
-                  // navigating without awaiting is safe, and awaiting
-                  // would leave the person on the page they just asked
-                  // to leave until a network round-trip finished.
-                  void logout()
-                  setOpen(false)
-                  navigate('/login')
-                }}
-                className={NAV_LINK_CLASS}
-              >
-                Log out
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+          <ul className="space-y-0.5">
+            {ABOUT_LINKS.map((link) => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className={NAV_LINK_CLASS}
+                  onClick={() => setOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+            {/* The only nav entry point into /admin/users -- otherwise
+                reachable solely by a bookmark or the one-time Request
+                Access deep-link email. */}
+            {status === 'signedIn' && groups.includes('admin') && (
+              <li>
+                <Link
+                  to="/admin/users"
+                  onClick={() => setOpen(false)}
+                  className={NAV_LINK_CLASS}
+                >
+                  Manage users
+                </Link>
+              </li>
+            )}
+            {status === 'signedIn' && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // logout() clears local state in a finally block, so
+                    // it resolves even when the Cognito call fails --
+                    // navigating without awaiting is safe, and awaiting
+                    // would leave the person on the page they just asked
+                    // to leave until a network round-trip finished.
+                    void logout()
+                    setOpen(false)
+                    navigate('/login')
+                  }}
+                  className={NAV_LINK_CLASS}
+                >
+                  Log out
+                </button>
+              </li>
+            )}
+          </ul>
+        </div>
 
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
@@ -305,6 +298,42 @@ export default function Sidebar({
             </ul>
           </div>
         ))}
+
+        {/* Ancestry -- its own section again, per Opa's review ("consider
+            returning the Ancestry element to the sidebar"). It used to
+            be a couple of loose links inside the account block.
+
+            One link per ancestral line, labeled "First {Surname}" after
+            the furthest known ancestor on that line -- computed from
+            data we already hold, with no manual surname curation (the
+            old site hand-tagged this per person). "(via {name})" stays
+            alongside: not only for the "no gender field" reason it was
+            added for, but because it's the only thing separating two
+            lines' text on the ~0.6% of real pages where both converge on
+            the same furthest ancestor. Absent entirely until the lookup
+            resolves, or when no biological parents are on record. */}
+        {ancestralLines && ancestralLines.length > 0 && (
+          <div className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
+            <p className="font-bold text-sm mb-2 text-fe-brown">Ancestry</p>
+            <ul className="space-y-0.5">
+              {ancestralLines.map((line) => (
+                <li key={line.viaId}>
+                  <Link
+                    to={
+                      line.furthestAncestor.linkedFamilyId !== null
+                        ? `/family/${line.furthestAncestor.linkedFamilyId}`
+                        : `/persons/${line.furthestAncestor.person_id}`
+                    }
+                    onClick={() => setOpen(false)}
+                    className={NAV_LINK_CLASS}
+                  >
+                    First {line.furthestAncestor.last_name} (via {line.viaName})
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Family page-specific -- only present when the current family's
             couple has at least one linked gallery (see getLinkedGalleries

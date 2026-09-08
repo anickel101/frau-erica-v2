@@ -143,7 +143,7 @@ function EmptyGrandparentBox() {
     <div className="flex items-center gap-3 p-4 border border-black/10 rounded-sm bg-fe-gen-grandparent">
       <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 text-center" />
       <div>
-        <p className="font-bold text-sm text-fe-ink/60 italic">No data available</p>
+        <p className="font-bold text-sm text-fe-ink/60">No data</p>
         <p className="text-xs text-fe-ink/70">&nbsp;</p>
       </div>
     </div>
@@ -156,7 +156,7 @@ function EmptyGrandparentBox() {
 //    single-parent Families row), there's no spouse to have parents of
 //    their own -- render nothing, not even a placeholder.
 //  - Otherwise always show two boxes, real data first: 0 known parents
-//    means two "No data available" boxes, 1 known means the real box
+//    means two "No data" boxes, 1 known means the real box
 //    plus one placeholder for the missing second parent. (More than 2
 //    is possible -- e.g. one biological plus one step-parent on record
 //    simultaneously -- in which case there's no missing slot to fill,
@@ -310,7 +310,12 @@ export default function FamilyPage() {
             // 32px) + gap-3 (12px) PersonCard.tsx's own box actually
             // uses to place its name text. If any of those change, this
             // needs to move with them.
-            <div className="max-w-none mb-8 pl-15.25 text-[12px] text-fe-ink">
+            // text-[14px], not the 12px used for run-of-text -- "a point or
+            // two larger than run-of-text" per review. The pl-15.25 indent
+            // stays as it is: it aligns with the name text in the boxes
+            // below rather than being an arbitrary measure, which is a
+            // better reason than the flat one-inch the text pages use.
+            <div className="max-w-none mb-8 pl-15.25 text-[14px] text-fe-ink">
               <ReactMarkdown>{family.description}</ReactMarkdown>
             </div>
           )}
@@ -355,12 +360,22 @@ export default function FamilyPage() {
           <div
             className={`grid grid-cols-1 ${coupleGridCols} gap-x-3 gap-y-1.5 mb-6 items-center`}
           >
-            {family.person_1 && (
+            {family.person_1 ? (
               <PersonCard
                 person={family.person_1}
                 generation="couple"
                 isInGermline={false}
               />
+            ) : (
+              // An empty cell, not nothing. The grandparent grid above
+              // always reserves both columns, so when person_1 is absent
+              // (a Families row with only person_2 set) omitting this
+              // slot slid the remaining partner into column one while
+              // their own "No data" grandparent boxes stayed in column
+              // two -- the misalignment reported on Sharda Mani's page.
+              // Rendered only on sm+, where the grid is actually two
+              // columns; on mobile it would be a stray blank row.
+              <div className="hidden sm:block" aria-hidden="true" />
             )}
             {isDivorced && (
               <div

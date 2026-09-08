@@ -3,10 +3,13 @@ import ReactMarkdown, { type ExtraProps } from 'react-markdown'
 import { Link, useParams } from 'react-router-dom'
 import DocumentEmbeddedImage from '../components/DocumentEmbeddedImage'
 import DocumentWideImage from '../components/DocumentWideImage'
-import Layout from '../components/Layout'
+import InlineMarkdown from '../components/InlineMarkdown'
 import TextByline from '../components/TextByline'
+import Layout from '../components/Layout'
 import { getDocumentById, getSeriesChapters } from '../data-access/public/documents'
+import { useHeaderRef } from '../hooks/useHeaderRef'
 import { getAuthorPerson } from '../utils/textDisplay'
+import { resolveImageUrl } from '../utils/imageUrl'
 
 // Modest variation around the old fixed 300px -- per review feedback,
 // images at a single uniform width read as a stacked column running
@@ -121,6 +124,34 @@ function createImageComponents(imageWidths: Map<string, number>) {
   }
 }
 
+// Same shape and reasoning as FamilyPage's FamilyHeader: useHeaderRef()
+// has to be called from inside Layout's children, so this can't be
+// inlined into TextPage, which is Layout's parent. Keeps the sidebar's
+// logo-block divider aligned with the bottom of the photo.
+//
+// Text pages had no header image at all until Opa asked for one ("ensure
+// that every text file has a header image, I think all Family pages
+// do"). The caption sits below at the same size as the document's own
+// image captions.
+function TextHeader({ imageUrl, caption }: { imageUrl: string; caption: string | null }) {
+  const headerRef = useHeaderRef()
+  return (
+    <>
+      <div
+        ref={headerRef}
+        className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
+      >
+        <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+      </div>
+      {caption && (
+        <p className="max-w-4xl mt-2 text-[11px] leading-tight text-fe-ink/60">
+          <InlineMarkdown>{caption}</InlineMarkdown>
+        </p>
+      )}
+    </>
+  )
+}
+
 export default function TextPage() {
   const { id } = useParams<{ id: string }>()
   const document = getDocumentById(Number(id))
@@ -150,6 +181,12 @@ export default function TextPage() {
 
   return (
     <Layout>
+      {document.header_image_url && (
+        <TextHeader
+          imageUrl={resolveImageUrl(document.header_image_url)}
+          caption={document.header_image_caption}
+        />
+      )}
       <div className="p-6 max-w-4xl">
         {document.series_title && (
           <p className="text-sm text-fe-brown mb-1">{document.series_title}</p>
@@ -157,6 +194,9 @@ export default function TextPage() {
         {/* text-xl/2xl, not text-2xl/3xl -- see FamilyPage.tsx's own
             comment on this: gives a long document title more room. */}
         <h1 className="text-xl sm:text-2xl font-bold mb-2">{document.title}</h1>
+        {/* The genre stamp stays. Opa asked to "consider removing" it
+            unless it served a purpose -- it does, so it's kept here and
+            on the index rows. */}
         <p className="text-sm text-fe-ink/70 mb-4">
           <TextByline
             author={document.author}
@@ -181,7 +221,15 @@ export default function TextPage() {
                 trailing margin is zeroed instead of relied on, so the
                 gap stays correct no matter what markdown block the
                 summary happens to end on. */}
-            <div className="max-w-none mb-6 text-[12px] text-fe-ink flow-root [&>*:last-child]:mb-0">
+            {/* pl-24 (1in at 96dpi) and text-[14px], both per Opa's
+                review: "indent summary graf an inch on the left and make
+                the summary graf a point or two larger than the body
+                text". app/CLAUDE.md had listed that indent under
+                "deliberately NOT replicated from the original site" --
+                it has now been asked for by the person whose site it is,
+                and that file has been corrected so it isn't removed
+                again as a stray re-addition. */}
+            <div className="max-w-none mb-6 pl-24 text-[14px] text-fe-ink flow-root [&>*:last-child]:mb-0">
               <ReactMarkdown components={imageComponents}>
                 {document.summary}
               </ReactMarkdown>
@@ -206,7 +254,8 @@ export default function TextPage() {
               {seriesChapters.map((chapter) =>
                 chapter.document_id === document.document_id ? (
                   <li key={chapter.document_id} className="font-bold">
-                    {chapter.series_order}. {chapter.title}
+                    {chapter.series_order ? `${chapter.series_order}. ` : ''}
+                    {chapter.title}
                   </li>
                 ) : (
                   <li key={chapter.document_id}>
@@ -214,7 +263,8 @@ export default function TextPage() {
                       to={`/documents/${chapter.document_id}`}
                       className="text-fe-link hover:text-fe-link-dark"
                     >
-                      {chapter.series_order}. {chapter.title}
+                      {chapter.series_order ? `${chapter.series_order}. ` : ''}
+                      {chapter.title}
                     </Link>
                   </li>
                 ),

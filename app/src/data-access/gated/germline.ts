@@ -2,19 +2,23 @@ import { apiFetch } from './apiClient'
 import { LinkedPersonSummary } from '../../types/person'
 
 export interface AncestralLine {
-  parentId: number
+  // The person this line is traced through -- a GRANDparent in the
+  // normal case, hence "via" rather than "parent".
+  viaId: number
   // Just the first name -- matches the sidebar link text exactly
   // ("First Bigelow (via Hans)"), not a full name.
-  parentName: string
+  viaName: string
   furthestAncestor: LinkedPersonSummary
 }
 
 export interface GermlineResponse {
   personIds: number[]
-  // One entry per immediate biological parent on record (0, 1, or 2 --
-  // there's no gender field anywhere in the schema, so this can't be
-  // split into "father's side"/"mother's side"; each line is instead
-  // labeled by that parent's own name).
+  // One entry per biological GRANDparent on record -- up to four, not
+  // two. There's no gender field anywhere in the schema, so these can't
+  // be split into "father's side"/"mother's side"; each line is instead
+  // labeled by the name of the person it runs through. A parent with no
+  // recorded parents falls back to a line for that parent, so half the
+  // tree never silently disappears.
   ancestralLines: AncestralLine[]
 }
 

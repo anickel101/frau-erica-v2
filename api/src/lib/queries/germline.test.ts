@@ -105,25 +105,37 @@ describe('getFurthestAncestorInLine', () => {
 })
 
 describe('getAncestralLines', () => {
-  test('one entry per known biological parent, each with the furthest point on that line', () => {
+  // Traced at the GRANDparent generation, so Lena's two parents (Anna
+  // and Karl) yield four lines, one per grandparent -- Opa's review
+  // asked for the grandparent generation rather than the two links that
+  // run through people already visible on his own family page.
+  test('one entry per known biological grandparent', () => {
     const lines = getAncestralLines(db, 7) // Lena
-    expect(lines).toHaveLength(2)
+    expect(lines.map((l) => l.viaId).sort()).toEqual([1, 2, 5, 6])
 
-    const viaAnna = lines.find((l) => l.parentId === 3)
-    expect(viaAnna?.parentName).toBe('Anna')
-    expect(viaAnna?.furthestAncestor).toMatchObject({ person_id: 1, first_name: 'Hans' })
+    const viaHans = lines.find((l) => l.viaId === 1)
+    expect(viaHans?.viaName).toBe('Hans')
+    // Hans has no recorded parents of his own, so his line ends at him.
+    expect(viaHans?.furthestAncestor).toMatchObject({ person_id: 1, first_name: 'Hans' })
 
-    const viaKarl = lines.find((l) => l.parentId === 4)
-    expect(viaKarl?.parentName).toBe('Karl')
-    expect(viaKarl?.furthestAncestor).toMatchObject({ person_id: 5, first_name: 'Otto' })
+    const viaOtto = lines.find((l) => l.viaId === 5)
+    expect(viaOtto?.viaName).toBe('Otto')
+    expect(viaOtto?.furthestAncestor).toMatchObject({ person_id: 5, first_name: 'Otto' })
+  })
+
+  // A parent with no parents of their own must not drop that half of
+  // the tree -- the line falls back to the parent themselves.
+  test('falls back to the parent when no grandparents are on record', () => {
+    const lines = getAncestralLines(db, 3) // Anna: parents Hans + Greta, neither has parents
+    expect(lines.map((l) => l.viaId).sort()).toEqual([1, 2])
   })
 
   test('a single entry when only one parent is on record', () => {
     const lines = getAncestralLines(db, 10) // Orphan
     expect(lines).toHaveLength(1)
     expect(lines[0]).toMatchObject({
-      parentId: 9,
-      parentName: 'Wilhelm',
+      viaId: 9,
+      viaName: 'Wilhelm',
       furthestAncestor: { person_id: 9, first_name: 'Wilhelm' },
     })
   })

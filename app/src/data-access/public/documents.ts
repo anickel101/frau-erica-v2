@@ -19,6 +19,13 @@ export interface DocumentListItem {
 
 export interface DocumentDetail extends DocumentListItem {
   content: string
+  // Resolved at export time (see scripts/export-data.ts): the document's
+  // own "hdr."-prefixed linked image where it has one, otherwise the
+  // archive-wide default. Never null in practice, but typed nullable
+  // because nothing in the schema guarantees the default image stays
+  // published.
+  header_image_url: string | null
+  header_image_caption: string | null
 }
 
 interface GeneratedImage {
