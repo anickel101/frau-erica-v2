@@ -7,6 +7,15 @@
 --
 -- To (re)build a fresh, empty database from this file:
 --   sqlite3 new_family_tree.db < schema.sql
+--
+-- COLUMN ORDER differs from the live database in places, and that is
+-- expected rather than drift. Columns added to the real database over
+-- time arrived via ALTER TABLE, which can only append -- so Persons has
+-- suffix, birth_year, death_year and preferred_first_name in a
+-- different order there than here, where they are grouped by meaning.
+-- Nothing depends on ordinal position: every query names its columns
+-- and nothing uses SELECT *. Column *names* were verified to match the
+-- live database exactly (2026-09-08).
 -- ============================================================
 
 -- SQLite disables foreign key enforcement by default.
@@ -247,6 +256,25 @@ CREATE TABLE GalleryLinks (
     gallery_id       INTEGER NOT NULL,
     person_id        INTEGER,
     family_id        INTEGER,
+    -- A denormalized copy of Galleries.name for the linked gallery.
+    --
+    -- Declared here because it exists in the real database and this file
+    -- is meant to describe it faithfully -- it was present for months
+    -- without being declared, which is how it went unnoticed until a
+    -- database-wide scan turned up mojibake in a column the schema said
+    -- didn't exist.
+    --
+    -- Redundant by nature: it duplicates data that Galleries already
+    -- owns, and can therefore disagree with it. Checked across all 36
+    -- rows and every one currently matches Galleries.name exactly,
+    -- including through the mojibake repair, which corrected both copies.
+    -- Nothing in this repository reads it -- not api/, not app/, not the
+    -- export script; gallery names are always resolved by joining
+    -- Galleries on gallery_id. It appears to be maintained by the
+    -- FileMaker side.
+    --
+    -- Treat Galleries.name as authoritative if the two ever disagree.
+    gallery_name     TEXT,
     CONSTRAINT GalleryLinks_Galleries_FK FOREIGN KEY (gallery_id) REFERENCES Galleries(gallery_id),
     CONSTRAINT GalleryLinks_Persons_FK   FOREIGN KEY (person_id)  REFERENCES Persons(person_id),
     CONSTRAINT GalleryLinks_Families_FK  FOREIGN KEY (family_id)  REFERENCES Families(family_id)
