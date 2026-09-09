@@ -29,6 +29,22 @@ CREATE TABLE Persons (
     first_name    TEXT NOT NULL,
     last_name     TEXT NOT NULL,
     middle_name   TEXT,
+    -- The name this person actually went by, where it differs from their
+    -- legal first name -- "Allison" for Mary Allison McMillan, "Molly"
+    -- for Mary Allison Bigelow. NOT a nickname: "Nana" and "Dick" are family
+    -- pet names and don't belong here, only what passed for a genuine
+    -- first name.
+    --
+    -- Replaces the whole given-name part when displayed, not just the
+    -- first name, so "Allison" renders "Allison McMillan" rather than
+    -- "Allison Allison McMillan" -- for both people this was added for,
+    -- the preferred name IS their middle name.
+    --
+    -- Used only for the Family page headline; the lilac/gold/green name
+    -- blocks continue to show the full legal name, so nothing here
+    -- hides what's on record. NULL means "no different from
+    -- first_name", which is the case for almost everyone.
+    preferred_first_name TEXT,
     suffix        TEXT,
     date_of_birth DATE,
     birth_year    INTEGER,

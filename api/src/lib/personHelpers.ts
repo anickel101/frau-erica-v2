@@ -11,6 +11,7 @@ export function toPersonSummary(person: {
   person_id: number
   first_name: string
   middle_name?: string | null
+  preferred_first_name?: string | null
   last_name: string
   date_of_birth: string | null
   date_of_death?: string | null
@@ -20,6 +21,11 @@ export function toPersonSummary(person: {
     first_name: person.first_name,
     last_name: person.last_name,
     ...(person.middle_name ? { middle_name: person.middle_name } : {}),
+    // Omitted rather than sent as null when unset, matching how every
+    // other optional field here behaves -- almost nobody has one.
+    ...(person.preferred_first_name
+      ? { preferred_first_name: person.preferred_first_name }
+      : {}),
     ...(person.date_of_birth ? { date_of_birth: person.date_of_birth } : {}),
     ...(person.date_of_death ? { date_of_death: person.date_of_death } : {}),
   }

@@ -204,3 +204,34 @@ describe('getFamilyById children -- must be linked to every partner', () => {
     expect(getFamilyById(db, 4)?.children.map((c) => c.person_id)).toEqual([3])
   })
 })
+
+// The Archivist asked for a "preferred first name" so the Family page
+// headline reads by the name someone actually went by -- "Alli
+// McMillan" rather than "Mary McMillan". Deliberately narrow: it
+// reaches the featured couple only, since the headline is built from
+// them and the coloured name blocks keep the full legal name.
+describe('preferred_first_name', () => {
+  test('is returned for the featured couple when set', () => {
+    db.run("UPDATE Persons SET preferred_first_name = 'Alli' WHERE person_id = 3")
+    const family = getFamilyById(db, 1)
+    expect(family?.person_1?.preferred_first_name).toBe('Alli')
+    // The legal first name is still carried alongside it, so the boxes
+    // can go on showing the full name.
+    expect(family?.person_1?.first_name).toBe('Anna')
+  })
+
+  test('is absent, not null, when nobody has one', () => {
+    const family = getFamilyById(db, 1)
+    expect(family?.person_1).not.toHaveProperty('preferred_first_name')
+  })
+
+  // Grandparents and children deliberately do not carry it -- if this
+  // ever starts coming through, the narrow-by-design scope has been
+  // widened by accident rather than by decision.
+  test('is not returned for grandparents or children', () => {
+    db.run("UPDATE Persons SET preferred_first_name = 'Whoever'")
+    const family = getFamilyById(db, 1)
+    expect(family?.grandparents_1[0]).not.toHaveProperty('preferred_first_name')
+    expect(family?.children[0]).not.toHaveProperty('preferred_first_name')
+  })
+})

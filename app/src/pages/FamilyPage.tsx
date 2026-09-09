@@ -187,10 +187,22 @@ function renderGrandparentColumn(
 // person_1/person_2 are individually nullable (schema.sql allows
 // single-parent Families rows) -- builds "Anson Nickel and Reva Gaur",
 // "Anson Nickel", or "" depending on which are present.
+//
+// preferred_first_name wins where one is recorded, so this reads "Peter
+// Crawley and Allison McMillan" rather than "... and Mary McMillan" --
+// the name she actually went by. This heading is the ONLY place it's used:
+// the lilac/gold/green boxes below keep the full legal name, so the
+// record itself is never hidden, which is how the Archivist asked for
+// it.
+//
+// The middle name is dropped either way, as it already was -- and that
+// matters here, since for both people this was added for the preferred
+// name IS their middle name ("Mary Allison McMillan" -> "Allison
+// McMillan", not "Allison Allison McMillan").
 function familyHeading(family: FamilyDetail): string {
   return [family.person_1, family.person_2]
     .filter((p) => p !== null)
-    .map((p) => `${p.first_name} ${p.last_name}`)
+    .map((p) => `${p.preferred_first_name ?? p.first_name} ${p.last_name}`)
     .join(' and ')
 }
 
