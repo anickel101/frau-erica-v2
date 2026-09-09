@@ -15,6 +15,7 @@ import { existsSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import prettier from 'prettier'
+import { fixMojibake } from './fixMojibake.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_DIR = path.join(__dirname, '../src/data/generated')
@@ -37,29 +38,6 @@ if (!existsSync(dbPath)) {
 }
 
 const db = new DatabaseSync(dbPath, { readOnly: true })
-
-// Old FileMaker/Word-authored text occasionally carries UTF-8 curly-quote
-// or dash bytes that got re-interpreted as MacRoman somewhere in this
-// project's editing history (BBEdit, most likely) -- a real ’ round-trips
-// to ‚Äô, an em dash to ‚Äî, etc. (confirmed against the real export: e.g.
-// "Molly‚Äôs wedding" instead of "Molly's wedding"). Idempotent -- these
-// exact byte sequences don't occur in ordinary prose, so running this on
-// already-clean text is a no-op. Applied at export time (not just a
-// one-off fix to the committed JSON) so this doesn't quietly reappear the
-// next time someone re-runs this script against the real database, since
-// the underlying FileMaker-era text field itself isn't being touched.
-function fixMojibake(text: string): string
-function fixMojibake(text: string | null): string | null
-function fixMojibake(text: string | null): string | null {
-  if (text === null) return null
-  return text
-    .replaceAll('‚Äô', '’') // ’
-    .replaceAll('‚Äì', '–') // –
-    .replaceAll('‚Äî', '—') // —
-    .replaceAll('‚Äò', '‘') // ‘
-    .replaceAll('‚Äú', '“') // “
-    .replaceAll('‚Äù', '”') // ”
-}
 
 async function writeJson(filename: string, data: unknown): Promise<void> {
   // Formatted through Prettier's own API (not just JSON.stringify) so the
