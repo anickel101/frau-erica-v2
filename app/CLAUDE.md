@@ -72,8 +72,8 @@ had it wrong.
 
 ### Deliberately NOT replicated from the original site
 
-The original site's design notes described three additional details
-that were considered and explicitly declined -- these are intentional
+The original site's design notes described additional details that were
+considered and explicitly declined -- these are intentional
 simplifications, not oversights, so don't "fix" them back in without
 checking first:
 
@@ -81,8 +81,15 @@ checking first:
   boxes (original used double spacing between generation rows; this
   site uses uniform spacing throughout)
 - A black border on the couple's (gold) boxes
-- A 1-inch left indent on summary/description text (on both Family and
-  Document pages)
+
+**Reversed on request (2026-09-07):** the 1-inch left indent on summary
+text used to be listed here as declined. The Archivist asked for it back
+in his review ("indent summary graf an inch on the left"), which is
+exactly the "check first" this list calls for. Document pages now use
+`pl-24`; Family pages keep their existing `pl-15.25`, which aligns the
+summary with the name text inside the PersonCard boxes below rather than
+being an arbitrary measure -- a better reason than a flat inch, and he
+only asked for the inch on text pages. Don't re-remove either.
 
 ## Established component patterns
 

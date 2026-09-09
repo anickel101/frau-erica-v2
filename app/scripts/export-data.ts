@@ -15,6 +15,7 @@ import { existsSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import prettier from 'prettier'
+import { fixMojibake } from './fixMojibake.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_DIR = path.join(__dirname, '../src/data/generated')
@@ -37,29 +38,6 @@ if (!existsSync(dbPath)) {
 }
 
 const db = new DatabaseSync(dbPath, { readOnly: true })
-
-// Old FileMaker/Word-authored text occasionally carries UTF-8 curly-quote
-// or dash bytes that got re-interpreted as MacRoman somewhere in this
-// project's editing history (BBEdit, most likely) -- a real ’ round-trips
-// to ‚Äô, an em dash to ‚Äî, etc. (confirmed against the real export: e.g.
-// "Molly‚Äôs wedding" instead of "Molly's wedding"). Idempotent -- these
-// exact byte sequences don't occur in ordinary prose, so running this on
-// already-clean text is a no-op. Applied at export time (not just a
-// one-off fix to the committed JSON) so this doesn't quietly reappear the
-// next time someone re-runs this script against the real database, since
-// the underlying FileMaker-era text field itself isn't being touched.
-function fixMojibake(text: string): string
-function fixMojibake(text: string | null): string | null
-function fixMojibake(text: string | null): string | null {
-  if (text === null) return null
-  return text
-    .replaceAll('‚Äô', '’') // ’
-    .replaceAll('‚Äì', '–') // –
-    .replaceAll('‚Äî', '—') // —
-    .replaceAll('‚Äò', '‘') // ‘
-    .replaceAll('‚Äú', '“') // “
-    .replaceAll('‚Äù', '”') // ”
-}
 
 async function writeJson(filename: string, data: unknown): Promise<void> {
   // Formatted through Prettier's own API (not just JSON.stringify) so the
@@ -252,6 +230,59 @@ const documentRows = (
   content: fixMojibake(row.content),
 }))
 
+// Header images for text pages. Opa asked that every text file have one,
+// as Family pages do, with hdr.MuellerFarm2.jpg as the fallback.
+//
+// The data was almost all there already: 124 of the 155 published
+// documents have a published image linked whose filename begins "hdr."
+// -- the archive's own long-standing convention for a header photo, the
+// same one Family pages rely on. Only the remaining 31 need the default.
+//
+// ORDER BY image_id so the one document with two candidate headers
+// (document 75) resolves the same way on every export rather than
+// however SQLite happened to return the rows.
+const DEFAULT_HEADER_IMAGE_URL = 'hdr.MuellerFarm2.jpg'
+
+interface DocumentHeaderRow {
+  document_id: number
+  url: string
+  caption: string | null
+}
+
+const documentHeaderRows = db
+  .prepare(
+    `SELECT il.document_id, i.url, i.caption
+       FROM ImageLinks il
+       JOIN Images i ON i.image_id = il.image_id
+      WHERE il.document_id IS NOT NULL
+        AND i.is_published = 1
+        AND i.url LIKE 'hdr%'
+      ORDER BY i.image_id`,
+  )
+  .all() as unknown as DocumentHeaderRow[]
+
+const headerByDocumentId = new Map<number, { url: string; caption: string | null }>()
+for (const row of documentHeaderRows) {
+  if (!headerByDocumentId.has(row.document_id)) {
+    headerByDocumentId.set(row.document_id, { url: row.url, caption: row.caption })
+  }
+}
+
+// The fallback's caption is read from the Images row rather than written
+// here, so the wording stays owned by the archive -- it already reads
+// exactly as Opa specified it.
+const defaultHeader = db
+  .prepare(`SELECT url, caption FROM Images WHERE url = ? AND is_published = 1`)
+  .get(DEFAULT_HEADER_IMAGE_URL) as { url: string; caption: string | null } | undefined
+
+function headerFor(documentId: number) {
+  const header = headerByDocumentId.get(documentId) ?? defaultHeader
+  return {
+    header_image_url: header?.url ?? null,
+    header_image_caption: fixMojibake(header?.caption ?? null),
+  }
+}
+
 // Documents.author is unused in real data (verified: 0/227 non-null) and
 // there's no reliable author -> person linkage anywhere in the schema
 // (DocumentLinks has only 6 rows and doesn't distinguish "author" from
@@ -269,6 +300,7 @@ const documentsDetail = documentRows.map((row) => ({
   genre: row.genre,
   tags: row.tags,
   content: row.content ?? '',
+  ...headerFor(row.document_id),
 }))
 
 const documentsList = documentRows.map((row) => ({

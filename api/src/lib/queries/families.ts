@@ -21,6 +21,12 @@ interface PersonSummaryRow {
   date_of_death: string | null
 }
 
+// Same as PersonSummaryRow plus the preferred name, which only the
+// featured couple's own lookup selects -- see getPersonSummary below.
+interface CouplePersonRow extends PersonSummaryRow {
+  preferred_first_name: string | null
+}
+
 // Same resolution PersonDetail's familyIdsAsPartner/familyIdAsChild
 // expose for a single person (see queries/persons.ts) -- reused here to
 // embed each displayed person's own "family page" link directly in this
@@ -81,11 +87,16 @@ function toLinkedPersonSummary(db: Database, row: PersonSummaryRow): LinkedPerso
   }
 }
 
+// Only ever called for the featured couple (person_1/person_2), which is
+// why this is the one person lookup that selects preferred_first_name:
+// it drives the Family page headline, and nothing else on the site uses
+// it. The coloured name blocks keep the full legal name, per the
+// Archivist's own note.
 function getPersonSummary(db: Database, personId: number): LinkedPersonSummary | null {
-  const row = queryOne<PersonSummaryRow>(
+  const row = queryOne<CouplePersonRow>(
     db,
     `SELECT person_id, first_name, COALESCE(middle_name, '') AS middle_name,
-            last_name, date_of_birth, date_of_death
+            preferred_first_name, last_name, date_of_birth, date_of_death
      FROM Persons WHERE person_id = :id`,
     { ':id': personId },
   )
@@ -122,11 +133,30 @@ interface ChildRow extends PersonSummaryRow {
   birth_year: number | null
 }
 
-// Children of this Families pairing -- anyone whose parent (per
-// Relationships) is person_id_1 or person_id_2, per schema.sql's own
-// documented convention of deriving children rather than storing them
-// redundantly on Families. DISTINCT because both parents typically have
-// their own Relationships row pointing at the same child.
+// Children of this Families pairing -- people linked as a child to
+// EVERY partner in the couple, per schema.sql's own documented
+// convention of deriving children rather than storing them redundantly
+// on Families.
+//
+// "Every partner", not "either partner". Matching on either meant a
+// child of just one of the two appeared on the couple's page as though
+// they were the couple's child, which for a genealogy archive is about
+// the worst thing a page can get wrong. The reported case: Anson Nickel
+// showed as a child of Peter Crawley and Mary McMillan, though he is
+// Mary's son by Mark Nickel and was born four years after Peter died.
+// Across the real data this removed 113 such rows from 34 families --
+// each one verified as a child with a different parent explicitly on
+// record, not merely a missing link.
+//
+// The rule is about *linkage*, not relationship type: biological to
+// both, adoptive to both, or adoptive to one and biological to the
+// other all count, which is what makes blended families render
+// correctly. Daniel and Susan Crawley are biological to Peter and Mary
+// and adoptive to Mark, so they correctly appear on both couples' pages.
+//
+// COUNT(DISTINCT r.person_id_1) rather than COUNT(*): a child can hold
+// two rows to the same parent (biological and adoptive both recorded),
+// which would otherwise satisfy a two-partner requirement on its own.
 //
 // Sorted firstborn-to-last, matching the old site's behavior -- date_of_birth
 // falls back to birth_year (as Jan 1 of that year) when only the year is
@@ -139,13 +169,15 @@ function getChildren(db: Database, parentIds: number[]): LinkedPersonSummary[] {
   const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const rows = queryAll<ChildRow>(
     db,
-    `SELECT DISTINCT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
+    `SELECT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
             p.last_name, p.date_of_birth, p.date_of_death, p.birth_year
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_2
      WHERE r.person_id_1 IN (${parents.sql})
-       AND r.relationship_type IN (${types.sql})`,
-    { ...parents.params, ...types.params },
+       AND r.relationship_type IN (${types.sql})
+     GROUP BY p.person_id
+     HAVING COUNT(DISTINCT r.person_id_1) = :requiredParents`,
+    { ...parents.params, ...types.params, ':requiredParents': parentIds.length },
   )
   rows.sort((a, b) => {
     const dateA = a.date_of_birth ?? (a.birth_year ? `${a.birth_year}-01-01` : null)
@@ -279,9 +311,17 @@ export function getFamilyById(db: Database, familyId: number): FamilyDetail | un
 
   // Also just "the couple" -- reused for getLinkedGalleries below, since
   // it's the same set of people getChildren already needed as parents.
-  const parentIds = [family.person_id_1, family.person_id_2].filter(
-    (id): id is number => id !== null,
-  )
+  //
+  // Derived from the RESOLVED person1/person2, not the raw
+  // family.person_id_1/2. A Families row can point at a person_id that
+  // has no Persons row at all -- family 854 references id 1198 as John
+  // Bigelow's spouse and no such person exists. Taking the raw ids would
+  // make getChildren demand a link to a partner who cannot be linked to,
+  // silently emptying that page of all six of its children.
+  const parentIds = [
+    person1 !== null ? family.person_id_1 : null,
+    person2 !== null ? family.person_id_2 : null,
+  ].filter((id): id is number => id !== null)
 
   return {
     family_id: family.family_id,

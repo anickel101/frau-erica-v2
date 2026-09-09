@@ -28,6 +28,13 @@ export interface PersonSummary {
   person_id: number
   first_name: string
   middle_name?: string
+  // The name this person actually went by, where it differs from their
+  // legal first name (see schema.sql's own comment on the column).
+  // Deliberately selected only for the featured couple on a Family page
+  // -- it drives that page's headline and nothing else, so it is absent
+  // on grandparents, children and search results by design rather than
+  // by omission.
+  preferred_first_name?: string
   last_name: string
   date_of_birth?: string
   date_of_death?: string

@@ -9,6 +9,12 @@
 export interface PersonSummary {
   person_id: number
   first_name: string
+  // The name this person actually went by, where it differs from their
+  // legal first name -- "Allison" for Mary Allison McMillan. Present only
+  // on the featured couple of a Family page, because that page's
+  // headline is the only place it's used; the coloured name blocks show
+  // the full legal name. See schema.sql's own comment on the column.
+  preferred_first_name?: string
   middle_name?: string
   last_name: string
   date_of_birth?: string // ISO date, e.g. '1987-10-24'

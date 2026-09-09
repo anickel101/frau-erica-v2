@@ -2,6 +2,7 @@ import { MouseEvent, useState } from 'react'
 import { GalleryPhoto } from '../data-access/public/galleries'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import ChevronButton from './ChevronButton'
+import InlineMarkdown from './InlineMarkdown'
 import Modal from './Modal'
 
 // See FamilyHeader in FamilyPage.tsx for why this is its own component:
@@ -75,7 +76,16 @@ export default function GalleryLargeImage({
         />
       </div>
       <p className="max-w-4xl mt-2 text-sm text-fe-ink/70 text-right">
-        <strong className="text-fe-ink">{photo.title}</strong> -- {photo.caption}
+        {/* Captions are authored in markdown -- 21 of the 349 published
+            gallery photos use *italics* or **bold**, most often for the
+            title of a publication. Rendered as plain text they showed
+            their asterisks, which is how the 1867 Jugend-Blaetter
+            gallery surfaced this. InlineMarkdown renders as a span, so
+            it drops into this sentence without breaking the layout. */}
+        <strong className="text-fe-ink">
+          <InlineMarkdown>{photo.title}</InlineMarkdown>
+        </strong>{' '}
+        -- <InlineMarkdown>{photo.caption}</InlineMarkdown>
         {(photo.location || photo.year_taken || photo.credit) && (
           <>
             {' '}
@@ -102,8 +112,12 @@ export default function GalleryLargeImage({
             className="max-w-[90vw] max-h-[calc(90vh-6rem)] object-contain"
           />
           <div className="mt-3 bg-black/60 text-white p-4 rounded-sm">
-            <p className="font-bold">{photo.title}</p>
-            <p className="text-sm text-white/80">{photo.caption}</p>
+            <p className="font-bold">
+              <InlineMarkdown>{photo.title}</InlineMarkdown>
+            </p>
+            <p className="text-sm text-white/80">
+              <InlineMarkdown>{photo.caption}</InlineMarkdown>
+            </p>
           </div>
         </div>
       </Modal>

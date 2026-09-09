@@ -24,7 +24,7 @@ export default function DocumentWideImage({ src, alt }: { src?: string; alt?: st
         <img src={src} alt={alt ?? ''} className="w-full h-auto rounded-sm shadow-sm" />
       </button>
       {alt && (
-        <figcaption className="mt-2 text-[11px] text-fe-ink/60 text-left">
+        <figcaption className="mt-2 text-[11px] leading-tight text-fe-ink/60 text-left">
           {alt}
         </figcaption>
       )}

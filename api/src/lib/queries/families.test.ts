@@ -142,3 +142,96 @@ describe('getFamilyById', () => {
     expect(family?.person_2?.otherFamilyId).toBeNull() // Karl
   })
 })
+
+// The rule Opa reported: a child of only ONE partner was appearing on
+// the couple's page as though they were the couple's child. His example
+// was Anson Nickel showing under Peter Crawley and Mary McMillan, though
+// Anson is Mary's son by Mark Nickel and was born four years after Peter
+// died. These build their rows on top of the shared fixture rather than
+// changing it, so the existing expectations stay meaningful.
+describe('getFamilyById children -- must be linked to every partner', () => {
+  // Anna (3) + Karl (4) are family 1, with children Lena (7) and Max (8)
+  // already linked to both.
+  function addPerson(id: number, first: string) {
+    db.run(
+      'INSERT INTO Persons (person_id, first_name, last_name, date_of_birth) VALUES (?, ?, ?, ?)',
+      [id, first, 'Test', '1985-01-01'],
+    )
+  }
+  function link(parentId: number, childId: number, type = 'biological_parent') {
+    db.run(
+      'INSERT INTO Relationships (person_id_1, person_id_2, relationship_type) VALUES (?, ?, ?)',
+      [parentId, childId, type],
+    )
+  }
+  const childIds = () => getFamilyById(db, 1)?.children.map((c) => c.person_id)
+
+  test('excludes a child linked to only one of the two partners', () => {
+    addPerson(90, 'OneParentOnly')
+    link(3, 90) // Anna only -- no link to Karl
+    expect(childIds()).toEqual([7, 8])
+  })
+
+  test('includes a child linked to both partners', () => {
+    addPerson(91, 'BothParents')
+    link(3, 91)
+    link(4, 91)
+    expect(childIds()).toContain(91)
+  })
+
+  // The blended-family case: linkage is what matters, not which type of
+  // parent each link happens to be.
+  test('includes a child adoptive to one partner and biological to the other', () => {
+    addPerson(92, 'AdoptedByKarl')
+    link(3, 92, 'biological_parent')
+    link(4, 92, 'adoptive_parent')
+    expect(childIds()).toContain(92)
+  })
+
+  // A child holding two rows to the SAME parent must not satisfy a
+  // two-partner requirement on its own -- the reason the query counts
+  // DISTINCT parents rather than rows.
+  test('two links to the same partner do not stand in for the second partner', () => {
+    addPerson(93, 'DoubleLinkedToAnna')
+    link(3, 93, 'biological_parent')
+    link(3, 93, 'adoptive_parent')
+    expect(childIds()).not.toContain(93)
+  })
+
+  // Family 4 is Hans (1) with no second partner, so one link is the
+  // whole requirement -- the rule must not empty single-parent families.
+  test('a single-parent family still shows children linked to that parent', () => {
+    expect(getFamilyById(db, 4)?.children.map((c) => c.person_id)).toEqual([3])
+  })
+})
+
+// The Archivist asked for a "preferred first name" so the Family page
+// headline reads by the name someone actually went by -- "Alli
+// McMillan" rather than "Mary McMillan". Deliberately narrow: it
+// reaches the featured couple only, since the headline is built from
+// them and the coloured name blocks keep the full legal name.
+describe('preferred_first_name', () => {
+  test('is returned for the featured couple when set', () => {
+    db.run("UPDATE Persons SET preferred_first_name = 'Alli' WHERE person_id = 3")
+    const family = getFamilyById(db, 1)
+    expect(family?.person_1?.preferred_first_name).toBe('Alli')
+    // The legal first name is still carried alongside it, so the boxes
+    // can go on showing the full name.
+    expect(family?.person_1?.first_name).toBe('Anna')
+  })
+
+  test('is absent, not null, when nobody has one', () => {
+    const family = getFamilyById(db, 1)
+    expect(family?.person_1).not.toHaveProperty('preferred_first_name')
+  })
+
+  // Grandparents and children deliberately do not carry it -- if this
+  // ever starts coming through, the narrow-by-design scope has been
+  // widened by accident rather than by decision.
+  test('is not returned for grandparents or children', () => {
+    db.run("UPDATE Persons SET preferred_first_name = 'Whoever'")
+    const family = getFamilyById(db, 1)
+    expect(family?.grandparents_1[0]).not.toHaveProperty('preferred_first_name')
+    expect(family?.children[0]).not.toHaveProperty('preferred_first_name')
+  })
+})

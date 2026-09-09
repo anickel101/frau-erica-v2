@@ -164,29 +164,51 @@ export function getFurthestAncestorInLine(
 }
 
 export interface AncestralLine {
-  parentId: number
-  // Just the first name -- matches the agreed sidebar link text
-  // exactly ("First Bigelow (via Hans)"), not a full name.
-  parentName: string
+  // The person this line is traced through. Named "via" rather than
+  // "parent" because it is a GRANDparent in the normal case -- see
+  // getAncestralLines below.
+  viaId: number
+  // Just the first name -- matches the sidebar link text exactly
+  // ("First Bigelow (via Hans)"), not a full name.
+  viaName: string
   furthestAncestor: LinkedPersonSummary
 }
 
-// One entry per immediate biological parent on record (0, 1, or 2 --
-// never hardcoded to 2), each with the furthest known point on that
-// parent's own line. The only function the handler calls directly --
-// handler stays thin, matching api/CLAUDE.md's "Handler = thin, logic
-// in lib/" convention.
+// One entry per biological GRANDparent on record, each with the
+// furthest known point on that grandparent's own line -- so a person
+// with a fully recorded pair of parents gets four lines, not two.
+//
+// Traced at the grandparent generation per Opa's review: two links told
+// him little he didn't already know, since both run through people he
+// can see on his own family page. Four splits his ancestry into the
+// distinct surname lines that are actually worth jumping to.
+//
+// A parent with no recorded parents of their own doesn't silently drop
+// that half of the tree -- the line falls back to the parent
+// themselves, the same "don't dead-end" reasoning as
+// getFurthestAncestorInLine. Deduplicated by person: where two lines
+// converge on one ancestor (cousins marrying, which the real data does
+// contain), that ancestor should appear once.
+//
+// The only function the handler calls directly -- handler stays thin,
+// matching api/CLAUDE.md's "Handler = thin, logic in lib/" convention.
 export function getAncestralLines(db: Database, personId: number): AncestralLine[] {
-  return getBiologicalParentIds(db, personId).map((parentId) => {
-    const row = queryOne<{ first_name: string }>(
+  const firstNameOf = (id: number) =>
+    queryOne<{ first_name: string }>(
       db,
       'SELECT first_name FROM Persons WHERE person_id = :id',
-      { ':id': parentId },
-    )
-    return {
-      parentId,
-      parentName: row?.first_name ?? '',
-      furthestAncestor: getFurthestAncestorInLine(db, parentId),
-    }
-  })
+      { ':id': id },
+    )?.first_name ?? ''
+
+  const viaIds: number[] = []
+  for (const parentId of getBiologicalParentIds(db, personId)) {
+    const grandparentIds = getBiologicalParentIds(db, parentId)
+    viaIds.push(...(grandparentIds.length > 0 ? grandparentIds : [parentId]))
+  }
+
+  return [...new Set(viaIds)].map((viaId) => ({
+    viaId,
+    viaName: firstNameOf(viaId),
+    furthestAncestor: getFurthestAncestorInLine(db, viaId),
+  }))
 }
