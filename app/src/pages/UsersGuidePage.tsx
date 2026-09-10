@@ -17,8 +17,15 @@ const GENERATION_LEGEND = [
   {
     label: 'The couple',
     className: 'bg-fe-gen-couple',
+    // "has ended" is the Archivist's own wording. Worth knowing that the
+    // dashes are driven by Relationships.status === 'divorced'
+    // specifically (see FamilyPage's isDivorced), not by any ended
+    // marriage -- the schema also allows 'widowed' and 'separated', and
+    // neither would draw them. No such rows exist today, so the sentence
+    // is accurate as things stand; if one is ever recorded, this is the
+    // line to revisit.
     description:
-      'The two people the page is about. Three short dashes between their boxes mean the marriage ended in divorce.',
+      'The two people the page is about. Three dashes mean the marriage has ended.',
   },
   {
     label: 'Children',
@@ -33,8 +40,7 @@ const GLYPH_LEGEND = [
   { glyph: '\u25BC', description: 'Down, to that child\u2019s own family page.' },
   {
     glyph: '\u25B6',
-    description:
-      'Sideways, to another marriage -- shown when someone married more than once, and takes you to that other family.',
+    description: 'Sideways moves to a previous or subsequent marriage.',
   },
   {
     glyph: <DiamondGlyph />,
@@ -132,12 +138,11 @@ export default function UsersGuidePage() {
                 ))}
               </ul>
               <p>
-                The diamond is the one worth knowing about. Once you are signed in, the
-                site works out your own direct line of descent and marks everyone on it,
-                so following the diamonds up the tree walks you back through your own
-                ancestors a generation at a time. It follows blood relations only: an
-                adoptive parent will not carry a diamond, even though they appear on the
-                page.
+                The diamond is special. Once you are signed in, the site works out your
+                own direct line of descent and marks everyone on it, so following the
+                diamonds up the tree walks you back through your own ancestors a
+                generation at a time. It follows blood relations only: an adoptive parent
+                will not carry a diamond, even though they appear on the page.
               </p>
             </div>
           </section>
