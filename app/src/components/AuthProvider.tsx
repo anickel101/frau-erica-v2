@@ -122,7 +122,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch(() => {
         // Name/home-family are a nice-to-have -- a failed lookup
-        // shouldn't affect sign-in itself, both just stay null.
+        // shouldn't affect sign-in itself, both just stay null. Safe
+        // precisely because nothing waits on either: the post-login
+        // redirect goes through personId, not this.
       })
     return () => {
       cancelled = true

@@ -20,7 +20,13 @@ const NAV_LINK_CLASS = 'font-bold text-fe-link hover:text-fe-link-dark text-xs'
 // and Log out alongside its two static links -- a mix of dynamic and
 // static entries that the plain title+links shape here can't express, so
 // it's rendered explicitly below instead.
-const ABOUT_LINKS: { label: string; to: string }[] = [
+const ABOUT_LINKS: { label: string; to: string; state?: unknown }[] = [
+  // Home carries `stay` because "/" redirects a signed-in member to
+  // their own family page (see components/homeDestination.ts) -- without
+  // it this link would bounce straight back where it came from, which is
+  // worse than having no link at all. The flag marks the difference
+  // between arriving at the site and deliberately asking for this page.
+  { label: 'Home', to: '/', state: { stay: true } },
   { label: "User's Guide", to: '/about' },
   { label: 'Contact the Archivist', to: '/contact' },
 ]
@@ -236,6 +242,7 @@ export default function Sidebar({
               <li key={link.to}>
                 <Link
                   to={link.to}
+                  state={link.state}
                   className={NAV_LINK_CLASS}
                   onClick={() => setOpen(false)}
                 >
