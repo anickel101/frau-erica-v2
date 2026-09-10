@@ -1,6 +1,6 @@
 import {
-  ArrowDownCircleIcon,
-  ArrowUpCircleIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
@@ -367,11 +367,16 @@ export default function AdminUsersPage() {
                                 >
                                   {/* An arrow pair, not a shield: direction
                                       IS the meaning here, and there is no
-                                      natural "un-shield" for demotion. */}
+                                      natural "un-shield" for demotion.
+                                      The plain arrows, not the *Circle*
+                                      variants -- those draw their own
+                                      circle, which inside IconAction's
+                                      ring would render as two concentric
+                                      rings. */}
                                   {isAdmin ? (
-                                    <ArrowDownCircleIcon className="w-5 h-5" />
+                                    <ArrowDownIcon className="w-5 h-5" />
                                   ) : (
-                                    <ArrowUpCircleIcon className="w-5 h-5" />
+                                    <ArrowUpIcon className="w-5 h-5" />
                                   )}
                                 </IconAction>
                               )}

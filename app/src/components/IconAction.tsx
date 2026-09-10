@@ -29,13 +29,26 @@ export default function IconAction({
   // the two that don't.
   variant?: 'plain' | 'danger'
 }) {
+  // All three are circles, so the row reads as one set of controls
+  // rather than two plain glyphs beside a filled block.
+  //
+  // The plain ring is border-current, so it takes whatever colour the
+  // icon has and follows it on hover without a second colour to keep in
+  // sync. 1.5px matches the icons' own stroke-width exactly (Heroicons
+  // 24/outline draws at 1.5), so the ring reads as part of the same
+  // drawing rather than a box around it.
   const button =
     variant === 'danger'
       ? // bg-red-700, not a lighter red: white on red-700 clears WCAG AA
         // comfortably, matching the contrast standard the rest of the
         // site was brought up to.
-        'bg-red-700 hover:bg-red-800 text-white'
-      : 'text-fe-link hover:text-fe-link-dark'
+        // A transparent ring of the same width as the plain variant's,
+        // so the filled circle is the same overall size as the outlined
+        // ones. Without it the border sits outside the 32px box and the
+        // two ringed buttons render 34px while the red one stays 32,
+        // which reads as the red circle being slightly small.
+        'bg-red-700 hover:bg-red-800 text-white border-[1.5px] border-transparent'
+      : 'text-fe-link hover:text-fe-link-dark border-[1.5px] border-current'
 
   return (
     <span className="relative inline-flex group">
@@ -43,7 +56,7 @@ export default function IconAction({
         type="button"
         onClick={onClick}
         aria-label={label}
-        className={`p-1.5 rounded-sm transition ${button}`}
+        className={`rounded-full p-1.5 transition ${button}`}
       >
         {children}
       </button>
