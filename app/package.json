@@ -17,6 +17,7 @@
     "ci": "npm run lint && npm run typecheck && npm run format:check && npm run test && npm run build"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "aws-amplify": "^6.20.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

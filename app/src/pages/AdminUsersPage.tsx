@@ -1,6 +1,13 @@
+import {
+  ArrowDownCircleIcon,
+  ArrowUpCircleIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ApproveRequestForm from '../components/ApproveRequestForm'
+import IconAction from '../components/IconAction'
 import Layout from '../components/Layout'
 import Modal from '../components/Modal'
 import PersonPicker from '../components/PersonPicker'
@@ -304,7 +311,7 @@ export default function AdminUsersPage() {
                       <th className="py-2 pr-4">Email</th>
                       <th className="py-2 pr-4">Groups</th>
                       <th className="py-2 pr-4">person_id</th>
-                      <th className="py-2" />
+                      <th className="py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -316,30 +323,57 @@ export default function AdminUsersPage() {
                           className="border-b border-fe-brown/10 align-top"
                         >
                           <td className="py-2 pr-4">{user.fullName ?? '—'}</td>
-                          <td className="py-2 pr-4">{user.email}</td>
+                          {/* break-words so a long address yields width
+                              rather than forcing the table wider. Without
+                              it the Actions column is squeezed until its
+                              buttons wrap onto a second line, which makes
+                              every row taller -- the opposite of what
+                              replacing the text labels was for. */}
+                          <td className="py-2 pr-4 break-words">{user.email}</td>
                           <td className="py-2 pr-4">{user.groups.join(', ')}</td>
                           <td className="py-2 pr-4">{user.personId ?? '—'}</td>
-                          <td className="py-2">
-                            <div className="flex flex-col items-start gap-1">
-                              <button
-                                type="button"
+                          <td className="py-2 whitespace-nowrap align-top">
+                            {/* A row rather than the old vertical stack --
+                                three icons take less height than three
+                                lines of text, which is most of what makes
+                                the table read more cleanly.
+                                
+                                Kept on one line. The text buttons this
+                                replaced could break mid-label ("Demote to
+                                / approved"), so the column could shrink;
+                                three fixed-size buttons can't. Allowing
+                                them to wrap instead just moved the problem
+                                -- the trash dropped to a second row and
+                                every row grew taller. The width comes from
+                                the email column instead, which breaks
+                                long addresses. */}
+                            <div className="flex items-center gap-1">
+                              <IconAction
+                                label="Edit person_id"
                                 onClick={() => setEditingEmail(user.email)}
-                                className="text-fe-link hover:text-fe-link-dark text-sm"
                               >
-                                Edit person_id
-                              </button>
+                                <PencilSquareIcon className="w-5 h-5" />
+                              </IconAction>
                               {/* No group action at all on the signed-in
                                   admin's own row -- self-protection
                                   against a stray click locking the only
                                   admin out (also enforced server-side). */}
                               {user.email !== ownEmail && (
-                                <button
-                                  type="button"
+                                <IconAction
+                                  label={
+                                    isAdmin ? 'Demote to approved' : 'Promote to admin'
+                                  }
                                   onClick={() => setConfirmingGroupEmail(user.email)}
-                                  className="text-fe-link hover:text-fe-link-dark text-sm"
                                 >
-                                  {isAdmin ? 'Demote to approved' : 'Promote to admin'}
-                                </button>
+                                  {/* An arrow pair, not a shield: direction
+                                      IS the meaning here, and there is no
+                                      natural "un-shield" for demotion. */}
+                                  {isAdmin ? (
+                                    <ArrowDownCircleIcon className="w-5 h-5" />
+                                  ) : (
+                                    <ArrowUpCircleIcon className="w-5 h-5" />
+                                  )}
+                                </IconAction>
                               )}
                               {/* Hidden on your own row and on admins,
                                   mirroring the two guards the API
@@ -349,13 +383,13 @@ export default function AdminUsersPage() {
                                   error would just be a worse way to
                                   learn the same rule. */}
                               {user.email !== ownEmail && !isAdmin && (
-                                <button
-                                  type="button"
+                                <IconAction
+                                  label="Delete account"
+                                  variant="danger"
                                   onClick={() => setDeletingEmail(user.email)}
-                                  className="text-fe-ink/50 hover:text-red-700 text-sm"
                                 >
-                                  Delete account
-                                </button>
+                                  <TrashIcon className="w-5 h-5" />
+                                </IconAction>
                               )}
                             </div>
                           </td>
