@@ -56,7 +56,13 @@ export default function IconAction({
         type="button"
         onClick={onClick}
         aria-label={label}
-        className={`rounded-full p-1.5 transition ${button}`}
+        // A fixed 30x30 box rather than padding around the icon: the
+        // border sits outside the padding box, so a padding-derived size
+        // lands on awkward numbers and drifts if the icon size changes.
+        // The icon is sized here too ([&>svg]) so the component owns its
+        // whole size contract and a fifth action can't quietly arrive at
+        // a different scale.
+        className={`flex h-[30px] w-[30px] items-center justify-center rounded-full transition [&>svg]:h-4 [&>svg]:w-4 ${button}`}
       >
         {children}
       </button>

@@ -347,12 +347,12 @@ export default function AdminUsersPage() {
                                 every row grew taller. The width comes from
                                 the email column instead, which breaks
                                 long addresses. */}
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2">
                               <IconAction
                                 label="Edit person_id"
                                 onClick={() => setEditingEmail(user.email)}
                               >
-                                <PencilSquareIcon className="w-5 h-5" />
+                                <PencilSquareIcon />
                               </IconAction>
                               {/* No group action at all on the signed-in
                                   admin's own row -- self-protection
@@ -373,11 +373,7 @@ export default function AdminUsersPage() {
                                       circle, which inside IconAction's
                                       ring would render as two concentric
                                       rings. */}
-                                  {isAdmin ? (
-                                    <ArrowDownIcon className="w-5 h-5" />
-                                  ) : (
-                                    <ArrowUpIcon className="w-5 h-5" />
-                                  )}
+                                  {isAdmin ? <ArrowDownIcon /> : <ArrowUpIcon />}
                                 </IconAction>
                               )}
                               {/* Hidden on your own row and on admins,
@@ -393,7 +389,7 @@ export default function AdminUsersPage() {
                                   variant="danger"
                                   onClick={() => setDeletingEmail(user.email)}
                                 >
-                                  <TrashIcon className="w-5 h-5" />
+                                  <TrashIcon />
                                 </IconAction>
                               )}
                             </div>
