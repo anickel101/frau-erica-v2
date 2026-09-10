@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import RandomHeaderImage from '../components/RandomHeaderImage'
 import { ADELHEID_PARAGRAPHS } from '../content/adelheid'
-import { DiamondGlyph, GlyphSlot } from '../components/NavigationGlyph'
+import { DiamondGlyph, GlyphSlot, SidewaysGlyph } from '../components/NavigationGlyph'
 import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // The same three tokens PersonCard gives its boxes, so these swatches
@@ -39,7 +39,7 @@ const GLYPH_LEGEND = [
   { glyph: '\u25B2', description: 'Up, to that person\u2019s own parents.' },
   { glyph: '\u25BC', description: 'Down, to that child\u2019s own family page.' },
   {
-    glyph: '\u25B6',
+    glyph: <SidewaysGlyph />,
     description: 'Sideways moves to a previous or subsequent marriage.',
   },
   {
@@ -139,10 +139,17 @@ export default function UsersGuidePage() {
               </ul>
               <p>
                 The diamond is special. Once you are signed in, the site works out your
-                own direct line of descent and marks everyone on it, so following the
-                diamonds up the tree walks you back through your own ancestors a
-                generation at a time. It follows blood relations only: an adoptive parent
-                will not carry a diamond, even though they appear on the page.
+                own direct line of descent and marks everyone on it. It follows blood
+                relations only, so an adoptive parent will not carry a diamond even though
+                they appear on the page.
+              </p>
+              <p>
+                Diamonds lead <em>down</em> the tree, not up. They sit on the children,
+                and the boxes above them never carry one -- so you cannot follow them
+                backwards in time. Instead, jump straight to the far end of a line: the{' '}
+                <strong>Ancestry</strong> links in the sidebar take you to your most
+                distant known ancestor on each side. From there, follow the diamonds down,
+                a generation at a time, and they will lead you back to yourself.
               </p>
             </div>
           </section>
