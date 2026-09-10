@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate, useLocation, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { getPersonById } from '../data-access/gated/persons'
 import { useAuth } from '../hooks/useAuth'
@@ -24,6 +24,18 @@ type ResolveState =
 export default function PersonPage() {
   const { id } = useParams<{ id: string }>()
   const { status } = useAuth()
+  // Set by HomePage's post-login redirect, which passes through this
+  // route on its way to the visitor's family page. It suppresses the
+  // "Loading..." below so the two hops read as a single navigation.
+  //
+  // Opt-in rather than the default, because the two ways of arriving
+  // here want opposite things. Every link to /persons/:id in the app --
+  // PersonCard, PersonIndexEntry, the sidebar's ancestry links,
+  // AnniversariesPage -- uses it only as the fallback for someone with
+  // no linked family, so a direct visit almost always ends on "isn't
+  // linked to a family page yet" rather than a redirect. Going blank
+  // there would replace a real message with an unexplained pause.
+  const isLandingHop = (useLocation().state as { landing?: boolean } | null)?.landing
   const [state, setState] = useState<ResolveState>({ kind: 'loading' })
 
   useEffect(() => {
@@ -62,6 +74,10 @@ export default function PersonPage() {
   if (state.kind === 'redirect') {
     return <Navigate to={`/family/${state.familyId}`} replace />
   }
+
+  // Nothing at all, not even the Layout shell, while passing through --
+  // a flash of empty chrome is as much of a blink as the text was.
+  if (isLandingHop && state.kind === 'loading') return null
 
   return (
     <Layout>

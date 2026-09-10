@@ -1,6 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import Layout from '../components/Layout'
+import { resolveHomeDestination } from '../components/homeDestination'
 import RandomHeaderImage from '../components/RandomHeaderImage'
+import { useAuth } from '../hooks/useAuth'
 import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // Picked once at module load (not during render, which must stay pure) --
@@ -18,6 +20,47 @@ const EXPLORE_LINKS = [
 ]
 
 export default function HomePage() {
+  const { status, personId, groups } = useAuth()
+  // Set by the sidebar's Home link. Someone who deliberately asked for
+  // this page gets it, rather than being redirected back to the family
+  // page they just navigated away from -- the redirect is about where to
+  // LAND on arrival, not a rule that this page is off limits.
+  const askedForHome = (useLocation().state as { stay?: boolean } | null)?.stay === true
+  const destination = askedForHome
+    ? ({ kind: 'home' } as const)
+    : resolveHomeDestination(status, personId, groups)
+
+  // A signed-in family member goes straight to their own family page.
+  // One redirect covers both entry points: LoginForm already navigates
+  // here after a successful sign-in, and someone typing frauerica.org
+  // months later arrives here too -- so neither needed its own rule.
+  //
+  // Via /persons/:id rather than /family/:id, because person_id is on
+  // the ID token and needs no lookup, while the family page it maps to
+  // does. PersonPage already performs exactly that resolution.
+  //
+  // `replace`, not a push -- otherwise Back from the family page returns
+  // here and is immediately redirected forward again, trapping them.
+  //
+  // The `landing` flag tells PersonPage this is a pass-through rather
+  // than a destination, so it stays blank instead of showing "Loading..."
+  // and the two hops read as one navigation. See PersonPage for why that
+  // is opt-in rather than its default.
+  if (destination.kind === 'person') {
+    return (
+      <Navigate
+        to={`/persons/${destination.personId}`}
+        replace
+        state={{ landing: true }}
+      />
+    )
+  }
+
+  // Blank, not the home page, while the session resolves: rendering the
+  // welcome and replacing it a moment later reads as a glitch. Only one
+  // tick for signed-out visitors, who then get 'home' properly.
+  if (destination.kind === 'resolving') return null
+
   return (
     <Layout>
       <div className="p-6">

@@ -21,6 +21,13 @@ export interface AuthState {
   // marriage/partnership if they have one, else the family they appear
   // in as a child. Resolved from the same lookup as personName. Null
   // until resolved, or if the lookup fails/finds no family at all.
+  //
+  // Nothing waits on this. The post-login redirect deliberately uses
+  // personId (which is on the token, so it's known synchronously) rather
+  // than this -- see components/homeDestination.ts. That's what lets
+  // this stay a plain two-state value: it only ever decorates the
+  // sidebar and the already-signed-in panel, where "not yet known" and
+  // "none" can both simply render no link.
   homeFamilyId: number | null
   // This person's own biological ancestor person_ids (GET /me/germline),
   // resolved once per sign-in like personName/homeFamilyId above -- null
