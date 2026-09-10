@@ -6,7 +6,7 @@ import { DiamondGlyph, GlyphSlot, SidewaysGlyph } from '../components/Navigation
 import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // The same three tokens PersonCard gives its boxes, so these swatches
-// are the colours themselves rather than an approximation of them.
+// are the colors themselves rather than an approximation of them.
 const GENERATION_LEGEND = [
   {
     label: 'Grandparents',
@@ -98,7 +98,7 @@ export default function UsersGuidePage() {
             </div>
           </section>
 
-          {/* Built from the same colour tokens and the same glyph
+          {/* Built from the same color tokens and the same glyph
               components the Family pages themselves use (see
               components/NavigationGlyph.tsx), not a hand-drawn copy -- a
               legend that quietly stops matching what it describes is
@@ -110,7 +110,7 @@ export default function UsersGuidePage() {
             <div className="space-y-3">
               <p>
                 Every family page is laid out the same way, three generations from top to
-                bottom, and the colour of a box tells you which generation you are looking
+                bottom, and the color of a box tells you which generation you are looking
                 at.
               </p>
               <ul className="space-y-2 my-4">

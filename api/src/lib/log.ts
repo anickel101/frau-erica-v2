@@ -43,14 +43,14 @@ export interface LogFields {
   [key: string]: unknown
 }
 
-// Error is not usefully JSON-serialisable on its own -- `message` and
+// Error is not usefully JSON-serializable on its own -- `message` and
 // `stack` are non-enumerable, so JSON.stringify(new Error('boom'))
 // returns "{}". Pulled out by hand so a logged failure actually carries
 // the reason. `name` matters more than it looks: the AWS SDK signals
 // most recoverable conditions through the error class
 // (UsernameExistsException, NoSuchKey), so it's usually the field worth
 // filtering on.
-function serialiseError(err: unknown): LogFields {
+function serializeError(err: unknown): LogFields {
   if (err instanceof Error) {
     return { errorName: err.name, errorMessage: err.message, stack: err.stack }
   }
@@ -78,6 +78,6 @@ export const log = {
     emit('WARN', event, fields)
   },
   error(event: string, err: unknown, fields: LogFields = {}): void {
-    emit('ERROR', event, { ...fields, ...serialiseError(err) })
+    emit('ERROR', event, { ...fields, ...serializeError(err) })
   },
 }

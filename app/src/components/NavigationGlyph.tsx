@@ -5,7 +5,7 @@ import { ReactNode } from 'react'
 //
 // Shared rather than redrawn in the guide: a legend that quietly stops
 // matching the thing it describes is worse than no legend, and these
-// have already changed twice (colour, then outline, then size). One
+// have already changed twice (color, then outline, then size). One
 // definition means the guide follows automatically.
 
 // An SVG shape, not the Unicode ◆ character -- confirmed live (twice)
@@ -62,7 +62,7 @@ function DiamondGlyph() {
 }
 
 // The canonical wrapper: fixed-width so names line up across all three
-// generations, flex-centred so the SVG diamond centres on its own
+// generations, flex-centered so the SVG diamond centers on its own
 // bounding box rather than on font-dependent glyph metrics.
 export function GlyphSlot({ children }: { children: ReactNode }) {
   return (

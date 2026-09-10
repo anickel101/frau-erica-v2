@@ -90,7 +90,7 @@ function toLinkedPersonSummary(db: Database, row: PersonSummaryRow): LinkedPerso
 // Only ever called for the featured couple (person_1/person_2), which is
 // why this is the one person lookup that selects preferred_first_name:
 // it drives the Family page headline, and nothing else on the site uses
-// it. The coloured name blocks keep the full legal name, per the
+// it. The colored name blocks keep the full legal name, per the
 // Archivist's own note.
 function getPersonSummary(db: Database, personId: number): LinkedPersonSummary | null {
   const row = queryOne<CouplePersonRow>(

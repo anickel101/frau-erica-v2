@@ -80,7 +80,7 @@ export function getPersonIdClaim(
 // Case-insensitive deliberately: this pool has UsernameConfiguration
 // CaseSensitive=false, so Admin@example.com and admin@example.com are
 // genuinely the same account. A raw === comparison let an admin walk
-// straight through their own protection by varying the capitalisation of
+// straight through their own protection by varying the capitalization of
 // the address they typed.
 //
 // Email is the Cognito username here (the sole sign-in identifier), so
