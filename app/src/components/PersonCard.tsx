@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { formatLifespan } from '../utils/dateDisplay'
 import { LinkedPersonSummary } from '../types/person'
-import { DiamondGlyph, GlyphSlot } from './NavigationGlyph'
+import { DiamondGlyph, GlyphSlot, SidewaysGlyph } from './NavigationGlyph'
 
 type Generation = 'grandparent' | 'couple' | 'child'
 
@@ -105,7 +105,7 @@ export default function PersonCard({
           aria-label={`${person.first_name}'s other family`}
           className="absolute top-1/2 right-3 -translate-y-1/2 text-fe-accent glyph-outline text-3xl leading-none hover:text-fe-accent-dark"
         >
-          ▶
+          <SidewaysGlyph />
         </Link>
       )}
     </div>
