@@ -104,27 +104,41 @@ function getPersonSummary(db: Database, personId: number): LinkedPersonSummary |
 }
 
 // A person's own parents -- "grandparents" from the featured couple's
-// perspective. Different parents are never collapsed together: someone
-// can have e.g. one biological and one step parent on record
-// simultaneously, and both belong on the page.
+// perspective.
 //
-// DISTINCT only deduplicates the same *person* appearing twice, which is
-// a different thing and possible because Relationships has no UNIQUE
-// constraint -- one person recorded as both biological_parent and
-// adoptive_parent of the same child (a step-parent who later adopts)
-// would otherwise render as two identical boxes. Currently zero
-// occurrences in the real data, checked directly; it's a guard for a
-// database that's edited by hand, matching what getChildren already does.
+// BIOLOGICAL ONLY, unlike every other parent lookup here. Per the
+// Archivist: "there can be only two sets of two grandparents (lilac
+// boxes, all biological) per Family page". The lilac row is the
+// bloodline; where a step- or adoptive parent belongs is the *other*
+// family page, reached by the sideways triangle on the couple's box.
+//
+// This reverses an earlier decision, and the comment that stood here
+// said the opposite -- that a step parent "belongs on the page" beside a
+// biological one. Both readings are defensible; this one is the
+// Archivist's, made with his own family in view (the only two
+// non-biological parent rows in the entire database put Mark Nickel on
+// two of these pages as an adoptive grandparent).
+//
+// Deliberately NOT applied to getChildren, getFamilyIdAsChild or
+// resolveLinkedFamilyIdsBulk, all of which still accept every parent
+// type: an adopted child does belong in their adoptive family's green
+// row, and their box must still link to that family page. The asymmetry
+// is the point -- adoption shows in the descent, not in the bloodline.
+//
+// DISTINCT is now largely belt-and-braces (one relationship type can
+// only produce one row per parent), but kept: Relationships has no
+// UNIQUE constraint, so a duplicated row in a hand-edited database would
+// otherwise render two identical boxes.
 function getParents(db: Database, personId: number): LinkedPersonSummary[] {
-  const types = inClause('type', PARENT_RELATIONSHIP_TYPES)
   const rows = queryAll<PersonSummaryRow>(
     db,
     `SELECT DISTINCT p.person_id, p.first_name, COALESCE(p.middle_name, '') AS middle_name,
             p.last_name, p.date_of_birth, p.date_of_death
      FROM Relationships r
      JOIN Persons p ON p.person_id = r.person_id_1
-     WHERE r.person_id_2 = :childId AND r.relationship_type IN (${types.sql})`,
-    { ':childId': personId, ...types.params },
+     WHERE r.person_id_2 = :childId
+       AND r.relationship_type = 'biological_parent'`,
+    { ':childId': personId },
   )
   return rows.map((row) => toLinkedPersonSummary(db, row))
 }

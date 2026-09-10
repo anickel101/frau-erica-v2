@@ -235,3 +235,53 @@ describe('preferred_first_name', () => {
     expect(family?.children[0]).not.toHaveProperty('preferred_first_name')
   })
 })
+
+// Per the Archivist: "there can be only two sets of two grandparents
+// (lilac boxes, all biological) per Family page." The lilac row is the
+// bloodline; a step- or adoptive parent belongs on the other family
+// page, reached by the sideways triangle. This reverses an earlier
+// decision, so it is worth holding in place explicitly.
+describe('grandparents are biological only', () => {
+  // Lena (7) has biological parents Anna (3) and Karl (4), plus StepDad
+  // Guy (17) recorded as a step_parent -- the fixture's only
+  // non-biological parent row. Family 20 makes her a partner so her own
+  // parents render as that page's grandparents.
+  beforeEach(() => {
+    db.run(
+      'INSERT INTO Families (family_id, person_id_1, person_id_2, description) VALUES (20, 7, 8, ?)',
+      ['Lena and Max'],
+    )
+  })
+
+  test('excludes a step parent from the grandparent row', () => {
+    const grandparents = getFamilyById(db, 20)?.grandparents_1.map((p) => p.person_id)
+    expect(grandparents?.sort()).toEqual([3, 4])
+    expect(grandparents).not.toContain(17)
+  })
+
+  test('excludes an adoptive parent too', () => {
+    db.run(
+      "INSERT INTO Relationships (person_id_1, person_id_2, relationship_type) VALUES (9, 7, 'adoptive_parent')",
+    )
+    const grandparents = getFamilyById(db, 20)?.grandparents_1.map((p) => p.person_id)
+    expect(grandparents?.sort()).toEqual([3, 4])
+    expect(grandparents).not.toContain(9)
+  })
+
+  // The asymmetry is the point: adoption shows in the descent, not in
+  // the bloodline. Narrowing getChildren the same way would erase
+  // adopted children from the family that raised them.
+  test('children are NOT narrowed -- an adoptive link still counts', () => {
+    db.run(
+      'INSERT INTO Persons (person_id, first_name, last_name, date_of_birth) VALUES (95, ?, ?, ?)',
+      ['Adopted', 'Child', '1990-01-01'],
+    )
+    db.run(
+      "INSERT INTO Relationships (person_id_1, person_id_2, relationship_type) VALUES (3, 95, 'adoptive_parent')",
+    )
+    db.run(
+      "INSERT INTO Relationships (person_id_1, person_id_2, relationship_type) VALUES (4, 95, 'adoptive_parent')",
+    )
+    expect(getFamilyById(db, 1)?.children.map((c) => c.person_id)).toContain(95)
+  })
+})
