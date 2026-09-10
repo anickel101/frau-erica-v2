@@ -10,7 +10,7 @@ declare global {
 let scriptLoaded = false
 
 // Call this when the form mounts, NOT at submit time. reCAPTCHA v3 scores
-// a request on the behaviour it observed during the session -- mouse
+// a request on the behavior it observed during the session -- mouse
 // movement, dwell time, how the page was interacted with. A script that
 // loads and executes within the same few hundred milliseconds hands
 // Google almost no signal, and a real person filling in a form carefully

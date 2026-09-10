@@ -32,8 +32,8 @@ export default function IconAction({
   // All three are circles, so the row reads as one set of controls
   // rather than two plain glyphs beside a filled block.
   //
-  // The plain ring is border-current, so it takes whatever colour the
-  // icon has and follows it on hover without a second colour to keep in
+  // The plain ring is border-current, so it takes whatever color the
+  // icon has and follows it on hover without a second color to keep in
   // sync. 1.5px matches the icons' own stroke-width exactly (Heroicons
   // 24/outline draws at 1.5), so the ring reads as part of the same
   // drawing rather than a box around it.
@@ -73,8 +73,8 @@ export default function IconAction({
           costs the fade, which is a fair trade for a page that doesn't
           scroll sideways.
 
-          Anchored right, not centred: these sit in the last column, so a
-          centred tooltip grows off the edge of the page. Growing leftward
+          Anchored right, not centered: these sit in the last column, so a
+          centered tooltip grows off the edge of the page. Growing leftward
           keeps it over the table, where there's always room.
 
           Above the button rather than below, so the last row's tooltip

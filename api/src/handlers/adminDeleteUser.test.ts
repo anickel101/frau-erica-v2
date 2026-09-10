@@ -98,10 +98,10 @@ describe('adminDeleteUser handler', () => {
     expect(sendMock).not.toHaveBeenCalled()
   })
 
-  // This pool has case-insensitive usernames, so differing capitalisation
+  // This pool has case-insensitive usernames, so differing capitalization
   // is the same account -- a raw === comparison let an admin delete
   // themselves by varying the case of what they typed.
-  test('self-deletion guard ignores capitalisation', async () => {
+  test('self-deletion guard ignores capitalization', async () => {
     sendMock.mockRejectedValue(new Error('must not be called'))
     const result = (await handler(
       fakeEvent('Admin@Example.com', { callerEmail: 'admin@example.com' }),

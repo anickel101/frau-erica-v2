@@ -6,7 +6,7 @@ describe('buildRequestEmail', () => {
   // address deliberately has no mailbox behind it -- SES only needs the
   // domain verified to send -- so without Reply-To, answering a
   // notification would bounce. Sending as @gmail.com (the previous
-  // behaviour) fails DKIM/SPF alignment and is what put these in spam.
+  // behavior) fails DKIM/SPF alignment and is what put these in spam.
   test('sends from the verified domain, with replies going to the archivist', () => {
     const email = buildRequestEmail(
       {

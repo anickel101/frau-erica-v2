@@ -7,14 +7,14 @@
   --color-fe-accent: #ff6600;
   --color-fe-accent-dark: #cc5200;
 
-  /* Link text only. The accent orange above is the brand colour and stays
+  /* Link text only. The accent orange above is the brand color and stays
      exactly as the original design notes specify -- but as *text* on the
      page background it measures 2.51:1, where WCAG AA wants 4.5:1 for
      normal-sized text (accent-dark is 3.76:1, also short, and only ever
      appeared on hover). At the 12px most links here are set in, for an
      audience skewing elderly, that's a real readability problem rather
      than a checkbox.
-     These are the darkest shades still recognisably the same orange:
+     These are the darkest shades still recognizably the same orange:
      4.70:1 and 6.52:1. Accent stays in charge of everything that isn't
      body-sized text -- the top bars, the generational glyphs, and
      white-on-orange buttons, all of which are fine as they are. */
@@ -30,7 +30,7 @@
   --color-fe-gen-child: #99cc99;
   /* Not from the original design notes -- new for the anniversary
      calendar's death events, which have no existing generational color
-     to reuse. A muted grey, deliberately distinct from --color-fe-bg. */
+     to reuse. A muted gray, deliberately distinct from --color-fe-bg. */
   --color-fe-gen-death: #b3b3b3;
 
   --font-sans: Verdana, Arial, Helvetica, sans-serif;
@@ -49,7 +49,7 @@ body {
    non-text UI.
    Darkening the fill was tried first and reads muddy brown rather than
    orange -- these glyphs are too small for a desaturated shade to still
-   look like the brand colour. Outlining instead keeps the fill at the
+   look like the brand color. Outlining instead keeps the fill at the
    exact #ff6600 the design notes specify and gets the contrast from the
    edge: fe-brown clears 3:1 on all three boxes (lilac 4.00, green 5.10,
    gold 6.20).

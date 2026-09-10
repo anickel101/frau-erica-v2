@@ -209,7 +209,7 @@ describe('getFamilyById children -- must be linked to every partner', () => {
 // headline reads by the name someone actually went by -- "Alli
 // McMillan" rather than "Mary McMillan". Deliberately narrow: it
 // reaches the featured couple only, since the headline is built from
-// them and the coloured name blocks keep the full legal name.
+// them and the colored name blocks keep the full legal name.
 describe('preferred_first_name', () => {
   test('is returned for the featured couple when set', () => {
     db.run("UPDATE Persons SET preferred_first_name = 'Alli' WHERE person_id = 3")
