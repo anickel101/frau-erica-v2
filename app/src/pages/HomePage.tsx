@@ -1,4 +1,4 @@
-import { Link, Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { resolveHomeDestination } from '../components/homeDestination'
 import RandomHeaderImage from '../components/RandomHeaderImage'
@@ -21,14 +21,7 @@ const EXPLORE_LINKS = [
 
 export default function HomePage() {
   const { status, personId, groups } = useAuth()
-  // Set by the sidebar's Home link. Someone who deliberately asked for
-  // this page gets it, rather than being redirected back to the family
-  // page they just navigated away from -- the redirect is about where to
-  // LAND on arrival, not a rule that this page is off limits.
-  const askedForHome = (useLocation().state as { stay?: boolean } | null)?.stay === true
-  const destination = askedForHome
-    ? ({ kind: 'home' } as const)
-    : resolveHomeDestination(status, personId, groups)
+  const destination = resolveHomeDestination(status, personId, groups)
 
   // A signed-in family member goes straight to their own family page.
   // One redirect covers both entry points: LoginForm already navigates

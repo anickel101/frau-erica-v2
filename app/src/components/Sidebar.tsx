@@ -20,13 +20,7 @@ const NAV_LINK_CLASS = 'font-bold text-fe-link hover:text-fe-link-dark text-xs'
 // and Log out alongside its two static links -- a mix of dynamic and
 // static entries that the plain title+links shape here can't express, so
 // it's rendered explicitly below instead.
-const ABOUT_LINKS: { label: string; to: string; state?: unknown }[] = [
-  // Home carries `stay` because "/" redirects a signed-in member to
-  // their own family page (see components/homeDestination.ts) -- without
-  // it this link would bounce straight back where it came from, which is
-  // worse than having no link at all. The flag marks the difference
-  // between arriving at the site and deliberately asking for this page.
-  { label: 'Home', to: '/', state: { stay: true } },
+const ABOUT_LINKS: { label: string; to: string }[] = [
   { label: "User's Guide", to: '/about' },
   { label: 'Contact the Archivist', to: '/contact' },
 ]
@@ -238,11 +232,31 @@ export default function Sidebar({
             </p>
           )}
           <ul className="space-y-0.5">
+            {/* "My Home" is this person's own family page, not the site's
+                welcome page -- for someone signed in, that IS home.
+                Rendered only once homeFamilyId resolves: before then, and
+                for an account with no linked family, there is nowhere for
+                it to point and a dead link is worse than none.
+
+                The "Logged in: {name}" line above already links to the
+                same place, but only implicitly -- a name that happens to
+                be clickable is easy to miss in something people use as
+                navigation. This says what it does. */}
+            {homeFamilyId !== null && (
+              <li>
+                <Link
+                  to={`/family/${homeFamilyId}`}
+                  className={NAV_LINK_CLASS}
+                  onClick={() => setOpen(false)}
+                >
+                  My Home
+                </Link>
+              </li>
+            )}
             {ABOUT_LINKS.map((link) => (
               <li key={link.to}>
                 <Link
                   to={link.to}
-                  state={link.state}
                   className={NAV_LINK_CLASS}
                   onClick={() => setOpen(false)}
                 >
