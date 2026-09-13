@@ -294,3 +294,114 @@ CREATE TABLE Lexicon (
     definition     TEXT,
     notes          TEXT
 );
+
+
+-- ------------------------------------------------------------
+-- Recipes: the Keepers cookbook — "An Index to the Foods of
+--   Gideon Lawton Lane" on the original site. Imported from ~55
+--   hand-written PHP pages (see app/scripts/importKeepers.ts).
+--
+--   Unlike Documents, this content is GATED: it is served through
+--   api/ to the 'approved' group, not exported to static JSON.
+--   Recipes are the first gated content that isn't family-tree data.
+--
+--   genre: the closed set the original cookbook's index used. Note
+--     "Little Plates" is stored AND displayed -- the old site stored
+--     that but displayed "Hors d'oeuvres"; the Archivist chose the
+--     former. Unlike Documents.genre (94% 'Other'), this arrives
+--     fully populated and evenly spread, so it is the organizing
+--     dimension the index page and its filters are built on.
+--   slug: URL identity, e.g. 'blueberry-buckle'. Verified collision
+--     -free across all 50 indexed recipes at import time.
+--   header_image_id: shared, not one-per-recipe -- 36 images serve
+--     51 recipe pages (hdr.Blueberries.jpg alone serves 5), hence a
+--     plain many-to-one FK with no uniqueness constraint.
+--   source_note: for the five recipes that credit an outside source
+--     (James Beard, the New York Times, the Minnesota Centennial
+--     Cookbook, Frau Erica's own 1903 Deutsch-Amerikanisches
+--     Kochbuch, Cuisinart).
+-- ------------------------------------------------------------
+CREATE TABLE Recipes (
+    recipe_id       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    slug            TEXT NOT NULL UNIQUE,
+    title           TEXT NOT NULL,
+    genre           TEXT CHECK (genre IN ('Jams / Canning', 'Bakery / Desserts',
+                                          'Little Plates', 'Soups', 'Main Dishes',
+                                          'Vegetables / Sides')),
+    summary         TEXT,
+    header_image_id INTEGER,
+    source_note     TEXT,
+    notes           TEXT,
+    is_published    INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT Recipes_Images_FK FOREIGN KEY (header_image_id) REFERENCES Images(image_id)
+);
+
+
+-- ------------------------------------------------------------
+-- RecipeSections: a recipe is a SEQUENCE of sections, not a single
+--   "ingredients then steps" pair. The source pages interleave them
+--   -- Blueberry Buckle runs streusel ingredients, streusel steps,
+--   buckle ingredients, buckle steps; Sour Cherry Tart does it four
+--   times. 42 of the 50 indexed recipes have one (usually unlabeled)
+--   section, 8 have two to four.
+--
+--   Sections also carry the two other groupings found in the source:
+--   Molly's Fruitcake uses them for batch scales ("The basic recipe",
+--   "To triple", "To quadruple"), and Eierschwer for its 1903
+--   original vs. its modern adaptation.
+--
+--   label: NULL for a single-section recipe.
+-- ------------------------------------------------------------
+CREATE TABLE RecipeSections (
+    section_id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    recipe_id   INTEGER NOT NULL,
+    label       TEXT,
+    sort_order  INTEGER NOT NULL,
+    CONSTRAINT RecipeSections_Recipes_FK FOREIGN KEY (recipe_id) REFERENCES Recipes(recipe_id)
+);
+
+
+-- ------------------------------------------------------------
+-- RecipeIngredients: one line per ingredient.
+--
+--   column_no: which of the source's two ingredient columns this
+--     line belongs to. This is CONTENT, not layout. The split is
+--     frequently semantic -- Carrot Muffins puts wet in column 1 and
+--     dry in column 2; Boeuf Bourguignon solids then liquids;
+--     Butternut Soup components then seasonings -- and the columns
+--     are uneven (3/4, 8/10, 5/4), which pure overflow would not
+--     produce. Renderers must honor it explicitly; CSS `columns: 2`
+--     would reflow and scramble the grouping.
+--   lang: NULL for the monolingual majority. Three recipes are
+--     bilingual, all from Frau Erica's 1903 Deutsch-Amerikanisches
+--     Kochbuch -- Sauerbraten, Johann im Sack, Eierschwer. Their
+--     German and English halves share a sort_order and differ only
+--     by lang, which gives the paragraph-by-paragraph pairing the
+--     Archivist asked for and collapses to one column on a phone.
+-- ------------------------------------------------------------
+CREATE TABLE RecipeIngredients (
+    ingredient_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    section_id    INTEGER NOT NULL,
+    text          TEXT NOT NULL,
+    column_no     INTEGER NOT NULL DEFAULT 1 CHECK (column_no IN (1, 2)),
+    lang          TEXT CHECK (lang IN ('de', 'en')),
+    sort_order    INTEGER NOT NULL,
+    CONSTRAINT RecipeIngredients_RecipeSections_FK FOREIGN KEY (section_id) REFERENCES RecipeSections(section_id)
+);
+
+
+-- ------------------------------------------------------------
+-- RecipeSteps: one markdown paragraph per step, belonging to a
+--   section rather than to the recipe -- see RecipeSections above
+--   for why.
+--
+--   lang: same pairing rule as RecipeIngredients.
+-- ------------------------------------------------------------
+CREATE TABLE RecipeSteps (
+    step_id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    section_id  INTEGER NOT NULL,
+    body        TEXT NOT NULL,
+    lang        TEXT CHECK (lang IN ('de', 'en')),
+    sort_order  INTEGER NOT NULL,
+    CONSTRAINT RecipeSteps_RecipeSections_FK FOREIGN KEY (section_id) REFERENCES RecipeSections(section_id)
+);
