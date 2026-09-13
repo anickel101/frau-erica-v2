@@ -122,3 +122,59 @@ export interface AnniversaryEvent {
   spouseId?: number
   spouseName?: string
 }
+
+// ---------------------------------------------------------------------
+// Keepers -- the family cookbook. Unlike Documents/Galleries/Lexicon,
+// this is gated content served from here rather than exported to static
+// JSON; see schema.sql's Recipes comment for why.
+// ---------------------------------------------------------------------
+
+export interface RecipeListItem {
+  recipe_id: number
+  slug: string
+  title: string
+  genre: string | null
+  summary: string | null
+  // Bare Images.url filename, same convention as FamilyDetail's --
+  // app/src/utils/imageUrl.ts adds the CDN prefix.
+  header_image_url: string | null
+}
+
+// One line of an ingredient list.
+export interface RecipeIngredient {
+  text: string
+  // Which of the source's two ingredient columns this belongs to. This
+  // is content, not layout: the split is frequently semantic (wet in 1,
+  // dry in 2). Render it as recorded rather than reflowing.
+  column_no: number
+  // null for the monolingual majority. For the three bilingual recipes
+  // from Frau Erica's 1903 cookbook, the 'de' and 'en' halves of one
+  // line share a sort_order.
+  lang: string | null
+  sort_order: number
+}
+
+export interface RecipeStep {
+  body: string
+  lang: string | null
+  sort_order: number
+}
+
+// A recipe is a sequence of these, not a single ingredients/steps pair
+// -- the source interleaves them, and sections also carry batch scales
+// and original-vs-modern groupings. See schema.sql.
+export interface RecipeSection {
+  label: string | null
+  sort_order: number
+  ingredients: RecipeIngredient[]
+  steps: RecipeStep[]
+}
+
+export interface RecipeDetail extends RecipeListItem {
+  source_note: string | null
+  // Derived, not stored: true when any ingredient or step carries a
+  // lang. Saves every caller re-deriving it to decide whether to render
+  // one column or two paired ones.
+  bilingual: boolean
+  sections: RecipeSection[]
+}
