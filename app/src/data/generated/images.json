@@ -5198,8 +5198,8 @@
     "credit": null,
     "year_taken": null,
     "location": null,
-    "width": null,
-    "height": null,
+    "width": 800,
+    "height": 348,
     "url": "hdr.McMillans2.jpg"
   },
   {
@@ -5242,8 +5242,8 @@
     "credit": null,
     "year_taken": null,
     "location": null,
-    "width": null,
-    "height": null,
+    "width": 800,
+    "height": 276,
     "url": "hdr.MuellerFarm2.jpg"
   },
   {
@@ -5253,8 +5253,8 @@
     "credit": null,
     "year_taken": null,
     "location": null,
-    "width": null,
-    "height": null,
+    "width": 800,
+    "height": 309,
     "url": "hdr.MuellerFarm3.jpg"
   },
   {
@@ -5715,8 +5715,8 @@
     "credit": null,
     "year_taken": null,
     "location": null,
-    "width": null,
-    "height": null,
+    "width": 800,
+    "height": 228,
     "url": "hdr.Frauenfleisz.jpg"
   },
   {
@@ -5803,8 +5803,8 @@
     "credit": null,
     "year_taken": null,
     "location": null,
-    "width": null,
-    "height": null,
+    "width": 1111,
+    "height": 338,
     "url": "hdr.Hecht.jpg"
   },
   {
@@ -6155,8 +6155,8 @@
     "credit": null,
     "year_taken": null,
     "location": null,
-    "width": null,
-    "height": null,
+    "width": 1000,
+    "height": 481,
     "url": "hdr.Stollen.jpg"
   },
   {
@@ -6224,5 +6224,346 @@
     "width": null,
     "height": null,
     "url": "MichaelFamily.jpeg"
+  },
+  {
+    "image_id": 3072,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 489,
+    "url": "hdr.AnsonBread.jpg"
+  },
+  {
+    "image_id": 3073,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 489,
+    "url": "hdr.BLT_Pasta.jpg"
+  },
+  {
+    "image_id": 3074,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 475,
+    "url": "hdr.Basil.jpg"
+  },
+  {
+    "image_id": 3075,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 426,
+    "url": "hdr.Beef.jpg"
+  },
+  {
+    "image_id": 3076,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 476,
+    "url": "hdr.BlackCherry.jpg"
+  },
+  {
+    "image_id": 3077,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 403,
+    "url": "hdr.Blueberries.jpg"
+  },
+  {
+    "image_id": 3078,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 471,
+    "url": "hdr.Boeuf.jpg"
+  },
+  {
+    "image_id": 3079,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 375,
+    "url": "hdr.Butternut.jpg"
+  },
+  {
+    "image_id": 3080,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 414,
+    "url": "hdr.CheeseCrackers.jpg"
+  },
+  {
+    "image_id": 3081,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 487,
+    "url": "hdr.CherryJam.jpg"
+  },
+  {
+    "image_id": 3082,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 304,
+    "url": "hdr.Clams.jpg"
+  },
+  {
+    "image_id": 3083,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 515,
+    "url": "hdr.Cucumbers.jpg"
+  },
+  {
+    "image_id": 3084,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 426,
+    "url": "hdr.GrannySmith.jpg"
+  },
+  {
+    "image_id": 3085,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 504,
+    "url": "hdr.GreenTomatoes.jpg"
+  },
+  {
+    "image_id": 3086,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 444,
+    "url": "hdr.Lebkuchen.jpg"
+  },
+  {
+    "image_id": 3087,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 549,
+    "url": "hdr.Linzertorte.jpg"
+  },
+  {
+    "image_id": 3088,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1306,
+    "height": 574,
+    "url": "hdr.Oatmeal.jpg"
+  },
+  {
+    "image_id": 3089,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 550,
+    "url": "hdr.SourCherry.jpg"
+  },
+  {
+    "image_id": 3090,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 571,
+    "url": "hdr.StrawberryRhubarb.jpg"
+  },
+  {
+    "image_id": 3091,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 559,
+    "url": "hdr.Succotash.jpg"
+  },
+  {
+    "image_id": 3092,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 487,
+    "url": "hdr.ThymeBombs.jpg"
+  },
+  {
+    "image_id": 3093,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 435,
+    "url": "hdr.Vichyssoise.jpg"
+  },
+  {
+    "image_id": 3094,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 441,
+    "url": "hdr.Watermelon.jpg"
+  },
+  {
+    "image_id": 3095,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 460,
+    "url": "hdr.carrots.jpg"
+  },
+  {
+    "image_id": 3096,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 400,
+    "url": "hdr.corn.jpg"
+  },
+  {
+    "image_id": 3097,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 491,
+    "url": "hdr.cranberries.jpg"
+  },
+  {
+    "image_id": 3098,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 419,
+    "url": "hdr.olives.jpg"
+  },
+  {
+    "image_id": 3099,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 465,
+    "url": "hdr.potatoes.jpg"
+  },
+  {
+    "image_id": 3100,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 563,
+    "url": "hdr.rhubarb.jpg"
+  },
+  {
+    "image_id": 3101,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 453,
+    "url": "hdr.tarragonlemon.jpg"
+  },
+  {
+    "image_id": 3102,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 428,
+    "url": "hdr.tomatoes.jpg"
   }
 ]

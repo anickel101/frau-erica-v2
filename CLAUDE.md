@@ -22,10 +22,42 @@ This repo has three main parts:
 - Public content (Documents, Galleries, Lexicon) is exported from that
   database to static JSON committed into `app/src/data/generated/` —
   `app/` reads it directly, no live queries, no `api/` involvement.
+- **Keepers** (the cookbook, `Recipes` + its three child tables) is the
+  one piece of content that is neither: it is *content*, but it is
+  **gated**, so it goes through `api/` like the family tree rather than
+  being exported to the committed JSON. The generated JSON ships to
+  every browser out of a public repo, so a render-only gate would have
+  published 54 family recipes behind a login wall that protected
+  nothing.
 - Gated content (Persons, Families) and everything account-related
   (login, request access, admin approval) goes through `api/`, which
   reads a periodically-synced read-only snapshot of the same database
   from S3 — see `api/CLAUDE.md` for exactly how that sync works.
+
+## Updating the live site
+
+Four different kinds of change, four different loops. The one that
+catches people out is that **the Keepers cookbook does not go through
+`export-data`** — see above.
+
+1. **Public content** (documents, galleries, lexicon, photos) — edit the
+   canonical database → `npm run export-data` in `app/` → review the
+   generated-JSON diff → commit → deploy `app/` with
+   `hosting/deploy-app.sh`.
+2. **Cookbook content** — edit the canonical database (or re-run
+   `npm run import-keepers` for a bulk reimport) → run
+   `~/scripts/frau-erica-backup.sh`, which pushes the snapshot `api/`
+   reads. **No export, no commit, no frontend deploy**: the data reaches
+   the site through the API, so the snapshot push *is* the publish step.
+3. **Frontend code** — edit → `npm run ci` → commit → `hosting/deploy-app.sh`.
+4. **API code** — edit → `npm run ci` in `api/` → `sam build && sam deploy`.
+
+A schema change to the canonical database needs a **migration**, not
+`schema.sql` — that file rebuilds from scratch and would drop
+everything. Write the migration by extracting the new statements
+verbatim from `schema.sql` so the two cannot drift, take a
+`sqlite3 db ".backup 'copy.db'"` first, and rehearse it on that copy
+before touching the real file.
 
 ## Schema conventions, if touching schema.sql
 
