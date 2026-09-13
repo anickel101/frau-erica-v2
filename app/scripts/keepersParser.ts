@@ -117,9 +117,30 @@ function collapse(text: string): string {
   return text.replace(/\s+/g, ' ').trim()
 }
 
+// German letters are transliterated the way German itself does it --
+// ß to ss, umlauts to the vowel plus e -- not dropped. Several titles
+// are German, and stripping the characters instead produced
+// "gro-er-hefenklo" from "Großer Hefenkloß", which is neither readable
+// nor guessable. "grosser-hefenkloss" is what a German speaker would
+// write, and it keeps the word intact.
+//
+// Accented Latin elsewhere (Paté) decomposes to its base letter, which
+// is the ordinary URL convention and loses nothing.
+const TRANSLITERATIONS: [RegExp, string][] = [
+  [/ß/g, 'ss'],
+  [/ä/g, 'ae'],
+  [/ö/g, 'oe'],
+  [/ü/g, 'ue'],
+]
+
 export function slugify(title: string): string {
-  return htmlToMarkdown(title)
-    .toLowerCase()
+  let text = htmlToMarkdown(title).toLowerCase()
+  for (const [pattern, replacement] of TRANSLITERATIONS) {
+    text = text.replace(pattern, replacement)
+  }
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[‘’']/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/-+/g, '-')
@@ -231,8 +252,22 @@ function looksLikeIngredientList(inner: string, attrs = ''): boolean {
   return average < 70
 }
 
+// Comments are stripped BEFORE the split, not after. The source marks an
+// empty second ingredient column with a commented-out placeholder that
+// has a <br> inside it:
+//
+//   <p class="text12" style="text-align:center;">
+//   <!--  ingredient<br>  -->
+//   </p>
+//
+// Splitting first tears that into "<!--  ingredient" and "  -->", and
+// neither fragment is well-formed markup any more, so tag-stripping
+// leaves both as literal text. The result was two junk ingredients on
+// every recipe with an unused second column -- visible on the printed
+// page as "<!-- ingredient" and "-->" sitting in the ingredient list.
 function splitBrLines(inner: string): string[] {
   return inner
+    .replace(/<!--[\s\S]*?-->/g, '')
     .split(/<br\s*\/?>/i)
     .map((line) => htmlToMarkdown(line))
     .filter((line) => line.length > 0)

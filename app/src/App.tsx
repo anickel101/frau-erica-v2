@@ -16,11 +16,13 @@ const FamilyPage = lazy(() => import('./pages/FamilyPage'))
 const GalleriesPage = lazy(() => import('./pages/GalleriesPage'))
 const GalleryPage = lazy(() => import('./pages/GalleryPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
+const KeepersPage = lazy(() => import('./pages/KeepersPage'))
 const LexiconPage = lazy(() => import('./pages/LexiconPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const PersonPage = lazy(() => import('./pages/PersonPage'))
 const PersonsPage = lazy(() => import('./pages/PersonsPage'))
+const RecipePage = lazy(() => import('./pages/RecipePage'))
 const RequestAccessPage = lazy(() => import('./pages/RequestAccessPage'))
 const TextPage = lazy(() => import('./pages/TextPage'))
 const TextsPage = lazy(() => import('./pages/TextsPage'))
@@ -48,6 +50,26 @@ export default function App() {
             element={
               <RequireApproved>
                 <FamilyPage />
+              </RequireApproved>
+            }
+          />
+
+          {/* Keepers, the cookbook. Gated like the family tree rather
+              than public like Documents/Galleries -- its data is served
+              from api/, not exported to the committed JSON. */}
+          <Route
+            path="/keepers"
+            element={
+              <RequireApproved>
+                <KeepersPage />
+              </RequireApproved>
+            }
+          />
+          <Route
+            path="/keepers/:slug"
+            element={
+              <RequireApproved>
+                <RecipePage />
               </RequireApproved>
             }
           />

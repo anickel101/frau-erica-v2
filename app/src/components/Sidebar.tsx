@@ -301,6 +301,35 @@ export default function Sidebar({
           </ul>
         </div>
 
+        {/* Keepers, the cookbook. Its own section rather than a line in
+            Explorations -- it is a distinct part of the archive with its
+            own accent colour, and the original site treated it that way
+            too.
+
+            Shown only to an approved user: both its routes are gated, so
+            offering the link to anyone else is offering a dead end. The
+            section heading and link carry the Keepers blue rather than
+            the site brown/orange, which is the one place in the sidebar
+            that colour appears -- enough to signal "a different part of
+            the site" without repainting the navigation. */}
+        {status === 'signedIn' &&
+          (groups.includes('approved') || groups.includes('admin')) && (
+            <div className="mt-4 border-t-[1.5px] border-fe-keeper pt-3">
+              <p className="font-bold text-sm mb-2 text-fe-keeper-link">Keepers</p>
+              <ul className="space-y-0.5">
+                <li>
+                  <Link
+                    to="/keepers"
+                    className="font-bold text-fe-keeper-link hover:text-fe-keeper-link-dark text-xs"
+                    onClick={() => setOpen(false)}
+                  >
+                    The Cookbook
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
+
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="mt-4 border-t-[1.5px] border-fe-brown pt-3">
             <p className="font-bold text-sm mb-2 text-fe-brown">{section.title}</p>

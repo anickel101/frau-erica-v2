@@ -27,10 +27,13 @@ export default function IconAction({
   // 'danger' is the filled red treatment -- reserved for destructive
   // actions, so the one button that deletes an account doesn't look like
   // the two that don't.
-  variant?: 'plain' | 'danger'
+  // 'danger' is the filled red treatment. 'keeper' is the cookbook's
+  // blue -- on a Keepers page the default orange is the only orange
+  // thing on the page, which reads as a stray rather than a control.
+  variant?: 'plain' | 'danger' | 'keeper'
 }) {
-  // All three are circles, so the row reads as one set of controls
-  // rather than two plain glyphs beside a filled block.
+  // Every variant is a circle, so a row of them reads as one set of
+  // controls rather than plain glyphs beside a filled block.
   //
   // The plain ring is border-current, so it takes whatever colour the
   // icon has and follows it on hover without a second colour to keep in
@@ -48,7 +51,9 @@ export default function IconAction({
         // two ringed buttons render 34px while the red one stays 32,
         // which reads as the red circle being slightly small.
         'bg-red-700 hover:bg-red-800 text-white border-[1.5px] border-transparent'
-      : 'text-fe-link hover:text-fe-link-dark border-[1.5px] border-current'
+      : variant === 'keeper'
+        ? 'text-fe-keeper-link hover:text-fe-keeper-link-dark border-[1.5px] border-current'
+        : 'text-fe-link hover:text-fe-link-dark border-[1.5px] border-current'
 
   return (
     <span className="relative inline-flex group">

@@ -49,6 +49,19 @@ describe('slugify', () => {
       'heppen-a-german-soul-food',
     )
   })
+
+  it('transliterates German rather than dropping the letters', () => {
+    // Stripping them produced "gro-er-hefenklo", which is neither
+    // readable nor guessable.
+    expect(slugify('Johann im Sack: Großer Hefenkloß')).toBe(
+      'johann-im-sack-grosser-hefenkloss',
+    )
+    expect(slugify('Süße Milch und Öl')).toBe('suesse-milch-und-oel')
+  })
+
+  it('reduces accented Latin to its base letter', () => {
+    expect(slugify('Ranch House Paté')).toBe('ranch-house-pate')
+  })
 })
 
 describe('parseIndex', () => {
@@ -117,6 +130,26 @@ describe('the fenced Keepers dialect', () => {
     expect(ingredients.filter((i) => i.columnNo === 2).map((i) => i.text)).toEqual([
       '1 1/2 cups flour',
       '1/2 tsp. salt',
+    ])
+  })
+
+  it('drops the commented-out placeholder in an unused second column', () => {
+    // The source marks an empty second column with a comment that has a
+    // <br> inside it. Splitting on <br> before stripping comments tore
+    // it into two fragments that survived as literal ingredients.
+    const recipe = parseRecipe(
+      page(`
+        ${FENCE_OPEN}
+        <p class="text12" style="text-align:center;">1/2 cup flour<br>pinch of salt<br></p>
+        <p class="text12" style="text-align:center;">
+        <!--  ingredient<br>  -->
+        </p>
+        ${FENCE_CLOSE}
+      `),
+    )
+    expect(recipe.sections[0].ingredients.map((i) => i.text)).toEqual([
+      '1/2 cup flour',
+      'pinch of salt',
     ])
   })
 
