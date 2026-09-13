@@ -135,18 +135,38 @@ function Steps({ steps, bilingual }: { steps: RecipeStep[]; bilingual: boolean }
   )
 }
 
+// One tone for both headings in a section -- the source's own label
+// ("Have ready", "For the streusel") and the "Method" heading below --
+// so the two read as a matched pair rather than two different devices.
+const SECTION_HEADING = 'mb-2 text-sm font-bold text-fe-brown'
+
 function Section({ section, bilingual }: { section: RecipeSection; bilingual: boolean }) {
+  // The rule and the "Method" heading only earn their place when there
+  // are ingredients above to separate from. 65 of the 68 published
+  // sections have both; the other three would otherwise get a heading
+  // sitting over nothing, or a rule with nothing above it.
+  const separated = section.ingredients.length > 0 && section.steps.length > 0
+
   return (
     // print-section keeps a label with its own ingredients across a page
     // break -- "For the streusel:" alone at the foot of a page is the
     // moment a printed recipe stops being usable.
     <div className="print-section mb-6">
       {section.label && (
-        <p className="mb-2 text-sm font-bold text-fe-brown">
+        <p className={SECTION_HEADING}>
           <InlineMarkdown>{section.label}</InlineMarkdown>
         </p>
       )}
       <IngredientColumns ingredients={section.ingredients} bilingual={bilingual} />
+      {separated && (
+        <>
+          {/* Lighter than the rule under the summary, which divides the
+              whole recipe -- this one divides a part of one, and should
+              not compete with it. */}
+          <hr className="mb-3 border-t border-fe-keeper/40" />
+          <p className={SECTION_HEADING}>Method</p>
+        </>
+      )}
       <Steps steps={section.steps} bilingual={bilingual} />
     </div>
   )
