@@ -10,7 +10,24 @@ interface TopBarStyle {
   width: number
 }
 
-export default function Layout({ children }: { children: ReactNode }) {
+// Which section's accent the top bar wears. 'archive' is the orange the
+// whole site has always used; 'keepers' is the cookbook's blue. A prop
+// rather than a route lookup so Layout stays ignorant of the router, and
+// defaulted so every existing caller is unaffected.
+export type LayoutAccent = 'archive' | 'keepers'
+
+const ACCENT_BAR: Record<LayoutAccent, string> = {
+  archive: 'bg-fe-accent',
+  keepers: 'bg-fe-keeper',
+}
+
+export default function Layout({
+  children,
+  accent = 'archive',
+}: {
+  children: ReactNode
+  accent?: LayoutAccent
+}) {
   // headerRef: pages attach this to their header image wrapper (via
   // useHeaderRef()), if they have one.
   // contentTopRef: marks the shared top edge that both the sidebar and
@@ -94,7 +111,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           (topBarStyle) on Family pages specifically -- see the measure()
           effect above. */}
       <div
-        className="h-6 bg-fe-accent"
+        className={`h-6 ${ACCENT_BAR[accent]} print:hidden`}
         style={
           topBarStyle
             ? { marginLeft: topBarStyle.marginLeft, width: topBarStyle.width }
@@ -103,11 +120,16 @@ export default function Layout({ children }: { children: ReactNode }) {
       />
 
       <div ref={contentTopRef} className="flex-1 md:flex">
-        <Sidebar
-          dividerOffset={dividerOffset}
-          familyGalleries={familyGalleries}
-          logoRef={logoRef}
-        />
+        {/* The sidebar is navigation; a printed page has nowhere to
+            navigate to. Hiding it here rather than inside Sidebar keeps
+            the decision with the layout that positions it. */}
+        <div className="contents print:hidden">
+          <Sidebar
+            dividerOffset={dividerOffset}
+            familyGalleries={familyGalleries}
+            logoRef={logoRef}
+          />
+        </div>
         <main className="flex-1 min-w-0">
           <HeaderRefContext.Provider value={headerRef}>
             <FamilyGalleriesContext.Provider value={setFamilyGalleries}>

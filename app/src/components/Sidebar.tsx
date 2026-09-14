@@ -278,8 +278,13 @@ export default function Sidebar({
                 </Link>
               </li>
             )}
+            {/* Log out and Change password share a line. They are the
+                two things you do TO your account rather than places in
+                the archive, and pairing them keeps the account block
+                from growing another full-width row for something used
+                twice a year. */}
             {status === 'signedIn' && (
-              <li>
+              <li className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -296,6 +301,16 @@ export default function Sidebar({
                 >
                   Log out
                 </button>
+                <span aria-hidden="true" className="text-xs text-fe-ink/30">
+                  |
+                </span>
+                <Link
+                  to="/account"
+                  onClick={() => setOpen(false)}
+                  className={NAV_LINK_CLASS}
+                >
+                  Change password
+                </Link>
               </li>
             )}
           </ul>
@@ -378,6 +393,40 @@ export default function Sidebar({
             </ul>
           </div>
         )}
+        {/* Keepers, the cookbook. Its own section rather than a line in
+            Explorations -- it is a distinct part of the archive with its
+            own accent colour, and the original site treated it that way
+            too.
+
+            Last in the sidebar, deliberately. It is the one section that
+            isn't the family archive, so it reads as an appendix to the
+            navigation rather than an interruption partway down it -- and
+            the blue rule above it lands at the bottom edge instead of
+            cutting the brown sections in half.
+
+            Shown only to an approved user: both its routes are gated, so
+            offering the link to anyone else is offering a dead end. The
+            section heading and link carry the Keepers blue rather than
+            the site brown/orange, which is the one place in the sidebar
+            that colour appears -- enough to signal "a different part of
+            the site" without repainting the navigation. */}
+        {status === 'signedIn' &&
+          (groups.includes('approved') || groups.includes('admin')) && (
+            <div className="mt-4 border-t-[1.5px] border-fe-keeper pt-3">
+              <p className="font-bold text-sm mb-2 text-fe-keeper-link">Keepers</p>
+              <ul className="space-y-0.5">
+                <li>
+                  <Link
+                    to="/keepers"
+                    className="font-bold text-fe-keeper-link hover:text-fe-keeper-link-dark text-xs"
+                    onClick={() => setOpen(false)}
+                  >
+                    The Cookbook
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
       </aside>
     </>
   )

@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "export-data": "node scripts/export-data.ts",
+    "import-keepers": "node scripts/importKeepers.ts",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",

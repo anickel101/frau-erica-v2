@@ -48,6 +48,12 @@ export type LoginResult = { outcome: 'success' } | { outcome: 'newPasswordRequir
 export interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<LoginResult>
   completeNewPassword: (newPassword: string) => Promise<void>
+  // For a signed-in user who knows their current password. Distinct from
+  // the request/confirm reset pair below, which is the forgot-password
+  // path and goes through an emailed code.
+  changePassword: (oldPassword: string, newPassword: string) => Promise<void>
+  // Revokes this user's refresh tokens everywhere, not just here.
+  logoutEverywhere: () => Promise<void>
   // Async, like every other action here. It was typed `() => void` while
   // the implementation was async, which quietly told every call site
   // there was nothing to await and no rejection to handle.

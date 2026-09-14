@@ -8,6 +8,7 @@ import {
   resetPassword,
   signIn,
   signOut,
+  updatePassword,
 } from 'aws-amplify/auth'
 import { COGNITO_CLIENT_ID, COGNITO_USER_POOL_ID } from '../config/cognito'
 import { setUnauthorizedHandler } from '../data-access/gated/apiClient'
@@ -198,6 +199,34 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // The authenticated change: the caller proves they know the current
+  // password, and no email is involved. Deliberately NOT the reset flow
+  // below -- emailing a code to someone who is already signed in reads
+  // as "did you forget?" when they didn't, puts SES deliverability in
+  // the path of a routine action, and skips the one check that matters
+  // on a shared family computer, which is that the person at the
+  // keyboard knows the current password.
+  //
+  // No setState afterwards: Cognito leaves the existing session valid,
+  // so the tokens in hand keep working and nothing about auth state has
+  // changed. Revoking the OTHER sessions is a separate, opt-in action --
+  // see logoutEverywhere.
+  async function changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    await updatePassword({ oldPassword, newPassword })
+  }
+
+  // Revokes every refresh token for this user, not just this browser's.
+  // Offered after a password change because that is usually why someone
+  // changes it -- a shared family computer they were still signed in on.
+  // Cognito does not do this automatically on a password change.
+  async function logoutEverywhere(): Promise<void> {
+    try {
+      await signOut({ global: true })
+    } finally {
+      setState(SIGNED_OUT_STATE)
+    }
+  }
+
   // Sends a verification code to the account's verified email via
   // Cognito's own delivery (same mechanism as the admin-approval
   // invitation).
@@ -217,6 +246,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     ...state,
     login,
     completeNewPassword,
+    changePassword,
+    logoutEverywhere,
     logout,
     requestPasswordReset,
     confirmPasswordReset,

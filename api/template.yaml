@@ -141,6 +141,18 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-anniversaries'
       RetentionInDays: 30
 
+  ListRecipesLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-recipes'
+      RetentionInDays: 30
+
+  GetRecipeLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-recipe'
+      RetentionInDays: 30
+
   MeLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -327,6 +339,81 @@ Resources:
           Properties:
             ApiId: !Ref FrauEricaApi
             Path: /anniversaries
+            Method: get
+
+  # Keepers, the family cookbook. Gated to 'approved' like the family
+  # tree -- the first gated content here that isn't Persons/Families
+  # data. See schema.sql's Recipes comment for why it isn't exported to
+  # static JSON like Documents and Galleries are.
+  ListRecipesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/recipes.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/recipes.handler
+      LoggingConfig:
+        LogGroup: !Ref ListRecipesLogGroup
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        ListRecipes:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /recipes
+            Method: get
+
+  GetRecipeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/recipe.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/recipe.handler
+      LoggingConfig:
+        LogGroup: !Ref GetRecipeLogGroup
+      # See GetPersonFunction's MemorySize comment -- same reasoning.
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        GetRecipe:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            # Slug, not id: it is the URL identity the frontend already
+            # holds from the index, and it survives a reimport (which
+            # reassigns recipe_id).
+            Path: /recipes/{slug}
             Method: get
 
   MeFunction:
