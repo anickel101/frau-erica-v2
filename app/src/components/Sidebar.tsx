@@ -278,8 +278,13 @@ export default function Sidebar({
                 </Link>
               </li>
             )}
+            {/* Log out and Change password share a line. They are the
+                two things you do TO your account rather than places in
+                the archive, and pairing them keeps the account block
+                from growing another full-width row for something used
+                twice a year. */}
             {status === 'signedIn' && (
-              <li>
+              <li className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -296,6 +301,16 @@ export default function Sidebar({
                 >
                   Log out
                 </button>
+                <span aria-hidden="true" className="text-xs text-fe-ink/30">
+                  |
+                </span>
+                <Link
+                  to="/account"
+                  onClick={() => setOpen(false)}
+                  className={NAV_LINK_CLASS}
+                >
+                  Change password
+                </Link>
               </li>
             )}
           </ul>

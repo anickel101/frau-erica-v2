@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
 import RequireAdmin from './components/RequireAdmin'
 import RequireApproved from './components/RequireApproved'
+import RequireSignedIn from './components/RequireSignedIn'
 
 // Route-level code splitting -- a public visitor loading HomePage
 // previously downloaded every page's JS up front, including the Cognito
@@ -10,6 +11,7 @@ import RequireApproved from './components/RequireApproved'
 // and the Require* gates stay eager (small, needed on every route).
 const AdminApprovePage = lazy(() => import('./pages/AdminApprovePage'))
 const AnniversariesPage = lazy(() => import('./pages/AnniversariesPage'))
+const AccountPage = lazy(() => import('./pages/AccountPage'))
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const FamilyPage = lazy(() => import('./pages/FamilyPage'))
@@ -51,6 +53,18 @@ export default function App() {
               <RequireApproved>
                 <FamilyPage />
               </RequireApproved>
+            }
+          />
+
+          {/* Account settings. RequireSignedIn, not RequireApproved: a
+              pending account still has a password and must be able to
+              change it. */}
+          <Route
+            path="/account"
+            element={
+              <RequireSignedIn>
+                <AccountPage />
+              </RequireSignedIn>
             }
           />
 
