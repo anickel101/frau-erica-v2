@@ -8,7 +8,7 @@ import TextByline from '../components/TextByline'
 import Layout from '../components/Layout'
 import { getDocumentById, getSeriesChapters } from '../data-access/public/documents'
 import { useHeaderRef } from '../hooks/useHeaderRef'
-import { getAuthorPerson } from '../utils/textDisplay'
+import { displayKicker, getAuthorPerson } from '../utils/textDisplay'
 import { resolveImageUrl } from '../utils/imageUrl'
 
 // Modest variation around the old fixed 300px -- per review feedback,
@@ -188,8 +188,10 @@ export default function TextPage() {
         />
       )}
       <div className="p-6 max-w-4xl">
-        {document.series_title && (
-          <p className="text-sm text-fe-brown mb-1">{document.series_title}</p>
+        {displayKicker(document.series_title) && (
+          <p className="text-sm text-fe-brown mb-1">
+            {displayKicker(document.series_title)}
+          </p>
         )}
         {/* text-xl/2xl, not text-2xl/3xl -- see FamilyPage.tsx's own
             comment on this: gives a long document title more room. */}

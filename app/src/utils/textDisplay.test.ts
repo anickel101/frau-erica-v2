@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { DocumentDetail } from '../data-access/public/documents'
-import { filterTextEntries, getSeriesRepresentative, groupTexts } from './textDisplay'
+import {
+  displayKicker,
+  filterTextEntries,
+  getSeriesRepresentative,
+  groupTexts,
+} from './textDisplay'
 
 function text(
   overrides: Partial<DocumentDetail> & Pick<DocumentDetail, 'document_id' | 'title'>,
@@ -61,6 +66,24 @@ describe('groupTexts', () => {
   })
 })
 
+describe('displayKicker', () => {
+  it('drops the trailing colon the old one-line layout needed', () => {
+    expect(displayKicker('Introduction:')).toBe('Introduction')
+    expect(displayKicker('In His Own Hand: ')).toBe('In His Own Hand')
+  })
+
+  it('leaves a kicker with no colon alone', () => {
+    expect(displayKicker('Opened Doors — Walking Through')).toBe(
+      'Opened Doors — Walking Through',
+    )
+  })
+
+  it('treats a bare colon or nothing as no kicker at all', () => {
+    expect(displayKicker(':')).toBeNull()
+    expect(displayKicker(null)).toBeNull()
+  })
+})
+
 describe('getSeriesRepresentative', () => {
   it('picks the lowest series_order, even when that is 0', () => {
     // Fritz's journal, Carl de Haas and Nana's memoir all number their
@@ -104,7 +127,7 @@ describe('groupTexts', () => {
     const [entry] = groupTexts(documents)
     expect(entry.kind).toBe('series')
     if (entry.kind !== 'series') return
-    expect(entry.seriesTitle).toBe('Introduction:')
+    expect(entry.seriesTitle).toBe('Introduction')
     expect(getSeriesRepresentative(entry.chapters).document_id).toBe(86)
   })
 })

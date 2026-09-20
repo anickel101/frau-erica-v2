@@ -17,6 +17,18 @@ export interface FilteredTextEntry {
   autoExpand: boolean
 }
 
+// A kicker as displayed. 64 of the 108 published series_title values end
+// in a colon -- "Introduction:", "In His Own Hand:", "Christmas 1995:" --
+// left over from the old site, where the kicker and the title ran
+// together on one line and the colon joined them. On their own line the
+// colon points at nothing. Stripped in display only; the data is left
+// as entered.
+export function displayKicker(kicker: string | null): string | null {
+  if (kicker === null) return null
+  const trimmed = kicker.replace(/\s*:\s*$/, '').trim()
+  return trimmed === '' ? null : trimmed
+}
+
 export function getAuthorPerson(document: DocumentListItem): Person | undefined {
   if (document.authorPersonId == null) return undefined
   return mockPersons.find((p) => p.person_id === document.authorPersonId)
@@ -60,7 +72,7 @@ export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
       seriesKey: document.series_key,
       // Provisional -- replaced below once every chapter is collected,
       // so the label and the representative come from the same chapter.
-      seriesTitle: document.series_title ?? document.title,
+      seriesTitle: displayKicker(document.series_title) ?? document.title,
       chapters: [document],
     }
     seriesByKey.set(document.series_key, series)
@@ -76,7 +88,8 @@ export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
       // the representative at least keeps the row internally consistent
       // -- the fix for the name itself is a real Series table.
       const representative = getSeriesRepresentative(entry.chapters)
-      entry.seriesTitle = representative.series_title ?? representative.title
+      entry.seriesTitle =
+        displayKicker(representative.series_title) ?? representative.title
     }
   }
 
