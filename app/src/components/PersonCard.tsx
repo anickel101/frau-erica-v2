@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { InformationCircleIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import IconAction from './IconAction'
 import {
   AltFamilyChevron,
@@ -31,6 +31,34 @@ const GENERATION_BORDER: Record<Generation, string> = {
   grandparent: 'border-2 border-fe-gen-grandparent-dark',
   couple: 'border-2 border-fe-gen-couple-dark',
   child: 'border-2 border-fe-gen-child-dark',
+}
+
+// A bare "i" for the More info button. Heroicons' InformationCircleIcon
+// is an i inside its own circle, which inside IconAction's ring became a
+// circle within a circle with a tiny letter in the middle. Heroicons has
+// no bare i, so this is drawn here -- as an SVG rather than a text
+// glyph, for the same reason the germline diamond is: a font-supplied
+// character's position in its cell varies with whatever font ends up
+// rendering it, and an SVG's bounding box does not.
+//
+// Sized to fill the ring the way the pencil does. Stroke 2.5 rather
+// than the pencil's 1.5, because a lone stem reads lighter than an
+// outlined shape of the same stroke; tried at 2 and it looked thin
+// beside the pencil.
+function InfoGlyph() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="10" x2="12" y2="20" />
+      <circle cx="12" cy="4.75" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
 }
 
 export default function PersonCard({
@@ -201,7 +229,7 @@ export default function PersonCard({
                   the glyph itself was larger: the ring is what gives the
                   control its presence. */}
               <IconAction label="More info (coming soon)" onClick={() => {}}>
-                <InformationCircleIcon />
+                <InfoGlyph />
               </IconAction>
               {isAdmin && (
                 <IconAction label="Edit (coming soon)" onClick={() => {}}>
