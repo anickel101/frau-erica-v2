@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { DocumentListItem } from '../data-access/public/documents'
 import { getAuthorPerson } from '../utils/textDisplay'
+import InlineMarkdown from './InlineMarkdown'
 import TextByline from './TextByline'
 
 export default function TextStandaloneRow({ document }: { document: DocumentListItem }) {
@@ -22,7 +23,9 @@ export default function TextStandaloneRow({ document }: { document: DocumentList
         />
       </p>
       {document.summary && (
-        <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">{document.summary}</p>
+        <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">
+          <InlineMarkdown>{document.summary}</InlineMarkdown>
+        </p>
       )}
     </article>
   )

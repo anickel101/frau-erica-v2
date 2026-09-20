@@ -22,8 +22,21 @@ export function getAuthorPerson(document: DocumentListItem): Person | undefined 
   return mockPersons.find((p) => p.person_id === document.authorPersonId)
 }
 
+// The chapter that stands for the whole series on the index: its summary
+// and byline are the ones shown. The LOWEST series_order, found
+// explicitly rather than assumed.
+//
+// This used to look for series_order === 1 and fall back to chapters[0].
+// Fourteen of the nineteen series don't start at 1. Eleven start at 2
+// because their Part I is unpublished, and for those the fallback
+// happened to be right. But three -- Fritz's journal, Carl de Haas,
+// Nana's memoir -- number their introduction 0, so chapter 1 exists and
+// was chosen over it: the index showed chapter 0's title with chapter 1's
+// summary, two different documents stitched together as one row.
 export function getSeriesRepresentative(chapters: DocumentListItem[]): DocumentListItem {
-  return chapters.find((c) => c.series_order === 1) ?? chapters[0]
+  return chapters.reduce((best, c) =>
+    (c.series_order ?? Infinity) < (best.series_order ?? Infinity) ? c : best,
+  )
 }
 
 export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
@@ -45,6 +58,8 @@ export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
     const series: Extract<TextIndexEntry, { kind: 'series' }> = {
       kind: 'series',
       seriesKey: document.series_key,
+      // Provisional -- replaced below once every chapter is collected,
+      // so the label and the representative come from the same chapter.
       seriesTitle: document.series_title ?? document.title,
       chapters: [document],
     }
@@ -55,6 +70,13 @@ export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
   for (const entry of entries) {
     if (entry.kind === 'series') {
       entry.chapters.sort((a, b) => (a.series_order ?? 0) - (b.series_order ?? 0))
+      // series_title is really a per-chapter kicker ("Introduction:",
+      // "In His Own Hand:", "Postscript:") pressed into service as a
+      // series name because nothing better is recorded. Taking it from
+      // the representative at least keeps the row internally consistent
+      // -- the fix for the name itself is a real Series table.
+      const representative = getSeriesRepresentative(entry.chapters)
+      entry.seriesTitle = representative.series_title ?? representative.title
     }
   }
 

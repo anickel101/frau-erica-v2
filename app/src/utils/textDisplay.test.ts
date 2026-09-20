@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DocumentDetail } from '../data-access/public/documents'
-import { filterTextEntries, groupTexts } from './textDisplay'
+import { filterTextEntries, getSeriesRepresentative, groupTexts } from './textDisplay'
 
 function text(
   overrides: Partial<DocumentDetail> & Pick<DocumentDetail, 'document_id' | 'title'>,
@@ -58,6 +58,54 @@ describe('groupTexts', () => {
     if (entries[0].kind === 'series') {
       expect(entries[0].chapters.map((c) => c.document_id)).toEqual([1, 2])
     }
+  })
+})
+
+describe('getSeriesRepresentative', () => {
+  it('picks the lowest series_order, even when that is 0', () => {
+    // Fritz's journal, Carl de Haas and Nana's memoir all number their
+    // introduction 0. An earlier version looked for series_order === 1,
+    // so those three rows showed chapter 0's title over chapter 1's
+    // summary -- two different documents stitched into one entry.
+    const intro = text({ document_id: 86, title: 'Journal', series_order: 0 })
+    const first = text({ document_id: 87, title: 'In Bremerhaven', series_order: 1 })
+    expect(getSeriesRepresentative([first, intro])).toBe(intro)
+  })
+
+  it('falls back to the earliest published chapter when Part I is missing', () => {
+    // Eleven series start at 2 because their opening chapter is
+    // unpublished. The row should stand on the earliest chapter that IS
+    // there, not on nothing.
+    const two = text({ document_id: 1, title: 'II', series_order: 2 })
+    const three = text({ document_id: 2, title: 'III', series_order: 3 })
+    expect(getSeriesRepresentative([three, two])).toBe(two)
+  })
+})
+
+describe('groupTexts', () => {
+  it('takes the series title from the same chapter the representative comes from', () => {
+    // Regardless of the order the export happened to list them in.
+    const documents = [
+      text({
+        document_id: 87,
+        title: 'In Bremerhaven',
+        series_key: 'F',
+        series_order: 1,
+        series_title: 'In His Own Hand:',
+      }),
+      text({
+        document_id: 86,
+        title: 'Journal',
+        series_key: 'F',
+        series_order: 0,
+        series_title: 'Introduction:',
+      }),
+    ]
+    const [entry] = groupTexts(documents)
+    expect(entry.kind).toBe('series')
+    if (entry.kind !== 'series') return
+    expect(entry.seriesTitle).toBe('Introduction:')
+    expect(getSeriesRepresentative(entry.chapters).document_id).toBe(86)
   })
 })
 
