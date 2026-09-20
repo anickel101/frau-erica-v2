@@ -282,9 +282,16 @@ export default function Sidebar({
                 two things you do TO your account rather than places in
                 the archive, and pairing them keeps the account block
                 from growing another full-width row for something used
-                twice a year. */}
+                twice a year.
+
+                A plain list item with inline children, NOT a flex row.
+                text-xs sets line-height to 16px, and a flex container
+                sizes to its children, so as flex this row rendered 16px
+                tall against 20px for every row around it -- a visible
+                4px pinch. As an ordinary <li> the parent's 20px line
+                box governs, exactly as it does for its siblings. */}
             {status === 'signedIn' && (
-              <li className="flex items-center gap-1.5">
+              <li>
                 <button
                   type="button"
                   onClick={() => {
@@ -301,7 +308,7 @@ export default function Sidebar({
                 >
                   Log out
                 </button>
-                <span aria-hidden="true" className="text-xs text-fe-ink/30">
+                <span aria-hidden="true" className="mx-1.5 text-xs text-fe-ink/30">
                   |
                 </span>
                 <Link
