@@ -2,7 +2,51 @@ import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import RandomHeaderImage from '../components/RandomHeaderImage'
 import { ADELHEID_PARAGRAPHS } from '../content/adelheid'
+import { DiamondGlyph, GlyphSlot, SidewaysGlyph } from '../components/NavigationGlyph'
 import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
+
+// The same three tokens PersonCard gives its boxes, so these swatches
+// are the colors themselves rather than an approximation of them.
+const GENERATION_LEGEND = [
+  {
+    label: 'Grandparents',
+    className: 'bg-fe-gen-grandparent',
+    description:
+      'The parents of the couple below, two boxes per side. Blood relations only -- a step-parent or adoptive parent appears on their own family page instead.',
+  },
+  {
+    label: 'The couple',
+    className: 'bg-fe-gen-couple',
+    // "has ended" is the Archivist's own wording. Worth knowing that the
+    // dashes are driven by Relationships.status === 'divorced'
+    // specifically (see FamilyPage's isDivorced), not by any ended
+    // marriage -- the schema also allows 'widowed' and 'separated', and
+    // neither would draw them. No such rows exist today, so the sentence
+    // is accurate as things stand; if one is ever recorded, this is the
+    // line to revisit.
+    description:
+      'The two people the page is about. Three dashes mean the marriage has ended.',
+  },
+  {
+    label: 'Children',
+    className: 'bg-fe-gen-child',
+    description:
+      'Their children, oldest first. Adopted children appear here alongside biological ones.',
+  },
+]
+
+const GLYPH_LEGEND = [
+  { glyph: '\u25B2', description: 'Up, to that person\u2019s own parents.' },
+  { glyph: '\u25BC', description: 'Down, to that child\u2019s own family page.' },
+  {
+    glyph: <SidewaysGlyph />,
+    description: 'Sideways moves to a previous or subsequent marriage.',
+  },
+  {
+    glyph: <DiamondGlyph />,
+    description: 'This person is one of your own direct ancestors.',
+  },
+]
 
 // Picked once at module load (not during render, which must stay pure) --
 // purely decorative, same approach as ContactPage.tsx.
@@ -14,7 +58,11 @@ export default function UsersGuidePage() {
       <div className="p-6">
         <RandomHeaderImage photo={HEADER_PHOTO} />
 
-        <div className="max-w-4xl mt-8">
+        {/* text-[14px] to match the summary paragraph on Family and
+              Document pages. This page had been running at the browser
+              default of 16px, so it read a step larger than everything
+              it describes. */}
+        <div className="max-w-4xl mt-8 text-[14px]">
           <h1 className="text-2xl sm:text-3xl font-bold mb-8">
             A Guide to FrauErica.org
           </h1>
@@ -46,6 +94,62 @@ export default function UsersGuidePage() {
                 reunions, weddings, and everyday life; and the Mueller Lexicon, a running
                 glossary of the German words and phrases that have persisted in the
                 family's daily speech across generations.
+              </p>
+            </div>
+          </section>
+
+          {/* Built from the same color tokens and the same glyph
+              components the Family pages themselves use (see
+              components/NavigationGlyph.tsx), not a hand-drawn copy -- a
+              legend that quietly stops matching what it describes is
+              worse than no legend. */}
+          <section className="mb-8">
+            <h2 className="text-xl font-bold text-fe-brown mb-2">
+              Reading a family page
+            </h2>
+            <div className="space-y-3">
+              <p>
+                Every family page is laid out the same way, three generations from top to
+                bottom, and the color of a box tells you which generation you are looking
+                at.
+              </p>
+              <ul className="space-y-2 my-4">
+                {GENERATION_LEGEND.map((row) => (
+                  <li key={row.label} className="flex items-start gap-3">
+                    <span
+                      className={`${row.className} w-28 shrink-0 rounded-sm border border-black/10 px-3 py-2 text-xs font-bold`}
+                    >
+                      {row.label}
+                    </span>
+                    <span>{row.description}</span>
+                  </li>
+                ))}
+              </ul>
+              <p>
+                The orange marks to the left of a name are how you move around the tree.
+                Each points in the direction it will take you:
+              </p>
+              <ul className="space-y-2 my-4">
+                {GLYPH_LEGEND.map((row) => (
+                  <li key={row.description} className="flex items-center gap-3">
+                    <GlyphSlot>{row.glyph}</GlyphSlot>
+                    <span>{row.description}</span>
+                  </li>
+                ))}
+              </ul>
+              <p>
+                The diamond is special. Once you are signed in, the site works out your
+                own direct line of descent and marks everyone on it. It follows blood
+                relations only, so an adoptive parent will not carry a diamond even though
+                they appear on the page.
+              </p>
+              <p>
+                Diamonds lead <em>down</em> the tree, not up. They sit on the children,
+                and the boxes above them never carry one -- so you cannot follow them
+                backwards in time. Instead, jump straight to the far end of a line: the{' '}
+                <strong>Ancestry</strong> links in the sidebar take you to your most
+                distant known ancestor on each side. From there, follow the diamonds down,
+                a generation at a time, and they will lead you back to yourself.
               </p>
             </div>
           </section>
