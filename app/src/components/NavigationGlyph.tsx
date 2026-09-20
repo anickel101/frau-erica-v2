@@ -64,8 +64,8 @@ export function GlyphSlot({ children }: { children: ReactNode }) {
   )
 }
 
-// The link to a person's other marriage: a tab beside their box, in the
-// box's own colour and border, pointing away from it. Replaces the
+// The link to a person's other marriage: a chevron beside their box, in
+// the box's own colour and border, pointing away from it. Replaces the
 // orange sideways triangle that used to sit inside the box.
 //
 // w-9 (36px), and the box beside it uses gap-2 (8px): together exactly
@@ -91,8 +91,11 @@ export function AltFamilyChevron({
   direction: 'left' | 'right'
   label: string
 }) {
+  // A true chevron -- a thick ">" with a notched back -- not a flat-
+  // backed tab. The tab was the first draft, and read as a folder tab
+  // rather than a direction; the notch is what makes it point.
   const points =
-    direction === 'right' ? '0,0 7,0 10,5 7,10 0,10' : '10,0 3,0 0,5 3,10 10,10'
+    direction === 'right' ? '0,0 5,0 10,5 5,10 0,10 5,5' : '10,0 5,0 0,5 5,10 10,10 5,5'
   return (
     <Link
       to={to}
@@ -123,7 +126,7 @@ export function AltFamilyChevronGlyph() {
   return (
     <svg viewBox="0 0 10 10" className="h-7 w-9 fill-fe-gen-couple" aria-hidden="true">
       <polygon
-        points="0,0 7,0 10,5 7,10 0,10"
+        points="0,0 5,0 10,5 5,10 0,10 5,5"
         stroke="var(--color-fe-gen-couple-dark)"
         strokeWidth="0.6"
         strokeLinejoin="round"
