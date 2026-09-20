@@ -39,8 +39,16 @@
 
   --color-fe-gen-grandparent: #cc99cc;
   --color-fe-gen-couple: #ffcc33;
-  --color-fe-gen-couple-dark: #cca329;
   --color-fe-gen-child: #99cc99;
+  /* Each generation's border, derived the same way: the fill at 80%
+     lightness (#ffcc33 -> #cca329 was the original, for the couple
+     boxes only). Grandparent and child boxes used to carry a 1px
+     black/10 hairline instead, which the Archivist found too faint next
+     to the couple's -- these give all three the same weight and the
+     same relationship to their own fill. */
+  --color-fe-gen-grandparent-dark: #a37aa3;
+  --color-fe-gen-couple-dark: #cca329;
+  --color-fe-gen-child-dark: #7aa37a;
   /* Not from the original design notes -- new for the anniversary
      calendar's death events, which have no existing generational color
      to reuse. A muted gray, deliberately distinct from --color-fe-bg. */

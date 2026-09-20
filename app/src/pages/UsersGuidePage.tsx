@@ -2,7 +2,11 @@ import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import RandomHeaderImage from '../components/RandomHeaderImage'
 import { ADELHEID_PARAGRAPHS } from '../content/adelheid'
-import { DiamondGlyph, GlyphSlot, SidewaysGlyph } from '../components/NavigationGlyph'
+import {
+  AltFamilyChevronGlyph,
+  DiamondGlyph,
+  GlyphSlot,
+} from '../components/NavigationGlyph'
 import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // The same three tokens PersonCard gives its boxes, so these swatches
@@ -36,11 +40,10 @@ const GENERATION_LEGEND = [
 ]
 
 const GLYPH_LEGEND = [
-  { glyph: '\u25B2', description: 'Up, to that person\u2019s own parents.' },
-  { glyph: '\u25BC', description: 'Down, to that child\u2019s own family page.' },
   {
-    glyph: <SidewaysGlyph />,
-    description: 'Sideways moves to a previous or subsequent marriage.',
+    glyph: <AltFamilyChevronGlyph />,
+    description:
+      'A tab beside one of the couple leads to that person\u2019s other marriage. It sits on whichever side they are on, and points away.',
   },
   {
     glyph: <DiamondGlyph />,
@@ -126,8 +129,9 @@ export default function UsersGuidePage() {
                 ))}
               </ul>
               <p>
-                The orange marks to the left of a name are how you move around the tree.
-                Each points in the direction it will take you:
+                The boxes are the links. Click a grandparent to go up to their own page,
+                or a child to go down to theirs; the couple in the middle are the page you
+                are already on, so their boxes stay put. Two marks add to that:
               </p>
               <ul className="space-y-2 my-4">
                 {GLYPH_LEGEND.map((row) => (
@@ -137,6 +141,11 @@ export default function UsersGuidePage() {
                   </li>
                 ))}
               </ul>
+              <p>
+                Every box also carries a small <strong>i</strong>. It opens a note on that
+                person &mdash; full dates, and links to their other pages on the site
+                &mdash; without leaving the page you are on.
+              </p>
               <p>
                 The diamond is special. Once you are signed in, the site works out your
                 own direct line of descent and marks everyone on it. It follows blood
