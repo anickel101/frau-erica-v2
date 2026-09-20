@@ -1,29 +1,5 @@
 [
   {
-    "document_id": 1,
-    "series_key": null,
-    "series_title": null,
-    "series_order": null,
-    "title": "Ah. We’re sorry you’re having trouble with that page",
-    "author": null,
-    "authorPersonId": null,
-    "summary": "Family tree pages are viewable only by Mueller descendants. If you have a place on the Mueller family tree — as direct descendant, as spouse, or as a kindred spirit — your username and password should let you move around the site freely and read whatever you like. Those credentials are easily and quickly available to Mueller descendants.",
-    "genre": "Other",
-    "tags": null
-  },
-  {
-    "document_id": 2,
-    "series_key": null,
-    "series_title": null,
-    "series_order": null,
-    "title": "A User’s Guide to FrauErica.org",
-    "author": null,
-    "authorPersonId": null,
-    "summary": "FrauErica.org is built around a graphical representation of the family tree, beginning with Georg and Gertrude Mueller in Napoleanic times. Lots of other families plug in — Kniefs, Oltroges, Schumms, Nickels, Marquardts, Gramses, Feiertags, Rehwinkels and many more, a *Who’s Who* of old Lutheran Church – Missouri Synod names. (C.F.W. Walther himself even has a small walk-on role.) All of the photographs, journals, letters, newspaper clippings, obituaries and so forth are in files that are clickable from the family tree. Various family archives have lots more. It seemed easiest just to post it all to the Web.",
-    "genre": "Other",
-    "tags": null
-  },
-  {
     "document_id": 3,
     "series_key": null,
     "series_title": null,
@@ -644,18 +620,6 @@
     "author": null,
     "authorPersonId": null,
     "summary": null,
-    "genre": "Other",
-    "tags": null
-  },
-  {
-    "document_id": 85,
-    "series_key": null,
-    "series_title": null,
-    "series_order": null,
-    "title": "Welcome to FrauErica.org (Please sign in)",
-    "author": null,
-    "authorPersonId": null,
-    "summary": "Friederich and Johanne Mueller and their nine children arrived in New York harbor aboard the wooden sailing ship *Der Adler* (The Eagle) on October 1, 1865. The Frau Erica Project — www.frauerica.org — gathers information about those 11 Muellers and their descendants. Its pages are open to anyone with a line of descent from those original Muellers.",
     "genre": "Other",
     "tags": null
   },

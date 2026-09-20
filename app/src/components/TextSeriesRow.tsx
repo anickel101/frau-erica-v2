@@ -6,6 +6,7 @@ import {
   getAuthorPerson,
   getSeriesRepresentative,
 } from '../utils/textDisplay'
+import InlineMarkdown from './InlineMarkdown'
 import TextByline from './TextByline'
 
 type SeriesEntry = Extract<TextIndexEntry, { kind: 'series' }>
@@ -50,7 +51,7 @@ export default function TextSeriesRow({
       </p>
       {representative.summary && (
         <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">
-          {representative.summary}
+          <InlineMarkdown>{representative.summary}</InlineMarkdown>
         </p>
       )}
 
