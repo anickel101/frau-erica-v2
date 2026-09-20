@@ -1,7 +1,13 @@
 import { Link } from 'react-router-dom'
 import { InformationCircleIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import IconAction from './IconAction'
-import { AltFamilyChevron, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
+import {
+  AltFamilyChevron,
+  CHEVRON_OVERLAP,
+  CHEVRON_POINT,
+  DiamondGlyph,
+  GlyphSlot,
+} from './NavigationGlyph'
 import { useAuth } from '../hooks/useAuth'
 import { formatLifespan } from '../utils/dateDisplay'
 import { getFullName } from '../utils/personDisplay'
@@ -73,6 +79,29 @@ export default function PersonCard({
   // chevron push the whole box over, and Ernst Rickmeyer's name sat
   // 175px right of his father's directly above it.
   const chevronOnLeft = hasOtherFamily && side === 'left'
+  const chevronOnRight = hasOtherFamily && side !== 'left'
+
+  // A box beside a chevron has its adjacent edge pointed to the same
+  // depth, so the two nest. clip-path draws the point but also clips
+  // away any CSS border, so a pointed box is built as two stacked
+  // layers -- the border colour clipped to the full shape, the fill
+  // clipped to the same shape inset by 2px -- with the content above.
+  // The inset diagonal runs a hair thinner than 2px (about 1.7 at this
+  // angle), which is below what the eye picks up beside the chevron's
+  // true 2px stroke.
+  //
+  // Padding on the pointed side is the point plus the normal 18px
+  // (border 2 + p-4 16 everywhere else), and the box overlaps the
+  // chevron by CHEVRON_OVERLAP. Together with the chevron's own width
+  // that puts the name at exactly the x every other name uses -- see
+  // AltFamilyChevron for the arithmetic.
+  const pointed = chevronOnLeft || chevronOnRight
+  const d = CHEVRON_POINT
+  const clipPath = pointed
+    ? `polygon(${chevronOnLeft ? `${d}px` : '0'} 0, ${chevronOnRight ? `calc(100% - ${d}px)` : '100%'} 0, ` +
+      `${chevronOnRight ? `100% 50%, calc(100% - ${d}px) 100%` : '100% 100%'}, ` +
+      `${chevronOnLeft ? `${d}px 100%, 0 50%` : '0 100%'})`
+    : undefined
   const chevron = hasOtherFamily && (
     <AltFamilyChevron
       to={`/family/${person.otherFamilyId}`}
@@ -86,15 +115,35 @@ export default function PersonCard({
       {/* The chevron is a sibling of the box, not part of it, so the box
           keeps its own border all the way round and the chevron carries
           its own. It sits on whichever side its partner is on. */}
-      <div className="flex items-stretch gap-2">
+      <div className="flex items-stretch">
         {chevronOnLeft && chevron}
 
         <div
+          style={{
+            marginLeft: chevronOnLeft ? -CHEVRON_OVERLAP : undefined,
+            marginRight: chevronOnRight ? -CHEVRON_OVERLAP : undefined,
+            paddingLeft: chevronOnLeft ? d + 18 : undefined,
+            paddingRight: chevronOnRight ? d + 18 : undefined,
+          }}
           className={`
-            relative flex flex-1 items-center gap-3 p-4 rounded-sm
-            ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}
+            relative flex flex-1 items-center gap-3
+            ${pointed ? 'p-[18px]' : `p-4 rounded-sm ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}`}
           `}
         >
+          {pointed && (
+            <>
+              <div
+                aria-hidden="true"
+                style={{ clipPath }}
+                className="absolute inset-0 bg-fe-gen-couple-dark"
+              />
+              <div
+                aria-hidden="true"
+                style={{ clipPath }}
+                className="absolute inset-[2px] bg-fe-gen-couple"
+              />
+            </>
+          )}
           {/* A "stretched" link: absolutely covers the whole box so the
               entire face is clickable, as before -- but as a SIBLING of
               the icon buttons rather than their parent, because a
@@ -112,7 +161,7 @@ export default function PersonCard({
 
           {!chevronOnLeft && <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>}
 
-          <div className="min-w-0">
+          <div className="relative min-w-0">
             <p className="font-bold text-sm">{name}</p>
             {/* Always rendered, even with no date on record -- a
                 non-breaking space reserves the same second line every
@@ -163,7 +212,7 @@ export default function PersonCard({
           )}
         </div>
 
-        {!chevronOnLeft && chevron}
+        {chevronOnRight && chevron}
       </div>
     </>
   )

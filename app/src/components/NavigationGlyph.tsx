@@ -65,23 +65,24 @@ export function GlyphSlot({ children }: { children: ReactNode }) {
 }
 
 // The link to a person's other marriage: a chevron beside their box, in
-// the box's own colour and border, pointing away from it. Replaces the
-// orange sideways triangle that used to sit inside the box.
+// the box's own colour and border, pointing away from it. The box's
+// adjacent edge is pointed to the same depth (see PersonCard), so the
+// two nest like breadcrumb arrows rather than sitting as two objects.
 //
-// w-9 (36px), and the box beside it uses gap-2 (8px): together exactly
-// the glyph slot's w-8 + gap-3 (32 + 12). That equality is what lets a
-// left-hand chevron take the slot's place without moving the name --
-// see PersonCard. The same width on the right, for symmetry when both
-// partners have another marriage.
+// Geometry, all in px, all load-bearing for the name alignment:
+//   width 40; point and notch both 18 deep (CHEVRON_POINT); the box
+//   overlaps the chevron by 14 so its own 18px point sits 4px inside
+//   the notch. Box edge therefore lands at 40 - 14 + 18 = 44 from the
+//   column's start, and 44 + 18px padding puts the name at 62 -- the
+//   same x as every other name on the page.
 //
-// Stretched to the box's full height with preserveAspectRatio="none",
-// which would normally stretch the stroke too -- vector-effect keeps
-// it at a constant 2px, so the outline reads as the same weight as the
-// box beside it whatever the box's height turns out to be.
-//
-// pointer-events on the polygon only, not the svg's bounding box, so
-// the transparent corners outside the arrow shape aren't clickable and
-// don't show a hover.
+// Stretched to the box's full height with preserveAspectRatio="none";
+// vector-effect keeps the stroke at a constant 2px so it matches the
+// box's own 2px outline whatever the box's height.
+export const CHEVRON_WIDTH = 40
+export const CHEVRON_POINT = 18
+export const CHEVRON_OVERLAP = 14
+
 export function AltFamilyChevron({
   to,
   direction,
@@ -91,19 +92,21 @@ export function AltFamilyChevron({
   direction: 'left' | 'right'
   label: string
 }) {
-  // A true chevron -- a thick ">" with a notched back -- not a flat-
-  // backed tab. The tab was the first draft, and read as a folder tab
-  // rather than a direction; the notch is what makes it point.
+  const w = CHEVRON_WIDTH
+  const d = CHEVRON_POINT
   const points =
-    direction === 'right' ? '0,0 5,0 10,5 5,10 0,10 5,5' : '10,0 5,0 0,5 5,10 10,10 5,5'
+    direction === 'right'
+      ? `${w - d},0 0,0 ${d},30 0,60 ${w - d},60 ${w},30`
+      : `${d},0 ${w},0 ${w - d},30 ${w},60 ${d},60 0,30`
   return (
     <Link
       to={to}
       aria-label={label}
-      className="group/chevron block w-9 shrink-0 self-stretch outline-none focus-visible:ring-2 focus-visible:ring-fe-accent rounded-sm"
+      style={{ width: w }}
+      className="group/chevron block shrink-0 self-stretch outline-none focus-visible:ring-2 focus-visible:ring-fe-accent rounded-sm"
     >
       <svg
-        viewBox="0 0 10 10"
+        viewBox={`0 0 ${w} 60`}
         preserveAspectRatio="none"
         className="h-full w-full fill-fe-gen-couple group-hover/chevron:fill-fe-gen-couple-dark transition"
         aria-hidden="true"
@@ -124,11 +127,16 @@ export function AltFamilyChevron({
 // same shape, same colours, not a link.
 export function AltFamilyChevronGlyph() {
   return (
-    <svg viewBox="0 0 10 10" className="h-7 w-9 fill-fe-gen-couple" aria-hidden="true">
+    <svg
+      viewBox="0 0 40 60"
+      className="h-7 w-[18px] fill-fe-gen-couple"
+      aria-hidden="true"
+    >
       <polygon
-        points="0,0 5,0 10,5 5,10 0,10 5,5"
+        points="22,0 0,0 18,30 0,60 22,60 40,30"
         stroke="var(--color-fe-gen-couple-dark)"
-        strokeWidth="0.6"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
       />
     </svg>
