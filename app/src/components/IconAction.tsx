@@ -40,6 +40,15 @@ export default function IconAction({
   // sync. 1.5px matches the icons' own stroke-width exactly (Heroicons
   // 24/outline draws at 1.5), so the ring reads as part of the same
   // drawing rather than a box around it.
+  // Hover inverts the ring: the outline fills with its own colour and
+  // the glyph goes white. Earlier the hover only darkened the outline a
+  // shade, orange to a slightly darker orange, which on the coloured
+  // family-page boxes was too subtle to register as feedback at all.
+  //
+  // cursor-pointer explicitly. Tailwind v4's preflight no longer gives
+  // buttons a pointer (v3 did), so without this every icon button on
+  // the site showed the arrow cursor -- including the ones on Manage
+  // Users that had been there all along.
   const button =
     variant === 'danger'
       ? // bg-red-700, not a lighter red: white on red-700 clears WCAG AA
@@ -52,8 +61,8 @@ export default function IconAction({
         // which reads as the red circle being slightly small.
         'bg-red-700 hover:bg-red-800 text-white border-[1.5px] border-transparent'
       : variant === 'keeper'
-        ? 'text-fe-keeper-link hover:text-fe-keeper-link-dark border-[1.5px] border-current'
-        : 'text-fe-link hover:text-fe-link-dark border-[1.5px] border-current'
+        ? 'text-fe-keeper-link border-[1.5px] border-current hover:bg-fe-keeper-link hover:text-white'
+        : 'text-fe-link border-[1.5px] border-current hover:bg-fe-link hover:text-white'
 
   return (
     <span className="relative inline-flex group">
@@ -67,7 +76,7 @@ export default function IconAction({
         // The icon is sized here too ([&>svg]) so the component owns its
         // whole size contract and a fifth action can't quietly arrive at
         // a different scale.
-        className={`flex h-[30px] w-[30px] items-center justify-center rounded-full transition [&>svg]:h-4 [&>svg]:w-4 ${button}`}
+        className={`flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-full transition [&>svg]:h-4 [&>svg]:w-4 ${button}`}
       >
         {children}
       </button>
