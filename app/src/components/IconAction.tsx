@@ -30,7 +30,12 @@ export default function IconAction({
   // 'danger' is the filled red treatment. 'keeper' is the cookbook's
   // blue -- on a Keepers page the default orange is the only orange
   // thing on the page, which reads as a stray rather than a control.
-  variant?: 'plain' | 'danger' | 'keeper'
+  // 'brown' is for controls that sit ON a coloured surface -- the
+  // family-page boxes -- where the link orange reads as imported from
+  // somewhere else. fe-brown is the site's own secondary colour (section
+  // headings, sidebar titles), and on the gold couple box it clears
+  // contrast comfortably where the box's own darker gold would not.
+  variant?: 'plain' | 'danger' | 'keeper' | 'brown'
 }) {
   // Every variant is a circle, so a row of them reads as one set of
   // controls rather than plain glyphs beside a filled block.
@@ -62,7 +67,9 @@ export default function IconAction({
         'bg-red-700 hover:bg-red-800 text-white border-[1.5px] border-transparent'
       : variant === 'keeper'
         ? 'text-fe-keeper-link border-[1.5px] border-current hover:bg-fe-keeper-link hover:text-white'
-        : 'text-fe-link border-[1.5px] border-current hover:bg-fe-link hover:text-white'
+        : variant === 'brown'
+          ? 'text-fe-brown border-[1.5px] border-current hover:bg-fe-brown hover:text-white'
+          : 'text-fe-link border-[1.5px] border-current hover:bg-fe-link hover:text-white'
 
   return (
     <span className="relative inline-flex group">

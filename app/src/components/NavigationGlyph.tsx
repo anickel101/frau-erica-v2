@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
 
 // The navigation glyphs shown on Family page boxes, and in the User's
 // Guide legend that explains them.
@@ -64,79 +63,22 @@ export function GlyphSlot({ children }: { children: ReactNode }) {
   )
 }
 
-// The link to a person's other marriage: a chevron beside their box, in
-// the box's own colour and border, pointing away from it. The box's
-// adjacent edge is pointed to the same depth (see PersonCard), so the
-// two nest like breadcrumb arrows rather than sitting as two objects.
-//
-// Geometry, all in px, all load-bearing for the name alignment:
-//   width 40; point and notch both 18 deep (CHEVRON_POINT); the box
-//   overlaps the chevron by 14 so its own 18px point sits 4px inside
-//   the notch. Box edge therefore lands at 40 - 14 + 18 = 44 from the
-//   column's start, and 44 + 18px padding puts the name at 62 -- the
-//   same x as every other name on the page.
-//
-// Stretched to the box's full height with preserveAspectRatio="none";
-// vector-effect keeps the stroke at a constant 2px so it matches the
-// box's own 2px outline whatever the box's height.
-export const CHEVRON_WIDTH = 40
-export const CHEVRON_POINT = 18
-export const CHEVRON_OVERLAP = 14
+// How deep a couple box's point is, when it has one. The box itself
+// becomes the arrow: a partner with another marriage gets their box
+// pointed on their own side, and the whole shape links there. About
+// half the box's height, so the tip is near a right angle.
+export const BOX_POINT = 30
 
-export function AltFamilyChevron({
-  to,
-  direction,
-  label,
-}: {
-  to: string
-  direction: 'left' | 'right'
-  label: string
-}) {
-  const w = CHEVRON_WIDTH
-  const d = CHEVRON_POINT
-  const points =
-    direction === 'right'
-      ? `${w - d},0 0,0 ${d},30 0,60 ${w - d},60 ${w},30`
-      : `${d},0 ${w},0 ${w - d},30 ${w},60 ${d},60 0,30`
+// The legend's picture of that pointed box -- same proportions, same
+// colours, not a link.
+export function PointedBoxGlyph() {
   return (
-    <Link
-      to={to}
-      aria-label={label}
-      style={{ width: w }}
-      className="group/chevron block shrink-0 self-stretch outline-none focus-visible:ring-2 focus-visible:ring-fe-accent rounded-sm"
-    >
-      <svg
-        viewBox={`0 0 ${w} 60`}
-        preserveAspectRatio="none"
-        className="h-full w-full fill-fe-gen-couple group-hover/chevron:fill-fe-gen-couple-dark transition"
-        aria-hidden="true"
-      >
-        <polygon
-          points={points}
-          stroke="var(--color-fe-gen-couple-dark)"
-          strokeWidth="2"
-          vectorEffect="non-scaling-stroke"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </Link>
-  )
-}
-
-// A static rendering of the chevron for the User's Guide legend --
-// same shape, same colours, not a link.
-export function AltFamilyChevronGlyph() {
-  return (
-    <svg
-      viewBox="0 0 40 60"
-      className="h-7 w-[18px] fill-fe-gen-couple"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 60 30" className="h-6 w-12" aria-hidden="true">
       <polygon
-        points="22,0 0,0 18,30 0,60 22,60 40,30"
+        points="1,1 44,1 59,15 44,29 1,29"
+        fill="var(--color-fe-gen-couple)"
         stroke="var(--color-fe-gen-couple-dark)"
         strokeWidth="2"
-        vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
       />
     </svg>
