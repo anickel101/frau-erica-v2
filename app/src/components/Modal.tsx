@@ -15,10 +15,15 @@ export default function Modal({
   open,
   onClose,
   children,
+  label = 'Enlarged image',
 }: {
   open: boolean
   onClose: () => void
   children: ReactNode
+  // The dialog's accessible name. Defaults to the image-zoom label this
+  // component was built for; anything else that opens a dialog says
+  // what it is.
+  label?: string
 }) {
   const panelRef = useRef<HTMLDivElement>(null)
   // Captured on open so focus can be handed back to whatever the person
@@ -98,7 +103,7 @@ export default function Modal({
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Enlarged image"
+        aria-label={label}
         tabIndex={-1}
         className="outline-none"
       >

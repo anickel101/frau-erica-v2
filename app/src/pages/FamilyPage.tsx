@@ -140,8 +140,8 @@ function FamilyNarrowTopBar() {
 // visibly shorter than a typical filled box.
 function EmptyGrandparentBox() {
   return (
-    <div className="flex items-center gap-3 p-4 border border-black/10 rounded-sm bg-fe-gen-grandparent">
-      <span className="text-fe-accent text-3xl leading-none w-8 shrink-0 text-center" />
+    <div className="flex items-center gap-3 p-4 border-2 border-fe-gen-grandparent-dark rounded-sm bg-fe-gen-grandparent">
+      <span className="text-fe-accent text-4xl leading-none w-8 shrink-0 text-center" />
       <div>
         <p className="font-bold text-sm text-fe-ink/60">No data</p>
         <p className="text-xs text-fe-ink/70">&nbsp;</p>
@@ -166,6 +166,7 @@ function EmptyGrandparentBox() {
 function renderGrandparentColumn(
   person: LinkedPersonSummary | null,
   grandparents: LinkedPersonSummary[],
+  currentFamilyId: number,
 ) {
   if (!person) return null
   const slotCount = Math.max(2, grandparents.length)
@@ -177,6 +178,7 @@ function renderGrandparentColumn(
         person={p}
         generation="grandparent"
         isInGermline={false}
+        currentFamilyId={currentFamilyId}
       />
     ) : (
       <EmptyGrandparentBox key={`empty-${i}`} />
@@ -316,18 +318,20 @@ export default function FamilyPage() {
           <h1 className="text-xl sm:text-2xl font-bold mb-4">{familyHeading(family)}</h1>
 
           {family.description && (
-            // pl-15.25 (61px) lines this text up with the name text
+            // pl-15.5 (62px) lines this text up with the name text
             // inside a PersonCard box below, not an arbitrary indent --
-            // that's border (1px) + p-4 (16px) + the glyph slot (w-8,
+            // that's border-2 (2px) + p-4 (16px) + the glyph slot (w-8,
             // 32px) + gap-3 (12px) PersonCard.tsx's own box actually
             // uses to place its name text. If any of those change, this
-            // needs to move with them.
+            // needs to move with them. (It was 61px against the old 1px
+            // grandparent border -- which meant it had been 1px off the
+            // couple boxes, always border-2, the whole time.)
             // text-[14px], not the 12px used for run-of-text -- "a point or
-            // two larger than run-of-text" per review. The pl-15.25 indent
+            // two larger than run-of-text" per review. The pl-15.5 indent
             // stays as it is: it aligns with the name text in the boxes
             // below rather than being an arbitrary measure, which is a
             // better reason than the flat one-inch the text pages use.
-            <div className="max-w-none mb-8 pl-15.25 text-[14px] text-fe-ink">
+            <div className="max-w-none mb-8 pl-15.5 text-[14px] text-fe-ink">
               <ReactMarkdown>{family.description}</ReactMarkdown>
             </div>
           )}
@@ -345,10 +349,18 @@ export default function FamilyPage() {
                 grid (spacing between *different*-color generations) is
                 unrelated and untouched. */}
             <div className="flex flex-col gap-1.5">
-              {renderGrandparentColumn(family.person_1, family.grandparents_1)}
+              {renderGrandparentColumn(
+                family.person_1,
+                family.grandparents_1,
+                family.family_id,
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
-              {renderGrandparentColumn(family.person_2, family.grandparents_2)}
+              {renderGrandparentColumn(
+                family.person_2,
+                family.grandparents_2,
+                family.family_id,
+              )}
             </div>
           </div>
 
@@ -377,6 +389,8 @@ export default function FamilyPage() {
                 person={family.person_1}
                 generation="couple"
                 isInGermline={false}
+                side="left"
+                currentFamilyId={family.family_id}
               />
             ) : (
               // An empty cell, not nothing. The grandparent grid above
@@ -404,6 +418,8 @@ export default function FamilyPage() {
                 person={family.person_2}
                 generation="couple"
                 isInGermline={false}
+                side="right"
+                currentFamilyId={family.family_id}
               />
             )}
           </div>
@@ -418,6 +434,7 @@ export default function FamilyPage() {
                   person={p}
                   generation="child"
                   isInGermline={isInGermline(p.person_id)}
+                  currentFamilyId={family.family_id}
                 />
               ))}
             </div>
