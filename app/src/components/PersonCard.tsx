@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { InformationCircleIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
+import IconAction from './IconAction'
 import { AltFamilyChevron, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
 import { useAuth } from '../hooks/useAuth'
 import { formatLifespan } from '../utils/dateDisplay'
@@ -25,15 +26,6 @@ const GENERATION_BORDER: Record<Generation, string> = {
   couple: 'border-2 border-fe-gen-couple-dark',
   child: 'border-2 border-fe-gen-child-dark',
 }
-
-// Shared by the two icon buttons so they can't drift apart. Plain
-// glyphs rather than IconAction's ringed circles: inside a coloured box
-// a ring reads as a second box, and the hover colour change plus the
-// cursor is enough to say "interactive" here.
-const ICON_BUTTON =
-  'flex h-7 w-7 items-center justify-center rounded-full text-fe-brown transition ' +
-  'hover:bg-black/10 hover:text-fe-ink cursor-pointer ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fe-accent'
 
 export default function PersonCard({
   person,
@@ -146,29 +138,26 @@ export default function PersonCard({
               centre themselves in it, so they sit midway between the end
               of the text and the box's edge however long the name is. */}
           {generation === 'couple' && (
-            <div className="relative z-10 flex flex-1 items-center justify-center gap-1.5 self-stretch">
+            <div className="relative z-10 flex flex-1 items-center justify-center gap-2 self-stretch">
               {/* Neither icon does anything yet. Both are present so the
                   layout is settled before there is something behind
                   them. The info dialog is built (PersonInfoDialog.tsx)
                   and was working; it is deliberately not wired up until
-                  the Archivist has decided what it should show. */}
-              <button
-                type="button"
-                aria-label={`More about ${name} (not yet available)`}
-                title="More info (coming soon)"
-                className={ICON_BUTTON}
-              >
-                <InformationCircleIcon className="h-5 w-5" />
-              </button>
+                  the Archivist has decided what it should show.
+
+                  IconAction, the same 30px ringed circle the Manage
+                  Users page uses, so an icon button is one thing across
+                  the site. A first draft used bare 20px glyphs here and
+                  they read as smaller than the admin page's, even though
+                  the glyph itself was larger: the ring is what gives the
+                  control its presence. */}
+              <IconAction label="More info (coming soon)" onClick={() => {}}>
+                <InformationCircleIcon />
+              </IconAction>
               {isAdmin && (
-                <button
-                  type="button"
-                  aria-label={`Edit ${name} (not yet available)`}
-                  title="Edit (coming soon)"
-                  className={ICON_BUTTON}
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </button>
+                <IconAction label="Edit (coming soon)" onClick={() => {}}>
+                  <PencilSquareIcon />
+                </IconAction>
               )}
             </div>
           )}
