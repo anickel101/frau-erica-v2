@@ -143,45 +143,56 @@ export default function PersonCard({
             </p>
           </div>
 
-          {/* The icons take whatever room is left after the name and
+          {/* Couple boxes only. The grandparent and child boxes are
+              links -- their whole face goes somewhere -- and a second
+              control on a surface that is already a control reads as
+              clutter. The couple's boxes go nowhere, so the icons are
+              the only thing to do there, and the space beside the name
+              is theirs.
+
+              The icons take whatever room is left after the name and
               centre themselves in it, so they sit midway between the end
               of the text and the box's edge however long the name is. */}
-          <div className="relative z-10 flex flex-1 items-center justify-center gap-1.5 self-stretch">
-            <button
-              type="button"
-              onClick={() => setInfoOpen(true)}
-              aria-label={`More about ${name}`}
-              title="More info"
-              className={ICON_BUTTON}
-            >
-              <InformationCircleIcon className="h-5 w-5" />
-            </button>
-            {isAdmin && (
-              // Rendered for admins only, and not wired to anything yet
-              // -- editing is later work. Present now so the layout is
-              // settled with two icons before there's a second thing to
-              // build behind it.
+          {generation === 'couple' && (
+            <div className="relative z-10 flex flex-1 items-center justify-center gap-1.5 self-stretch">
               <button
                 type="button"
-                aria-label={`Edit ${name} (not yet available)`}
-                title="Edit (coming soon)"
+                onClick={() => setInfoOpen(true)}
+                aria-label={`More about ${name}`}
+                title="More info"
                 className={ICON_BUTTON}
               >
-                <PencilSquareIcon className="h-5 w-5" />
+                <InformationCircleIcon className="h-5 w-5" />
               </button>
-            )}
-          </div>
+              {isAdmin && (
+                // Rendered for admins only, and not wired to anything
+                // yet -- editing is later work. Present now so the
+                // layout is settled with two icons before there's a
+                // second thing to build behind it.
+                <button
+                  type="button"
+                  aria-label={`Edit ${name} (not yet available)`}
+                  title="Edit (coming soon)"
+                  className={ICON_BUTTON}
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {!chevronOnLeft && chevron}
       </div>
 
-      <PersonInfoDialog
-        person={person}
-        currentFamilyId={currentFamilyId}
-        open={infoOpen}
-        onClose={() => setInfoOpen(false)}
-      />
+      {generation === 'couple' && (
+        <PersonInfoDialog
+          person={person}
+          currentFamilyId={currentFamilyId}
+          open={infoOpen}
+          onClose={() => setInfoOpen(false)}
+        />
+      )}
     </>
   )
 }
