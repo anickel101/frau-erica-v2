@@ -1,8 +1,6 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { InformationCircleIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import { AltFamilyChevron, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
-import PersonInfoDialog from './PersonInfoDialog'
 import { useAuth } from '../hooks/useAuth'
 import { formatLifespan } from '../utils/dateDisplay'
 import { getFullName } from '../utils/personDisplay'
@@ -42,7 +40,6 @@ export default function PersonCard({
   generation,
   isInGermline = false,
   side,
-  currentFamilyId = null,
 }: {
   person: LinkedPersonSummary
   generation: Generation
@@ -58,14 +55,9 @@ export default function PersonCard({
   // partner's chevron goes on the left, pointing left. Only meaningful
   // for generation 'couple'.
   side?: 'left' | 'right'
-  // The family page this card is rendered on, passed through to the
-  // info dialog so it doesn't offer a link back to the page the reader
-  // is already looking at.
-  currentFamilyId?: number | null
 }) {
   const { groups } = useAuth()
   const isAdmin = groups.includes('admin')
-  const [infoOpen, setInfoOpen] = useState(false)
 
   const name = getFullName(person)
 
@@ -155,20 +147,20 @@ export default function PersonCard({
               of the text and the box's edge however long the name is. */}
           {generation === 'couple' && (
             <div className="relative z-10 flex flex-1 items-center justify-center gap-1.5 self-stretch">
+              {/* Neither icon does anything yet. Both are present so the
+                  layout is settled before there is something behind
+                  them. The info dialog is built (PersonInfoDialog.tsx)
+                  and was working; it is deliberately not wired up until
+                  the Archivist has decided what it should show. */}
               <button
                 type="button"
-                onClick={() => setInfoOpen(true)}
-                aria-label={`More about ${name}`}
-                title="More info"
+                aria-label={`More about ${name} (not yet available)`}
+                title="More info (coming soon)"
                 className={ICON_BUTTON}
               >
                 <InformationCircleIcon className="h-5 w-5" />
               </button>
               {isAdmin && (
-                // Rendered for admins only, and not wired to anything
-                // yet -- editing is later work. Present now so the
-                // layout is settled with two icons before there's a
-                // second thing to build behind it.
                 <button
                   type="button"
                   aria-label={`Edit ${name} (not yet available)`}
@@ -184,15 +176,6 @@ export default function PersonCard({
 
         {!chevronOnLeft && chevron}
       </div>
-
-      {generation === 'couple' && (
-        <PersonInfoDialog
-          person={person}
-          currentFamilyId={currentFamilyId}
-          open={infoOpen}
-          onClose={() => setInfoOpen(false)}
-        />
-      )}
     </>
   )
 }

@@ -142,11 +142,6 @@ export default function UsersGuidePage() {
                 ))}
               </ul>
               <p>
-                The couple&rsquo;s own boxes carry a small <strong>i</strong>. It opens a
-                note on that person &mdash; full dates, and links to their other pages on
-                the site &mdash; without leaving the page you are on.
-              </p>
-              <p>
                 The diamond is special. Once you are signed in, the site works out your
                 own direct line of descent and marks everyone on it. It follows blood
                 relations only, so an adoptive parent will not carry a diamond even though

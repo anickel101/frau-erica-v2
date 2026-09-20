@@ -166,7 +166,6 @@ function EmptyGrandparentBox() {
 function renderGrandparentColumn(
   person: LinkedPersonSummary | null,
   grandparents: LinkedPersonSummary[],
-  currentFamilyId: number,
 ) {
   if (!person) return null
   const slotCount = Math.max(2, grandparents.length)
@@ -178,7 +177,6 @@ function renderGrandparentColumn(
         person={p}
         generation="grandparent"
         isInGermline={false}
-        currentFamilyId={currentFamilyId}
       />
     ) : (
       <EmptyGrandparentBox key={`empty-${i}`} />
@@ -349,18 +347,10 @@ export default function FamilyPage() {
                 grid (spacing between *different*-color generations) is
                 unrelated and untouched. */}
             <div className="flex flex-col gap-1.5">
-              {renderGrandparentColumn(
-                family.person_1,
-                family.grandparents_1,
-                family.family_id,
-              )}
+              {renderGrandparentColumn(family.person_1, family.grandparents_1)}
             </div>
             <div className="flex flex-col gap-1.5">
-              {renderGrandparentColumn(
-                family.person_2,
-                family.grandparents_2,
-                family.family_id,
-              )}
+              {renderGrandparentColumn(family.person_2, family.grandparents_2)}
             </div>
           </div>
 
@@ -390,7 +380,6 @@ export default function FamilyPage() {
                 generation="couple"
                 isInGermline={false}
                 side="left"
-                currentFamilyId={family.family_id}
               />
             ) : (
               // An empty cell, not nothing. The grandparent grid above
@@ -419,7 +408,6 @@ export default function FamilyPage() {
                 generation="couple"
                 isInGermline={false}
                 side="right"
-                currentFamilyId={family.family_id}
               />
             )}
           </div>
@@ -434,7 +422,6 @@ export default function FamilyPage() {
                   person={p}
                   generation="child"
                   isInGermline={isInGermline(p.person_id)}
-                  currentFamilyId={family.family_id}
                 />
               ))}
             </div>
