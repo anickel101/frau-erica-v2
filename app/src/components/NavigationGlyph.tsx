@@ -71,8 +71,10 @@ export function GlyphSlot({ children }: { children: ReactNode }) {
 // The chevron is the only part of the pair that is a link; the box
 // itself is the page you're on and goes nowhere.
 //
-// A thick ">" with a notched back, not a flat-backed tab: the notch is
-// what makes it read as a direction rather than a folder tab.
+// A pentagon: flat left edge, pointed right. The earlier version had a
+// notched back (a thick ">"); the Archivist asked for the straight
+// vertical edge instead, so it reads as an arrowhead sitting beside
+// the box rather than a bracket.
 //
 // Stretched to the box's full height with preserveAspectRatio="none";
 // vector-effect keeps the stroke at a constant 2px so it matches the
@@ -91,7 +93,7 @@ export function AltFamilyChevron({ to, label }: { to: string; label: string }) {
         aria-hidden="true"
       >
         <polygon
-          points="0,0 5,0 10,5 5,10 0,10 5,5"
+          points="0,0 5,0 10,5 5,10 0,10"
           stroke="var(--color-fe-gen-couple-dark)"
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"
@@ -108,7 +110,7 @@ export function AltFamilyChevronGlyph() {
   return (
     <svg viewBox="0 0 10 10" className="h-7 w-6 fill-fe-gen-couple" aria-hidden="true">
       <polygon
-        points="0,0 5,0 10,5 5,10 0,10 5,5"
+        points="0,0 5,0 10,5 5,10 0,10"
         stroke="var(--color-fe-gen-couple-dark)"
         strokeWidth="2"
         vectorEffect="non-scaling-stroke"
