@@ -2,7 +2,11 @@ import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import RandomHeaderImage from '../components/RandomHeaderImage'
 import { ADELHEID_PARAGRAPHS } from '../content/adelheid'
-import { DiamondGlyph, GlyphSlot, PointedBoxGlyph } from '../components/NavigationGlyph'
+import {
+  AltFamilyChevronGlyph,
+  DiamondGlyph,
+  GlyphSlot,
+} from '../components/NavigationGlyph'
 import { getAllGalleryPhotos, pickRandomPhoto } from '../utils/randomPhoto'
 
 // The same three tokens PersonCard gives its boxes, so these swatches
@@ -37,9 +41,9 @@ const GENERATION_LEGEND = [
 
 const GLYPH_LEGEND = [
   {
-    glyph: <PointedBoxGlyph />,
+    glyph: <AltFamilyChevronGlyph />,
     description:
-      'One of the couple\u2019s boxes coming to a point means that person had another marriage. The whole box is the link to it, and it points toward their side.',
+      'A chevron beside one of the couple\u2019s boxes means that person had another marriage. The chevron is the link to it.',
   },
   {
     glyph: <DiamondGlyph />,

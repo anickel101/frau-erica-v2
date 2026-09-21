@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import IconAction from './IconAction'
-import { BOX_POINT, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
+import { AltFamilyChevron, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
 import { useAuth } from '../hooks/useAuth'
 import { formatLifespan } from '../utils/dateDisplay'
 import { getFullName } from '../utils/personDisplay'
@@ -59,7 +59,6 @@ export default function PersonCard({
   person,
   generation,
   isInGermline = false,
-  side,
 }: {
   person: LinkedPersonSummary
   generation: Generation
@@ -70,108 +69,84 @@ export default function PersonCard({
   // direction arrows are gone, since the box itself is the link and its
   // colour already says which generation it is.
   isInGermline?: boolean
-  // Which half of the couple this box is. Decides which side the
-  // other-marriage chevron sits on and points toward: a left-hand
-  // partner's chevron goes on the left, pointing left. Only meaningful
-  // for generation 'couple'.
-  side?: 'left' | 'right'
 }) {
   const { groups } = useAuth()
   const isAdmin = groups.includes('admin')
 
   const name = getFullName(person)
 
-  // The couple's boxes are the page you're on, so a plain couple box
-  // goes nowhere: no link, no hover, no cursor. But a partner with
-  // another marriage gets a box that IS the way there -- pointed on
-  // their own side, and clickable as a whole. So the rule a reader
-  // learns is simply: a box that comes to a point goes somewhere.
-  // Grandparent and child boxes still navigate to that person's own
-  // family page.
-  const hasOtherFamily = generation === 'couple' && person.otherFamilyId != null
-  const pointLeft = hasOtherFamily && side === 'left'
-  const pointRight = hasOtherFamily && side !== 'left'
-  const pointed = pointLeft || pointRight
-
-  const to = hasOtherFamily
-    ? `/family/${person.otherFamilyId}`
-    : person.linkedFamilyId !== null
+  // The couple's boxes are the page you're on, so they go nowhere: no
+  // link, no hover, no cursor. A partner with another marriage gets a
+  // separate chevron beside the box (see AltFamilyChevron), and that
+  // chevron -- not the box -- is the link. Grandparent and child boxes
+  // navigate to that person's own family page.
+  const isCouple = generation === 'couple'
+  const hasOtherFamily = isCouple && person.otherFamilyId != null
+  const to =
+    person.linkedFamilyId !== null
       ? `/family/${person.linkedFamilyId}`
       : `/persons/${person.person_id}`
-  const linkLabel = hasOtherFamily
-    ? `${person.first_name}'s other marriage`
-    : `${name}'s family page`
-  const isNavigable = generation !== 'couple' || hasOtherFamily
 
-  // clip-path draws the point but clips CSS borders away, so a pointed
-  // box is two stacked layers -- the border colour clipped to the full
-  // shape, the fill clipped to the same shape inset 2px -- with the
-  // content above. The inset diagonal measures within a quarter pixel of
-  // the 2px straight edges.
-  const d = BOX_POINT
-  const clipPath = pointed
-    ? `polygon(${pointLeft ? `${d}px` : '0'} 0, ${pointRight ? `calc(100% - ${d}px)` : '100%'} 0, ` +
-      `${pointRight ? `100% 50%, calc(100% - ${d}px) 100%` : '100% 100%'}, ` +
-      `${pointLeft ? `${d}px 100%, 0 50%` : '0 100%'})`
-    : undefined
-
-  // Every name on the page sits 62px in from its box's left edge:
-  // border 2 + p-4 16 + the glyph slot 32 + gap 12. A box pointed on
-  // the left has no slot; its padding is simply the full 62, which
-  // leaves 32px between the point's base and the text.
-  const NAME_INSET = 62
-
-  return (
+  const box = (
     <div
-      style={{
-        paddingLeft: pointLeft ? NAME_INSET : undefined,
-        paddingRight: pointRight ? d + 18 : undefined,
-      }}
       className={`
-        relative flex items-center gap-3
-        ${pointed ? 'p-[18px]' : `p-4 rounded-sm ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}`}
+        relative flex items-center gap-3 p-4 rounded-sm
+        ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}
       `}
     >
-      {pointed && (
-        <>
-          <div
-            aria-hidden="true"
-            style={{ clipPath }}
-            className="absolute inset-0 bg-fe-gen-couple-dark"
-          />
-          <div
-            aria-hidden="true"
-            style={{ clipPath }}
-            className="absolute inset-[2px] bg-fe-gen-couple"
-          />
-        </>
-      )}
-
       {/* A "stretched" link: absolutely covers the whole box so the
-          entire face is clickable -- but as a SIBLING of the icon
-          buttons rather than their parent, because a <button> inside
-          an <a> is invalid HTML and unreachable to assistive tech. The
-          buttons sit above it (z-10), so they take their own clicks.
-          On a pointed box the link is clipped to the same shape, so the
-          empty corners beside the point are neither clickable nor
-          hoverable. The hover is drawn on the link, not the box, so
-          hovering a button doesn't dim the face. */}
-      {isNavigable && (
+          entire face is clickable. The hover is drawn on the link, not
+          the box. */}
+      {!isCouple && (
         <Link
           to={to}
-          aria-label={linkLabel}
-          style={{ clipPath }}
+          aria-label={`${name}'s family page`}
           className="absolute inset-0 rounded-sm transition hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fe-accent"
         />
       )}
 
-      {!pointLeft && <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>}
+      {/* The left column is the glyph slot on grandparent and child
+          boxes, and the icon stack on couple boxes. Both are 32px wide,
+          so every name on the page starts 62px in from its box's left
+          edge (border 2 + p-4 16 + 32 + gap-3 12), and the summary
+          paragraph above the tree is indented to match. A couple box
+          never shows a diamond (FamilyPage passes isInGermline={false}
+          for the couple, deliberately -- see its comment there), so the
+          slot is free for the icons.
 
-      {/* relative, so it paints above a pointed box's two fill layers --
-          but pointer-events-none, because relative also paints it above
-          the stretched link, and without this a click on the name
-          landed on the <p> and went nowhere. The name is the most
-          obvious thing to click; it has to reach the link underneath. */}
+          Neither icon does anything yet; both are present so the layout
+          is settled before there is something behind them. The info
+          dialog is built (PersonInfoDialog.tsx) and was working; it is
+          deliberately not wired up until the Archivist has decided what
+          it should show. */}
+      {isCouple ? (
+        <div className="flex w-8 shrink-0 flex-col items-center gap-1">
+          <IconAction
+            variant="brown"
+            tooltip="left"
+            label="More info (coming soon)"
+            onClick={() => {}}
+          >
+            <InfoGlyph />
+          </IconAction>
+          {isAdmin && (
+            <IconAction
+              variant="brown"
+              tooltip="left"
+              label="Edit (coming soon)"
+              onClick={() => {}}
+            >
+              <PencilSquareIcon />
+            </IconAction>
+          )}
+        </div>
+      ) : (
+        <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>
+      )}
+
+      {/* pointer-events-none so a click on the name reaches the
+          stretched link underneath rather than landing on the <p> and
+          going nowhere. The name is the most obvious thing to click. */}
       <div className="pointer-events-none relative min-w-0 flex-1">
         <p className="font-bold text-sm">{name}</p>
         {/* Always rendered, even with no date on record -- a
@@ -186,27 +161,20 @@ export default function PersonCard({
           {formatLifespan(person.date_of_birth, person.date_of_death) || '\u00A0'}
         </p>
       </div>
+    </div>
+  )
 
-      {/* Couple boxes only, and right-aligned rather than floating in
-          the leftover space: a fixed home at the box's edge reads as
-          part of the box, where centring left them drifting with the
-          length of the name. Neither icon does anything yet; both are
-          present so the layout is settled before there is something
-          behind them. The info dialog is built (PersonInfoDialog.tsx)
-          and was working; it is deliberately not wired up until the
-          Archivist has decided what it should show. */}
-      {generation === 'couple' && (
-        <div className="relative z-10 flex shrink-0 items-center gap-2">
-          <IconAction variant="brown" label="More info (coming soon)" onClick={() => {}}>
-            <InfoGlyph />
-          </IconAction>
-          {isAdmin && (
-            <IconAction variant="brown" label="Edit (coming soon)" onClick={() => {}}>
-              <PencilSquareIcon />
-            </IconAction>
-          )}
-        </div>
-      )}
+  if (!hasOtherFamily) return box
+
+  // Box, gap, chevron. The chevron stretches to the box's height and is
+  // the only clickable part of the pair.
+  return (
+    <div className="flex items-stretch gap-2">
+      <div className="min-w-0 flex-1">{box}</div>
+      <AltFamilyChevron
+        to={`/family/${person.otherFamilyId}`}
+        label={`${person.first_name}'s other marriage`}
+      />
     </div>
   )
 }

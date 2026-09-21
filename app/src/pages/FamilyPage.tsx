@@ -379,7 +379,6 @@ export default function FamilyPage() {
                 person={family.person_1}
                 generation="couple"
                 isInGermline={false}
-                side="left"
               />
             ) : (
               // An empty cell, not nothing. The grandparent grid above
@@ -407,7 +406,6 @@ export default function FamilyPage() {
                 person={family.person_2}
                 generation="couple"
                 isInGermline={false}
-                side="right"
               />
             )}
           </div>

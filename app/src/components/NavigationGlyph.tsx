@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 
 // The navigation glyphs shown on Family page boxes, and in the User's
 // Guide legend that explains them.
@@ -63,22 +64,54 @@ export function GlyphSlot({ children }: { children: ReactNode }) {
   )
 }
 
-// How deep a couple box's point is, when it has one. The box itself
-// becomes the arrow: a partner with another marriage gets their box
-// pointed on their own side, and the whole shape links there. About
-// half the box's height, so the tip is near a right angle.
-export const BOX_POINT = 30
-
-// The legend's picture of that pointed box -- same proportions, same
-// colours, not a link.
-export function PointedBoxGlyph() {
+// The link to a person's other marriage: a chevron beside their box,
+// with a gap, in the box's own colour and outline. Always on the right
+// and always pointing right, whichever partner it belongs to -- so it
+// never sits on a box's left, and never disturbs where the name starts.
+// The chevron is the only part of the pair that is a link; the box
+// itself is the page you're on and goes nowhere.
+//
+// A thick ">" with a notched back, not a flat-backed tab: the notch is
+// what makes it read as a direction rather than a folder tab.
+//
+// Stretched to the box's full height with preserveAspectRatio="none";
+// vector-effect keeps the stroke at a constant 2px so it matches the
+// box's own 2px outline whatever the box's height.
+export function AltFamilyChevron({ to, label }: { to: string; label: string }) {
   return (
-    <svg viewBox="0 0 60 30" className="h-6 w-12" aria-hidden="true">
+    <Link
+      to={to}
+      aria-label={label}
+      className="group/chevron block w-9 shrink-0 self-stretch rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-fe-accent"
+    >
+      <svg
+        viewBox="0 0 10 10"
+        preserveAspectRatio="none"
+        className="h-full w-full fill-fe-gen-couple transition group-hover/chevron:fill-fe-gen-couple-dark"
+        aria-hidden="true"
+      >
+        <polygon
+          points="0,0 5,0 10,5 5,10 0,10 5,5"
+          stroke="var(--color-fe-gen-couple-dark)"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </Link>
+  )
+}
+
+// A static rendering of the chevron for the User's Guide legend --
+// same shape, same colours, not a link.
+export function AltFamilyChevronGlyph() {
+  return (
+    <svg viewBox="0 0 10 10" className="h-7 w-6 fill-fe-gen-couple" aria-hidden="true">
       <polygon
-        points="1,1 44,1 59,15 44,29 1,29"
-        fill="var(--color-fe-gen-couple)"
+        points="0,0 5,0 10,5 5,10 0,10 5,5"
         stroke="var(--color-fe-gen-couple-dark)"
         strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
       />
     </svg>

@@ -20,6 +20,7 @@ export default function IconAction({
   onClick,
   children,
   variant = 'plain',
+  tooltip = 'right',
 }: {
   label: string
   onClick: () => void
@@ -36,6 +37,11 @@ export default function IconAction({
   // headings, sidebar titles), and on the gold couple box it clears
   // contrast comfortably where the box's own darker gold would not.
   variant?: 'plain' | 'danger' | 'keeper' | 'brown'
+  // Which edge the tooltip hangs from. The default anchors it to the
+  // button's right edge and lets it grow leftward, which suits the last
+  // column of a table. A button at the LEFT edge of something needs the
+  // opposite, or the tooltip runs off the page.
+  tooltip?: 'left' | 'right'
 }) {
   // Every variant is a circle, so a row of them reads as one set of
   // controls rather than plain glyphs beside a filled block.
@@ -104,7 +110,7 @@ export default function IconAction({
           describes. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-full right-0 z-10 mb-1 hidden whitespace-nowrap rounded-sm bg-fe-ink px-2 py-1 text-xs text-white group-hover:block group-focus-within:block"
+        className={`pointer-events-none absolute bottom-full z-10 mb-1 hidden whitespace-nowrap rounded-sm bg-fe-ink px-2 py-1 text-xs text-white group-hover:block group-focus-within:block ${tooltip === 'left' ? 'left-0' : 'right-0'}`}
       >
         {label}
       </span>
