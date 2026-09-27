@@ -1,8 +1,7 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { InformationCircleIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
+import IconAction from './IconAction'
 import { AltFamilyChevron, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
-import PersonInfoDialog from './PersonInfoDialog'
 import { useAuth } from '../hooks/useAuth'
 import { formatLifespan } from '../utils/dateDisplay'
 import { getFullName } from '../utils/personDisplay'
@@ -28,21 +27,38 @@ const GENERATION_BORDER: Record<Generation, string> = {
   child: 'border-2 border-fe-gen-child-dark',
 }
 
-// Shared by the two icon buttons so they can't drift apart. Plain
-// glyphs rather than IconAction's ringed circles: inside a coloured box
-// a ring reads as a second box, and the hover colour change plus the
-// cursor is enough to say "interactive" here.
-const ICON_BUTTON =
-  'flex h-7 w-7 items-center justify-center rounded-full text-fe-brown transition ' +
-  'hover:bg-black/10 hover:text-fe-ink cursor-pointer ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fe-accent'
+// A bare "i" for the More info button. Heroicons' InformationCircleIcon
+// is an i inside its own circle, which inside IconAction's ring became a
+// circle within a circle with a tiny letter in the middle. Heroicons has
+// no bare i, so this is drawn here -- as an SVG rather than a text
+// glyph, for the same reason the germline diamond is: a font-supplied
+// character's position in its cell varies with whatever font ends up
+// rendering it, and an SVG's bounding box does not.
+//
+// Sized to fill the ring the way the pencil does. Stroke 2.5 rather
+// than the pencil's 1.5, because a lone stem reads lighter than an
+// outlined shape of the same stroke; tried at 2 and it looked thin
+// beside the pencil.
+function InfoGlyph() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="10" x2="12" y2="20" />
+      <circle cx="12" cy="4.75" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
 
 export default function PersonCard({
   person,
   generation,
   isInGermline = false,
-  side,
-  currentFamilyId = null,
 }: {
   person: LinkedPersonSummary
   generation: Generation
@@ -53,135 +69,112 @@ export default function PersonCard({
   // direction arrows are gone, since the box itself is the link and its
   // colour already says which generation it is.
   isInGermline?: boolean
-  // Which half of the couple this box is. Decides which side the
-  // other-marriage chevron sits on and points toward: a left-hand
-  // partner's chevron goes on the left, pointing left. Only meaningful
-  // for generation 'couple'.
-  side?: 'left' | 'right'
-  // The family page this card is rendered on, passed through to the
-  // info dialog so it doesn't offer a link back to the page the reader
-  // is already looking at.
-  currentFamilyId?: number | null
 }) {
   const { groups } = useAuth()
   const isAdmin = groups.includes('admin')
-  const [infoOpen, setInfoOpen] = useState(false)
 
   const name = getFullName(person)
 
-  // The couple's boxes are the page you're on. Clicking them went
-  // nowhere useful, so they are no longer links at all -- no hover, no
-  // cursor. Grandparent and child boxes still navigate to that person's
-  // own family page.
-  const isNavigable = generation !== 'couple'
+  // The couple's boxes are the page you're on, so they go nowhere: no
+  // link, no hover, no cursor. A partner with another marriage gets a
+  // separate chevron beside the box (see AltFamilyChevron), and that
+  // chevron -- not the box -- is the link. Grandparent and child boxes
+  // navigate to that person's own family page.
+  const isCouple = generation === 'couple'
+  const hasOtherFamily = isCouple && person.otherFamilyId != null
   const to =
     person.linkedFamilyId !== null
       ? `/family/${person.linkedFamilyId}`
       : `/persons/${person.person_id}`
 
-  const hasOtherFamily = generation === 'couple' && person.otherFamilyId != null
-  // A left-hand chevron stands exactly where the glyph slot would: its
-  // width plus the gap beside it (36 + 8) equals the slot plus its gap
-  // (32 + 12), so a box with a chevron on its left drops the slot and
-  // its name lands at the same x as every other name on the page. 41
-  // families have their alternate marriage on the left partner, so this
-  // is the common case, not the edge case -- an earlier build let the
-  // chevron push the whole box over, and Ernst Rickmeyer's name sat
-  // 175px right of his father's directly above it.
-  const chevronOnLeft = hasOtherFamily && side === 'left'
-  const chevron = hasOtherFamily && (
-    <AltFamilyChevron
-      to={`/family/${person.otherFamilyId}`}
-      direction={side === 'left' ? 'left' : 'right'}
-      label={`${person.first_name}'s other family`}
-    />
+  const box = (
+    <div
+      className={`
+        relative flex items-center gap-3 p-4 rounded-sm
+        ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}
+      `}
+    >
+      {/* A "stretched" link: absolutely covers the whole box so the
+          entire face is clickable. The hover is drawn on the link, not
+          the box. */}
+      {!isCouple && (
+        <Link
+          to={to}
+          aria-label={`${name}'s family page`}
+          className="absolute inset-0 rounded-sm transition hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fe-accent"
+        />
+      )}
+
+      {/* The left column is the glyph slot on grandparent and child
+          boxes, and the icon stack on couple boxes. Both are 32px wide,
+          so every name on the page starts 62px in from its box's left
+          edge (border 2 + p-4 16 + 32 + gap-3 12), and the summary
+          paragraph above the tree is indented to match. A couple box
+          never shows a diamond (FamilyPage passes isInGermline={false}
+          for the couple, deliberately -- see its comment there), so the
+          slot is free for the icons.
+
+          Neither icon does anything yet; both are present so the layout
+          is settled before there is something behind them. The info
+          dialog is built (PersonInfoDialog.tsx) and was working; it is
+          deliberately not wired up until the Archivist has decided what
+          it should show. */}
+      {isCouple ? (
+        <div className="flex w-8 shrink-0 flex-col items-center gap-1">
+          <IconAction
+            variant="brown"
+            tooltip="left"
+            label="More info (coming soon)"
+            onClick={() => {}}
+          >
+            <InfoGlyph />
+          </IconAction>
+          {isAdmin && (
+            <IconAction
+              variant="brown"
+              tooltip="left"
+              label="Edit (coming soon)"
+              onClick={() => {}}
+            >
+              <PencilSquareIcon />
+            </IconAction>
+          )}
+        </div>
+      ) : (
+        <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>
+      )}
+
+      {/* pointer-events-none so a click on the name reaches the
+          stretched link underneath rather than landing on the <p> and
+          going nowhere. The name is the most obvious thing to click. */}
+      <div className="pointer-events-none relative min-w-0 flex-1">
+        <p className="font-bold text-sm">{name}</p>
+        {/* Always rendered, even with no date on record -- a
+            non-breaking space reserves the same second line every
+            other box gets, so boxes stay the same height whether or
+            not this person has a dateline. */}
+        <p className="text-xs text-fe-ink/70">
+          {/* '\u00A0' written as an escape, not typed: a plain space
+              collapses to nothing and the box loses its second line.
+              That regression shipped once, in a rewrite of this
+              file, and was only caught in a screenshot. */}
+          {formatLifespan(person.date_of_birth, person.date_of_death) || '\u00A0'}
+        </p>
+      </div>
+    </div>
   )
 
+  if (!hasOtherFamily) return box
+
+  // Box, gap, chevron. The chevron stretches to the box's height and is
+  // the only clickable part of the pair.
   return (
-    <>
-      {/* The chevron is a sibling of the box, not part of it, so the box
-          keeps its own border all the way round and the chevron carries
-          its own. It sits on whichever side its partner is on. */}
-      <div className="flex items-stretch gap-2">
-        {chevronOnLeft && chevron}
-
-        <div
-          className={`
-            relative flex flex-1 items-center gap-3 p-4 rounded-sm
-            ${GENERATION_STYLES[generation]} ${GENERATION_BORDER[generation]}
-          `}
-        >
-          {/* A "stretched" link: absolutely covers the whole box so the
-              entire face is clickable, as before -- but as a SIBLING of
-              the icon buttons rather than their parent, because a
-              <button> inside an <a> is invalid HTML and unreachable to
-              assistive tech. The buttons sit above it (z-10), so they
-              take their own clicks. The hover is drawn on the link, not
-              the box, so hovering a button doesn't dim the whole face. */}
-          {isNavigable && (
-            <Link
-              to={to}
-              aria-label={`${name}'s family page`}
-              className="absolute inset-0 rounded-sm transition hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fe-accent"
-            />
-          )}
-
-          {!chevronOnLeft && <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>}
-
-          <div className="min-w-0">
-            <p className="font-bold text-sm">{name}</p>
-            {/* Always rendered, even with no date on record -- a
-                non-breaking space reserves the same second line every
-                other box gets, so boxes stay the same height whether or
-                not this person has a dateline. */}
-            <p className="text-xs text-fe-ink/70">
-              {/* '\u00A0' written as an escape, not typed: a plain space
-                  collapses to nothing and the box loses its second line.
-                  That regression shipped once, in a rewrite of this
-                  file, and was only caught in a screenshot. */}
-              {formatLifespan(person.date_of_birth, person.date_of_death) || '\u00A0'}
-            </p>
-          </div>
-
-          {/* The icons take whatever room is left after the name and
-              centre themselves in it, so they sit midway between the end
-              of the text and the box's edge however long the name is. */}
-          <div className="relative z-10 flex flex-1 items-center justify-center gap-1.5 self-stretch">
-            <button
-              type="button"
-              onClick={() => setInfoOpen(true)}
-              aria-label={`More about ${name}`}
-              title="More info"
-              className={ICON_BUTTON}
-            >
-              <InformationCircleIcon className="h-5 w-5" />
-            </button>
-            {isAdmin && (
-              // Rendered for admins only, and not wired to anything yet
-              // -- editing is later work. Present now so the layout is
-              // settled with two icons before there's a second thing to
-              // build behind it.
-              <button
-                type="button"
-                aria-label={`Edit ${name} (not yet available)`}
-                title="Edit (coming soon)"
-                className={ICON_BUTTON}
-              >
-                <PencilSquareIcon className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {!chevronOnLeft && chevron}
-      </div>
-
-      <PersonInfoDialog
-        person={person}
-        currentFamilyId={currentFamilyId}
-        open={infoOpen}
-        onClose={() => setInfoOpen(false)}
+    <div className="flex items-stretch gap-2">
+      <div className="min-w-0 flex-1">{box}</div>
+      <AltFamilyChevron
+        to={`/family/${person.otherFamilyId}`}
+        label={`${person.first_name}'s other marriage`}
       />
-    </>
+    </div>
   )
 }

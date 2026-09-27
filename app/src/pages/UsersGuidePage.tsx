@@ -43,7 +43,7 @@ const GLYPH_LEGEND = [
   {
     glyph: <AltFamilyChevronGlyph />,
     description:
-      'A tab beside one of the couple leads to that person\u2019s other marriage. It sits on whichever side they are on, and points away.',
+      'A chevron beside one of the couple\u2019s boxes means that person had another marriage. The chevron is the link to it.',
   },
   {
     glyph: <DiamondGlyph />,
@@ -141,11 +141,6 @@ export default function UsersGuidePage() {
                   </li>
                 ))}
               </ul>
-              <p>
-                Every box also carries a small <strong>i</strong>. It opens a note on that
-                person &mdash; full dates, and links to their other pages on the site
-                &mdash; without leaving the page you are on.
-              </p>
               <p>
                 The diamond is special. Once you are signed in, the site works out your
                 own direct line of descent and marks everyone on it. It follows blood

@@ -64,49 +64,36 @@ export function GlyphSlot({ children }: { children: ReactNode }) {
   )
 }
 
-// The link to a person's other marriage: a tab beside their box, in the
-// box's own colour and border, pointing away from it. Replaces the
-// orange sideways triangle that used to sit inside the box.
+// The link to a person's other marriage: a chevron beside their box,
+// with a gap, in the box's own colour and outline. Always on the right
+// and always pointing right, whichever partner it belongs to -- so it
+// never sits on a box's left, and never disturbs where the name starts.
+// The chevron is the only part of the pair that is a link; the box
+// itself is the page you're on and goes nowhere.
 //
-// w-9 (36px), and the box beside it uses gap-2 (8px): together exactly
-// the glyph slot's w-8 + gap-3 (32 + 12). That equality is what lets a
-// left-hand chevron take the slot's place without moving the name --
-// see PersonCard. The same width on the right, for symmetry when both
-// partners have another marriage.
+// A pentagon: flat left edge, pointed right. The earlier version had a
+// notched back (a thick ">"); the Archivist asked for the straight
+// vertical edge instead, so it reads as an arrowhead sitting beside
+// the box rather than a bracket.
 //
-// Stretched to the box's full height with preserveAspectRatio="none",
-// which would normally stretch the stroke too -- vector-effect keeps
-// it at a constant 2px, so the outline reads as the same weight as the
-// box beside it whatever the box's height turns out to be.
-//
-// pointer-events on the polygon only, not the svg's bounding box, so
-// the transparent corners outside the arrow shape aren't clickable and
-// don't show a hover.
-export function AltFamilyChevron({
-  to,
-  direction,
-  label,
-}: {
-  to: string
-  direction: 'left' | 'right'
-  label: string
-}) {
-  const points =
-    direction === 'right' ? '0,0 7,0 10,5 7,10 0,10' : '10,0 3,0 0,5 3,10 10,10'
+// Stretched to the box's full height with preserveAspectRatio="none";
+// vector-effect keeps the stroke at a constant 2px so it matches the
+// box's own 2px outline whatever the box's height.
+export function AltFamilyChevron({ to, label }: { to: string; label: string }) {
   return (
     <Link
       to={to}
       aria-label={label}
-      className="group/chevron block w-9 shrink-0 self-stretch outline-none focus-visible:ring-2 focus-visible:ring-fe-accent rounded-sm"
+      className="group/chevron block w-9 shrink-0 self-stretch rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-fe-accent"
     >
       <svg
         viewBox="0 0 10 10"
         preserveAspectRatio="none"
-        className="h-full w-full fill-fe-gen-couple group-hover/chevron:fill-fe-gen-couple-dark transition"
+        className="h-full w-full fill-fe-gen-couple transition group-hover/chevron:fill-fe-gen-couple-dark"
         aria-hidden="true"
       >
         <polygon
-          points={points}
+          points="0,0 5,0 10,5 5,10 0,10"
           stroke="var(--color-fe-gen-couple-dark)"
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"
@@ -121,11 +108,12 @@ export function AltFamilyChevron({
 // same shape, same colours, not a link.
 export function AltFamilyChevronGlyph() {
   return (
-    <svg viewBox="0 0 10 10" className="h-7 w-9 fill-fe-gen-couple" aria-hidden="true">
+    <svg viewBox="0 0 10 10" className="h-7 w-6 fill-fe-gen-couple" aria-hidden="true">
       <polygon
-        points="0,0 7,0 10,5 7,10 0,10"
+        points="0,0 5,0 10,5 5,10 0,10"
         stroke="var(--color-fe-gen-couple-dark)"
-        strokeWidth="0.6"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
       />
     </svg>

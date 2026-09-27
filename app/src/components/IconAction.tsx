@@ -20,6 +20,7 @@ export default function IconAction({
   onClick,
   children,
   variant = 'plain',
+  tooltip = 'right',
 }: {
   label: string
   onClick: () => void
@@ -30,7 +31,17 @@ export default function IconAction({
   // 'danger' is the filled red treatment. 'keeper' is the cookbook's
   // blue -- on a Keepers page the default orange is the only orange
   // thing on the page, which reads as a stray rather than a control.
-  variant?: 'plain' | 'danger' | 'keeper'
+  // 'brown' is for controls that sit ON a coloured surface -- the
+  // family-page boxes -- where the link orange reads as imported from
+  // somewhere else. fe-brown is the site's own secondary colour (section
+  // headings, sidebar titles), and on the gold couple box it clears
+  // contrast comfortably where the box's own darker gold would not.
+  variant?: 'plain' | 'danger' | 'keeper' | 'brown'
+  // Which edge the tooltip hangs from. The default anchors it to the
+  // button's right edge and lets it grow leftward, which suits the last
+  // column of a table. A button at the LEFT edge of something needs the
+  // opposite, or the tooltip runs off the page.
+  tooltip?: 'left' | 'right'
 }) {
   // Every variant is a circle, so a row of them reads as one set of
   // controls rather than plain glyphs beside a filled block.
@@ -40,6 +51,15 @@ export default function IconAction({
   // sync. 1.5px matches the icons' own stroke-width exactly (Heroicons
   // 24/outline draws at 1.5), so the ring reads as part of the same
   // drawing rather than a box around it.
+  // Hover inverts the ring: the outline fills with its own colour and
+  // the glyph goes white. Earlier the hover only darkened the outline a
+  // shade, orange to a slightly darker orange, which on the coloured
+  // family-page boxes was too subtle to register as feedback at all.
+  //
+  // cursor-pointer explicitly. Tailwind v4's preflight no longer gives
+  // buttons a pointer (v3 did), so without this every icon button on
+  // the site showed the arrow cursor -- including the ones on Manage
+  // Users that had been there all along.
   const button =
     variant === 'danger'
       ? // bg-red-700, not a lighter red: white on red-700 clears WCAG AA
@@ -52,8 +72,10 @@ export default function IconAction({
         // which reads as the red circle being slightly small.
         'bg-red-700 hover:bg-red-800 text-white border-[1.5px] border-transparent'
       : variant === 'keeper'
-        ? 'text-fe-keeper-link hover:text-fe-keeper-link-dark border-[1.5px] border-current'
-        : 'text-fe-link hover:text-fe-link-dark border-[1.5px] border-current'
+        ? 'text-fe-keeper-link border-[1.5px] border-current hover:bg-fe-keeper-link hover:text-white'
+        : variant === 'brown'
+          ? 'text-fe-brown border-[1.5px] border-current hover:bg-fe-brown hover:text-white'
+          : 'text-fe-link border-[1.5px] border-current hover:bg-fe-link hover:text-white'
 
   return (
     <span className="relative inline-flex group">
@@ -67,7 +89,7 @@ export default function IconAction({
         // The icon is sized here too ([&>svg]) so the component owns its
         // whole size contract and a fifth action can't quietly arrive at
         // a different scale.
-        className={`flex h-[30px] w-[30px] items-center justify-center rounded-full transition [&>svg]:h-4 [&>svg]:w-4 ${button}`}
+        className={`flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-full transition [&>svg]:h-4 [&>svg]:w-4 ${button}`}
       >
         {children}
       </button>
@@ -88,7 +110,7 @@ export default function IconAction({
           describes. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-full right-0 z-10 mb-1 hidden whitespace-nowrap rounded-sm bg-fe-ink px-2 py-1 text-xs text-white group-hover:block group-focus-within:block"
+        className={`pointer-events-none absolute bottom-full z-10 mb-1 hidden whitespace-nowrap rounded-sm bg-fe-ink px-2 py-1 text-xs text-white group-hover:block group-focus-within:block ${tooltip === 'left' ? 'left-0' : 'right-0'}`}
       >
         {label}
       </span>
