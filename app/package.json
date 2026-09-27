@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "export-data": "node scripts/export-data.ts",
     "import-keepers": "node scripts/importKeepers.ts",
+    "split-parallel-text": "node scripts/splitParallelText.ts",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
