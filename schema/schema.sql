@@ -12,10 +12,17 @@
 -- expected rather than drift. Columns added to the real database over
 -- time arrived via ALTER TABLE, which can only append -- so Persons has
 -- suffix, birth_year, death_year and preferred_first_name in a
--- different order there than here, where they are grouped by meaning.
--- Nothing depends on ordinal position: every query names its columns
--- and nothing uses SELECT *. Column *names* were verified to match the
--- live database exactly (2026-09-08).
+-- different order there than here, where they are grouped by meaning,
+-- and Documents has language/parallel_of after is_published rather than
+-- before it (migration 001). Nothing depends on ordinal position: every
+-- query names its columns and nothing uses SELECT *. Column *names*
+-- were verified to match the live database exactly (2026-09-08, and
+-- again for Documents on 2026-09-27).
+--
+-- STRUCTURAL CHANGES to the real database go through schema/migrations/
+-- as well as this file -- running this one against the live archive
+-- would rebuild it from scratch and drop every record in it. See
+-- schema/migrations/README.md.
 -- ============================================================
 
 -- SQLite disables foreign key enforcement by default.
@@ -146,6 +153,8 @@ CREATE TABLE Images (
 --     which had already drifted out of sync in the original source.
 --   genre: closed set, taken directly from the original site's own
 --     genre index page.
+--   language/parallel_of: a work held in two languages is two rows,
+--     not one row with both interleaved — see the note below the table.
 -- ------------------------------------------------------------
 CREATE TABLE Documents (
     document_id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -159,8 +168,48 @@ CREATE TABLE Documents (
     genre        TEXT CHECK (genre IN ('Biography', 'Memoir', 'History', 'Literary', 'Letter', 'Recipe', 'Other')),
     tags         TEXT,
     notes        TEXT,
-    is_published INTEGER NOT NULL DEFAULT 0
+    language     TEXT CHECK (language IN ('en', 'de')),
+    parallel_of  INTEGER REFERENCES Documents(document_id),
+    is_published INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT Documents_parallel_not_self CHECK (parallel_of IS NULL OR parallel_of <> document_id)
 );
+
+-- Parallel texts.
+--   A work that exists in German and in English is stored as TWO
+--   Documents rows, one per language, rather than as one row with the
+--   two interleaved paragraph by paragraph (which is how these arrived
+--   from the original site). Splitting them is what lets the website
+--   set the languages side by side, matching paragraph against matching
+--   paragraph, instead of one after the other.
+--
+--   language: which language THIS row's content is in. NULL means the
+--     document isn't part of a pair — true of most of the archive, and
+--     the reason both columns are nullable.
+--
+--   parallel_of: names the row this one is the other-language half of.
+--     It is set on the SECONDARY row and left NULL on the one the
+--     archive treats as the entry point — the row that carries the
+--     summary, appears in the Index of Texts, and is what a reader
+--     clicks. The website renders the pair from either row's URL.
+--
+--   Why "parallel_of" and not "translation_of": in every one of these
+--     works the German is the original and the English the translation,
+--     but the ENGLISH row is the entry point, because the archive keeps
+--     one summary per work and keeps it in English. A column called
+--     translation_of, set on the German row and pointing at the
+--     English, would therefore assert the exact opposite of what
+--     happened — that the German was translated from the English. This
+--     column records the pairing only. Which language came first is not
+--     lost: it is recoverable from `language`, the German being the
+--     original throughout this archive.
+--
+--   A pair is 1:1, which is why this is a column rather than a
+--     Translations join table: a join table models many-to-many and
+--     would permit rows that contradict each other — two German halves
+--     for one English, or a cycle — which then have to be forbidden
+--     with constraints a single nullable pointer makes impossible to
+--     express in the first place.
+CREATE INDEX IF NOT EXISTS idx_documents_parallel_of ON Documents(parallel_of);
 
 -- ------------------------------------------------------------
 -- Families: couples/partnerships with description and photo
