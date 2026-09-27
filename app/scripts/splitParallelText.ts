@@ -63,6 +63,7 @@ interface DocumentRow {
   content: string
   language: string | null
   parallel_of: number | null
+  is_published: number
 }
 
 // A rough count of how much of a document reads as German, used only to
@@ -183,7 +184,11 @@ function toSql(row: DocumentRow, proposal: SplitProposal): string {
     // the row that appears in the Index of Texts.
     '  NULL,',
     `  ${sqlString(proposal.germanContent)},`,
-    `  ${sqlString(row.genre)}, ${sqlString(row.tags)}, 'de', ${row.document_id}, 1`,
+    // is_published is INHERITED, not assumed. Publishing the German
+    // half of an unpublished document would export a row whose entry
+    // point isn't there -- true of document 134, which is unpublished
+    // while the rest of its series is not.
+    `  ${sqlString(row.genre)}, ${sqlString(row.tags)}, 'de', ${row.document_id}, ${row.is_published}`,
     ');',
     '',
     `UPDATE Documents SET`,
@@ -219,7 +224,7 @@ const ids = idsFlag
 
 const statement = db.prepare(
   `SELECT document_id, title, series_key, series_title, series_order,
-          genre, tags, content, language, parallel_of
+          genre, tags, content, language, parallel_of, is_published
      FROM Documents WHERE document_id = ?`,
 )
 
