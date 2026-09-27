@@ -3,6 +3,8 @@ import documentsListRaw from '../../data/generated/documents-list.json'
 import imagesRaw from '../../data/generated/images.json'
 import { resolveImageUrl } from '../../utils/imageUrl'
 
+export type DocumentLanguage = 'en' | 'de'
+
 export interface DocumentListItem {
   document_id: number
   series_key: string | null
@@ -15,10 +17,28 @@ export interface DocumentListItem {
   genre:
     'Biography' | 'Memoir' | 'History' | 'Literary' | 'Letter' | 'Recipe' | 'Other' | null
   tags: string | null
+  // Which language this document's own content is in, for the handful
+  // of works the archive holds in both. null for everything else, which
+  // is most of it -- see schema.sql's note under Documents.
+  language: DocumentLanguage | null
+}
+
+// The other half of a parallel text, already resolved -- so a caller
+// never has to know that a pair is two rows, or which of the two the
+// reader happened to ask for.
+export interface ParallelHalf {
+  document_id: number
+  language: DocumentLanguage
+  content: string
 }
 
 export interface DocumentDetail extends DocumentListItem {
   content: string
+  // The counterpart, where this work exists in both languages. The
+  // German and English halves of a pair always arrive as
+  // document/parallel with the entry point as `document`, whichever of
+  // the two ids was asked for.
+  parallel: ParallelHalf | null
   // Resolved at export time (see scripts/export-data.ts): the document's
   // own "hdr."-prefixed linked image where it has one, otherwise the
   // archive-wide default. Never null in practice, but typed nullable
@@ -34,8 +54,18 @@ interface GeneratedImage {
   url: string
 }
 
+// The shape actually stored in documents.json: parallel_of is a raw id,
+// which getDocumentById resolves into a ParallelHalf before any caller
+// sees it.
+interface GeneratedDocument extends DocumentListItem {
+  content: string
+  parallel_of: number | null
+  header_image_url: string | null
+  header_image_caption: string | null
+}
+
 const documentsList = documentsListRaw as DocumentListItem[]
-const documentsDetail = documentsDetailRaw as DocumentDetail[]
+const documentsDetail = documentsDetailRaw as GeneratedDocument[]
 const imagesById = new Map(
   (imagesRaw as GeneratedImage[]).map((img) => [img.image_id, img]),
 )
@@ -73,10 +103,57 @@ export function listDocuments(): DocumentListItem[] {
   return documentsList
 }
 
+// Both halves of a parallel text resolve to the same page: ask for
+// either id and you get the entry point -- the row carrying the title
+// and summary the archive lists -- with its counterpart alongside. A
+// reader who lands on the German half's URL gets the pair rather than
+// an untitled German page with no way back.
+//
+// Exported and generic over the row shape so it can be tested directly:
+// no document in the archive is split yet, so there is no real fixture
+// to assert against, and the alternative would be mocking the generated
+// JSON module.
+export function resolveDocumentPair<
+  T extends { document_id: number; parallel_of: number | null },
+>(all: T[], id: number): { entry: T; counterpart: T | undefined } | undefined {
+  const asked = all.find((d) => d.document_id === id)
+  if (!asked) return undefined
+
+  // If the id names a translated half, the entry point is what it
+  // points at; otherwise it IS the entry point, and its counterpart is
+  // whatever points back at it. The ?? asked fallback covers a
+  // dangling pointer -- better a lone German page than none at all.
+  const entry =
+    asked.parallel_of !== null
+      ? (all.find((d) => d.document_id === asked.parallel_of) ?? asked)
+      : asked
+  const counterpart =
+    entry === asked ? all.find((d) => d.parallel_of === entry.document_id) : asked
+
+  return { entry, counterpart }
+}
+
 export function getDocumentById(id: number): DocumentDetail | undefined {
-  const document = documentsDetail.find((d) => d.document_id === id)
-  if (!document) return undefined
-  return { ...document, content: resolveImagePlaceholders(document.content) }
+  const resolved = resolveDocumentPair(documentsDetail, id)
+  if (!resolved) return undefined
+  const { entry, counterpart } = resolved
+
+  // parallel_of is the stored pointer; callers get the resolved
+  // `parallel` below instead, so it does not belong in the public shape.
+  const rest = { ...entry, parallel_of: undefined }
+  delete (rest as { parallel_of?: number }).parallel_of
+  return {
+    ...rest,
+    content: resolveImagePlaceholders(entry.content),
+    parallel:
+      counterpart && counterpart.language !== null
+        ? {
+            document_id: counterpart.document_id,
+            language: counterpart.language,
+            content: resolveImagePlaceholders(counterpart.content),
+          }
+        : null,
+  }
 }
 
 export function getSeriesChapters(seriesKey: string): DocumentListItem[] {

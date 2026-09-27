@@ -16,6 +16,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import prettier from 'prettier'
 import { fixMojibake } from './fixMojibake.ts'
+import { validateParallelTexts } from './parallelTextValidation.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_DIR = path.join(__dirname, '../src/data/generated')
@@ -212,13 +213,15 @@ interface DocumentRow {
   content: string | null
   genre: string | null
   tags: string | null
+  language: string | null
+  parallel_of: number | null
 }
 
 const documentRows = (
   db
     .prepare(
       `SELECT document_id, series_key, series_title, series_order, title,
-              summary, content, genre, tags
+              summary, content, genre, tags, language, parallel_of
        FROM Documents WHERE is_published = 1`,
     )
     .all() as unknown as DocumentRow[]
@@ -288,6 +291,36 @@ function headerFor(documentId: number) {
 // (DocumentLinks has only 6 rows and doesn't distinguish "author" from
 // "subject" anyway) -- both fields are kept in the shape for forward
 // compatibility, always null for now.
+// Parallel texts are checked before anything is written. See
+// parallelTextValidation.ts for why this is fatal rather than a warning:
+// the site pairs the two halves by position, so a pair that has drifted
+// by one paragraph renders happily and sets every paragraph after it
+// against the wrong translation.
+//
+// Validated against every published row, since a pair whose halves
+// disagree about publication is itself one of the faults being looked
+// for.
+const parallelCheck = validateParallelTexts(
+  documentRows.map((row) => ({
+    document_id: row.document_id,
+    title: row.title,
+    content: row.content,
+    summary: row.summary,
+    language: row.language,
+    parallel_of: row.parallel_of,
+    is_published: 1,
+  })),
+)
+for (const warning of parallelCheck.warnings) {
+  console.warn(`  parallel text: ${warning}`)
+}
+if (parallelCheck.errors.length > 0) {
+  console.error('\nParallel-text validation failed, so nothing was exported:\n')
+  for (const error of parallelCheck.errors) console.error(`  - ${error}`)
+  console.error('')
+  process.exit(1)
+}
+
 const documentsDetail = documentRows.map((row) => ({
   document_id: row.document_id,
   series_key: row.series_key,
@@ -300,21 +333,31 @@ const documentsDetail = documentRows.map((row) => ({
   genre: row.genre,
   tags: row.tags,
   content: row.content ?? '',
+  language: row.language,
+  parallel_of: row.parallel_of,
   ...headerFor(row.document_id),
 }))
 
-const documentsList = documentRows.map((row) => ({
-  document_id: row.document_id,
-  series_key: row.series_key,
-  series_title: row.series_title,
-  series_order: row.series_order,
-  title: row.title,
-  author: null as string | null,
-  authorPersonId: null as number | null,
-  summary: row.summary,
-  genre: row.genre,
-  tags: row.tags,
-}))
+// One entry per work, not per row. The translated half is a satellite:
+// it has no summary of its own and would appear in the Index of Texts
+// as a duplicate of the work it belongs to, under the same title. It
+// stays in documents.json (so its own URL still resolves, and so the
+// pair can be rendered from either id) but out of every list.
+const documentsList = documentRows
+  .filter((row) => row.parallel_of === null)
+  .map((row) => ({
+    document_id: row.document_id,
+    series_key: row.series_key,
+    series_title: row.series_title,
+    series_order: row.series_order,
+    title: row.title,
+    author: null as string | null,
+    authorPersonId: null as number | null,
+    summary: row.summary,
+    genre: row.genre,
+    tags: row.tags,
+    language: row.language,
+  }))
 
 await writeJson('documents.json', documentsDetail)
 await writeJson('documents-list.json', documentsList)
