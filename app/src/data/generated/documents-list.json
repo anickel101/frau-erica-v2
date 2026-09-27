@@ -9,7 +9,8 @@
     "authorPersonId": null,
     "summary": "This brief biography was read during Adelheid’s memorial service at Calvary Lutheran Church in Stayton, Oregon.",
     "genre": "Biography",
-    "tags": "Mueller/Nickel, Adelheid"
+    "tags": "Mueller/Nickel, Adelheid",
+    "language": null
   },
   {
     "document_id": 4,
@@ -21,7 +22,8 @@
     "authorPersonId": null,
     "summary": "In early October 1930, Adelheid Mueller received a formal call from St. Lucas Evangelical Lutheran Church, a Wisconsin-Synod congregation in Milwaukee. It was dated September 12, postmarked September 28. She was 23 at the time and had been teaching school in La Crosse, Wisconsin — her first job after graduating from Dr. Martin Luther College (Class of 1929). Adelheid evidently had learned that the call was coming and discussed it with her parents. Pastor Köhler’s letter mentions that Viola Oetchen, already a teacher at St. Lucas, was eager to have Adelheid as a roommate. For whatever reason, Adelheid made other living arrangements, renting a room from Albert and Margaret Nickel, two members of the church. The Nickels had a son named Hilbert, who sang in the St. Lucas choir ...",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 10,
@@ -33,7 +35,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Biography",
-    "tags": "Ingram, Alice"
+    "tags": "Ingram, Alice",
+    "language": null
   },
   {
     "document_id": 12,
@@ -45,7 +48,8 @@
     "authorPersonId": null,
     "summary": "Alida’s prologue:  \n*For more than a year, Emma has been coaxing and insisting that I write the memoirs of my family and about my early life. It seems to me a foolish undertaking, as every scrap of paper or records that might help went up in smoke long ago and there is only a very poor memory to depend upon.*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 13,
@@ -57,7 +61,8 @@
     "authorPersonId": null,
     "summary": "Alida’s prologue:  \n*For more than a year, Emma has been coaxing and insisting that I write the memoirs of my family and about my early life. It seems to me a foolish undertaking, as every scrap of paper or records that might help went up in smoke long ago and there is only a very poor memory to depend upon.*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 14,
@@ -69,7 +74,8 @@
     "authorPersonId": null,
     "summary": "Alida Bigelow’s daughter Emma was insistent and encouraging about having a written memoir from her mother. Alida sent Emma this letter describing Charlie, his early days, and their years together. The file copy is undated however, so it is unclear whether this letter was a first attempt at memoir or a postscript to the finished work.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 15,
@@ -81,7 +87,8 @@
     "authorPersonId": null,
     "summary": "A father’s 1853 wedding gift to his daughter made another appearance nearly a century later — for his great-great-great-granddaughter’s baptism. It arrived with this\nphp\n$img=\"img0549\"; // Get image serial number from \\_Images.fmp12 database\nprint (\"<a href=\"https://www.frauerica.org/Images/\\_Gallery.php?image=$img&refer=$refer\"handwritten note \");\n?>\nfrom infant Allison McMillan’s maternal grandmother.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 16,
@@ -93,7 +100,8 @@
     "authorPersonId": null,
     "summary": "The printed program for the March 2023 concert of the Providence Singers carried a version of this congratulatory note about two golden anniversaries: women’s intercollegiate ice hockey and the incorporation of the Providence Singers. Alli played a significant early role role in both.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 18,
@@ -105,7 +113,8 @@
     "authorPersonId": null,
     "summary": "The Frau Erica archive knows of five forebears who bore Anson as their first or middle name.. There may well be more, considering the size of families a couple generations in the past. Here are the five. If you know of others, please [contact the archivist](/contact).",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 19,
@@ -117,7 +126,8 @@
     "authorPersonId": null,
     "summary": "This obituary was published June 3, 2021, in the *Chicago Tribune*.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 23,
@@ -129,7 +139,8 @@
     "authorPersonId": null,
     "summary": "Carl de Haas, great- and great-great-grandfather to the McMillans of White Bear Lake, arrived on the Wisconsin frontier in 1847. *Winke für Auswanderer,* his booklet of advice for people considering emigration, was widely available in Germany and went through at least two printings and an expanded second edition.",
     "genre": "Memoir",
-    "tags": "de Haas, Carl"
+    "tags": "de Haas, Carl",
+    "language": null
   },
   {
     "document_id": 24,
@@ -141,7 +152,8 @@
     "authorPersonId": null,
     "summary": "Carl, his brother Richard, and nephew Eduard began their trip to New York by river steamer from Düsseldorf to Rotterdam, and by sea from Rotterdam to Havre and Cherbourg. It was an early introduction to seasickness, poor service, inedible food, overcharging, and too much baggage. Still, he encouraged others to make the trip.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 25,
@@ -153,7 +165,8 @@
     "authorPersonId": null,
     "summary": "Their ship would not leave from Havre as promised, but from Cherbourg — and nearly a month late. They boarded the Union after three weeks in Cherbourg and were appalled at dreadful accommodations far below what they had been promised. Carl, who spoke some French, led a delegation ashore to confront the agents Herout & de Handel with their complaints. It was evening, time was short, they did what they could but did not succeed.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 26,
@@ -165,7 +178,8 @@
     "authorPersonId": null,
     "summary": "The trip to New York took 16 days, two longer than expected because of adverse winds. Carl advises careful packing, good locks, and extra cash. He and his party arrived July 7, 1847, and stayed at the Greenwich House, 85 Greenwich Street.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 27,
@@ -177,7 +191,8 @@
     "authorPersonId": null,
     "summary": "Carl and his party took the Newton, a Hudson River steamer to Albany, the train to Buffalo, and a Great Lakes steamship to Milwaukee — a far more comfortable part of the trip. He warns against taking the heavily marketed canal boats from Albany to Buffalo. Transportation inland is expensive, but the train is worth it.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 28,
@@ -189,7 +204,8 @@
     "authorPersonId": null,
     "summary": "With baggage and belongings stashed in Milwaukee, Carl, Richard, and Eduard traveled by stagecoach to Fond du Lac, arriving July 27 in the evening. They went on foot to the Calumet settlement, where they stayed with Johann Mentis. Carl describes the topography in detail, with advice on how to find suitable land. After an exhausting expedition to see more of the territory, he bought a 40-acre farm next to Mentis.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 29,
@@ -201,7 +217,8 @@
     "authorPersonId": null,
     "summary": "Setting up a frontier household is expensive and difficult; clearing unbroken land is crushingly physical work. Carl describes the necessary equipment and lists prices. American axes are expensive but better than German ones. A featherbed is absolutely necessary; a clock, not so much.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 30,
@@ -213,7 +230,8 @@
     "authorPersonId": null,
     "summary": "Here, late in the pamphlet, Carl explains American weather, including tornadoes and wider-ranging temperatures than emigrants would leave behind in Germany, and explores the details of owning, clearing, and farming the land. It is back-breaking work.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 31,
@@ -225,7 +243,8 @@
     "authorPersonId": null,
     "summary": "Carl offers information and advice on crops, livestock, game and wildfowl, and firearms. There are Indians on this frontier, some speaking good English and living in a settlement called Brothertown, others nomadic and living off the hunt.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 32,
@@ -237,7 +256,8 @@
     "authorPersonId": null,
     "summary": "Despite all the hardships and risks outlined in his pamphlet, Carl de Haas encouraged Germans who are considering emigration to make the move. He himself, however, as his brother Friedrich notes in the Postscript, left the frontier settler’s life after a year or so, set up a brewery with his brother and nephew, and then decamped for Buffalo, where he raised his family and worked as a journalist.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 36,
@@ -249,7 +269,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 37,
@@ -261,7 +282,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 38,
@@ -273,7 +295,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 39,
@@ -285,7 +308,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 40,
@@ -297,7 +321,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 41,
@@ -309,7 +334,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 42,
@@ -321,7 +347,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 43,
@@ -333,7 +360,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 44,
@@ -345,7 +373,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 45,
@@ -357,7 +386,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 46,
@@ -369,7 +399,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 47,
@@ -381,7 +412,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 48,
@@ -393,7 +425,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 49,
@@ -405,7 +438,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 50,
@@ -417,7 +451,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 51,
@@ -429,7 +464,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 52,
@@ -441,7 +477,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 53,
@@ -453,7 +490,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 54,
@@ -465,7 +503,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 55,
@@ -477,7 +516,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, *The Chicago Memoirs*",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 57,
@@ -489,7 +529,8 @@
     "authorPersonId": null,
     "summary": "— Joel Nickel, Stayton, Oregon, Christmas 2011",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 58,
@@ -501,7 +542,8 @@
     "authorPersonId": null,
     "summary": "Constanze Rösing’s niece Theodora Mueller emigrated with her parents and siblings to Kendallville, Indiana, in the fall of 1865 when she was 21. Ludwig Knief had already returned to Germany from the California gold fields by then. He was 23 and seeking theological training for his life’s goal: to serve as a Lutheran missionary in America. In 1863 he moved to Hermannsburg, where his circle of friends included Constanze, then 41. Constanze thought Ludwig and Theodora would make a great couple, and worked to bring them together. They were married in Kendallville in 1868.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 63,
@@ -513,7 +555,8 @@
     "authorPersonId": null,
     "summary": "In June 2022, Doug McMillan wrote and submitted this bit of autobiography to the *Wall Street Journal* for its “My Ride” feature.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 68,
@@ -525,7 +568,8 @@
     "authorPersonId": null,
     "summary": "Ernie Mueller was, among other things, a born storyteller. No one knows whether “Foot, Foot Foot, and Foot Foot Foot” was his original composition, but his telling was highly original and memorable for a generation of nephews and nieces. In 1986, Ernie told it again to an assemblage of Muellers, asking the children to count the “foots.” His grand-niece Adele won the the grand prize, a moving wooden duck ornament for the garden. Ernie told and wrote the story several times. This version was in his own hand on three sheets (six sides) of ruled notebook paper, a keepsake of Ernie’s sister Adelheid.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 69,
@@ -537,7 +581,8 @@
     "authorPersonId": null,
     "summary": "Ernie Mueller was, among other things, a born storyteller. No one knows whether “Foot, Foot Foot, and Foot Foot Foot” was his original composition, but his telling was highly original and memorable for a generation of nephews and nieces. Nephew Tim Mueller once asked him to write it down, and Ernie obliged — on both sides of a large sheet of paper. Tim transcribed it.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 73,
@@ -549,7 +594,8 @@
     "authorPersonId": null,
     "summary": "Hardy Essig was easily the best professor of English literature in the Archivist’s long academic career. The classes he offered at Concordia Senior College in Fort Wayne — and the Archivist took all of them except the course on Milton, for scheduling reasons — were intellectually challenging and naturally engaging. The study of literature was never the same in graduate school. Hardy’s obituary ran in the Fort Wayne Journal-Gazette on April 5, 2006.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 74,
@@ -561,7 +607,8 @@
     "authorPersonId": null,
     "summary": "This report, written by staff writer Marisa Osorio Colon, appeared in the Hartford Courant November 8, 1996",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 75,
@@ -573,7 +620,8 @@
     "authorPersonId": null,
     "summary": "Some beachcombers make little piles of stones, call them cairns, and walk on. For the LeRoi-Nickel household in Portland, Oregon, that spur-of-the-moment creative task has evolved into a planful, aspirational, competitive art form evocative of work by the sculptor [Isamu Noguchi](https://en.wikipedia.org/wiki/Isamu_Noguchi) (1904–1988). The annual roster of invited participants grows; the rules continue to evolve.",
     "genre": "Other",
-    "tags": "Five Rocks"
+    "tags": "Five Rocks",
+    "language": null
   },
   {
     "document_id": 80,
@@ -585,7 +633,8 @@
     "authorPersonId": null,
     "summary": "**Sponge Cake (a.k.a., *Eierschwer*)**  \nMueller weddings and other ceremonial gatherings were never complete without a dense yellow sponge cake, often served with berries or other fruit. The Muellers called it *“Eierschwer”* (egg-heavy) because the recipe listed its ingredients based on the exact weight of the eggs. There were variations (eight eggs rather than 10), but the ingredients were always the same, always in exact proportion, and came with the strict instruction: Stir it in the same direction. This is the original from Frau Erica’s *Deutsch-Amerikanisches Kochbuch*.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 81,
@@ -597,7 +646,8 @@
     "authorPersonId": null,
     "summary": "There are countless variations on the sauerbraten theme, from celery to stewed raisins, and many German families have their own recipes. This is from Frau Erica’s *Deutsch-Amerikanisches Kochbuch* (Rundschau Publishing Co., Milwaukee and Chicago, 1903; Eleventh printing).",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 82,
@@ -609,7 +659,8 @@
     "authorPersonId": null,
     "summary": "Fred Knief (above, with Dodo) read a congratulatory message from his brother-in-law Ernst (Opa) Mueller at the wedding celebration, then sent Ernst a full report, dated June 6, 1909. Only the [first page](https://www.frauerica.org/Images/_Image.php?refer=/Text/FredKnief1.php&image=0122) of Fred’s report survives:",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 83,
@@ -621,7 +672,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 86,
@@ -633,7 +685,8 @@
     "authorPersonId": null,
     "summary": "For decades, the archive had only an English translation of Fritz Mueller’s journal, prepared by Fritz’s great-grandson Herbert Mueller. In September 2025, the archive received a 35-year-old photocopy of the original German Herbert used, found among papers in the estate of his son Robert. In October 2025, a web search found the original Mueller family copy, printed in Germany in 1867, in the collection of the Lilly Library at Indiana University-Bloomington. The library provided a high-resolution copy of the 18-page journal now\n[available on FrauErica.org.](https://www.frauerica.org/Images/0048.php?refer=$refer)",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 87,
@@ -645,7 +698,8 @@
     "authorPersonId": null,
     "summary": "**I. Farewells in Bremerhaven**  \nThe Mueller family had begun its journey, although they were still at anchor offshore at Bremerhaven. Fritz began writing his journal by recounting bon voyage visits and farewell gifts presented before the steam tug pushed *der Adler* away from land. Gifts included butter, cookies, and apples.\n[View the 1867 printed edition](https://www.frauerica.org/Images/0048.php?refer=$refer)",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 88,
@@ -657,7 +711,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 89,
@@ -669,7 +724,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 90,
@@ -681,7 +737,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 91,
@@ -693,7 +750,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 92,
@@ -705,7 +763,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 93,
@@ -717,7 +776,8 @@
     "authorPersonId": null,
     "summary": "The Mueller family had been in its new home less than half a year when it suddenly faced disaster. Fritz Mueller, age 44, died on May 6, 1866, and the family soon learned that all the land they had bought was encumbered by an undisclosed lien. They lost almost everything.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 97,
@@ -729,7 +789,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 98,
@@ -741,7 +802,8 @@
     "authorPersonId": null,
     "summary": "I Timothy 6:7  \n*“For we brought nothing into this world, and it is certain we can carry nothing out.”*  \nGerhard‘s total estate came to $1,124, nearly all of it junk.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 99,
@@ -753,7 +815,8 @@
     "authorPersonId": null,
     "summary": "In December of 1980, the archivist had time and opportunity to drive through through northern Minnesota — Tenstrike, Lake George, Frazee, Height of Land, Park Rapids, Bemidji — interviewing people who knew Gerhard and picking up bits and pieces of the historical record. Handwritten notes from that trip surfaced nearly 40 years later and are transcribed here.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 100,
@@ -765,7 +828,8 @@
     "authorPersonId": null,
     "summary": "Between moving from the Kansas City Star to a position at the Brown University News Bureau, the archivist had time for a car trip through northern Minnesota — Tenstrike, Lake George, Frazee, Height of Land, Park Rapids, Bemidji — interviewing people who knew Gerhard and picking up bits and pieces of the historical record. Handwritten notes from that trip surfaced nearly 40 years later and are transcribed here.",
     "genre": "Memoir",
-    "tags": "Mueller, Gerhard"
+    "tags": "Mueller, Gerhard",
+    "language": null
   },
   {
     "document_id": 105,
@@ -777,7 +841,8 @@
     "authorPersonId": null,
     "summary": "Hans Mueller’s obituary appeared in the Chicago Tribune of August 26, 1917.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 106,
@@ -789,7 +854,8 @@
     "authorPersonId": null,
     "summary": "The Luecke, Battermann, and Hedder families knew each other in German Chicago, largely through family membership at St. John’s Lutheran Church, known as Mayfair. Decades later, they connected again in Orange, California.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 108,
@@ -801,7 +867,8 @@
     "authorPersonId": null,
     "summary": "This obituary was published by *Reporter*, the official newspaper of the Lutheran Church–Missouri Synod. It was posted March 27, 2020.",
     "genre": "Biography",
-    "tags": "Mueller, Herbert Jr."
+    "tags": "Mueller, Herbert Jr.",
+    "language": null
   },
   {
     "document_id": 111,
@@ -813,7 +880,8 @@
     "authorPersonId": null,
     "summary": "For years, H.C. Nickel taught evening business classes once or twice a week at Indiana University’s Gary campus. Mary Ann Curtis, a columnist with the *Post-Tribune* in Gary, enrolled in one of his courses for the fall 1966 semester. H.C. died that October. This description of H.C.’s introductory session for a family finances class ran the following April 30. Adelheid Nickel sent the author a dozen roses.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 112,
@@ -825,7 +893,8 @@
     "authorPersonId": null,
     "summary": "Beginning as a Christmas present in 1844, *Struwwelpeter* became one of the most successful children’s books ever. It went through hundreds of editions, was translated into all European and several other languages, and was a familiar part of life in the immigrant German home. This account, written by the author Heinrich Hoffmann, appeared in 1867, marking the 100th edition of the book.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 114,
@@ -837,7 +906,8 @@
     "authorPersonId": null,
     "summary": "The $45,000 defamation suit — about $1.2 million in 2015 dollars — brought by the Rev. Charles L. Janzow, pastor of Bethlehem Evangelical Lutheran Church, against 18 members of his congregation in 1904, was withdrawn by mutual consent. Erich E.A. Mueller and his “Christian socialist” writings were a factor in the suit. The Synodical Proceedings of 1907 mention the controversy. Janzow himself was removed from the Missouri Synod but apparently was later restored. This is Janzow’s obituary from the *St. Louis Post-Dispatch*.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 115,
@@ -849,7 +919,8 @@
     "authorPersonId": null,
     "summary": "The continuing dispute between Rev. C.L. Janzow’s Bethlehem congregation and the offshoot St. Mark’s congregation found its way to the synodical conference. The original German of the following account comes from the *1907 Proceedings of the Western District*, courtesy of the Concordia Historical Institute.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 117,
@@ -861,7 +932,8 @@
     "authorPersonId": null,
     "summary": "**II. Brentwood, Missouri**  \nJim’s studio in Brentwood, Missouri, was next door to Standard Pipe Protection Co., a business that wrapped sections of pipe in protective coatings for construction oil pipelines. It was a great place to scrounge for materials. The plywood end caps, which the company discarded when shipments of new pipe sections arrived, became raw material for his “Circle Pieces.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 118,
@@ -873,7 +945,8 @@
     "authorPersonId": null,
     "summary": "**III. New York, New York**  \nIn 1978, Nickel loaded his work, supplies and equipment into a rental truck and left the St. Louis area for New York, where he opened a studio on the 11th floor of a building on 35th Street, a block from Macy’s. He later bought a building on Bedford Avenue in Brooklyn and moved his studio into what had once been a delicatessen.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 119,
@@ -885,7 +958,8 @@
     "authorPersonId": null,
     "summary": "New Year’s Day 1924 found Joe King’s brother Lawrence jailed in Powers, Michigan. Police raided the pool room Lawrence operated in Powers, armed with a federal warrant charging him with illegal possession and sale of moonshine whiskey. Lawrence attempted to escape, running out the back door with a few bottles of “white mule” — a common term for moonshine because of its lack of color and its powerful kick, according to Merriam-Webster.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 120,
@@ -897,7 +971,8 @@
     "authorPersonId": null,
     "summary": "Joel expanded a bit more about his use of geometric abstraction in the following essay, available to viewers at his 2026 Keizer show.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 122,
@@ -909,7 +984,8 @@
     "authorPersonId": null,
     "summary": "Well after retirement from the Lutheran ministry, Joel continues his parallel career as an artist, showing his work in several Oregon galleries. This invitation to a show at the Keizer Community Center included the following statement from the artist.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 123,
@@ -921,7 +997,8 @@
     "authorPersonId": null,
     "summary": "Two decades after retiring from the Lutheran ministry, Joel Nickel remains immersed in philosophical, artistic, historical, even theological discoveries. He continues to show his work in Oregon galleries and has had shows at the Keizer Community Center since 2018. He wrote the following essay for “Connective Relations,” his 2026 show at Keizer.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 128,
@@ -933,7 +1010,8 @@
     "authorPersonId": null,
     "summary": "The following obituary ran in the *Santa Fe New Mexican* on June 27, 2010.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 129,
@@ -945,7 +1023,8 @@
     "authorPersonId": null,
     "summary": "Kevin was a ranger with the National Park Service for nearly 25 years. The following comes from the online NPS history entry for the Hubbell Trading Post, where Kevin once served as superintendent.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 135,
@@ -957,7 +1036,8 @@
     "authorPersonId": null,
     "summary": "***Lebenslauf II:* Childhood and Confirmation**  \n“My confirmation made a great impression on me. I cried and secretly made a selfish vow to God that if he would grant my wish and allow me to get out into the wider world, then I would speak the word of God to the Indians so that they could become Christians.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 136,
@@ -969,7 +1049,8 @@
     "authorPersonId": null,
     "summary": "***Lebenslauf III:* First Emigration – The California Gold Rush**  \n“When I emigrated at age 20, it had to happen secretly since I could not undertake a journey because of my approaching military obligation. But I had no scruples about avoiding that. In California I lived completely without God’s word and prayer, but even while I was in Bremen and went to the cathedral, I heard only rationalistic nonsense.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 137,
@@ -981,7 +1062,8 @@
     "authorPersonId": null,
     "summary": "***Lebenslauf IV:* The Return to Germany**  \n“In Hermannsburg I made the acquaintance of one of the Fritschel brothers from the Iowa Synod. There were four of us there at the time who were studying for America, and he tried to persuade us to join the Iowa Synod. I refused to make that pledge on the grounds that I did not know enough about the doctrinal differences between the Missouri and Iowa synods to tell them apart.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 138,
@@ -993,7 +1075,8 @@
     "authorPersonId": null,
     "summary": "***Lebenslauf V:* Marriage and Mission in America**  \n“I asked for the hand of a virtuous and marriageable young woman, Theodora Mueller, through her mother, the widow Johanna Mueller of Kendallville, Noble County, Indiana. We had never seen each other. I did not know her; she did not know me. I took this step on the advice of Theodora’s aunt, Miss Constance Rösing, whom I had met in Hermannsburg, and with trust in the gracious providence of God. ... We became engaged on the 17th and celebrated our wedding on the 24th of May 1868.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 139,
@@ -1005,7 +1088,8 @@
     "authorPersonId": null,
     "summary": "***Lebenslauf VI:* Theodora and the Mueller In-Laws**  \n“My mother-in-law had a very difficult struggle. She had to endure the full measure of her widow’s burden, which she bore and overcame with patience and hope of eternal life. Most of her earthly goods were plundered by merciless money-lenders and a domineering, tyrannical pastor under whom my sainted father-in-law had already suffered greatly and had been deeply hurt.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 140,
@@ -1017,7 +1101,8 @@
     "authorPersonId": null,
     "summary": "***Lebenslauf VII:* Final Years and Epilogue**  \n“He appealed to a member of his earlier congregation at Golden, a man named Heinrich Buss who was living in Nebraska, to advance him money with which to build a small house in Rosebud, Missouri, near his first congregation in Drake. Here, it seemed, he would have peace and domesticity. But this house was not going to be his final place on earth either, because on August 11, 1911, it burned to the ground with everything that was in it.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 142,
@@ -1029,7 +1114,8 @@
     "authorPersonId": null,
     "summary": "Martin Luther, never one to mince words, recognized an individual’s responsibility for community public health. Not taking precautions against the plague and thereby infecting others would make people “responsible before God” for their neighbor’s death.",
     "genre": "Other",
-    "tags": "Luther On Vaccination"
+    "tags": "Luther On Vaccination",
+    "language": null
   },
   {
     "document_id": 143,
@@ -1041,7 +1127,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 144,
@@ -1053,7 +1140,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 145,
@@ -1065,7 +1153,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 146,
@@ -1077,7 +1166,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 147,
@@ -1089,7 +1179,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 148,
@@ -1101,7 +1192,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 149,
@@ -1113,7 +1205,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 150,
@@ -1125,7 +1218,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 151,
@@ -1137,7 +1231,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 152,
@@ -1149,7 +1244,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 153,
@@ -1161,7 +1257,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 154,
@@ -1173,7 +1270,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 155,
@@ -1185,7 +1283,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 156,
@@ -1197,7 +1296,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 157,
@@ -1209,7 +1309,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 158,
@@ -1221,7 +1322,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 159,
@@ -1233,7 +1335,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 160,
@@ -1245,7 +1348,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 161,
@@ -1257,7 +1361,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 162,
@@ -1269,7 +1374,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 164,
@@ -1281,7 +1387,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 165,
@@ -1293,7 +1400,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 166,
@@ -1305,7 +1413,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 167,
@@ -1317,7 +1426,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 168,
@@ -1329,7 +1439,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 169,
@@ -1341,7 +1452,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 170,
@@ -1353,7 +1465,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 171,
@@ -1365,7 +1478,8 @@
     "authorPersonId": null,
     "summary": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value, some bits of information about who’s doing what. So here’s the archive.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 173,
@@ -1377,7 +1491,8 @@
     "authorPersonId": null,
     "summary": "This obituary ran in the *Green Bay Press-Gazette*, Green Bay, WI, on January 15, 2003",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 174,
@@ -1389,7 +1504,8 @@
     "authorPersonId": null,
     "summary": "The diamond solitaire has been in the family for four generations — originally as an engagement ring, then as a solitaire necklace — and has resided in Minnesota, Europe, Rhode Island, and currently in Richmond, Virginia.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 180,
@@ -1401,7 +1517,8 @@
     "authorPersonId": null,
     "summary": "Otto was about 8 years old when when his parents sold their small farm at Story Lake, near Kendallville, and acquired the original Mueller farm. Otto grew up to become a Lutheran minister. He is buried in the churchyard of St. John’s in Kendallville. This comes from an extensive memoir Otto wrote in retirement.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 182,
@@ -1413,7 +1530,8 @@
     "authorPersonId": null,
     "summary": "Molly McMillan — Nana, to her grandchildren and great-grandchildren — had a lot to distill into a memoir: daughter of a long-established Twin Cities family, physics graduate of Vassar, war-time bride, early feminist, civic leader, among the first ordained Presbyterian women in Minnesota, mother of five, grandmother of 15, great-grandmother of 10. She worked on the following chapters for several years, signing and dating the memoir on All Saints Day, November 1, 2007. Life — and great-grandchildren — kept coming for nearly another decade.",
     "genre": "Memoir",
-    "tags": "Bigelow McMillan, Molly"
+    "tags": "Bigelow McMillan, Molly",
+    "language": null
   },
   {
     "document_id": 183,
@@ -1425,7 +1543,8 @@
     "authorPersonId": null,
     "summary": "Molly”s forebears — Bigelows, McKibbins, Dorseys, Dorrises — were English or Scots-Irish. They arrived in St. Paul from New York, Massachusetts, and Pennsylvania in the mid-19th century — and they thrived.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 184,
@@ -1437,7 +1556,8 @@
     "authorPersonId": null,
     "summary": "Molly’s experience as a regional officer for the Junior League prepared her for positions of community leadership in St. Paul and Ramsey County as well as for service on various foundation boards.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 185,
@@ -1449,7 +1569,8 @@
     "authorPersonId": null,
     "summary": "Molly had returned to the House of Hope after college. Her experience there deepened, including election as an elder and a seminal study group of churchwomen. Studies at United Theological Seminary, originally as part of a graduate program, deepened as well.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 186,
@@ -1461,7 +1582,8 @@
     "authorPersonId": null,
     "summary": "In her section on “The Unlikely Road to Ministry,” Molly describes a night of contemplation and spiritual awakening. When she took up her pen the next morning, she felt an almost automatic jotting of the phrase, “My way comes through thee, O God.” This is the poem she created then.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 187,
@@ -1473,7 +1595,8 @@
     "authorPersonId": null,
     "summary": "Ordained and well-experienced in leading a large congregation, Molly returned to United Theological Seminary as interim president, then chair of the Board, and finally as fundraiser and patron for Bigelow Chapel.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 188,
@@ -1485,7 +1608,8 @@
     "authorPersonId": null,
     "summary": "Trees were important to Molly, both as trees and as metaphors for grouping and fixing memories. When she wrote about her father, she wrote also about [the woods](/documents/192). She wrote “Trees” at another turning point in her life, when she left Manitou Island and moved to her apartment at EagleCrest.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 189,
@@ -1497,7 +1621,8 @@
     "authorPersonId": null,
     "summary": "Five years after her husband died, Molly sold the home on Manitou Island and moved to an apartment in EagleCrest, a Presbyterian Home in Roseville, Minnesota. She traveled, continued to do “supply preaching” in congregations with vacancies, and found ways to further pursue some of the intellectual and theological questions that intrigued her.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 190,
@@ -1509,7 +1634,8 @@
     "authorPersonId": null,
     "summary": "Molly‘s computer had a lot of writing on it — sermons, poetry, beginnings of documents, sketches of times and places. Some of these she expanded and incorporated into her memoir. “Poetic Odds and Ends” was the final part of her memoir, a mosaic of verses she evidently found pleasing or important but couldn’t find a place for.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 191,
@@ -1521,7 +1647,8 @@
     "authorPersonId": null,
     "summary": "C.H. Bigelow Jr., Molly’s father, was a widower with three children when he married Molly’s mother, Allison McKibbin. C.H. was 53 when Molly was born; newborn Molly had three young-adult siblings aged 18, 21, and 24.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 192,
@@ -1533,7 +1660,8 @@
     "authorPersonId": null,
     "summary": "Molly was a perceptive and versatile writer. Her memoir includes several original poems and a collection of poetic odds and ends. “The Woods” celebrates her father’s “other great love.”",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 193,
@@ -1545,7 +1673,8 @@
     "authorPersonId": null,
     "summary": "Although she did not feel close to her mother, Molly did learn learn some important things from her: how to write, that injustice must be confronted forcefully ... and how to knit.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 194,
@@ -1557,7 +1686,8 @@
     "authorPersonId": null,
     "summary": "Summers found Molly on Manitou Island, a Bigelow retreat that was “a summer playground for for its many children in the 1920s and ’30s.” Her children and grandchildren knew exactly what she meant.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 195,
@@ -1569,7 +1699,8 @@
     "authorPersonId": null,
     "summary": "Molly was a pioneer, the only physics major in the Vassar Class of 1941. She understood the physics of what she could not see — atoms, waves, particles — but the mathematics that described observable physical forces, not so much. Music, however, was a lifelong joy.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 196,
@@ -1581,7 +1712,8 @@
     "authorPersonId": null,
     "summary": "Dick and Molly were two very different people, Molly wrote, but they shared a great range of interests, including a healthy dose of international golfing.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 197,
@@ -1593,7 +1725,8 @@
     "authorPersonId": null,
     "summary": "An observation triggers memory of a vignette from decades ago.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 198,
@@ -1605,7 +1738,8 @@
     "authorPersonId": null,
     "summary": "As a new college graduate, Molly was invited to join the Junior League. She thrived on the opportunity, developing her administrative skills and rising to become a regional director.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 202,
@@ -1617,7 +1751,8 @@
     "authorPersonId": null,
     "summary": "The following *Todesanzeige*, written *auf Deutsch* by the Rev. Herbert C. Mueller, Opa’s son, appeared on page 356 of *Der Lutheraner*, “The Official Organ of The Lutheran Church–Missouri Synod,” on October 26, 1948. An obituary *auf Englisch* also appeared in [*The Lutheran Witness*](/documents/201) for October 5, 1948, on page 324.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 204,
@@ -1629,7 +1764,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 205,
@@ -1641,7 +1777,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 207,
@@ -1653,7 +1790,8 @@
     "authorPersonId": null,
     "summary": "Peter’s parents lived in Hamden, Connecticut, about five miles north of New Haven. He was returning to Rhode Island after visiting his father, who had been hospitalized in New Haven.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 208,
@@ -1665,7 +1803,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Biography",
-    "tags": "Rehwinckel"
+    "tags": "Rehwinckel",
+    "language": null
   },
   {
     "document_id": 209,
@@ -1677,7 +1816,8 @@
     "authorPersonId": null,
     "summary": "Dick Gahl and Joel Nickel, classmates at Concordia Seminary in St. Louis, shared a Mueller heritage. Dick’s grandmother Emma, daughter of Enno Mueller, and Joel’s grandfather Ernst, son of Wilhelm Mueller, were cousins.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 210,
@@ -1689,7 +1829,8 @@
     "authorPersonId": null,
     "summary": "Robert Kent Mueller, the fifth child of Herbert and Ruth (Polley) Mueller, was a composer, orchestral conductor, organist and veteran music professor at the University of Arkansas.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 211,
@@ -1701,7 +1842,8 @@
     "authorPersonId": null,
     "summary": null,
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 213,
@@ -1713,7 +1855,8 @@
     "authorPersonId": null,
     "summary": "This history, written by Laura Mellenthin in May 1977, was sent by Mary Jo Uebele in response to a request from the archivist for historic information about the St. John’s Thrift Shop, founded by Adelheid Schumm and other members. It opened on June 29, 1970, and is still operating.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 214,
@@ -1725,7 +1868,8 @@
     "authorPersonId": null,
     "summary": "(optional)",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 215,
@@ -1737,7 +1881,8 @@
     "authorPersonId": null,
     "summary": "A lighter, tastier, more wholesome German Christmas bread without a hint of candied fruit. Stollen baking is to be done only between Thanksgiving and the following January 6, the Feast of the Epiphany. It is legal to bake a final loaf on the sixth, slice it, wrap it carefully in portions, and freeze it for enjoyment later in the year.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 217,
@@ -1749,7 +1894,8 @@
     "authorPersonId": null,
     "summary": "Here follows a biographical essay by Frieda Katharine Magdalena Caroline Mueller Feiertag (a.k.a., Tante Fieks). Fieks apparently wrote this at age 84 for — perhaps at the invitation of — her nieces Frieda Elizabeth Mueller and Adelheid Mueller Nickel.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 218,
@@ -1761,7 +1907,8 @@
     "authorPersonId": null,
     "summary": "The wooden box, a cube about six inches on a side, may have been in the family before Georg received it. It was handed down from Georg to Fritz to Wilhelm to Ernst (Opa) to son Ernst (Uncle Ernie of Eagle Lake), and eventually to Ernie’s nephew Herbert. It was accompanied by a\n[handwritten note](https://www.frauerica.org/Images/_Image.php?refer=$refer&image=0564)\nfrom Opa Mueller, transcribed below.",
     "genre": "History",
-    "tags": "Heirlooms"
+    "tags": "Heirlooms",
+    "language": null
   },
   {
     "document_id": 222,
@@ -1773,7 +1920,8 @@
     "authorPersonId": null,
     "summary": "**Part Two: Marriage, family, West Ely, Missouri, and Woodworth, Illinois**  \nAnna Wolter and Henry Waldschmidt — she first knew him as “Jake” — went their separate ways after high school. Henry went off to college; Anna took a job at the phone company. They met again as maid of honor and best man at the wedding of mutual friends.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 225,
@@ -1785,7 +1933,8 @@
     "authorPersonId": null,
     "summary": "**II. Careers in Chicago**  \nWith their early years on the Mueller Farm behind them, Wilhelm and Adelheid began to look toward the next chapter. Wilhelm’s work as a drayman in Kendallville was a temporary measure. In less than two years they were off to Chicago, where Adelheid would continue her career as a writer under the pen name Frau Erica and Wilhelm would begin more than three decades of service as superintendent of Concordia Cemetery.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 226,
@@ -1797,7 +1946,8 @@
     "authorPersonId": null,
     "summary": "**III. The Muellers are in America to stay**  \nWilhelm and Frau Erica lived into their 70s and celebrated their silver and golden wedding anniversaries with their children. (A copy of the engraved silver invitation is in the archives.)",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 227,
@@ -1809,7 +1959,8 @@
     "authorPersonId": null,
     "summary": "***Forest Leaves*** for June 7, 1918  \nOne measure of Wilhelm Mueller’s stature in suburban Chicago was that his obituary was carried as the cover story in *Forest Leaves.* This comes from the files of his granddaughter Frieda Mueller Gilvarg.",
     "genre": "Other",
-    "tags": null
+    "tags": null,
+    "language": null
   },
   {
     "document_id": 228,
@@ -1821,6 +1972,7 @@
     "authorPersonId": null,
     "summary": "Michael and Wilhelmine Nickel left Prussia for America in 1879, carrying an infant son and whatever fit in steerage. Their arrival on the SS Lessing — recorded name by name on the ship's own passenger manifest — is the oldest surviving record of this branch of the family in the United States.",
     "genre": "History",
-    "tags": null
+    "tags": null,
+    "language": null
   }
 ]

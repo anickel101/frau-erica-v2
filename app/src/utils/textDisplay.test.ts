@@ -20,6 +20,8 @@ function text(
     content: '',
     genre: null,
     tags: null,
+    language: null,
+    parallel: null,
     header_image_url: null,
     header_image_caption: null,
     ...overrides,
