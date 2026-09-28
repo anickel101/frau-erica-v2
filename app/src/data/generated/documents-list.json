@@ -660,7 +660,7 @@
     "summary": "Fred Knief (above, with Dodo) read a congratulatory message from his brother-in-law Ernst (Opa) Mueller at the wedding celebration, then sent Ernst a full report, dated June 6, 1909. Only the [first page](https://www.frauerica.org/Images/_Image.php?refer=/Text/FredKnief1.php&image=0122) of Fred’s report survives:",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 83,
@@ -894,7 +894,7 @@
     "summary": "Beginning as a Christmas present in 1844, *Struwwelpeter* became one of the most successful children’s books ever. It went through hundreds of editions, was translated into all European and several other languages, and was a familiar part of life in the immigrant German home. This account, written by the author Heinrich Hoffmann, appeared in 1867, marking the 100th edition of the book.",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 114,
@@ -920,7 +920,7 @@
     "summary": "The continuing dispute between Rev. C.L. Janzow’s Bethlehem congregation and the offshoot St. Mark’s congregation found its way to the synodical conference. The original German of the following account comes from the *1907 Proceedings of the Western District*, courtesy of the Concordia Historical Institute.",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 117,
@@ -1027,6 +1027,19 @@
     "language": null
   },
   {
+    "document_id": 134,
+    "series_key": "LudwigKnief",
+    "series_title": null,
+    "series_order": 1,
+    "title": "I. Introduction",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "Ludwig Knief‘s *Lebenslauf* was circulated widely in the Mueller and Knief families. This copy arrived from Frieda Gilvarg, Fred and Dodo Knief‘s neice. It is dated August 1902, neatly typed, and accompanied by a typed *Nachtrag* (Epilogue), probably the work of Fred Knief in Milwaukee. The following translation is complete but still a work in progress. Some of the idiomatic 19th-century German was difficult to translate. Corrections and suggestions are always welcome.",
+    "genre": "Memoir",
+    "tags": "Knief, Ludwig",
+    "language": "en"
+  },
+  {
     "document_id": 135,
     "series_key": "LudwigKnief",
     "series_title": null,
@@ -1037,7 +1050,7 @@
     "summary": "***Lebenslauf II:* Childhood and Confirmation**  \n“My confirmation made a great impression on me. I cried and secretly made a selfish vow to God that if he would grant my wish and allow me to get out into the wider world, then I would speak the word of God to the Indians so that they could become Christians.”",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 136,
@@ -1050,7 +1063,7 @@
     "summary": "***Lebenslauf III:* First Emigration – The California Gold Rush**  \n“When I emigrated at age 20, it had to happen secretly since I could not undertake a journey because of my approaching military obligation. But I had no scruples about avoiding that. In California I lived completely without God’s word and prayer, but even while I was in Bremen and went to the cathedral, I heard only rationalistic nonsense.”",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 137,
@@ -1063,7 +1076,7 @@
     "summary": "***Lebenslauf IV:* The Return to Germany**  \n“In Hermannsburg I made the acquaintance of one of the Fritschel brothers from the Iowa Synod. There were four of us there at the time who were studying for America, and he tried to persuade us to join the Iowa Synod. I refused to make that pledge on the grounds that I did not know enough about the doctrinal differences between the Missouri and Iowa synods to tell them apart.”",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 138,
@@ -1076,7 +1089,7 @@
     "summary": "***Lebenslauf V:* Marriage and Mission in America**  \n“I asked for the hand of a virtuous and marriageable young woman, Theodora Mueller, through her mother, the widow Johanna Mueller of Kendallville, Noble County, Indiana. We had never seen each other. I did not know her; she did not know me. I took this step on the advice of Theodora’s aunt, Miss Constance Rösing, whom I had met in Hermannsburg, and with trust in the gracious providence of God. ... We became engaged on the 17th and celebrated our wedding on the 24th of May 1868.”",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 139,
@@ -1089,7 +1102,7 @@
     "summary": "***Lebenslauf VI:* Theodora and the Mueller In-Laws**  \n“My mother-in-law had a very difficult struggle. She had to endure the full measure of her widow’s burden, which she bore and overcame with patience and hope of eternal life. Most of her earthly goods were plundered by merciless money-lenders and a domineering, tyrannical pastor under whom my sainted father-in-law had already suffered greatly and had been deeply hurt.”",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 140,
@@ -1102,7 +1115,7 @@
     "summary": "***Lebenslauf VII:* Final Years and Epilogue**  \n“He appealed to a member of his earlier congregation at Golden, a man named Heinrich Buss who was living in Nebraska, to advance him money with which to build a small house in Rosebud, Missouri, near his first congregation in Drake. Here, it seemed, he would have peace and domesticity. But this house was not going to be his final place on earth either, because on August 11, 1911, it burned to the ground with everything that was in it.”",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 142,
@@ -1752,7 +1765,7 @@
     "summary": "The following *Todesanzeige*, written *auf Deutsch* by the Rev. Herbert C. Mueller, Opa’s son, appeared on page 356 of *Der Lutheraner*, “The Official Organ of The Lutheran Church–Missouri Synod,” on October 26, 1948. An obituary *auf Englisch* also appeared in [*The Lutheran Witness*](/documents/201) for October 5, 1948, on page 324.",
     "genre": "Other",
     "tags": null,
-    "language": null
+    "language": "en"
   },
   {
     "document_id": 204,
