@@ -180,3 +180,67 @@ describe('filterTextEntries', () => {
     expect(results).toEqual([])
   })
 })
+
+describe('groupTexts and collections', () => {
+  // These use a real series_key, because the collection name comes from
+  // the real collections.json -- that lookup is the behaviour under test.
+  it('names a collection from the Series table, not a chapter kicker', () => {
+    const entries = groupTexts([
+      text({
+        document_id: 1,
+        title: 'I. Introduction',
+        series_key: 'LudwigKnief',
+        series_order: 1,
+        series_title: 'Lebenslauf I:',
+      }),
+      text({
+        document_id: 2,
+        title: 'II. Childhood',
+        series_key: 'LudwigKnief',
+        series_order: 2,
+        series_title: 'Lebenslauf II:',
+      }),
+    ])
+
+    expect(entries).toHaveLength(1)
+    const entry = entries[0]
+    expect(entry.kind).toBe('series')
+    if (entry.kind === 'series') {
+      // Not "Lebenslauf I", which is what deriving from the kicker gave.
+      expect(entry.seriesTitle).toBe("Ludwig Knief's Lebenslauf")
+      expect(entry.collection?.slug).toBe('ludwig-kniefs-lebenslauf')
+    }
+  })
+
+  // One published text is not a collection: a card promising one and
+  // delivering a single document a click further away is worse than
+  // just listing the document.
+  it('lists a one-text group as an ordinary text', () => {
+    const entries = groupTexts([
+      text({
+        document_id: 1,
+        title: 'Obituary: The Rev. E.H.C. Mueller',
+        series_key: 'OpaObit',
+        series_order: 2,
+      }),
+    ])
+
+    expect(entries).toHaveLength(1)
+    expect(entries[0].kind).toBe('standalone')
+  })
+
+  it('promotes the same group once a second text is published', () => {
+    const entries = groupTexts([
+      text({ document_id: 1, title: 'One', series_key: 'OpaObit', series_order: 1 }),
+      text({ document_id: 2, title: 'Two', series_key: 'OpaObit', series_order: 2 }),
+    ])
+
+    expect(entries).toHaveLength(1)
+    expect(entries[0].kind).toBe('series')
+  })
+
+  it('leaves a document with no series alone', () => {
+    const entries = groupTexts([text({ document_id: 1, title: 'A single text' })])
+    expect(entries[0].kind).toBe('standalone')
+  })
+})

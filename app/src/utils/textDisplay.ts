@@ -1,3 +1,8 @@
+import {
+  Collection,
+  MINIMUM_COLLECTION_SIZE,
+  getCollectionByKey,
+} from '../data-access/public/collections'
 import { DocumentListItem } from '../data-access/public/documents'
 import { mockPersons } from '../data/mockPersons'
 import { Person } from '../types/person'
@@ -7,7 +12,14 @@ export type TextIndexEntry =
   | {
       kind: 'series'
       seriesKey: string
+      // The collection's real name, from the Series table -- no longer
+      // a chapter kicker standing in for one.
       seriesTitle: string
+      // Present whenever the archive knows this group as a collection,
+      // which since the Series table is always. Kept optional so a
+      // series_key with no Series row degrades to a titled group rather
+      // than crashing the index.
+      collection?: Collection
       chapters: DocumentListItem[]
     }
 
@@ -79,21 +91,48 @@ export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
     entries.push(series)
   }
 
+  // Second pass, once every chapter is in place: name each group, and
+  // demote the ones too small to be a collection.
+  //
+  // The name now comes from the Series table. It used to be taken from
+  // series_title, which is a per-chapter kicker ("Introduction:", "In
+  // His Own Hand:", "Christmas 1995:") pressed into service as a series
+  // name because nothing better was recorded -- which is how a run of 28
+  // Christmas letters came to be called "Christmas 1995:". The fallback
+  // below is the old behaviour, kept only for a series_key with no
+  // Series row; the export refuses to ship one of those.
+  const named: TextIndexEntry[] = []
   for (const entry of entries) {
-    if (entry.kind === 'series') {
-      entry.chapters.sort((a, b) => (a.series_order ?? 0) - (b.series_order ?? 0))
-      // series_title is really a per-chapter kicker ("Introduction:",
-      // "In His Own Hand:", "Postscript:") pressed into service as a
-      // series name because nothing better is recorded. Taking it from
-      // the representative at least keeps the row internally consistent
-      // -- the fix for the name itself is a real Series table.
-      const representative = getSeriesRepresentative(entry.chapters)
-      entry.seriesTitle =
-        displayKicker(representative.series_title) ?? representative.title
+    if (entry.kind !== 'series') {
+      named.push(entry)
+      continue
     }
+
+    entry.chapters.sort((a, b) => (a.series_order ?? 0) - (b.series_order ?? 0))
+    const collection = getCollectionByKey(entry.seriesKey)
+
+    // One published text is not a collection. Listing it as an ordinary
+    // text is more honest than a card promising a collection and
+    // delivering a single document one click further away -- and the
+    // group becomes a collection again on its own when a second text is
+    // published. See MINIMUM_COLLECTION_SIZE.
+    if (entry.chapters.length < MINIMUM_COLLECTION_SIZE) {
+      for (const document of entry.chapters) {
+        named.push({ kind: 'standalone', document })
+      }
+      continue
+    }
+
+    entry.collection = collection
+    const representative = getSeriesRepresentative(entry.chapters)
+    entry.seriesTitle =
+      collection?.name ??
+      displayKicker(representative.series_title) ??
+      representative.title
+    named.push(entry)
   }
 
-  return entries
+  return named
 }
 
 function includesQuery(value: string | null, q: string): boolean {

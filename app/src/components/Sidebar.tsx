@@ -32,6 +32,7 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Index of Persons', to: '/persons' },
       { label: 'Index of Galleries', to: '/galleries' },
       { label: 'Index of Texts', to: '/documents' },
+      { label: 'Collections', to: '/collections' },
       { label: 'The Mueller Lexicon', to: '/lexicon' },
       { label: 'Today in Frau Erica', to: '/anniversaries' },
     ],

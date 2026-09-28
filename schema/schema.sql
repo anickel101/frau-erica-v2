@@ -140,6 +140,37 @@ CREATE TABLE Images (
 );
 
 -- ------------------------------------------------------------
+-- Series: the collections texts are gathered into
+--   Documents.series_key groups chapters into a series; this table is
+--   what says what that series actually IS. Without it the website had
+--   to derive a name from series_title, which is a different field
+--   doing a different job (the per-chapter kicker printed above each
+--   title, which is why so many end in a colon) -- so a 28-letter run
+--   came out labelled "Christmas 1995:".
+--   slug: what the URL says (/collections/christmas-letters). Separate
+--     from series_key because the keys are internal CamelCase and these
+--     links get shared around the family.
+--   kind: the three genuinely different things the archive currently
+--     calls "series" -- a multi-chapter work read in order, an annual
+--     run read by date, and a per-person collection with no reading
+--     order at all.
+--   cover_image_url: optional. The website falls back to the header
+--     image of the first chapter, which every document has.
+--   sort_key: optional shelf-order override; name is used when NULL.
+--   Documents.series_key is NOT constrained to this table by a foreign
+--     key -- see migrations/002 for why -- so the export checks it.
+-- ------------------------------------------------------------
+CREATE TABLE Series (
+    series_key      TEXT NOT NULL PRIMARY KEY,
+    slug            TEXT NOT NULL UNIQUE,
+    name            TEXT NOT NULL,
+    kind            TEXT NOT NULL CHECK (kind IN ('work', 'annual', 'person')),
+    blurb           TEXT,
+    cover_image_url TEXT,
+    sort_key        TEXT
+);
+
+-- ------------------------------------------------------------
 -- Documents: written pieces (biographies, articles, letters, etc.)
 --   content: the body text, stored as Markdown. Embedded images
 --     use a {{image:ID}} placeholder referencing a real Images row

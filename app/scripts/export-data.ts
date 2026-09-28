@@ -359,6 +359,130 @@ const documentsList = documentRows
     language: row.language,
   }))
 
+// ---------- Series (the collections texts are gathered into) ----------
+
+interface SeriesRow {
+  series_key: string
+  slug: string
+  name: string
+  kind: string
+  blurb: string | null
+  cover_image_url: string | null
+  sort_key: string | null
+}
+
+const seriesRows = db
+  .prepare(
+    `SELECT series_key, slug, name, kind, blurb, cover_image_url, sort_key
+       FROM Series`,
+  )
+  .all() as unknown as SeriesRow[]
+
+// Every series_key a published document claims must have a Series row,
+// or that document's chapters would render under no collection at all
+// and simply vanish from the shelf. Fatal, because the alternative is a
+// text nobody can find.
+const knownSeriesKeys = new Set(seriesRows.map((row) => row.series_key))
+const orphanedKeys = [
+  ...new Set(
+    documentRows
+      .filter((row) => row.series_key && !knownSeriesKeys.has(row.series_key))
+      .map((row) => row.series_key as string),
+  ),
+]
+if (orphanedKeys.length > 0) {
+  console.error('\nPublished documents claim a series with no Series row:\n')
+  for (const key of orphanedKeys) console.error(`  - ${key}`)
+  console.error('\nAdd a row to Series, or clear series_key on those documents.\n')
+  process.exit(1)
+}
+
+// Chapters counted from the EXPORTED, entry-point documents only: the
+// German half of a parallel text is not a chapter of its own, and an
+// unpublished chapter is not on the shelf.
+const chapterCounts = new Map<string, number>()
+for (const row of documentRows) {
+  if (!row.series_key || row.parallel_of !== null) continue
+  chapterCounts.set(row.series_key, (chapterCounts.get(row.series_key) ?? 0) + 1)
+}
+
+// The cover falls back to a chapter's header image, which is why this
+// ships with covers on day one: every document has one (see
+// DEFAULT_HEADER_IMAGE_URL above). A real cover set later in
+// Series.cover_image_url always wins.
+//
+// Two rules beyond "take the first chapter's", because a shelf of cards
+// is judged on its pictures and the naive version put the same photo on
+// two cards three times over:
+//
+//   1. Skip the archive-wide default. It is the image a document gets
+//      when it has none of its own, so it is nobody's cover in
+//      particular -- and it put the same green field on the Christmas
+//      letters and on Fritz's journal.
+//   2. Don't repeat a cover already taken. Collections are processed
+//      biggest first, so the ones most likely to be looked at get first
+//      pick of the distinctive images, and a small collection falls
+//      back to a repeat only when it has nothing else.
+const chaptersByKey = new Map<string, number[]>()
+for (const row of [...documentRows].sort(
+  (a, b) => (a.series_order ?? 0) - (b.series_order ?? 0),
+)) {
+  if (!row.series_key || row.parallel_of !== null) continue
+  const list = chaptersByKey.get(row.series_key) ?? []
+  list.push(row.document_id)
+  chaptersByKey.set(row.series_key, list)
+}
+
+const shelved = seriesRows
+  // A collection with nothing published in it is not a collection yet.
+  // The row stays in the archive so it is named when its texts are
+  // published; it just isn't shipped.
+  .filter((row) => (chapterCounts.get(row.series_key) ?? 0) > 0)
+  // Biggest first, so the shelf opens on the works someone is most
+  // likely to have come for -- twenty-eight Christmas letters and a
+  // twenty-chapter memoir, not whichever collection starts with A.
+  // Alphabetical put Adelheid, Alida and Fred Knief in the index's
+  // six-card preview while Nana's memoir sat below the fold. An
+  // explicit sort_key still wins where the Archivist sets one.
+  .sort((a, b) => {
+    if (a.sort_key || b.sort_key) {
+      return (a.sort_key ?? '\uffff').localeCompare(b.sort_key ?? '\uffff')
+    }
+    const size =
+      (chapterCounts.get(b.series_key) ?? 0) - (chapterCounts.get(a.series_key) ?? 0)
+    return size !== 0 ? size : a.name.localeCompare(b.name)
+  })
+
+const takenCovers = new Set<string>()
+
+function coverFor(seriesKey: string, explicit: string | null): string | null {
+  if (explicit) return explicit
+
+  const headers = (chaptersByKey.get(seriesKey) ?? []).map(
+    (id) => headerFor(id).header_image_url,
+  )
+  const usable = headers.filter(
+    (url): url is string => url !== null && url !== DEFAULT_HEADER_IMAGE_URL,
+  )
+
+  const unused = usable.find((url) => !takenCovers.has(url))
+  const chosen = unused ?? usable[0] ?? headers[0] ?? null
+  if (chosen) takenCovers.add(chosen)
+  return chosen
+}
+
+const collections = shelved.map((row) => ({
+  series_key: row.series_key,
+  slug: row.slug,
+  name: fixMojibake(row.name),
+  kind: row.kind,
+  blurb: fixMojibake(row.blurb),
+  cover_image_url: coverFor(row.series_key, row.cover_image_url),
+  chapterCount: chapterCounts.get(row.series_key) ?? 0,
+}))
+
+await writeJson('collections.json', collections)
+
 await writeJson('documents.json', documentsDetail)
 await writeJson('documents-list.json', documentsList)
 
@@ -433,7 +557,8 @@ await writeJson('galleries.json', galleries)
 db.close()
 
 console.log('Export complete:')
-console.log(`  documents:         ${documentsDetail.length} (published)`)
+console.log(`  documents:         ${documentsDetail.length} (published)
+  collections:       ${collections.length} (with >=1 published text)`)
 console.log(`  galleries:         ${galleries.length} (with >=1 published photo)`)
 console.log(`  lexicon:           ${lexicon.length}`)
 console.log(`  persons:           ${persons.length}`)

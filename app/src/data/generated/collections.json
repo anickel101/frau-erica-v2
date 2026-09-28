@@ -1,0 +1,173 @@
+[
+  {
+    "series_key": "MarkAlliChristmas",
+    "slug": "christmas-letters",
+    "name": "Mark and Alli's Christmas Letters",
+    "kind": "annual",
+    "blurb": "Annual Christmas letters get a mixed reception: tossed unread, browsed lightly, responded to. In the aggregate, though, they have some historical value — some bits of information about who's doing what. So here's the archive.",
+    "cover_image_url": "hdr.MuellerFarm2.jpg",
+    "chapterCount": 28
+  },
+  {
+    "series_key": "Chicago",
+    "slug": "chicago-memoirs",
+    "name": "The Chicago Memoirs",
+    "kind": "work",
+    "blurb": "Joel Nickel's account of the years in Chicago, told a year at a time from 1967.",
+    "cover_image_url": "hdr.Chicago2.jpg",
+    "chapterCount": 20
+  },
+  {
+    "series_key": "NanaLifeTimes",
+    "slug": "my-life-and-its-times",
+    "name": "My Life and Its Times",
+    "kind": "work",
+    "blurb": "Mary Allison (Molly) Bigelow McMillan had a lot to distill into a memoir: daughter of a long-established Twin Cities family, physics graduate of Vassar, war-time bride, civic leader, and among the first ordained Presbyterian women in Minnesota.",
+    "cover_image_url": "hdr.Manitou1.jpg",
+    "chapterCount": 17
+  },
+  {
+    "series_key": "CarlDeHaas",
+    "slug": "winke-fuer-auswanderer",
+    "name": "Winke für Auswanderer",
+    "kind": "work",
+    "blurb": "Carl de Haas arrived on the Wisconsin frontier in 1847. His booklet of advice for people considering emigration was widely available in Germany and went through at least two printings.",
+    "cover_image_url": "hdr.CarlDeHaas3.jpg",
+    "chapterCount": 10
+  },
+  {
+    "series_key": "FritzReise",
+    "slug": "fritz-muellers-journal",
+    "name": "Fritz Mueller's Journal of the Voyage to America",
+    "kind": "work",
+    "blurb": "Fritz Mueller kept a journal of the 1865 crossing and the journey inland. The archive holds both his German and the English translation made by his great-grandson Herbert, set side by side.",
+    "cover_image_url": "hdr.Mueller1864.jpg",
+    "chapterCount": 8
+  },
+  {
+    "series_key": "LudwigKnief",
+    "slug": "ludwig-kniefs-lebenslauf",
+    "name": "Ludwig Knief's Lebenslauf",
+    "kind": "work",
+    "blurb": "Written from memory in August 1902 and addressed to his children: a farm childhood near Bremen, the California gold rush, and a life in the ministry in America. German and English side by side.",
+    "cover_image_url": "hdr.Knief2.jpg",
+    "chapterCount": 7
+  },
+  {
+    "series_key": "GerhardMueller",
+    "slug": "gerhard-mueller",
+    "name": "Gerhard Mueller",
+    "kind": "person",
+    "blurb": "The pastor of Height of Land, remembered in a tournament report, an estate record, and a road trip taken to find the parishes he served.",
+    "cover_image_url": "hdr.HeightOfLand1.jpg",
+    "chapterCount": 4
+  },
+  {
+    "series_key": "AlidaBigelow",
+    "slug": "alida-bigelows-memories",
+    "name": "Alida Wood Bigelow: Memories",
+    "kind": "work",
+    "blurb": "Written at her daughter Emma's insistence — \"It seems to me a foolish undertaking,\" Alida begins, \"as every scrap of paper or records that might help went up in smoke long ago.\"",
+    "cover_image_url": "hdr.StPaul.jpg",
+    "chapterCount": 3
+  },
+  {
+    "series_key": "WilhelmMueller",
+    "slug": "wilhelm-and-frau-erica",
+    "name": "Wilhelm and Frau Erica",
+    "kind": "work",
+    "blurb": "Wilhelm Mueller and Adelheid, the Frau Erica this archive is named for: Kendallville, then careers in Chicago.",
+    "cover_image_url": "hdr.MuellerFarm3.jpg",
+    "chapterCount": 3
+  },
+  {
+    "series_key": "FrauErica",
+    "slug": "frau-erica",
+    "name": "Adelheid Rickmeyer, Frau Erica",
+    "kind": "person",
+    "blurb": "The Frau Erica of the archive's name, and her cookbook.",
+    "cover_image_url": "hdr.Frauenfleisz.jpg",
+    "chapterCount": 2
+  },
+  {
+    "series_key": "FredKnief",
+    "slug": "fred-knief",
+    "name": "Fred Knief",
+    "kind": "person",
+    "blurb": "A brother-in-law's account of a Mueller wedding, and the story of his own.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 2
+  },
+  {
+    "series_key": "JimNickel",
+    "slug": "jim-nickel-three-cities",
+    "name": "Jim Nickel: Three Cities",
+    "kind": "work",
+    "blurb": "Oak Park, Brentwood, New York — a life told through the places it was lived in.",
+    "cover_image_url": "hdr.JimNickel1.jpg",
+    "chapterCount": 2
+  },
+  {
+    "series_key": "JoelNickel",
+    "slug": "joel-nickel",
+    "name": "Joel Nickel",
+    "kind": "person",
+    "blurb": "Forty years of ministry, and a second life in art.",
+    "cover_image_url": "hdr.Chicago1.jpg",
+    "chapterCount": 2
+  },
+  {
+    "series_key": "KevinMcKibbin",
+    "slug": "kevin-mckibbin",
+    "name": "Kevin McKibbin",
+    "kind": "person",
+    "blurb": "Park ranger. Remembered in his obituary and in an account of the work.",
+    "cover_image_url": "hdr.HubbellTP.jpg",
+    "chapterCount": 2
+  },
+  {
+    "series_key": "Janzow",
+    "slug": "the-bethlehem-congregation",
+    "name": "The Bethlehem Congregation Case",
+    "kind": "person",
+    "blurb": "A minister sued his congregation in St. Louis, and the proceedings were published in German.",
+    "cover_image_url": "hdr.Janzow1.jpg",
+    "chapterCount": 2
+  },
+  {
+    "series_key": "Hib",
+    "slug": "hc-nickel",
+    "name": "H.C. Nickel",
+    "kind": "person",
+    "blurb": "Stock seller, teacher, and a newspaper column on money and happiness.",
+    "cover_image_url": "hdr.GaryPostTribune.jpg",
+    "chapterCount": 1
+  },
+  {
+    "series_key": "TanteFieks",
+    "slug": "tante-fieks",
+    "name": "Tante Fieks",
+    "kind": "person",
+    "blurb": "Sofie Mueller — Tante Fieks — looking back on bright and dark days.",
+    "cover_image_url": "hdr.MuellerFarm3.jpg",
+    "chapterCount": 1
+  },
+  {
+    "series_key": "OpaObit",
+    "slug": "ehc-mueller",
+    "name": "The Rev. E.H.C. Mueller",
+    "kind": "person",
+    "blurb": "Two obituaries of the same man, one in English and one in German.",
+    "cover_image_url": "hdr.Freedom1.jpg",
+    "chapterCount": 1
+  },
+  {
+    "series_key": "Waldschmidt",
+    "slug": "the-waldschmidts",
+    "name": "The Waldschmidts",
+    "kind": "person",
+    "blurb": "Anna's history, and Henry's.",
+    "cover_image_url": "hdr.Woodworth1.jpg",
+    "chapterCount": 1
+  }
+]
