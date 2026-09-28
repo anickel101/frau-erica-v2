@@ -6,6 +6,7 @@ import DocumentWideImage from '../components/DocumentWideImage'
 import InlineMarkdown from '../components/InlineMarkdown'
 import TextByline from '../components/TextByline'
 import Layout from '../components/Layout'
+import ParallelText from '../components/ParallelText'
 import { getDocumentById, getSeriesChapters } from '../data-access/public/documents'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import { displayKicker, getAuthorPerson } from '../utils/textDisplay'
@@ -177,7 +178,31 @@ export default function TextPage() {
   // never resolved to real markdown image syntax in the first place (see
   // data-access/public/documents.ts), and confirmed against the real
   // data that no document's summary actually has one anyway.
-  const imageComponents = createImageComponents(buildImageWidths(document.content))
+  // Both halves feed one width sequence, so a photo in the German
+  // column and one in the English column don't independently restart the
+  // rotation and land on the same size beside each other.
+  const imageComponents = createImageComponents(
+    buildImageWidths(
+      document.parallel
+        ? `${document.content}\n\n${document.parallel.content}`
+        : document.content,
+    ),
+  )
+
+  // Where this chapter sits in its series, for the previous/next links
+  // below. These used to be written by hand into the end of each
+  // document ("**Next:** [On the High Seas](/documents/88)"); splitting
+  // a parallel text strips them, since an English-only navigation line
+  // has no German counterpart to pair with. Derived here instead, which
+  // also means they cannot go stale.
+  const chapterIndex = seriesChapters.findIndex(
+    (chapter) => chapter.document_id === document.document_id,
+  )
+  const previousChapter = chapterIndex > 0 ? seriesChapters[chapterIndex - 1] : null
+  const nextChapter =
+    chapterIndex >= 0 && chapterIndex < seriesChapters.length - 1
+      ? seriesChapters[chapterIndex + 1]
+      : null
 
   return (
     <Layout>
@@ -243,9 +268,51 @@ export default function TextPage() {
           </>
         )}
 
-        <div className="max-w-none text-[12px] text-fe-ink flow-root">
-          <ReactMarkdown components={imageComponents}>{document.content}</ReactMarkdown>
-        </div>
+        {document.parallel ? (
+          <ParallelText
+            german={
+              document.parallel.language === 'de'
+                ? document.parallel.content
+                : document.content
+            }
+            english={
+              document.parallel.language === 'de'
+                ? document.content
+                : document.parallel.content
+            }
+            components={imageComponents}
+          />
+        ) : (
+          <div className="max-w-none text-[12px] text-fe-ink flow-root">
+            <ReactMarkdown components={imageComponents}>{document.content}</ReactMarkdown>
+          </div>
+        )}
+
+        {/* Only where the hand-written links were removed. Documents
+            that still carry their own "Next:" line would otherwise show
+            the same link twice. */}
+        {document.parallel && (previousChapter || nextChapter) && (
+          <nav className="mt-8 flex justify-between gap-4 text-sm">
+            {previousChapter ? (
+              <Link
+                to={`/documents/${previousChapter.document_id}`}
+                className="text-fe-link hover:text-fe-link-dark"
+              >
+                &larr; {previousChapter.title}
+              </Link>
+            ) : (
+              <span />
+            )}
+            {nextChapter && (
+              <Link
+                to={`/documents/${nextChapter.document_id}`}
+                className="text-fe-link hover:text-fe-link-dark text-right"
+              >
+                {nextChapter.title} &rarr;
+              </Link>
+            )}
+          </nav>
+        )}
 
         {seriesChapters.length > 0 && (
           <div className="mt-8">
