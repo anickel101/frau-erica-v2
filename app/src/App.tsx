@@ -28,6 +28,8 @@ const RecipePage = lazy(() => import('./pages/RecipePage'))
 const RequestAccessPage = lazy(() => import('./pages/RequestAccessPage'))
 const TextPage = lazy(() => import('./pages/TextPage'))
 const TextsPage = lazy(() => import('./pages/TextsPage'))
+const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
+const CollectionPage = lazy(() => import('./pages/CollectionPage'))
 const UsersGuidePage = lazy(() => import('./pages/UsersGuidePage'))
 
 function RouteLoading() {
@@ -91,7 +93,13 @@ export default function App() {
           {/* Public content -- Phase 3B */}
           <Route path="/" element={<HomePage />} />
           <Route path="/documents" element={<TextsPage />} />
+          {/* Individual texts keep /documents/:id. Around forty links
+              inside the archive's own text point there, so the path is
+              effectively permanent; collections get their own top-level
+              route rather than renaming under it. */}
           <Route path="/documents/:id" element={<TextPage />} />
+          <Route path="/collections" element={<CollectionsPage />} />
+          <Route path="/collections/:slug" element={<CollectionPage />} />
           <Route path="/galleries" element={<GalleriesPage />} />
           <Route path="/galleries/:id" element={<GalleryPage />} />
           <Route path="/lexicon" element={<LexiconPage />} />
