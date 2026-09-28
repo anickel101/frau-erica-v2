@@ -27,14 +27,20 @@ export default function CollectionCard({ collection }: { collection: Collection 
         className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fe-accent"
       >
         {collection.cover_image_url && (
-          // aspect-[3/2] with object-cover, so nineteen covers of wildly
-          // different shapes -- portraits, a title page, a harbour
-          // panorama -- make one even shelf rather than a ragged grid.
+          // A fixed aspect ratio with object-cover, so nineteen covers
+          // of wildly different shapes -- portraits, a title page, a
+          // harbour panorama -- make one even shelf rather than a
+          // ragged grid.
+          //
+          // 25/11 is two-thirds the height 3/2 gave: at 3/2 the images
+          // dominated the card and pushed the blurbs down the page, and
+          // a letterbox crop suits a shelf of covers better than a
+          // near-square one.
           <img
             src={collection.cover_image_url}
             alt=""
             loading="lazy"
-            className="aspect-[3/2] w-full object-cover"
+            className="aspect-[25/11] w-full object-cover"
           />
         )}
         <div className="p-3">

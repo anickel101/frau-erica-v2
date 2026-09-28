@@ -119,30 +119,7 @@ export default function PersonCard({
           dialog is built (PersonInfoDialog.tsx) and was working; it is
           deliberately not wired up until the Archivist has decided what
           it should show. */}
-      {isCouple ? (
-        <div className="flex w-8 shrink-0 flex-col items-center gap-1">
-          <IconAction
-            variant="brown"
-            tooltip="left"
-            label="More info (coming soon)"
-            onClick={() => {}}
-          >
-            <InfoGlyph />
-          </IconAction>
-          {isAdmin && (
-            <IconAction
-              variant="brown"
-              tooltip="left"
-              label="Edit (coming soon)"
-              onClick={() => {}}
-            >
-              <PencilSquareIcon />
-            </IconAction>
-          )}
-        </div>
-      ) : (
-        <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>
-      )}
+      <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>
 
       {/* pointer-events-none so a click on the name reaches the
           stretched link underneath rather than landing on the <p> and
@@ -161,6 +138,35 @@ export default function PersonCard({
           {formatLifespan(person.date_of_birth, person.date_of_death) || '\u00A0'}
         </p>
       </div>
+
+      {/* A horizontal row at the box's right edge, centred against the
+          two-line name block. They were stacked in the left column for
+          a while, which put them where the germline diamond sits on the
+          other two rows and made a couple's box half again as tall as
+          its neighbours; the Archivist didn't like it.
+
+          Right-aligned rather than floating just after the name: a
+          fixed home at the box's edge reads as part of the box, where
+          sitting against the text left them drifting with the length of
+          each name.
+
+          Neither icon does anything yet; both are present so the layout
+          is settled before there is something behind them. The info
+          dialog is built (PersonInfoDialog.tsx) and was working; it is
+          deliberately not wired up until the Archivist has decided what
+          it should show. */}
+      {isCouple && (
+        <div className="relative z-10 flex shrink-0 items-center gap-2">
+          <IconAction variant="brown" label="More info (coming soon)" onClick={() => {}}>
+            <InfoGlyph />
+          </IconAction>
+          {isAdmin && (
+            <IconAction variant="brown" label="Edit (coming soon)" onClick={() => {}}>
+              <PencilSquareIcon />
+            </IconAction>
+          )}
+        </div>
+      )}
     </div>
   )
 
