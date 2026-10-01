@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { markdownLink } from '../utils/markdownLink'
 import { useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import PersonCard from '../components/PersonCard'
@@ -50,7 +51,7 @@ function FamilyCaption({ caption }: { caption: string }) {
       style={{ width: `${widthPercent}%` }}
       className="ml-auto text-right text-[12px] leading-tight text-fe-ink/70 hyphens-none text-pretty"
     >
-      <ReactMarkdown>{caption}</ReactMarkdown>
+      <ReactMarkdown components={markdownLink}>{caption}</ReactMarkdown>
     </div>
   )
 }
@@ -330,7 +331,9 @@ export default function FamilyPage() {
             // below rather than being an arbitrary measure, which is a
             // better reason than the flat one-inch the text pages use.
             <div className="max-w-none mb-8 pl-15.5 text-[14px] text-fe-ink">
-              <ReactMarkdown>{family.description}</ReactMarkdown>
+              <ReactMarkdown components={markdownLink}>
+                {family.description}
+              </ReactMarkdown>
             </div>
           )}
 

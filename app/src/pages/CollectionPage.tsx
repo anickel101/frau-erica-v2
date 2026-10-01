@@ -62,7 +62,7 @@ export default function CollectionPage() {
                 document's own summary gets on TextPage -- this is the
                 same kind of thing in the same place, and should read
                 the same way. */}
-            <div className="max-w-none mb-6 pl-24 text-[14px] text-fe-ink">
+            <div className="max-w-none mb-6 pl-8 sm:pl-24 text-[14px] text-fe-ink">
               <p>{collection.blurb}</p>
             </div>
             <hr className="border-t-[1.5px] border-fe-brown mb-6" />
