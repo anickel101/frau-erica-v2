@@ -11,6 +11,7 @@ import { getDocumentById, getSeriesChapters } from '../data-access/public/docume
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import { displayKicker, getAuthorPerson } from '../utils/textDisplay'
 import { resolveImageUrl } from '../utils/imageUrl'
+import { markdownLink } from '../utils/markdownLink'
 
 // Modest variation around the old fixed 300px -- per review feedback,
 // images at a single uniform width read as a stacked column running
@@ -77,6 +78,7 @@ function buildImageWidths(content: string): Map<string, number> {
 // wraps around it, and gets the zoom-on-click modal.
 function createImageComponents(imageWidths: Map<string, number>) {
   return {
+    ...markdownLink,
     // title carries the {{image:ID:modifier}} modifier through markdown's
     // own image-title slot (see MARKDOWN_IMAGE's comment above and
     // data-access/public/documents.ts's resolveImagePlaceholders) --
@@ -256,7 +258,7 @@ export default function TextPage() {
                 it has now been asked for by the person whose site it is,
                 and that file has been corrected so it isn't removed
                 again as a stray re-addition. */}
-            <div className="max-w-none mb-6 pl-24 text-[14px] text-fe-ink flow-root [&>*:last-child]:mb-0">
+            <div className="max-w-none mb-6 pl-8 sm:pl-24 text-[14px] text-fe-ink flow-root [&>*:last-child]:mb-0">
               <ReactMarkdown components={imageComponents}>
                 {document.summary}
               </ReactMarkdown>
