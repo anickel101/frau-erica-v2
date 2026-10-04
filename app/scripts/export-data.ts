@@ -81,7 +81,44 @@ const images = (
   location: fixMojibake(img.location),
 }))
 
-await writeJson('images.json', images)
+// Who appears in each photograph, from ImageLinks.person_id.
+//
+// Distinct from GalleryLinks.person_id, which says whose gallery this
+// IS -- a gallery is about someone even in the photographs they are not
+// in. The two are unioned for the "people in this gallery" list; the
+// per-photograph names come from here alone.
+//
+// Filled in by the tagging tool at /admin/tag-photos and applied with
+// scripts/reviewPhotoTags.ts. Six rows carried a person before that
+// existed; everything beyond that is hand-tagged.
+interface ImagePersonRow {
+  image_id: number
+  person_id: number
+}
+const imagePersonRows = db
+  .prepare(`SELECT image_id, person_id FROM ImageLinks WHERE person_id IS NOT NULL`)
+  .all() as unknown as ImagePersonRow[]
+
+const personIdsByImage = new Map<number, number[]>()
+for (const row of imagePersonRows) {
+  personIdsByImage.set(row.image_id, [
+    ...(personIdsByImage.get(row.image_id) ?? []),
+    row.person_id,
+  ])
+}
+
+// personIds on every published image, not just the ones in a gallery.
+//
+// 263 published photographs sit outside any gallery -- 171 header
+// images and 92 others -- and the tagging tool reaches them through two
+// synthetic groups built from this file. Without the tags here, that
+// tool could not tell which of them were already done.
+const imagesWithPeople = images.map((img) => ({
+  ...img,
+  personIds: personIdsByImage.get(img.image_id) ?? [],
+}))
+
+await writeJson('images.json', imagesWithPeople)
 
 const imagesById = new Map(images.map((img) => [img.image_id, img]))
 
@@ -516,32 +553,6 @@ interface GalleryLinkRow {
 const galleryLinkRows = db
   .prepare(`SELECT gallery_id, person_id FROM GalleryLinks`)
   .all() as unknown as GalleryLinkRow[]
-
-// Who appears in each photograph, from ImageLinks.person_id.
-//
-// Distinct from GalleryLinks.person_id, which says whose gallery this
-// IS -- a gallery is about someone even in the photographs they are not
-// in. The two are unioned for the "people in this gallery" list; the
-// per-photograph names come from here alone.
-//
-// Filled in by the tagging tool at /admin/tag-photos and applied with
-// scripts/reviewPhotoTags.ts. Six rows carried a person before that
-// existed; everything beyond that is hand-tagged.
-interface ImagePersonRow {
-  image_id: number
-  person_id: number
-}
-const imagePersonRows = db
-  .prepare(`SELECT image_id, person_id FROM ImageLinks WHERE person_id IS NOT NULL`)
-  .all() as unknown as ImagePersonRow[]
-
-const personIdsByImage = new Map<number, number[]>()
-for (const row of imagePersonRows) {
-  personIdsByImage.set(row.image_id, [
-    ...(personIdsByImage.get(row.image_id) ?? []),
-    row.person_id,
-  ])
-}
 
 const galleries = galleryRows
   .map((gallery) => {

@@ -7,7 +7,12 @@ import { getDb } from '../lib/db'
 import { log } from '../lib/log'
 import { parseJsonBody } from '../lib/parseJsonBody'
 import { putPhotoTag } from '../lib/photoTags'
-import { imageIsInGallery, personExists } from '../lib/queries/photoTagTargets'
+import {
+  HEADER_IMAGES_GROUP,
+  MISCELLANEOUS_GROUP,
+  imageIsInGallery,
+  personExists,
+} from '../lib/queries/photoTagTargets'
 import { jsonResponse } from '../lib/response'
 import { withLogging } from '../lib/withLogging'
 
@@ -23,6 +28,12 @@ interface AddTagBody {
 function asId(value: unknown): number | null {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 1) return null
   return value
+}
+
+function asGalleryId(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value)) return null
+  if (value === HEADER_IMAGES_GROUP || value === MISCELLANEOUS_GROUP) return value
+  return value >= 1 ? value : null
 }
 
 // Records that a person appears in a photograph.
@@ -45,10 +56,15 @@ async function baseHandler(
 
   const imageId = asId(body.image_id)
   const personId = asId(body.person_id)
-  const galleryId = asId(body.gallery_id)
+  // gallery_id also accepts the two synthetic groups, which are negative
+  // precisely so they cannot collide with a real gallery -- see
+  // queries/photoTagTargets.ts. imageIsInGallery below is what actually
+  // decides whether this image belongs to whatever was named.
+  const galleryId = asGalleryId(body.gallery_id)
   if (imageId === null || personId === null || galleryId === null) {
     return jsonResponse(400, {
-      error: 'image_id, person_id and gallery_id must each be a positive integer',
+      error:
+        'image_id and person_id must be positive integers, and gallery_id a gallery or group id',
     })
   }
 
