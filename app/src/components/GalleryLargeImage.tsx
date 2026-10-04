@@ -4,6 +4,7 @@ import { useHeaderRef } from '../hooks/useHeaderRef'
 import ChevronButton from './ChevronButton'
 import InlineMarkdown from './InlineMarkdown'
 import Modal from './Modal'
+import PhotoPeople from './PhotoPeople'
 
 // See FamilyHeader in FamilyPage.tsx for why this is its own component:
 // useHeaderRef() must be called from within Layout's children.
@@ -75,7 +76,13 @@ export default function GalleryLargeImage({
           className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-70 focus-visible:opacity-100"
         />
       </div>
-      <p className="max-w-4xl mt-2 text-sm text-fe-ink/70 text-right">
+      {/* text-balance evens the lines out rather than filling the
+          first and leaving a stub on the second. Captions here are one
+          or two lines and right-aligned, which is exactly where a
+          two-word orphan looks worst. Browsers cap balancing at a few
+          lines, so a long caption falls back to normal wrapping on its
+          own. */}
+      <p className="max-w-4xl mt-2 text-sm text-fe-ink/70 text-right text-balance">
         {/* Captions are authored in markdown -- 21 of the 349 published
             gallery photos use *italics* or **bold**, most often for the
             title of a publication. Rendered as plain text they showed
@@ -111,13 +118,24 @@ export default function GalleryLargeImage({
             alt={photo.title}
             className="max-w-[90vw] max-h-[calc(90vh-6rem)] object-contain"
           />
-          <div className="mt-3 bg-black/60 text-white p-4 rounded-sm">
+          {/* stopPropagation, because the whole modal closes on a
+              click (cursor-zoom-out, and Modal's own backdrop handler).
+              Without it the names below would be unusable: the modal
+              would start closing on the way to the family page, and a
+              click meant to select caption text would dismiss the
+              picture. Same reasoning as PersonInfoDialog's own
+              stopPropagation. */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mt-3 cursor-auto rounded-sm bg-black/60 p-4 text-white"
+          >
             <p className="font-bold">
               <InlineMarkdown>{photo.title}</InlineMarkdown>
             </p>
-            <p className="text-sm text-white/80">
+            <p className="text-sm text-balance text-white/80">
               <InlineMarkdown>{photo.caption}</InlineMarkdown>
             </p>
+            <PhotoPeople photo={photo} tone="modal" />
           </div>
         </div>
       </Modal>
