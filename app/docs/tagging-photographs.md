@@ -70,6 +70,11 @@ the archive. After that they appear on the gallery pages. So there is a
 gap between your tagging and anything visible changing — that is expected,
 not a problem.
 
+The gallery list shows where things stand: how far through each gallery
+you are, and, when there is any, a note saying how much is saved but not
+yet added to the archive. If that note is there, nothing is wrong — it
+just means Anson hasn't done the next step yet.
+
 ---
 
 ### For Anson: applying the tags

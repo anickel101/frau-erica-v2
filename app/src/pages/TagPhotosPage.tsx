@@ -9,6 +9,7 @@ import { getGalleryById, listGalleries } from '../data-access/public/galleries'
 import type { GalleryPhoto } from '../data-access/public/galleries'
 import {
   addPhotoTag,
+  listAllPhotoTags,
   listPhotoTags,
   removePhotoTag,
 } from '../data-access/gated/photoTags'
@@ -47,32 +48,113 @@ export default function TagPhotosPage() {
 
 function ChooseGallery() {
   const galleries = useMemo(() => listGalleries(), [])
+  const [tags, setTags] = useState<PhotoTag[] | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    listAllPhotoTags()
+      .then((loaded) => {
+        if (!cancelled) setTags(loaded)
+      })
+      // A failed load is not worth an error here: the list still works,
+      // it just shows no progress. Saying "couldn't load progress" above
+      // a perfectly usable page would be alarming out of proportion.
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // What has been tagged, and what of that is not yet in the archive.
+  //
+  // The second number is the one with no other home. A tag lives in its
+  // own store until someone applies it, and until now nothing anywhere
+  // said how much was waiting -- the only way to find out was to run a
+  // script on the archivist's machine. Computable here because the page
+  // already holds both halves: the collected tags from the API, and the
+  // applied ones in each photograph's personIds.
+  const progress = useMemo(() => {
+    const byGallery = new Map<number, { tagged: Set<number>; unapplied: number }>()
+    if (!tags) return byGallery
+
+    const applied = new Set<string>()
+    for (const gallery of galleries) {
+      for (const photo of gallery.photos) {
+        for (const personId of photo.personIds) {
+          applied.add(`${photo.image_id}:${personId}`)
+        }
+      }
+    }
+
+    for (const tag of tags) {
+      const entry = byGallery.get(tag.gallery_id) ?? { tagged: new Set(), unapplied: 0 }
+      entry.tagged.add(tag.image_id)
+      if (!applied.has(`${tag.image_id}:${tag.person_id}`)) entry.unapplied += 1
+      byGallery.set(tag.gallery_id, entry)
+    }
+    return byGallery
+  }, [tags, galleries])
+
+  const waiting = [...progress.values()].reduce((n, g) => n + g.unapplied, 0)
 
   return (
     <Layout>
       <div className="p-6 max-w-4xl">
         <h1 className="text-2xl font-bold mb-1">Tag photographs</h1>
-        <p className="text-sm text-fe-ink/70 mb-6 max-w-prose">
+        <p className="text-sm text-fe-ink/70 mb-4 max-w-prose">
           Pick a gallery, then say who is in each photograph. Your work saves as you go,
           so you can stop whenever you like and pick up where you left off. Tagging the
           same person twice does nothing &mdash; so if you aren&rsquo;t sure whether you
           already tagged someone, just tag them.
         </p>
 
+        {/* The answer to "is there anything waiting?", which previously
+            existed nowhere. Tags are collected separately from the
+            archive and applied in a reviewed batch, so there is always a
+            gap between tagging and anything appearing on the site --
+            this says how wide it currently is, rather than leaving
+            someone to wonder whether their work registered. */}
+        {waiting > 0 && (
+          <p className="mb-6 border-l-2 border-fe-accent bg-fe-brown/5 py-2 pl-3 text-sm text-fe-ink/80">
+            <strong>{waiting}</strong> {waiting === 1 ? 'tag is' : 'tags are'} saved but
+            not yet added to the archive, so {waiting === 1 ? 'it has' : 'they have'} not
+            appeared on the gallery pages yet. Anson adds them in batches &mdash; nothing
+            is lost in the meantime.
+          </p>
+        )}
+
         <ul className="space-y-0">
-          {galleries.map((gallery) => (
-            <li key={gallery.gallery_id}>
-              <Link
-                to={`/admin/tag-photos/${gallery.gallery_id}`}
-                className="flex items-baseline justify-between gap-4 border-b border-fe-brown/20 py-3 hover:bg-black/5"
-              >
-                <span className="text-base font-bold text-fe-ink">{gallery.name}</span>
-                <span className="shrink-0 text-xs text-fe-ink/60">
-                  {gallery.photos.length} photographs
-                </span>
-              </Link>
-            </li>
-          ))}
+          {galleries.map((gallery) => {
+            const done = progress.get(gallery.gallery_id)
+            const taggedCount = done?.tagged.size ?? 0
+            const total = gallery.photos.length
+            return (
+              <li key={gallery.gallery_id}>
+                <Link
+                  to={`/admin/tag-photos/${gallery.gallery_id}`}
+                  className="flex items-baseline justify-between gap-4 border-b border-fe-brown/20 py-3 hover:bg-black/5"
+                >
+                  <span className="text-base font-bold text-fe-ink">{gallery.name}</span>
+                  <span className="shrink-0 text-right text-xs text-fe-ink/60">
+                    {tags === null ? (
+                      `${total} photographs`
+                    ) : taggedCount === 0 ? (
+                      `none of ${total} tagged`
+                    ) : taggedCount >= total ? (
+                      <span className="text-fe-ink/80">all {total} tagged</span>
+                    ) : (
+                      `${taggedCount} of ${total} tagged`
+                    )}
+                    {done && done.unapplied > 0 && (
+                      <span className="block text-fe-accent-dark">
+                        {done.unapplied} awaiting the archive
+                      </span>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </Layout>
