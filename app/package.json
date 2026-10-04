@@ -15,6 +15,7 @@
     "split-parallel-text": "node scripts/splitParallelText.ts",
     "propose-dates": "node scripts/proposeDates.ts",
     "review-photo-tags": "node scripts/reviewPhotoTags.ts",
+    "apply-photo-tags": "node scripts/reviewPhotoTags.ts --apply",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",

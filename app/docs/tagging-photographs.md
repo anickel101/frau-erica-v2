@@ -81,29 +81,26 @@ just means Anson hasn't done the next step yet.
 
 ```sh
 cd app
-
-# read what has been collected, grouped by photograph
-npm run review-photo-tags
-npm run review-photo-tags -- --gallery=12
-
-# emit SQL for the ones not already in the archive
-npm run review-photo-tags -- --out=/tmp/tags.sql
+AWS_PROFILE=frau-erica-v2-deploy npm run apply-photo-tags
 ```
 
-Needs AWS credentials (`AWS_PROFILE=frau-erica-v2-deploy`).
+That is the whole thing. It reports what has been collected, refuses to
+run if any tag names a person or photograph that no longer exists, backs
+the archive up, rehearses the change on that backup, applies it, and
+re-exports `galleries.json`. Then commit the generated JSON and run
+`hosting/deploy-app.sh`.
 
-Then the usual: back up, rehearse on the copy, apply, export, and push
-the snapshot.
+No snapshot push: photo tags reach the site through the committed
+`galleries.json`, not the gated API.
+
+To look before leaping:
 
 ```sh
-DB="$HOME/Library/Mobile Documents/com~apple~CloudDocs/frau-erica-db/frau_erica.db"
-sqlite3 "$DB" ".backup '/tmp/frau_erica.pre-tags.db'"
-sqlite3 /tmp/frau_erica.pre-tags.db < /tmp/tags.sql   # rehearse
-sqlite3 "$DB" < /tmp/tags.sql                          # apply
-npm run export-data                                    # galleries.json
-~/scripts/frau-erica-backup.sh                         # gated pages
+npm run review-photo-tags                     # the report, writes nothing
+npm run review-photo-tags -- --gallery=12     # one gallery
+npm run review-photo-tags -- --out=/tmp/t.sql # the SQL, to apply by hand
 ```
 
-The script is safely re-runnable: anything already in `ImageLinks` is
-reported as "already in the archive" and left out of the SQL, so it never
-writes a tag twice.
+Safely re-runnable either way: anything already in `ImageLinks` is
+reported as "already in the archive" and left out, so it never writes a
+tag twice.
