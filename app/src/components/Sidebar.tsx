@@ -265,19 +265,33 @@ export default function Sidebar({
                 </Link>
               </li>
             ))}
-            {/* The only nav entry point into /admin/users -- otherwise
-                reachable solely by a bookmark or the one-time Request
-                Access deep-link email. */}
+            {/* The only nav entry points into the admin pages --
+                otherwise reachable solely by a bookmark or the one-time
+                Request Access deep-link email. Tag photographs was
+                briefly unreachable for exactly that reason: the page
+                shipped with no link to it, so the one person it was
+                built for had no way to find it. */}
             {status === 'signedIn' && groups.includes('admin') && (
-              <li>
-                <Link
-                  to="/admin/users"
-                  onClick={() => setOpen(false)}
-                  className={NAV_LINK_CLASS}
-                >
-                  Manage users
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link
+                    to="/admin/users"
+                    onClick={() => setOpen(false)}
+                    className={NAV_LINK_CLASS}
+                  >
+                    Manage users
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/admin/tag-photos"
+                    onClick={() => setOpen(false)}
+                    className={NAV_LINK_CLASS}
+                  >
+                    Tag photographs
+                  </Link>
+                </li>
+              </>
             )}
             {/* Log out and Change password share a line. They are the
                 two things you do TO your account rather than places in
