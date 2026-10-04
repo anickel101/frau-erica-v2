@@ -517,6 +517,32 @@ const galleryLinkRows = db
   .prepare(`SELECT gallery_id, person_id FROM GalleryLinks`)
   .all() as unknown as GalleryLinkRow[]
 
+// Who appears in each photograph, from ImageLinks.person_id.
+//
+// Distinct from GalleryLinks.person_id, which says whose gallery this
+// IS -- a gallery is about someone even in the photographs they are not
+// in. The two are unioned for the "people in this gallery" list; the
+// per-photograph names come from here alone.
+//
+// Filled in by the tagging tool at /admin/tag-photos and applied with
+// scripts/reviewPhotoTags.ts. Six rows carried a person before that
+// existed; everything beyond that is hand-tagged.
+interface ImagePersonRow {
+  image_id: number
+  person_id: number
+}
+const imagePersonRows = db
+  .prepare(`SELECT image_id, person_id FROM ImageLinks WHERE person_id IS NOT NULL`)
+  .all() as unknown as ImagePersonRow[]
+
+const personIdsByImage = new Map<number, number[]>()
+for (const row of imagePersonRows) {
+  personIdsByImage.set(row.image_id, [
+    ...(personIdsByImage.get(row.image_id) ?? []),
+    row.person_id,
+  ])
+}
+
 const galleries = galleryRows
   .map((gallery) => {
     const photos = galleryImageRows
@@ -533,11 +559,22 @@ const galleries = galleryRows
         width: img.width ?? 0,
         height: img.height ?? 0,
         url: img.url,
+        personIds: personIdsByImage.get(img.image_id) ?? [],
       }))
 
-    const linkedPersonIds = galleryLinkRows
-      .filter((gl) => gl.gallery_id === gallery.gallery_id && gl.person_id != null)
-      .map((gl) => gl.person_id as number)
+    // The union: whose gallery this is, PLUS everyone tagged in any of
+    // its photographs. The page's heading promises "people in this
+    // gallery", and before the per-photograph tags existed it could only
+    // deliver "whose gallery this is" -- which is how a photograph of
+    // Anson and Mark listed only Anson.
+    const linkedPersonIds = [
+      ...new Set([
+        ...galleryLinkRows
+          .filter((gl) => gl.gallery_id === gallery.gallery_id && gl.person_id != null)
+          .map((gl) => gl.person_id as number),
+        ...photos.flatMap((photo) => photo.personIds),
+      ]),
+    ]
 
     return {
       gallery_id: gallery.gallery_id,

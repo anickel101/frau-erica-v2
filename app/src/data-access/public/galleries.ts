@@ -11,6 +11,13 @@ export interface GalleryPhoto {
   width: number
   height: number
   url: string
+  // Who appears in THIS photograph, from ImageLinks.person_id -- filled
+  // in by the tagging tool at /admin/tag-photos. Distinct from the
+  // gallery's own linkedPersonIds, which says whose gallery it is: a
+  // gallery is about someone even in the pictures they are not in.
+  // Empty for any photograph nobody has tagged yet, which is most of
+  // them.
+  personIds: number[]
 }
 
 export interface GalleryData {

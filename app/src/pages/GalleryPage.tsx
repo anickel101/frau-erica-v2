@@ -6,7 +6,8 @@ import Layout from '../components/Layout'
 import GalleryLargeImage from '../components/GalleryLargeImage'
 import GalleryThumbnailStrip from '../components/GalleryThumbnailStrip'
 import { getGalleryById } from '../data-access/public/galleries'
-import { getLinkedPersons } from '../utils/galleryDisplay'
+import type { GalleryPhoto } from '../data-access/public/galleries'
+import { getLinkedPersons, getPhotoPersons } from '../utils/galleryDisplay'
 import { getFullName } from '../utils/personDisplay'
 
 function wrap(index: number, length: number): number {
@@ -99,6 +100,17 @@ export default function GalleryPage() {
       <div className="p-6">
         <GalleryLargeImage photo={photos[activeIndex]} onPrev={goPrev} onNext={goNext} />
 
+        {/* Who is in the photograph currently shown -- the point of the
+            tagging work, and the only place it is visible. Sits directly
+            under the picture rather than with the gallery-wide list
+            below, because it describes THIS image and changes as the
+            reader moves through the strip.
+
+            Absent entirely for an untagged photograph, which is most of
+            them: an empty "In this photograph" heading would read as
+            something broken rather than something not yet done. */}
+        <PhotoPeople photo={photos[activeIndex]} />
+
         <GalleryThumbnailStrip
           photos={photos}
           activeIndex={activeIndex}
@@ -133,6 +145,11 @@ export default function GalleryPage() {
 
         {linkedPersons.length > 0 && (
           <div className="max-w-4xl mt-6">
+            {/* Now genuinely everyone in the gallery: the export unions
+                the gallery's own people with everyone tagged in any of
+                its photographs. Before per-photograph tags existed this
+                heading overstated what the data knew -- a picture of two
+                brothers listed only the one whose gallery it was. */}
             <h2 className="font-bold text-sm text-fe-brown mb-2">
               Family pages for people in this gallery
             </h2>
@@ -156,5 +173,31 @@ export default function GalleryPage() {
         )}
       </div>
     </Layout>
+  )
+}
+
+function PhotoPeople({ photo }: { photo: GalleryPhoto }) {
+  const people = getPhotoPersons(photo)
+  if (people.length === 0) return null
+
+  return (
+    <p className="max-w-4xl mt-1 text-[11px] leading-tight text-fe-ink/60">
+      In this photograph:{' '}
+      {people.map((person, index) => (
+        <span key={person.person_id}>
+          {index > 0 && ', '}
+          {person.linkedFamilyId !== null ? (
+            <Link
+              to={`/family/${person.linkedFamilyId}`}
+              className="text-fe-link hover:text-fe-link-dark"
+            >
+              {getFullName(person)}
+            </Link>
+          ) : (
+            getFullName(person)
+          )}
+        </span>
+      ))}
+    </p>
   )
 }
