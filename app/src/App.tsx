@@ -13,6 +13,7 @@ const AdminApprovePage = lazy(() => import('./pages/AdminApprovePage'))
 const AnniversariesPage = lazy(() => import('./pages/AnniversariesPage'))
 const AccountPage = lazy(() => import('./pages/AccountPage'))
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'))
+const TagPhotosPage = lazy(() => import('./pages/TagPhotosPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const FamilyPage = lazy(() => import('./pages/FamilyPage'))
 const GalleriesPage = lazy(() => import('./pages/GalleriesPage'))
@@ -148,6 +149,26 @@ export default function App() {
             element={
               <RequireAdmin>
                 <AdminUsersPage />
+              </RequireAdmin>
+            }
+          />
+          {/* One route, two shapes: no galleryId picks a gallery, a
+              galleryId tags it. Keeps the archivist's URL stable while
+              they work -- a bookmark returns them to the gallery they
+              were in, not to the list. */}
+          <Route
+            path="/admin/tag-photos"
+            element={
+              <RequireAdmin>
+                <TagPhotosPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/tag-photos/:galleryId"
+            element={
+              <RequireAdmin>
+                <TagPhotosPage />
               </RequireAdmin>
             }
           />
