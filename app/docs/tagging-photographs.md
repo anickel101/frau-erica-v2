@@ -20,6 +20,17 @@ administrators.
 
 Pick a gallery and start. You can stop whenever you like.
 
+Two entries at the bottom of the list are not real galleries:
+
+- **Header images** — the photographs that head a family page, a text or
+  a collection. Most are scenery or documents, but some are people: the
+  gravestones at the top of Wilhelm and Adelheid's page, for instance.
+- **Miscellaneous photographs** — everything else that belongs to no
+  gallery, including the pictures that appear inside written pieces.
+
+Skipping is especially expected in those two. Many are maps and title
+pages with nobody in them at all.
+
 ## How it works
 
 One photograph at a time, with its caption beside it. The caption usually

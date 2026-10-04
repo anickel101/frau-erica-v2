@@ -12,7 +12,12 @@ vi.mock('../lib/photoTags', () => ({ putPhotoTag }))
 // against real SQL in queries/photoTagTargets.test.ts.
 const personExists = vi.fn(() => true)
 const imageIsInGallery = vi.fn(() => true)
-vi.mock('../lib/queries/photoTagTargets', () => ({ personExists, imageIsInGallery }))
+vi.mock('../lib/queries/photoTagTargets', () => ({
+  personExists,
+  imageIsInGallery,
+  HEADER_IMAGES_GROUP: -1,
+  MISCELLANEOUS_GROUP: -2,
+}))
 vi.mock('../lib/db', () => ({ getDb: async () => ({}) }))
 
 const { handler } = await import('./addPhotoTag')
@@ -77,7 +82,7 @@ describe('POST /photo-tags', () => {
     ['a float', { ...valid, image_id: 12.5 }],
     ['a numeric string', { ...valid, person_id: '23' }],
     ['zero', { ...valid, gallery_id: 0 }],
-    ['a negative', { ...valid, image_id: -1 }],
+    ['a negative image_id', { ...valid, image_id: -1 }],
     ['a missing field', { image_id: 500, person_id: 23 }],
   ])('rejects %s', async (_label, body) => {
     const res = await call(body)
@@ -107,6 +112,23 @@ describe('POST /photo-tags', () => {
     imageIsInGallery.mockReturnValue(false)
     const res = await call(valid)
     expect(res.statusCode).toBe(404)
+    expect(putPhotoTag).not.toHaveBeenCalled()
+  })
+
+  // The two synthetic groups are negative on purpose, so the plain
+  // "positive integer" rule would have rejected every tag on a header
+  // image or an uncategorised one.
+  test.each([[-1], [-2]])('accepts the synthetic group %i', async (galleryId) => {
+    const res = await call({ ...valid, gallery_id: galleryId })
+    expect(res.statusCode).toBe(200)
+    expect(putPhotoTag).toHaveBeenCalledWith(
+      expect.objectContaining({ gallery_id: galleryId }),
+    )
+  })
+
+  test('still rejects a group id that means nothing', async () => {
+    const res = await call({ ...valid, gallery_id: -99 })
+    expect(res.statusCode).toBe(400)
     expect(putPhotoTag).not.toHaveBeenCalled()
   })
 

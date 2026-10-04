@@ -5,7 +5,12 @@ import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
 import SearchInput from '../components/SearchInput'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { getGalleryById, listGalleries } from '../data-access/public/galleries'
+import {
+  GROUP_SLUGS,
+  getTaggableGallery,
+  groupSlugFor,
+  listTaggableGalleries,
+} from '../data-access/public/taggableGalleries'
 import type { GalleryPhoto } from '../data-access/public/galleries'
 import {
   addPhotoTag,
@@ -41,13 +46,17 @@ import {
 
 export default function TagPhotosPage() {
   const { galleryId } = useParams<{ galleryId: string }>()
-  return galleryId ? <TagGallery galleryId={Number(galleryId)} /> : <ChooseGallery />
+  if (!galleryId) return <ChooseGallery />
+  // "headers" and "misc" name the two synthetic groups; anything else is
+  // a real gallery id. See taggableGalleries.ts for why those two have
+  // slugs rather than appearing as -1 and -2 in the URL.
+  return <TagGallery galleryId={GROUP_SLUGS[galleryId] ?? Number(galleryId)} />
 }
 
 // ---------------------------------------------------------------- picker
 
 function ChooseGallery() {
-  const galleries = useMemo(() => listGalleries(), [])
+  const galleries = useMemo(() => listTaggableGalleries(), [])
   const [tags, setTags] = useState<PhotoTag[] | null>(null)
 
   useEffect(() => {
@@ -131,7 +140,7 @@ function ChooseGallery() {
             return (
               <li key={gallery.gallery_id}>
                 <Link
-                  to={`/admin/tag-photos/${gallery.gallery_id}`}
+                  to={`/admin/tag-photos/${groupSlugFor(gallery.gallery_id)}`}
                   className="flex items-baseline justify-between gap-4 border-b border-fe-brown/20 py-3 hover:bg-black/5"
                 >
                   <span className="text-base font-bold text-fe-ink">{gallery.name}</span>
@@ -164,7 +173,7 @@ function ChooseGallery() {
 // --------------------------------------------------------------- tagging
 
 function TagGallery({ galleryId }: { galleryId: number }) {
-  const gallery = useMemo(() => getGalleryById(galleryId), [galleryId])
+  const gallery = useMemo(() => getTaggableGallery(galleryId), [galleryId])
   const [tags, setTags] = useState<PhotoTag[] | null>(null)
   const [loadError, setLoadError] = useState(false)
   const [index, setIndex] = useState(0)
