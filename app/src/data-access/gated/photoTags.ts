@@ -21,6 +21,14 @@ export async function listPhotoTags(galleryId: number): Promise<PhotoTag[]> {
   return tags
 }
 
+// Every tag, across every gallery -- what the picker needs to show how
+// far along each one is, and how much is collected but not yet in the
+// archive.
+export async function listAllPhotoTags(): Promise<PhotoTag[]> {
+  const { tags } = await apiFetch<{ tags: PhotoTag[] }>('/photo-tags')
+  return tags
+}
+
 export function addPhotoTag(
   imageId: number,
   personId: number,

@@ -4,6 +4,7 @@ import {
   DynamoDBDocumentClient,
   PutCommand,
   QueryCommand,
+  ScanCommand,
 } from '@aws-sdk/lib-dynamodb'
 import { requireEnv } from './env'
 
@@ -88,6 +89,33 @@ export async function listPhotoTagsForGallery(galleryId: number): Promise<PhotoT
         ExpressionAttributeValues: { ':g': galleryId },
         ExclusiveStartKey: startKey,
       }),
+    )
+    tags.push(...((page.Items ?? []) as PhotoTag[]))
+    startKey = page.LastEvaluatedKey
+  } while (startKey)
+
+  return tags
+}
+
+// Every tag, across every gallery.
+//
+// A Scan, which is usually the wrong instinct in DynamoDB -- but the
+// question really is "everything collected so far", and the table holds
+// one row per person per photograph for an archive of a few hundred
+// photographs. Querying each gallery's index separately would be 31
+// requests to answer a question one request answers.
+//
+// What it is for: the gallery picker shows how far along each gallery
+// is, and how much work is collected but not yet in the archive. Without
+// it the only way to know either was to run a script on the archivist's
+// own machine.
+export async function listAllPhotoTags(): Promise<PhotoTag[]> {
+  const tags: PhotoTag[] = []
+  let startKey: Record<string, unknown> | undefined
+
+  do {
+    const page = await client.send(
+      new ScanCommand({ TableName: tableName(), ExclusiveStartKey: startKey }),
     )
     tags.push(...((page.Items ?? []) as PhotoTag[]))
     startKey = page.LastEvaluatedKey

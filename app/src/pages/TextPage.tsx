@@ -146,8 +146,13 @@ function TextHeader({ imageUrl, caption }: { imageUrl: string; caption: string |
       >
         <img src={imageUrl} alt="" className="w-full h-full object-cover" />
       </div>
+      {/* text-balance for the same reason gallery captions have it: a
+          two-line caption otherwise fills the first line and leaves a
+          stub on the second. The Family page's own header caption
+          already solved this with text-pretty and a width search (see
+          FamilyCaption there); this one had nothing. */}
       {caption && (
-        <p className="max-w-4xl mt-2 text-[11px] leading-tight text-fe-ink/60">
+        <p className="max-w-4xl mt-2 text-[11px] leading-tight text-fe-ink/60 text-balance">
           <InlineMarkdown>{caption}</InlineMarkdown>
         </p>
       )}

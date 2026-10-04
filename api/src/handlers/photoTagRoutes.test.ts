@@ -6,7 +6,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const deletePhotoTag = vi.fn()
 const listPhotoTagsForGallery = vi.fn(async () => [])
-vi.mock('../lib/photoTags', () => ({ deletePhotoTag, listPhotoTagsForGallery }))
+const listAllPhotoTags = vi.fn(async () => [])
+vi.mock('../lib/photoTags', () => ({
+  deletePhotoTag,
+  listPhotoTagsForGallery,
+  listAllPhotoTags,
+}))
 
 const { handler: del } = await import('./deletePhotoTag')
 const { handler: list } = await import('./listPhotoTags')
@@ -40,6 +45,7 @@ const run = async (h: typeof del, e: APIGatewayProxyEventV2WithJWTAuthorizer) =>
 beforeEach(() => {
   deletePhotoTag.mockReset()
   listPhotoTagsForGallery.mockReset().mockResolvedValue([])
+  listAllPhotoTags.mockReset().mockResolvedValue([])
 })
 
 describe('DELETE /photo-tags/{imageId}/{personId}', () => {
@@ -102,12 +108,25 @@ describe('GET /photo-tags', () => {
     expect(listPhotoTagsForGallery).not.toHaveBeenCalled()
   })
 
-  test.each([[{}], [{ gallery_id: 'abc' }]])(
-    'requires a numeric gallery_id (%o)',
-    async (q) => {
-      const res = await run(list, event({ queryStringParameters: q as never }))
-      expect(res.statusCode).toBe(400)
-      expect(listPhotoTagsForGallery).not.toHaveBeenCalled()
-    },
-  )
+  // No gallery_id means every gallery -- what the picker asks for to
+  // show progress across the archive.
+  test('returns every tag when no gallery is named', async () => {
+    listAllPhotoTags.mockResolvedValue([
+      { image_id: 1, person_id: 2, gallery_id: 3 },
+    ] as never)
+    const res = await run(list, event({}))
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body as string).tags).toHaveLength(1)
+    expect(listPhotoTagsForGallery).not.toHaveBeenCalled()
+  })
+
+  // A malformed value is still a 400. Quietly returning the whole
+  // archive because someone typed gallery_id=abc would be a surprising
+  // amount of data and a confusing answer to a question asked wrongly.
+  test('rejects a malformed gallery_id rather than returning everything', async () => {
+    const res = await run(list, event({ queryStringParameters: { gallery_id: 'abc' } }))
+    expect(res.statusCode).toBe(400)
+    expect(listAllPhotoTags).not.toHaveBeenCalled()
+    expect(listPhotoTagsForGallery).not.toHaveBeenCalled()
+  })
 })

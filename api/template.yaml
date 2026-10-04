@@ -898,12 +898,17 @@ Resources:
           PHOTO_TAGS_TABLE: !Ref PhotoTagsTable
       Policies:
         - Statement:
-            # Query, not Scan, and on the index as well as the table --
-            # the by-gallery index needs its own ARN, which is the table
-            # ARN with /index/* appended.
-            - Sid: QueryOwnTagsTableOnly
+            # Query for one gallery (via the by-gallery index, which
+            # needs its own ARN -- the table ARN with /index/* appended),
+            # and Scan for "everything collected so far", which the
+            # gallery picker asks for to show progress. Scan is usually
+            # the wrong instinct, but one request beats 31 for a table
+            # this size.
+            - Sid: ReadOwnTagsTableOnly
               Effect: Allow
-              Action: dynamodb:Query
+              Action:
+                - dynamodb:Query
+                - dynamodb:Scan
               Resource:
                 - !GetAtt PhotoTagsTable.Arn
                 - !Sub '${PhotoTagsTable.Arn}/index/*'
