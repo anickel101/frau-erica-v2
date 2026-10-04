@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom'
-import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import IconAction from './IconAction'
 import { AltFamilyChevron, DiamondGlyph, GlyphSlot } from './NavigationGlyph'
-import { useAuth } from '../hooks/useAuth'
 import { formatLifespan } from '../utils/dateDisplay'
 import { getFullName } from '../utils/personDisplay'
 import { LinkedPersonSummary } from '../types/person'
@@ -70,9 +68,6 @@ export default function PersonCard({
   // colour already says which generation it is.
   isInGermline?: boolean
 }) {
-  const { groups } = useAuth()
-  const isAdmin = groups.includes('admin')
-
   const name = getFullName(person)
 
   // The couple's boxes are the page you're on, so they go nowhere: no
@@ -155,16 +150,55 @@ export default function PersonCard({
           dialog is built (PersonInfoDialog.tsx) and was working; it is
           deliberately not wired up until the Archivist has decided what
           it should show. */}
+      {/* Centred in the band between the box's left edge and where the
+          name starts -- 62px, the same measure that lines every name on
+          the page up with every other (border 2 + p-4 16 + the glyph
+          slot 32 + gap-3 12). Absolutely positioned because that centre,
+          31px, sits inside the box's own 18px of border and padding, so
+          no element in the normal flow can reach it.
+
+          58px wide, not 62: an absolutely positioned child is placed
+          against the PADDING edge, which is already 2px in from the
+          box's outer edge because of the border. Starting there, 58px
+          centres on 2 + 29 = 31px from the outer edge, which is the
+          midpoint of the band. A 62px box would centre on 33 -- off by
+          the width of the border, which is exactly the kind of two
+          pixels that looks like nothing and reads as wrong.
+
+          The glyph slot below still renders and still reserves its 32px,
+          so the name stays exactly where it is on every other row. A
+          couple's box never shows a germline diamond (FamilyPage passes
+          isInGermline={false} for the couple, deliberately), so the slot
+          is empty underneath and there is nothing to collide with.
+
+          The icon does nothing yet. PersonInfoDialog.tsx is built and
+          was working; it stays unwired until the Archivist has decided
+          what it should show.
+
+          THE EDIT BUTTON USED TO SIT BESIDE THIS ONE and was removed on
+          request, not abandoned. To put it back:
+
+            {isAdmin && (
+              <IconAction variant="brown" label="Edit" onClick={...}>
+                <PencilSquareIcon />
+              </IconAction>
+            )}
+
+          with `const { groups } = useAuth()` and
+          `const isAdmin = groups.includes('admin')` above, plus the
+          PencilSquareIcon and useAuth imports. Note the container below
+          is 62px wide and centres ONE icon -- two would need it widened
+          or laid out differently.
+
+          The feature it was for (an admin editing a person from the
+          Family page) is designed in full and deliberately not built:
+          see the "dad-database-interface-plan" writeup for why, and for
+          what it would cost. */}
       {isCouple && (
-        <div className="relative z-10 flex shrink-0 items-center gap-2">
+        <div className="absolute inset-y-0 left-0 z-10 flex w-[58px] items-center justify-center">
           <IconAction variant="brown" label="More info (coming soon)" onClick={() => {}}>
             <InfoGlyph />
           </IconAction>
-          {isAdmin && (
-            <IconAction variant="brown" label="Edit (coming soon)" onClick={() => {}}>
-              <PencilSquareIcon />
-            </IconAction>
-          )}
         </div>
       )}
     </div>
