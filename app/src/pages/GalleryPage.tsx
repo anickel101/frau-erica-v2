@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { markdownLink } from '../utils/markdownLink'
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import GalleryLargeImage from '../components/GalleryLargeImage'
@@ -127,7 +128,7 @@ export default function GalleryPage() {
             pages have no equivalent boxes to match, so this is just a
             plain, visible indent per Dad's review notes. */}
         <div className="max-w-4xl pl-8 text-[12px] text-fe-ink">
-          <ReactMarkdown>{gallery.summary}</ReactMarkdown>
+          <ReactMarkdown components={markdownLink}>{gallery.summary}</ReactMarkdown>
         </div>
 
         {linkedPersons.length > 0 && (

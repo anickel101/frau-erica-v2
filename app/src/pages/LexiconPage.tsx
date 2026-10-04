@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { markdownLink } from '../utils/markdownLink'
 import Layout from '../components/Layout'
 import LexiconIndexSection from '../components/LexiconIndexSection'
 import SearchInput from '../components/SearchInput'
@@ -57,7 +58,7 @@ export default function LexiconPage() {
         <div className="max-w-4xl mt-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">The Mueller Lexicon</h1>
           <div className="max-w-none mb-6 space-y-4 text-[12px] text-fe-ink">
-            <ReactMarkdown>{INTRO}</ReactMarkdown>
+            <ReactMarkdown components={markdownLink}>{INTRO}</ReactMarkdown>
           </div>
           <hr className="border-fe-brown mb-4" />
           <SearchInput value={query} onChange={setQuery} placeholder="Search terms..." />
