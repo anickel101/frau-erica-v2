@@ -97,6 +97,60 @@ Resources:
           ThrottlingRateLimit: 1
           ThrottlingBurstLimit: 5
 
+  # Photo tags: who appears in which photograph.
+  #
+  # A table of its own, deliberately NOT the archive's ImageLinks. The
+  # archive's writable copy lives on the archivist's machine and this API
+  # only ever reads a snapshot of it; letting a web form write there
+  # would mean inverting which copy is authoritative and retiring the
+  # nightly backup -- a large piece of work that was considered and
+  # deferred. Tagging needs none of it: tags are append-only and
+  # low-stakes, so they are collected here and applied to ImageLinks
+  # later in a reviewed batch.
+  #
+  # PAY_PER_REQUEST because the load is one person tagging photographs by
+  # hand. Provisioned capacity would mean paying hourly for a table used
+  # in bursts a few evenings a month.
+  #
+  # PointInTimeRecovery even though this is working data rather than the
+  # archive: it represents hours of irreplaceable human judgment between
+  # the moment it is entered and the moment it is applied, and the cost
+  # is negligible at this size.
+  PhotoTagsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-photo-tags'
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      # image_id + person_id as the composite key makes a tag unique for
+      # free: tagging the same person twice overwrites rather than
+      # duplicating, so there is no de-duplication to write and no tag id
+      # to collide over.
+      AttributeDefinitions:
+        - AttributeName: image_id
+          AttributeType: N
+        - AttributeName: person_id
+          AttributeType: N
+        - AttributeName: gallery_id
+          AttributeType: N
+      KeySchema:
+        - AttributeName: image_id
+          KeyType: HASH
+        - AttributeName: person_id
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        # So the tagging page can fetch a whole gallery's tags in one
+        # request when it opens, rather than one request per photograph.
+        - IndexName: by-gallery
+          KeySchema:
+            - AttributeName: gallery_id
+              KeyType: HASH
+            - AttributeName: image_id
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
   # Explicit log groups, one per function, purely to set a retention
   # policy. A Lambda creates its own log group on first invocation if one
   # doesn't exist, but that implicit group retains logs *forever* (the
@@ -133,6 +187,24 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-search'
+      RetentionInDays: 30
+
+  AddPhotoTagLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-add-photo-tag'
+      RetentionInDays: 30
+
+  DeletePhotoTagLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-delete-photo-tag'
+      RetentionInDays: 30
+
+  ListPhotoTagsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-list-photo-tags'
       RetentionInDays: 30
 
   AnniversariesLogGroup:
@@ -726,6 +798,122 @@ Resources:
             ApiId: !Ref FrauEricaApi
             Path: /admin/users/{email}
             Method: delete
+
+  # --- Photo tagging (admin only) -------------------------------------
+  #
+  # All three write to, or read from, the PhotoTags table and nothing
+  # else. AddPhotoTag additionally gets the same READ-ONLY snapshot grant
+  # every gated route has, purely to validate that a tag points at a real
+  # person and a photograph genuinely in that gallery. No function here
+  # can write to the archive; there is no S3 PutObject permission in the
+  # stack at all.
+
+  AddPhotoTagFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/addPhotoTag.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/addPhotoTag.handler
+      LoggingConfig:
+        LogGroup: !Ref AddPhotoTagLogGroup
+      # 512 like the other snapshot-reading functions -- this one pays
+      # the S3 download + sql.js init cold start to validate ids.
+      MemorySize: 512
+      Environment:
+        Variables:
+          PHOTO_TAGS_TABLE: !Ref PhotoTagsTable
+          DB_BUCKET: frau-erica-db-backups
+          DB_KEY: current/frau_erica.db
+      Policies:
+        - Statement:
+            - Sid: WriteOwnTagsTableOnly
+              Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: !GetAtt PhotoTagsTable.Arn
+            - Sid: ReadCurrentSnapshotOnly
+              Effect: Allow
+              Action: s3:GetObject
+              Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
+      Events:
+        AddPhotoTag:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /photo-tags
+            Method: post
+
+  DeletePhotoTagFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/deletePhotoTag.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/deletePhotoTag.handler
+      LoggingConfig:
+        LogGroup: !Ref DeletePhotoTagLogGroup
+      Environment:
+        Variables:
+          PHOTO_TAGS_TABLE: !Ref PhotoTagsTable
+      Policies:
+        - Statement:
+            - Sid: DeleteOwnTagsTableOnly
+              Effect: Allow
+              Action: dynamodb:DeleteItem
+              Resource: !GetAtt PhotoTagsTable.Arn
+      Events:
+        DeletePhotoTag:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /photo-tags/{imageId}/{personId}
+            Method: delete
+
+  ListPhotoTagsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/listPhotoTags.ts
+        Format: cjs
+        Target: node22
+        Sourcemap: false
+    Properties:
+      Handler: src/handlers/listPhotoTags.handler
+      LoggingConfig:
+        LogGroup: !Ref ListPhotoTagsLogGroup
+      Environment:
+        Variables:
+          PHOTO_TAGS_TABLE: !Ref PhotoTagsTable
+      Policies:
+        - Statement:
+            # Query, not Scan, and on the index as well as the table --
+            # the by-gallery index needs its own ARN, which is the table
+            # ARN with /index/* appended.
+            - Sid: QueryOwnTagsTableOnly
+              Effect: Allow
+              Action: dynamodb:Query
+              Resource:
+                - !GetAtt PhotoTagsTable.Arn
+                - !Sub '${PhotoTagsTable.Arn}/index/*'
+      Events:
+        ListPhotoTags:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref FrauEricaApi
+            Path: /photo-tags
+            Method: get
 
 Outputs:
   ApiUrl:
