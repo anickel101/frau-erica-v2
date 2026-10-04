@@ -56,8 +56,16 @@ Live stack: `frau-erica-api`, region `us-east-1`. Base URL is in
    `app/CLAUDE.md`.
 3. Only then does the handler touch the database (`getDb()`,
    `src/lib/db.ts` — downloads the S3 snapshot on cold start, cached at
-   module scope so warm invocations skip it) or call out to Cognito/SES/
-   SSM.
+   module scope, with a per-request `HeadObject` ETag check so an edit
+   pushed to S3 is picked up without waiting for the container to be
+   recycled) or call out to Cognito/SES/SSM.
+
+   That freshness check is not an optimisation to remove. Without it a
+   container that started before an edit served the old snapshot for its
+   whole life — confirmed live on 2026-10-04, where the site showed old
+   and new values depending on which container answered, with no error
+   anywhere. `HeadObject` needs no extra IAM: HEAD on an object is
+   authorised by `s3:GetObject`.
 
 `/request-access` is the one exception — it has no account to check yet
 (`Auth: Authorizer: NONE` override in `template.yaml`), so it's a plain
