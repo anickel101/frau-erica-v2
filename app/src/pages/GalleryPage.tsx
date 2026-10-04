@@ -3,11 +3,11 @@ import ReactMarkdown from 'react-markdown'
 import { markdownLink } from '../utils/markdownLink'
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
+import PhotoPeople from '../components/PhotoPeople'
 import GalleryLargeImage from '../components/GalleryLargeImage'
 import GalleryThumbnailStrip from '../components/GalleryThumbnailStrip'
 import { getGalleryById } from '../data-access/public/galleries'
-import type { GalleryPhoto } from '../data-access/public/galleries'
-import { getLinkedPersons, getPhotoPersons } from '../utils/galleryDisplay'
+import { getLinkedPersons } from '../utils/galleryDisplay'
 import { getFullName } from '../utils/personDisplay'
 
 function wrap(index: number, length: number): number {
@@ -109,7 +109,7 @@ export default function GalleryPage() {
             Absent entirely for an untagged photograph, which is most of
             them: an empty "In this photograph" heading would read as
             something broken rather than something not yet done. */}
-        <PhotoPeople photo={photos[activeIndex]} />
+        <PhotoPeople photo={photos[activeIndex]} tone="page" />
 
         <GalleryThumbnailStrip
           photos={photos}
@@ -153,7 +153,12 @@ export default function GalleryPage() {
             <h2 className="font-bold text-sm text-fe-brown mb-2">
               Family pages for people in this gallery
             </h2>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            {/* One name per line. Flowed inline they read as a single
+                run-on sentence of names, and a long one wrapped into a
+                ragged block that was hard to scan for a particular
+                person -- which is the only reason anyone reads this
+                list. */}
+            <ul className="space-y-1 text-sm">
               {linkedPersons.map((person) => (
                 <li key={person.person_id}>
                   {person.linkedFamilyId !== null ? (
@@ -173,31 +178,5 @@ export default function GalleryPage() {
         )}
       </div>
     </Layout>
-  )
-}
-
-function PhotoPeople({ photo }: { photo: GalleryPhoto }) {
-  const people = getPhotoPersons(photo)
-  if (people.length === 0) return null
-
-  return (
-    <p className="max-w-4xl mt-1 text-[11px] leading-tight text-fe-ink/60">
-      In this photograph:{' '}
-      {people.map((person, index) => (
-        <span key={person.person_id}>
-          {index > 0 && ', '}
-          {person.linkedFamilyId !== null ? (
-            <Link
-              to={`/family/${person.linkedFamilyId}`}
-              className="text-fe-link hover:text-fe-link-dark"
-            >
-              {getFullName(person)}
-            </Link>
-          ) : (
-            getFullName(person)
-          )}
-        </span>
-      ))}
-    </p>
   )
 }
