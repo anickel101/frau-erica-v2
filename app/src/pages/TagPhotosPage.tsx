@@ -253,6 +253,7 @@ function TagGallery({ galleryId }: { galleryId: number }) {
   }
 
   const photo = gallery.photos[index]
+  const photoCount = gallery.photos.length
   const taggedImageIds = new Set((tags ?? []).map((t) => t.image_id))
   const doneCount = gallery.photos.filter((p) => taggedImageIds.has(p.image_id)).length
 
@@ -281,6 +282,41 @@ function TagGallery({ galleryId }: { galleryId: number }) {
             {saveError}
           </p>
         )}
+
+        {/* Above the photograph, not below it.
+            A tall portrait pushed the controls off the bottom of the
+            screen, so moving on from one meant scrolling down to find
+            Next and then back up to see what came next -- twice per
+            photograph, over hundreds of them. Up here they stay put
+            while the image changes underneath them.
+
+            Both wrap. A gallery is a loop to be gone round, not a
+            queue with two dead ends: reaching the last photograph and
+            wanting the first one back is ordinary, and a disabled
+            button at each end answered that with nothing at all. Only
+            a single-photograph gallery disables them, where every move
+            would land back on the same picture. */}
+        <div className="mb-5 flex items-center justify-between gap-4 border-b border-fe-brown/20 pb-3">
+          <button
+            type="button"
+            onClick={() => setIndex((i) => (i - 1 + photoCount) % photoCount)}
+            disabled={photoCount <= 1}
+            className="text-sm text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
+          >
+            &larr; Previous
+          </button>
+          {/* As prominent as anything else on the page. "I don't know who
+              that is" is a legitimate answer, and a tool that makes it
+              feel like a failure is a tool that gets abandoned. */}
+          <button
+            type="button"
+            onClick={() => setIndex((i) => (i + 1) % photoCount)}
+            disabled={photoCount <= 1}
+            className="text-sm font-bold text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
+          >
+            Skip / Next &rarr;
+          </button>
+        </div>
 
         {tags === null && !loadError ? (
           <p className="text-sm text-fe-ink/60">Loading&hellip;</p>
@@ -314,28 +350,6 @@ function TagGallery({ galleryId }: { galleryId: number }) {
             }
           />
         ) : null}
-
-        <div className="mt-6 flex items-center justify-between gap-4 border-t border-fe-brown/20 pt-4">
-          <button
-            type="button"
-            onClick={() => setIndex((i) => Math.max(0, i - 1))}
-            disabled={index === 0}
-            className="text-sm text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
-          >
-            &larr; Previous
-          </button>
-          {/* As prominent as anything else on the page. "I don't know who
-              that is" is a legitimate answer, and a tool that makes it
-              feel like a failure is a tool that gets abandoned. */}
-          <button
-            type="button"
-            onClick={() => setIndex((i) => Math.min(gallery.photos.length - 1, i + 1))}
-            disabled={index >= gallery.photos.length - 1}
-            className="text-sm font-bold text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
-          >
-            Skip / Next &rarr;
-          </button>
-        </div>
       </div>
     </Layout>
   )

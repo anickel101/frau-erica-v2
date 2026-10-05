@@ -42,7 +42,10 @@ names the people, which is often faster than recognising a face.
 - **Someone else** — search by name for anyone not on that list.
 - **In this photograph** — who you have tagged so far. The ✕ beside a
   name removes it.
-- **Skip / Next** — moves on without tagging anything.
+- **Skip / Next** — moves on without tagging anything. It sits above
+  the photograph, so you never have to scroll past a tall one to find
+  it. Both it and **Previous** go round the loop: Next on the last
+  photograph comes back to the first.
 
 ## Things worth knowing
 
