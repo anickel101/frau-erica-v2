@@ -255,9 +255,11 @@ CREATE TABLE Documents (
 --     it doesn't, so a row with both set shows the Persons spelling.
 --
 --   Why both, rather than deriving the person from the name: the name
---     does not identify anybody. This archive has two Mark Nickels and
---     several Friedrich Muellers, and matching on a string would
---     silently attribute a document to whichever one sorted first.
+--     does not identify anybody. 97 first-and-last-name pairs in this
+--     archive are shared by two or more people -- six Paul Muellers,
+--     five Martin Muellers, four Charles Bigelows -- and matching on a
+--     string would silently attribute a document to whichever one
+--     sorted first.
 --     It also has to survive the opposite case -- "Nana", "Opa",
 --     "Tante Fieks" are what the family calls the author and nothing
 --     like the name in Persons.

@@ -341,10 +341,11 @@ function headerFor(documentId: number) {
 // people with no record in it.
 //
 // Not resolved by matching the author string to a name. The name does
-// not identify anybody (two Mark Nickels, several Friedrich Muellers),
-// and the family's own words for its authors -- "Nana", "Opa", "Tante
-// Fieks" -- look nothing like the names in Persons. The id is recorded
-// in the archive deliberately, one document at a time.
+// not identify anybody: 97 first-and-last-name pairs in this archive are
+// shared by two or more people, six of them Paul Mueller. And the
+// family's own words for its authors -- "Nana", "Opa", "Tante Fieks" --
+// look nothing like the names in Persons. The id is recorded in the
+// archive deliberately, one document at a time.
 // Parallel texts are checked before anything is written. See
 // parallelTextValidation.ts for why this is fatal rather than a warning:
 // the site pairs the two halves by position, so a pair that has drifted
