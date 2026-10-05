@@ -250,6 +250,7 @@ interface DocumentRow {
   content: string | null
   genre: string | null
   tags: string | null
+  author: string | null
   language: string | null
   parallel_of: number | null
 }
@@ -258,7 +259,7 @@ const documentRows = (
   db
     .prepare(
       `SELECT document_id, series_key, series_title, series_order, title,
-              summary, content, genre, tags, language, parallel_of
+              summary, content, genre, tags, author, language, parallel_of
        FROM Documents WHERE is_published = 1`,
     )
     .all() as unknown as DocumentRow[]
@@ -323,11 +324,18 @@ function headerFor(documentId: number) {
   }
 }
 
-// Documents.author is unused in real data (verified: 0/227 non-null) and
-// there's no reliable author -> person linkage anywhere in the schema
-// (DocumentLinks has only 6 rows and doesn't distinguish "author" from
-// "subject" anyway) -- both fields are kept in the shape for forward
-// compatibility, always null for now.
+// author is now real data, and is emitted. It was hardcoded null here
+// on the grounds that no document had one (0/227 at the time), which
+// was true until the Chicago Memoirs were given one -- at which point
+// setting it in the database had no visible effect whatsoever, because
+// this file threw it away on the way out. TextByline could already
+// render a plain author string; it had simply never been handed one.
+//
+// authorPersonId stays null: Documents has no author_person_id column,
+// so an author cannot be linked to their own record even when they
+// have one (Joel Nickel is person 33). Worth adding -- the search box
+// advertises author search, and TextByline's nicer branch, the one that
+// links the name to a family page, is unreachable without it.
 // Parallel texts are checked before anything is written. See
 // parallelTextValidation.ts for why this is fatal rather than a warning:
 // the site pairs the two halves by position, so a pair that has drifted
@@ -364,7 +372,7 @@ const documentsDetail = documentRows.map((row) => ({
   series_title: row.series_title,
   series_order: row.series_order,
   title: row.title,
-  author: null as string | null,
+  author: fixMojibake(row.author),
   authorPersonId: null as number | null,
   summary: row.summary,
   genre: row.genre,
@@ -388,7 +396,7 @@ const documentsList = documentRows
     series_title: row.series_title,
     series_order: row.series_order,
     title: row.title,
-    author: null as string | null,
+    author: fixMojibake(row.author),
     authorPersonId: null as number | null,
     summary: row.summary,
     genre: row.genre,
