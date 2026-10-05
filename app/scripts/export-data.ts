@@ -251,6 +251,7 @@ interface DocumentRow {
   genre: string | null
   tags: string | null
   author: string | null
+  author_person_id: number | null
   language: string | null
   parallel_of: number | null
 }
@@ -259,7 +260,8 @@ const documentRows = (
   db
     .prepare(
       `SELECT document_id, series_key, series_title, series_order, title,
-              summary, content, genre, tags, author, language, parallel_of
+              summary, content, genre, tags, author, author_person_id,
+              language, parallel_of
        FROM Documents WHERE is_published = 1`,
     )
     .all() as unknown as DocumentRow[]
@@ -331,11 +333,18 @@ function headerFor(documentId: number) {
 // this file threw it away on the way out. TextByline could already
 // render a plain author string; it had simply never been handed one.
 //
-// authorPersonId stays null: Documents has no author_person_id column,
-// so an author cannot be linked to their own record even when they
-// have one (Joel Nickel is person 33). Worth adding -- the search box
-// advertises author search, and TextByline's nicer branch, the one that
-// links the name to a family page, is unreachable without it.
+// authorPersonId is emitted too, as of migration 004. It names the
+// author's Persons record where they have one, which is what lets
+// TextByline take its nicer branch -- the author's name as a link to
+// their family page -- instead of printing plain text. Most documents
+// keep a null here and always will: much of this archive was written by
+// people with no record in it.
+//
+// Not resolved by matching the author string to a name. The name does
+// not identify anybody (two Mark Nickels, several Friedrich Muellers),
+// and the family's own words for its authors -- "Nana", "Opa", "Tante
+// Fieks" -- look nothing like the names in Persons. The id is recorded
+// in the archive deliberately, one document at a time.
 // Parallel texts are checked before anything is written. See
 // parallelTextValidation.ts for why this is fatal rather than a warning:
 // the site pairs the two halves by position, so a pair that has drifted
@@ -373,7 +382,7 @@ const documentsDetail = documentRows.map((row) => ({
   series_order: row.series_order,
   title: row.title,
   author: fixMojibake(row.author),
-  authorPersonId: null as number | null,
+  authorPersonId: row.author_person_id,
   summary: row.summary,
   genre: row.genre,
   tags: row.tags,
@@ -397,7 +406,7 @@ const documentsList = documentRows
     series_order: row.series_order,
     title: row.title,
     author: fixMojibake(row.author),
-    authorPersonId: null as number | null,
+    authorPersonId: row.author_person_id,
     summary: row.summary,
     genre: row.genre,
     tags: row.tags,
