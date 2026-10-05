@@ -63,7 +63,19 @@ export default function CollectionPage() {
                 same kind of thing in the same place, and should read
                 the same way. */}
             <div className="max-w-none mb-6 pl-8 sm:pl-24 text-[14px] text-fe-ink">
-              <p>{collection.blurb}</p>
+              {/* Split on blank lines rather than printed as one <p>.
+                  A blurb long enough to want paragraphs -- the Chicago
+                  Memoirs runs to three -- used to arrive here as a
+                  single string with its newlines collapsed by HTML, so
+                  the breaks the author wrote simply vanished and the
+                  whole thing read as one run-on paragraph. The card and
+                  the series row both line-clamp the same text, so this
+                  is the only place the full blurb is ever read. */}
+              {blurbParagraphs(collection.blurb).map((paragraph, index) => (
+                <p key={index} className={index > 0 ? 'mt-3' : undefined}>
+                  <InlineMarkdown>{paragraph}</InlineMarkdown>
+                </p>
+              ))}
             </div>
             <hr className="border-t-[1.5px] border-fe-brown mb-6" />
           </>
@@ -111,6 +123,16 @@ function orderFor(
   chapters: DocumentListItem[],
 ): DocumentListItem[] {
   return collection.kind === 'annual' ? [...chapters].reverse() : chapters
+}
+
+// A blurb's own paragraph breaks, as written. Collapses runs of blank
+// lines and trims, so a stray trailing newline in the archive doesn't
+// print an empty paragraph.
+function blurbParagraphs(blurb: string): string[] {
+  return blurb
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 0)
 }
 
 function countLabel(collection: Collection): string {
