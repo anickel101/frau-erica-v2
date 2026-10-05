@@ -194,6 +194,7 @@ CREATE TABLE Documents (
     series_order INTEGER,
     title        TEXT NOT NULL,
     author       TEXT,
+    author_person_id INTEGER REFERENCES Persons(person_id),
     summary      TEXT,
     content      TEXT,
     genre        TEXT CHECK (genre IN ('Biography', 'Memoir', 'History', 'Literary', 'Letter', 'Recipe', 'Other')),
@@ -240,6 +241,35 @@ CREATE TABLE Documents (
 --     for one English, or a cycle — which then have to be forbidden
 --     with constraints a single nullable pointer makes impossible to
 --     express in the first place.
+-- Authorship.
+--   author is the name as the archive wants it printed. It stays the
+--     only required half: most of what is held here was written by
+--     people who have no Persons row and never will -- Carl de Haas,
+--     a parish secretary, a newspaper -- and a document by one of them
+--     is still a document with an author.
+--
+--   author_person_id names that author's record WHEN THEY HAVE ONE, so
+--     the byline can link to their family page. It is a hint for
+--     display, not a second source of truth: the site prints the
+--     person's name when the link resolves and the author string when
+--     it doesn't, so a row with both set shows the Persons spelling.
+--
+--   Why both, rather than deriving the person from the name: the name
+--     does not identify anybody. 97 first-and-last-name pairs in this
+--     archive are shared by two or more people -- six Paul Muellers,
+--     five Martin Muellers, four Charles Bigelows -- and matching on a
+--     string would silently attribute a document to whichever one
+--     sorted first.
+--     It also has to survive the opposite case -- "Nana", "Opa",
+--     "Tante Fieks" are what the family calls the author and nothing
+--     like the name in Persons.
+--
+--   Deliberately NOT NOT NULL and deliberately unenforced beyond the
+--     foreign key: an author_person_id whose Persons row spells the
+--     name differently is a normal state, not an error.
+
+CREATE INDEX IF NOT EXISTS idx_documents_author_person ON Documents(author_person_id);
+
 CREATE INDEX IF NOT EXISTS idx_documents_parallel_of ON Documents(parallel_of);
 
 -- ------------------------------------------------------------
