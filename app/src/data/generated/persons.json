@@ -15838,5 +15838,17 @@
     "date_of_death": null,
     "death_year": null,
     "linkedFamilyId": 932
+  },
+  {
+    "person_id": 1343,
+    "first_name": "Benjamin",
+    "middle_name": "Michael",
+    "last_name": "Akers",
+    "suffix": "",
+    "date_of_birth": null,
+    "birth_year": 1992,
+    "date_of_death": null,
+    "death_year": null,
+    "linkedFamilyId": 684
   }
 ]
