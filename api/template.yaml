@@ -243,6 +243,65 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-request-access'
       RetentionInDays: 30
 
+  # --- Watching the notification that nobody was watching ---
+  #
+  # Every access-request notification failed from 2026-09-08 to
+  # 2026-10-05. Three real relatives asked for access and nobody was
+  # told. The failure was logged correctly the whole time -- an ERROR
+  # line, with the name, the email and the reason, sitting in CloudWatch
+  # where nothing reads it. Both times it was finally caught by a person
+  # filling in the form and noticing, which is not a monitoring strategy.
+  #
+  # The alarm matches the log line the handler already writes, so there
+  # is nothing extra to emit and nothing to keep in step beyond the event
+  # name itself.
+  RequestAccessNotificationFailedFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Ref RequestAccessLogGroup
+      # The handler's own structured log line. Deliberately NOT a bare
+      # text match on "AccessDenied": the two failures so far were both
+      # AccessDenied, but the thing worth alarming on is "the archivist
+      # wasn't told", whatever the cause -- a throttle, an SES suspension
+      # or a bad address would all matter just as much.
+      FilterPattern: '{ $.event = "request-access.notification-failed" }'
+      MetricTransformations:
+        - MetricNamespace: FrauErica
+          MetricName: AccessRequestNotificationFailures
+          MetricValue: '1'
+          # Emits a 0 when nothing matches, so the alarm sits in OK
+          # rather than INSUFFICIENT_DATA. An alarm that spends its life
+          # greyed out is one nobody trusts or looks at.
+          DefaultValue: 0
+
+  RequestAccessNotificationFailedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-access-request-not-delivered'
+      AlarmDescription: >
+        An access request arrived but the archivist could not be emailed
+        about it. Someone is waiting to be let in and nobody has been
+        told. The CloudWatch log group for request-access holds the
+        name, email and connection needed to approve them by hand, and
+        /admin/users will already show them as pending.
+      Namespace: FrauErica
+      MetricName: AccessRequestNotificationFailures
+      Statistic: Sum
+      # One failure is worth knowing about. These arrive a handful of
+      # times a year, so there is no noise to suppress and no reason to
+      # wait for a second one -- the whole point is to hear on the day.
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      # The existing bounce/complaint topic, whose subscription the
+      # archivist has already confirmed. See hosting/dns.yaml's
+      # EmailIssuesTopicArn output -- this import is why the dns stack
+      # must be deployed before this one.
+      AlarmActions:
+        - !ImportValue FrauEricaEmailIssuesTopic
+
   AdminApproveUserLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
