@@ -196,25 +196,54 @@ async function baseHandler(
 
   const frontendOrigin = requireEnv('FRONTEND_ORIGIN')
 
+  let notifyError: unknown = null
   try {
     await sendAdminNotification({ name, email, connection }, frontendOrigin)
   } catch (err) {
     // The worst failure this route has, and previously the quietest: the
     // account now exists in 'pending' but nothing told the archivist to
     // go approve it, so the request lands in a state where the requester
-    // is waiting and nobody knows to act. Rethrown (the requester should
-    // not be told this worked), but logged first with the details needed
+    // is waiting and nobody knows to act. Logged with the details needed
     // to approve them by hand -- this line is the notification when the
     // notification itself is what broke.
     log.error('request-access.notification-failed', err, { email, name, connection })
-    throw err
+    notifyError = err
   }
 
   // Surfaced only after the archivist has been notified. The requester
   // does need to see a failure here -- without a Cognito account, the
   // approve flow has nothing to approve, so this genuinely needs a retry
   // or manual intervention rather than a falsely reassuring 200.
+  //
+  // Checked before the notification failure below, and thrown rather
+  // than returned: "we have you, just tell the archivist" would be a lie
+  // when no account was created.
   if (cognitoError) throw cognitoError
+
+  // A told-the-truth failure, not a generic 500.
+  //
+  // This used to rethrow, on the reasoning that the requester shouldn't
+  // be told it worked. Right in principle, wrong in effect: API Gateway
+  // turned the throw into a bare 500, the form showed "API request to
+  // /request-access failed: 500", and the only reading available to a
+  // person is "that didn't go through, try again". On 5 October 2026 one
+  // relative read it exactly that way and resubmitted ten times over
+  // three hours, trimming his family tree shorter each time in the
+  // belief it was too long. Every retry was a no-op: his account existed
+  // from the first attempt and was approvable the whole time.
+  //
+  // So the status stays an error -- something really did fail, and the
+  // archivist really wasn't told -- but the message says which half
+  // worked and gives the one action that helps. 502 rather than 500
+  // because the failure is in a dependency (SES), not in this request.
+  if (notifyError) {
+    return jsonResponse(502, {
+      error:
+        `We've got your request, but we couldn't notify the Archivist automatically. ` +
+        `There's no need to submit the form again -- please email ` +
+        `FrauErica.archivist@gmail.com so they know to look for you.`,
+    })
+  }
 
   log.info('request-access.accepted', { email })
   return jsonResponse(200, { ok: true })
