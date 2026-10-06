@@ -289,10 +289,24 @@ export default function TextPage() {
             }
             components={imageComponents}
           />
-        ) : (
+        ) : document.content.trim() ? (
           <div className="max-w-none text-[12px] text-fe-ink flow-root">
             <ReactMarkdown components={imageComponents}>{document.content}</ReactMarkdown>
           </div>
+        ) : (
+          // Five published documents have a summary and no text at all
+          // -- 98, 119, and three chapters of Nana's memoir. They used
+          // to render the header, the title, the byline, the summary and
+          // the rule that exists to separate summary from body, and then
+          // stop. The rule read as a promise of text that wasn't there,
+          // so the page looked broken rather than unfinished.
+          //
+          // Said here rather than fixed in the data, because it is true
+          // of any document whose transcription hasn't been done yet and
+          // the archive will have more of them.
+          <p className="text-[12px] italic text-fe-ink/70">
+            The text of this piece hasn&rsquo;t been transcribed into the archive yet.
+          </p>
         )}
 
         {/* Only where the hand-written links were removed. Documents
