@@ -1,5 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Layout from './Layout'
 
 // Set when we've already tried an automatic reload this tab session --
@@ -38,11 +38,31 @@ interface State {
   error: Error | null
 }
 
-export default class ErrorBoundary extends Component<{ children: ReactNode }, State> {
+// The error view renders inside Layout, so the sidebar's twenty-odd
+// links are on screen whenever it shows. Without this prop they were all
+// dead: state.error was set once and nothing ever cleared it, so React
+// Router changed the URL and the boundary went on rendering the same
+// error view. A user clicked link after link and the screen never
+// changed -- then the "Reload the page" button reloaded whichever URL
+// they had last clicked rather than the one they were on.
+//
+// locationKey changes on every navigation, including to the same path,
+// so clearing on it gives every link its ordinary meaning back. If the
+// next page throws too, the boundary simply catches again.
+class ErrorBoundaryInner extends Component<
+  { children: ReactNode; locationKey: string },
+  State
+> {
   state: State = { error: null }
 
   static getDerivedStateFromError(error: Error): State {
     return { error }
+  }
+
+  componentDidUpdate(previous: { locationKey: string }): void {
+    if (this.state.error && previous.locationKey !== this.props.locationKey) {
+      this.setState({ error: null })
+    }
   }
 
   componentDidMount(): void {
@@ -95,4 +115,12 @@ export default class ErrorBoundary extends Component<{ children: ReactNode }, St
       </Layout>
     )
   }
+}
+
+// A function wrapper only so the class above can see the location --
+// hooks can't be used in a class, and the boundary has to stay a class
+// because getDerivedStateFromError has no hook equivalent.
+export default function ErrorBoundary({ children }: { children: ReactNode }) {
+  const location = useLocation()
+  return <ErrorBoundaryInner locationKey={location.key}>{children}</ErrorBoundaryInner>
 }

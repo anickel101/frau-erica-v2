@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ApiError } from '../data-access/gated/apiClient'
 import { PrinterIcon } from '@heroicons/react/24/outline'
 import IconAction from '../components/IconAction'
 import InlineMarkdown from '../components/InlineMarkdown'
@@ -189,7 +190,15 @@ export default function RecipePage() {
         // A 404 here is the ordinary "no such recipe" answer -- including
         // for the four that import unpublished -- and deserves its own
         // message rather than "something went wrong".
-        const notFound = error instanceof Error && /\b404\b/.test(error.message)
+        // error.status, not a string match on the message. This read
+        // /\b404\b/ against error.message -- but apiFetch builds that
+        // message from the API's own body, and recipe.ts returns "No
+        // recipe with slug X", which contains no "404". So the notFound
+        // branch below was unreachable and an old or mistyped Keepers
+        // link said "Something went wrong loading this recipe",
+        // sending the reader to chase a fault that did not exist.
+        // FamilyPage has always done this correctly.
+        const notFound = error instanceof ApiError && error.status === 404
         setState({ kind: notFound ? 'notFound' : 'error' })
       })
     return () => {
