@@ -452,6 +452,58 @@ if (orphanedKeys.length > 0) {
   process.exit(1)
 }
 
+// Every {{image:ID}} in a published document must name a PUBLISHED
+// image, because an id that isn't in images.json resolves to an empty
+// string in the browser -- no gap, no alt text, no console warning. The
+// photograph simply isn't there, and nothing says so.
+//
+// This is not hypothetical. When the check was written, 70 of the 97
+// placeholders in the archive pointed at images that exist in the
+// database with real filenames and dimensions and are simply
+// is_published = 0. 49 documents were affected and 46 of them lost
+// EVERY photograph they had, including the whole 1998-2019 run of
+// Christmas letters.
+//
+// Reviewing the generated-JSON diff cannot catch it: the placeholders
+// are still in documents.json, and the loss happens at render time.
+//
+// A warning, not fatal, and deliberately so -- unlike an orphaned
+// series_key, this has a legitimate intermediate state. An archivist
+// mid-way through publishing a letter and its photographs should be
+// able to export. What they should not be able to do is ship it without
+// being told.
+const publishedImageIds = new Set(images.map((img) => img.image_id))
+const missingEmbeds = documentRows
+  .map((row) => ({
+    document_id: row.document_id,
+    title: row.title,
+    ids: [
+      ...new Set(
+        [...(row.content ?? '').matchAll(/\{\{image:(\d+)\}\}/g)]
+          .map((m) => Number(m[1]))
+          .filter((id) => !publishedImageIds.has(id)),
+      ),
+    ],
+  }))
+  .filter((row) => row.ids.length > 0)
+
+if (missingEmbeds.length > 0) {
+  const total = missingEmbeds.reduce((n, row) => n + row.ids.length, 0)
+  console.warn(
+    `\n${total} embedded image${total === 1 ? '' : 's'} in ${missingEmbeds.length} published document${missingEmbeds.length === 1 ? '' : 's'} will not appear:\n`,
+  )
+  for (const row of missingEmbeds) {
+    console.warn(`  ${row.document_id}  ${row.title}`)
+    console.warn(
+      `      missing image${row.ids.length === 1 ? '' : 's'}: ${row.ids.join(', ')}`,
+    )
+  }
+  console.warn(
+    '\n  Publish those images (Images.is_published = 1), or remove the\n' +
+      '  {{image:ID}} placeholders. Until then those pages render without them.\n',
+  )
+}
+
 // Chapters counted from the EXPORTED, entry-point documents only: the
 // German half of a parallel text is not a chapter of its own, and an
 // unpublished chapter is not on the shelf.

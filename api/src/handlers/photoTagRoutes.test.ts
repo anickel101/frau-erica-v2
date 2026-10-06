@@ -123,6 +123,19 @@ describe('GET /photo-tags', () => {
   // A malformed value is still a 400. Quietly returning the whole
   // archive because someone typed gallery_id=abc would be a surprising
   // amount of data and a confusing answer to a question asked wrongly.
+  // The bug this file did not catch. /^\d+$/ cannot match -1, so the two
+  // synthetic groups -- the 263 photographs that belong to no gallery --
+  // could be tagged but never read back: opening the group returned 400
+  // and the page showed a load error. The old test only ever tried
+  // 'abc', which a correct guard and a broken one both reject.
+  test.each([
+    ['-1', 'header images'],
+    ['-2', 'miscellaneous'],
+  ])('accepts gallery_id=%s, the %s group', async (raw) => {
+    const res = await run(list, event({ queryStringParameters: { gallery_id: raw } }))
+    expect(res.statusCode).toBe(200)
+  })
+
   test('rejects a malformed gallery_id rather than returning everything', async () => {
     const res = await run(list, event({ queryStringParameters: { gallery_id: 'abc' } }))
     expect(res.statusCode).toBe(400)

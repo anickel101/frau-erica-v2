@@ -4,6 +4,7 @@ import type {
 } from 'aws-lambda'
 import { requireAdminAccess } from '../lib/auth'
 import { listAllPhotoTags, listPhotoTagsForGallery } from '../lib/photoTags'
+import { galleryIdFromParam } from '../lib/queries/photoTagTargets'
 import { jsonResponse } from '../lib/response'
 import { withLogging } from '../lib/withLogging'
 
@@ -29,15 +30,22 @@ async function baseHandler(
   // 400: silently returning the whole archive because someone typed
   // gallery_id=abc would be a surprising amount of data and a confusing
   // answer to a question that was asked wrongly.
-  if (raw !== undefined && !/^\d+$/.test(raw)) {
-    return jsonResponse(400, { error: 'gallery_id must be a positive integer' })
+  //
+  // galleryIdFromParam rather than a regex here, because a regex here is
+  // exactly what went wrong: /^\d+$/ cannot match -1 or -2, so the two
+  // synthetic groups could be written to and never read back. The rule
+  // now lives next to the constants it has to agree with.
+  if (raw === undefined) {
+    return jsonResponse(200, { tags: await listAllPhotoTags() })
   }
 
-  const tags =
-    raw === undefined
-      ? await listAllPhotoTags()
-      : await listPhotoTagsForGallery(Number(raw))
-  return jsonResponse(200, { tags })
+  const galleryId = galleryIdFromParam(raw)
+  if (galleryId === null) {
+    return jsonResponse(400, {
+      error: 'gallery_id must be a gallery number, or -1 / -2 for the two groups',
+    })
+  }
+  return jsonResponse(200, { tags: await listPhotoTagsForGallery(galleryId) })
 }
 
 export const handler = withLogging('listPhotoTags', baseHandler)

@@ -41,6 +41,38 @@ export function personExists(db: Database, personId: number): boolean {
 export const HEADER_IMAGES_GROUP = -1
 export const MISCELLANEOUS_GROUP = -2
 
+// What counts as a gallery id, in one place.
+//
+// It lived in addPhotoTag.ts, and listPhotoTags.ts grew its own version
+// as a query-string regex -- /^\d+$/, which cannot match a negative
+// number. So a tag could be WRITTEN against the header or miscellaneous
+// group and never READ back: opening /admin/tag-photos/headers returned
+// 400 and the page showed a load error, leaving all 263 ungalleried
+// photographs unreachable by the tool built for them. The two routes
+// disagreeing about the same rule is the bug; sharing the rule is the
+// fix.
+export function isGalleryId(value: number): boolean {
+  if (!Number.isSafeInteger(value)) return false
+  return value >= 1 || value === HEADER_IMAGES_GROUP || value === MISCELLANEOUS_GROUP
+}
+
+// For a JSON body. Deliberately refuses a numeric STRING: JSON will
+// carry "12" into a field typed number, and it would reach DynamoDB as a
+// key no later query matches.
+export function asGalleryId(value: unknown): number | null {
+  if (typeof value !== 'number' || !isGalleryId(value)) return null
+  return value
+}
+
+// For a query string, where everything is a string by definition.
+// Rejects '12.5', '1e9', '' and ' 12' -- Number() alone accepts all but
+// the first, and Number('') is 0.
+export function galleryIdFromParam(raw: string): number | null {
+  if (!/^-?\d+$/.test(raw)) return null
+  const value = Number(raw)
+  return isGalleryId(value) ? value : null
+}
+
 // Checks the PAIRING, not just that each id exists: gallery_id is what
 // the by-gallery index is built on, so a tag filed under the wrong
 // gallery would be invisible to the page that needs to show it --
