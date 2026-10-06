@@ -107,9 +107,42 @@ describe('adminApproveUser handler behavior', () => {
     })
     expect(sendMock.mock.calls[2][0]).toBeInstanceOf(AdminCreateUserCommand)
     expect(sendMock.mock.calls[2][0].input).toMatchObject({ MessageAction: 'RESEND' })
-    expect(sendMock.mock.calls[3][0]).toBeInstanceOf(AdminRemoveUserFromGroupCommand)
-    expect(sendMock.mock.calls[3][0].input).toMatchObject({ GroupName: 'pending' })
-    expect(sendMock.mock.calls[4][0]).toBeInstanceOf(AdminAddUserToGroupCommand)
-    expect(sendMock.mock.calls[4][0].input).toMatchObject({ GroupName: 'approved' })
+    // ORDER MATTERS, and this assertion is the whole point of pinning it.
+    //
+    // These two used to run the other way round. If the add then failed
+    // -- a throttle, a transient 5xx -- the account belonged to no group
+    // at all, and adminListUsers enumerates membership group by group,
+    // so the person being approved vanished from the admin table: not
+    // pending, not approved, not deletable from the UI. In this order a
+    // half-failure leaves them in both groups, which hasApprovedAccess
+    // already accepts and the list still shows.
+    expect(sendMock.mock.calls[3][0]).toBeInstanceOf(AdminAddUserToGroupCommand)
+    expect(sendMock.mock.calls[3][0].input).toMatchObject({ GroupName: 'approved' })
+    expect(sendMock.mock.calls[4][0]).toBeInstanceOf(AdminRemoveUserFromGroupCommand)
+    expect(sendMock.mock.calls[4][0].input).toMatchObject({ GroupName: 'pending' })
+  })
+
+  // The failure the ordering exists to survive.
+  test('a failed group add leaves them still pending, not in limbo', async () => {
+    // userExists goes through the same sendMock (AdminGetUserCommand),
+    // so the sequence is: 1 the existence check, 2 the attribute write,
+    // 3 the RESEND, 4 the group add -- which fails here.
+    let call = 0
+    sendMock.mockImplementation(() => {
+      call += 1
+      if (call === 4) throw new Error('TooManyRequestsException')
+      return {}
+    })
+
+    await expect(
+      handler(fakeEvent('[admin]', { email: 'a@b.com', personId: 23 })),
+    ).rejects.toThrow('TooManyRequestsException')
+
+    // Nothing removed them from pending, so they are still visible to
+    // the admin list and the approval can simply be retried.
+    const removals = sendMock.mock.calls.filter(
+      (c) => c[0] instanceof AdminRemoveUserFromGroupCommand,
+    )
+    expect(removals).toHaveLength(0)
   })
 })
