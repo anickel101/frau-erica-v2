@@ -51,14 +51,25 @@ a **render** guard, not a data guard.
 Each was deliberate, is documented, and re-raising it costs the reader
 attention that a real finding needs.
 
-1. **`persons.json` is public.** 1,321 real people — names and birth
-   *years*, no full dates for anyone plausibly living — ship to every
-   browser from a public repo. This was examined in the 2026-09-05
-   review, decided as an accepted trade-off for a genealogy archive, and
-   `README.md` now carries a section stating precisely what is and isn't
-   exposed. Do not re-litigate. *Do* report any new leak of something
-   that section says is **not** published (notes fields, unpublished
-   documents, recipes, exact dates of birth).
+1. **`persons.json` is public.** 1,321 real people ship to every browser
+   from a public repo. This was examined in the 2026-09-05 review and
+   decided as an accepted trade-off for a genealogy archive; `README.md`
+   carries a section stating precisely what is exposed. Do not
+   re-litigate *that decision*.
+
+   **Correction, 2026-10-06.** An earlier version of this brief said the
+   file held "birth years, no full dates for anyone plausibly living".
+   That is false, and a reviewer caught it. The file carries **829 full
+   `date_of_birth` values**; 447 of those people have no death recorded,
+   254 of them were born in 1940 or later, 104 in 1980 or later, and the
+   most recent is 2026-03-09 — a baby. `README.md` states this correctly
+   ("full, exact dates of birth for several hundred people who are still
+   living"); this brief did not. Reviewers told to report "exact dates of
+   birth" as a leak were being asked to verify an invariant that does not
+   hold.
+
+   *Do* still report any leak of what the README says is **not**
+   published: notes fields, unpublished documents, recipes.
 2. **Static-vs-API split.** Settled. Keepers is gated *because* the
    generated JSON ships to every browser.
 3. **Propose-then-apply.** `splitParallelText.ts`, `proposeDates.ts` emit
@@ -140,9 +151,9 @@ without being told to reload matters more than an elegance problem.
 Not your job to fix, and not findings — but don't report them as
 discoveries: the authorship pass across 242 documents (tiers in a
 separate artifact), several archive-housekeeping items (duplicate
-documents 67/114 and 112/243, 180 uncatalogued S3 files), and one FK
-orphan (family 854 → missing person 1198, which `foreign_key_check`
-reports on every run).
+documents 67/114 and 112/243, 180 uncatalogued S3 files), and **two** FK
+orphans — `Relationships|385` and `Families|854` (the latter pointing at
+a missing person 1198) — which `foreign_key_check` reports on every run.
 
 One that *is* worth confirming, because it is live: **six documents have
 empty content and five of them are published** — 98, 119, 186, 188, 190
