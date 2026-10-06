@@ -577,12 +577,26 @@ Resources:
               Effect: Allow
               Action: kms:Decrypt
               Resource: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/ssm
+            # The DOMAIN identity, not the archivist's gmail address.
+            # SES authorises a send against the identity of the FROM
+            # address, and lib/ses.ts sends from archivist@frauerica.org
+            # (a deliverability fix -- gmail treats SES mail claiming to
+            # be from gmail.com as spoofing). This Resource was left
+            # pointing at the old gmail identity when that changed, so
+            # every single access-request notification failed with
+            # AccessDenied from 2026-09-08 until 2026-10-05 -- four
+            # weeks, three real relatives, nobody told. The requests
+            # themselves were fine; only the telling broke.
+            #
+            # Keep this in step with FROM_ADDRESS in lib/ses.ts. They are
+            # two halves of one fact and nothing but this comment ties
+            # them together.
             - Sid: SendAdminNotification
               Effect: Allow
               Action:
                 - ses:SendEmail
                 - ses:SendRawEmail
-              Resource: !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/FrauErica.archivist@gmail.com
+              Resource: !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/frauerica.org
             # Creates the requester's own account, in 'pending', with no
             # usable credentials yet (MessageAction: SUPPRESS in the
             # handler) -- see adminApproveUser.ts for the only place
