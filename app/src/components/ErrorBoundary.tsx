@@ -1,6 +1,7 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import Layout from './Layout'
+import { buttonClassName } from '../utils/formStyles'
 
 // Set when we've already tried an automatic reload this tab session --
 // without it, a genuinely missing chunk (rather than a stale one) would
@@ -99,7 +100,7 @@ class ErrorBoundaryInner extends Component<
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="bg-fe-accent hover:bg-fe-accent-dark text-white px-4 py-2 rounded-sm text-sm font-bold"
+              className={buttonClassName}
             >
               Reload the page
             </button>

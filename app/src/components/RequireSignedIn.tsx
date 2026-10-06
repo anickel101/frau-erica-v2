@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import Layout from './Layout'
 import { useAuth } from '../hooks/useAuth'
+import { linkButtonClassName } from '../utils/formStyles'
 
 // Signed in, and nothing more.
 //
@@ -30,10 +31,7 @@ export default function RequireSignedIn({ children }: { children: ReactNode }) {
           <h1 className="text-2xl font-bold mb-4">You're not signed in</h1>
           <p className="mb-6">Sign in to change your password.</p>
           <p>
-            <Link
-              to="/login"
-              className="bg-fe-accent hover:bg-fe-accent-dark text-white px-4 py-2 rounded-sm text-sm font-bold inline-block"
-            >
+            <Link to="/login" className={linkButtonClassName}>
               Log in
             </Link>
           </p>

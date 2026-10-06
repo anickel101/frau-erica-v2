@@ -15,9 +15,24 @@
      audience skewing elderly, that's a real readability problem rather
      than a checkbox.
      These are the darkest shades still recognizably the same orange:
-     4.70:1 and 6.52:1. Accent stays in charge of everything that isn't
-     body-sized text -- the top bars, the generational glyphs, and
-     white-on-orange buttons, all of which are fine as they are. */
+     4.70:1 and 6.52:1 as text on the page background.
+
+     They also carry solid white-on-orange surfaces -- buttons, the
+     selected month pill -- which is why the name says "link" and the
+     usage is wider. White on the accent is 2.94:1 and on accent-dark
+     4.40:1, both short of the 4.5:1 that 12-14px bold button text needs;
+     on these two it is 5.50:1 and 7.63:1.
+
+     This comment used to claim the opposite -- that the bars, the
+     glyphs and "white-on-orange buttons" were "all fine as they are".
+     The bars and glyphs are: a 24px bar carries no text, and the glyphs
+     get their contrast from a fe-brown outline rather than a darker
+     fill. The buttons never were, and that false clause is why the pass
+     that produced these two tokens stopped short of them.
+
+     Accent still owns everything that carries no body-sized text: the
+     top bars, the generational glyphs, and the mobile menu button, whose
+     whole job is to continue the top bar it sits against. */
   --color-fe-link: #b34700;
   --color-fe-link-dark: #8f3900;
 
@@ -29,7 +44,11 @@
      rules (3.24:1 on the page background -- fine for a 24px bar, short
      of AA for body text), and a darkened sibling carries link text at
      6.02:1, hover at 7.51:1. Hue 210 against the orange's 24, which is
-     why it reads as a deliberate second section rather than a clash. */
+     why it reads as a deliberate second section rather than a clash.
+
+     keeper-link also fills the selected genre pill, for the same reason
+     fe-link fills the buttons: white on #0080ff is 3.80:1, short of the
+     4.5:1 its 12px label needs, and 7.04:1 on the darker shade. */
   --color-fe-keeper: #0080ff;
   --color-fe-keeper-link: #0056b3;
   --color-fe-keeper-link-dark: #004a91;

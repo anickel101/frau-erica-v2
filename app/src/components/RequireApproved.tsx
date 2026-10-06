@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Layout from './Layout'
 import { resolveGateView } from './gateView'
 import { useAuth } from '../hooks/useAuth'
+import { linkButtonClassName } from '../utils/formStyles'
 
 function LoginTeaser() {
   return (
@@ -14,10 +15,7 @@ function LoginTeaser() {
           people we can confirm belong to the family.
         </p>
         <p className="mb-6">
-          <Link
-            to="/login"
-            className="bg-fe-accent hover:bg-fe-accent-dark text-white px-4 py-2 rounded-sm text-sm font-bold inline-block"
-          >
+          <Link to="/login" className={linkButtonClassName}>
             Log in
           </Link>
         </p>

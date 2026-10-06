@@ -112,7 +112,7 @@ export default function KeepersPage() {
                 aria-pressed={genre === null}
                 className={`${FILTER_BASE} ${
                   genre === null
-                    ? 'bg-fe-keeper border-fe-keeper text-white'
+                    ? 'bg-fe-keeper-link border-fe-keeper-link text-white'
                     : 'border-fe-keeper text-fe-keeper-link hover:bg-fe-keeper/10'
                 }`}
               >
@@ -126,7 +126,7 @@ export default function KeepersPage() {
                   aria-pressed={genre === g}
                   className={`${FILTER_BASE} ${
                     genre === g
-                      ? 'bg-fe-keeper border-fe-keeper text-white'
+                      ? 'bg-fe-keeper-link border-fe-keeper-link text-white'
                       : 'border-fe-keeper text-fe-keeper-link hover:bg-fe-keeper/10'
                   }`}
                 >

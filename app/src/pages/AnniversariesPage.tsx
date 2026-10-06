@@ -179,7 +179,7 @@ export default function AnniversariesPage() {
                   onClick={() => setMonth(m)}
                   className={`px-2 py-1 rounded-sm text-xs font-bold transition ${
                     isActive
-                      ? 'bg-fe-accent text-white'
+                      ? 'bg-fe-link text-white'
                       : 'bg-fe-brown/10 text-fe-brown hover:bg-fe-brown/20'
                   }`}
                 >
