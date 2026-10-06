@@ -8,8 +8,7 @@ import { log } from '../lib/log'
 import { parseJsonBody } from '../lib/parseJsonBody'
 import { putPhotoTag } from '../lib/photoTags'
 import {
-  HEADER_IMAGES_GROUP,
-  MISCELLANEOUS_GROUP,
+  asGalleryId,
   imageIsInGallery,
   personExists,
 } from '../lib/queries/photoTagTargets'
@@ -28,12 +27,6 @@ interface AddTagBody {
 function asId(value: unknown): number | null {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 1) return null
   return value
-}
-
-function asGalleryId(value: unknown): number | null {
-  if (typeof value !== 'number' || !Number.isSafeInteger(value)) return null
-  if (value === HEADER_IMAGES_GROUP || value === MISCELLANEOUS_GROUP) return value
-  return value >= 1 ? value : null
 }
 
 // Records that a person appears in a photograph.

@@ -12,11 +12,15 @@ vi.mock('../lib/photoTags', () => ({ putPhotoTag }))
 // against real SQL in queries/photoTagTargets.test.ts.
 const personExists = vi.fn(() => true)
 const imageIsInGallery = vi.fn(() => true)
-vi.mock('../lib/queries/photoTagTargets', () => ({
+// importOriginal rather than a hand-written stub for the whole module:
+// asGalleryId is pure, and stubbing it would mean these tests pass while
+// the real rule is wrong -- which is exactly what happened when
+// listPhotoTags grew its own incompatible copy of it. Only the two
+// functions that touch the snapshot are replaced.
+vi.mock('../lib/queries/photoTagTargets', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../lib/queries/photoTagTargets')>()),
   personExists,
   imageIsInGallery,
-  HEADER_IMAGES_GROUP: -1,
-  MISCELLANEOUS_GROUP: -2,
 }))
 vi.mock('../lib/db', () => ({ getDb: async () => ({}) }))
 
