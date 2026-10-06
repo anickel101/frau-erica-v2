@@ -164,10 +164,43 @@ const NON_ASCII_RUN = /[\u0080-\uffff]{2,}/g
 
 const UTF8_STRICT = new TextDecoder('utf-8', { fatal: true })
 
-// A run that isn't Mac-Roman-encodable, or doesn't decode as UTF-8
-// afterwards, is genuine text and comes back untouched. That is what
-// makes this safe to run over everything -- "Sauerbraten mit Klößen"
-// survives unchanged.
+// Mojibake in this archive always decodes back into one of three
+// blocks: Latin-1 Supplement and Latin Extended-A (the umlauts, the
+// eszett, the ring and the accents) or General Punctuation (the curly
+// quotes, the en and em dashes, the ellipsis). Nothing else is a
+// plausible repair of a German family archive.
+//
+// This guard is what makes the round trip safe, and it is not
+// theoretical. Mac Roman puts the curly quotes and dashes at 0xD0-0xD5,
+// inside UTF-8's two-byte lead range, and the umlauts at 0x80-0x9F,
+// inside its continuation range -- so a dash or a non-breaking space
+// immediately followed by an umlaut encodes to a valid two-byte
+// sequence and decodes, silently, into Cyrillic:
+//
+//   "1900–Über"  ->  "1900Іber"
+//   "—Überall"   ->  "цberall"
+//   NBSP + "ü"   ->  "ʟ"
+//
+// Latent when this was written -- nothing currently in the archive
+// trips it -- but it fires the first time somebody types "—Über" or
+// pastes from a word processor carrying a non-breaking space, which is
+// exactly what a FileMaker re-import brings.
+function isPlausibleRepair(decoded: string): boolean {
+  for (const char of decoded) {
+    const code = char.codePointAt(0)!
+    if (code < 0x80) continue
+    if (code >= 0x00a0 && code <= 0x024f) continue
+    if (code >= 0x2000 && code <= 0x206f) continue
+    return false
+  }
+  return true
+}
+
+// A run that isn't Mac-Roman-encodable, doesn't decode as UTF-8
+// afterwards, or decodes into something no German text would contain,
+// is genuine text and comes back untouched. That is what makes this
+// safe to run over everything -- "Sauerbraten mit Klößen" survives
+// unchanged, and so does "1900–Über".
 function repairRun(run: string): string {
   const bytes: number[] = []
   for (const char of run) {
@@ -176,7 +209,8 @@ function repairRun(run: string): string {
     bytes.push(byte)
   }
   try {
-    return UTF8_STRICT.decode(new Uint8Array(bytes))
+    const decoded = UTF8_STRICT.decode(new Uint8Array(bytes))
+    return isPlausibleRepair(decoded) ? decoded : run
   } catch {
     return run
   }
