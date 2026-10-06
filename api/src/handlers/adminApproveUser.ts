@@ -67,6 +67,16 @@ async function baseHandler(
         UserAttributes: [{ Name: 'custom:person_id', Value: String(personId) }],
       }),
     )
+    // Logged here rather than only on full success. This write is
+    // already durable, and the three calls after it can throw -- so
+    // without this line a person_id could be changed and leave no trace
+    // anywhere except a generic request.failed, while the admin sees a
+    // 500 and reasonably concludes nothing happened.
+    log.info('admin.person-id-set', {
+      actor: getCallerEmail(event),
+      target: email,
+      personId,
+    })
     // Resends the invitation -- the first time this person actually
     // receives real login credentials.
     await cognito.send(
@@ -74,13 +84,6 @@ async function baseHandler(
         UserPoolId: userPoolId,
         Username: email,
         MessageAction: 'RESEND',
-      }),
-    )
-    await cognito.send(
-      new AdminRemoveUserFromGroupCommand({
-        UserPoolId: userPoolId,
-        Username: email,
-        GroupName: GROUPS.PENDING,
       }),
     )
   } else {
@@ -104,6 +107,21 @@ async function baseHandler(
     )
   }
 
+  // ADD to approved before REMOVING from pending, and never the other
+  // way round.
+  //
+  // The removal used to run first. If the add then failed -- a throttle,
+  // a transient 5xx -- the account belonged to NO group, and
+  // adminListUsers enumerates membership group by group, so the person
+  // being approved disappeared from the admin table altogether: not
+  // pending, not approved, not deletable from the UI, recoverable only
+  // from the AWS console or by retyping their exact address into this
+  // form. They themselves got a 403 on every gated route.
+  //
+  // In this order a half-failure leaves them in BOTH groups, which
+  // hasApprovedAccess already treats as approved and which the admin
+  // list still shows. Retrying is safe: AdminAddUserToGroup on an
+  // existing member is a no-op, and so is removing a non-member.
   await cognito.send(
     new AdminAddUserToGroupCommand({
       UserPoolId: userPoolId,
@@ -111,6 +129,16 @@ async function baseHandler(
       GroupName: GROUPS.APPROVED,
     }),
   )
+
+  if (hadPriorRequest) {
+    await cognito.send(
+      new AdminRemoveUserFromGroupCommand({
+        UserPoolId: userPoolId,
+        Username: email,
+        GroupName: GROUPS.PENDING,
+      }),
+    )
+  }
 
   // The moment someone gains access to the gated family data. Records
   // which of the two paths ran, because they differ in a way that
