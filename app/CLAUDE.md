@@ -137,9 +137,23 @@ repo root.
 
 ## Auth / gating (built and live)
 
-- **Gated** (family-tree traversal only): Family pages, Person pages —
-  anything using `Persons`/`Families`/`Relationships` data
-- **Public**: Documents, Galleries, Lexicon, and eventually a cookbook
+- **Gated**: Family pages, Person pages, search, germline, Anniversaries,
+  and **Keepers (the cookbook)** — served through `api/` from the S3
+  snapshot, never exported. The cookbook is the one people get wrong: it
+  is _content_, so it reads as public, but it is gated, and root
+  `CLAUDE.md` explains why at length — the generated JSON ships to every
+  browser out of a public repo, so a render-only gate would have
+  published 54 family recipes behind a login wall that protected nothing.
+  Nothing in `export-data.ts` touches `Recipes`, and nothing should.
+- **Public** (exported to committed JSON): Documents, Galleries, Lexicon,
+  Images, Series — **and Persons**. `persons.json` carries all 1,321
+  people and ships to every browser, because public Document and Gallery
+  pages resolve person references into readable names.
+- **Persons therefore reach the site BOTH ways** — committed JSON for
+  public pages, the S3 snapshot for gated Family pages. Adding or editing
+  a person needs `npm run export-data` _and_
+  `~/scripts/frau-erica-backup.sh`; doing one without the other makes the
+  site disagree with itself, with no error anywhere.
 - Cognito-based auth (User Pool with `pending`/`approved`/`admin` groups),
   API Gateway + Lambda for gated data, static S3/CloudFront for public
   content

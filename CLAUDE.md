@@ -29,7 +29,13 @@ This repo has three main parts:
   every browser out of a public repo, so a render-only gate would have
   published 54 family recipes behind a login wall that protected
   nothing.
-- Gated content (Persons, Families) and everything account-related
+- **Persons are exported too**, and are the one table that reaches the
+  site by both routes: `persons.json` is committed and public (public
+  Document and Gallery pages resolve names through it), *and* `api/`
+  reads Persons live from the snapshot for gated Family pages. A change
+  to a person needs both publish steps.
+- Gated content (Families, search, germline, anniversaries) and
+  everything account-related
   (login, request access, admin approval) goes through `api/`, which
   reads a periodically-synced read-only snapshot of the same database
   from S3 — see `api/CLAUDE.md` for exactly how that sync works.

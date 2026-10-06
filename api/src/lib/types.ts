@@ -1,16 +1,21 @@
-// Mirrors app/src/data/mockFamily.ts and mockPersons.ts so the frontend's
-// eventual swap from mock data to this API is a shape match, not a
-// redesign -- same convention app/CLAUDE.md already establishes for the
-// mock data itself ("match this shape rather than restructuring
-// components"). api/ and app/ are separate dependency trees (no shared
-// package), so these are redeclared here rather than imported.
+// The wire shape this API returns, mirrored on the frontend by
+// app/src/types/person.ts and app/src/types/family.ts -- whose own
+// headers say they mirror this file. api/ and app/ are deliberately
+// separate dependency trees with no shared package, so the two ends are
+// redeclared rather than imported, and kept in step by hand.
 //
-// One deliberate deviation from the current mocks: schema/schema.sql's
-// Families.person_id_1/person_id_2 are nullable (single-parent families
-// are valid data), but mockFamily.ts's FamilyPageData assumes both are
-// always present. This API reports the real, honest nullability --
-// FamilyPage.tsx will need a small update to handle a null person_2
-// before this can be wired in directly.
+// This header used to point at app/src/data/mockFamily.ts and describe
+// the frontend's "eventual swap from mock data to this API". That file
+// was deleted when the swap happened, and the API has been live since
+// 2026-09-06 -- so the only statement of which file is authoritative
+// for a shared wire shape named a file that does not exist, and read as
+// an outstanding blocker on work that had shipped.
+//
+// The nullability note it carried is also settled:
+// Families.person_id_1/person_id_2 are nullable because single-parent
+// families are real data, this API reports that honestly, and
+// FamilyPage.tsx handles an absent partner with a documented empty-cell
+// branch.
 
 export interface Person {
   person_id: number
