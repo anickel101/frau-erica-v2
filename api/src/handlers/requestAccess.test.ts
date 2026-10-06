@@ -181,4 +181,57 @@ describe('requestAccess handler', () => {
     // even when account creation itself fails.
     expect(sendAdminNotificationMock).toHaveBeenCalledTimes(1)
   })
+
+  // The failure that actually happened. For four weeks every send
+  // returned AccessDenied (the IAM policy named the sender's old
+  // identity), this rethrew, and API Gateway turned it into a bare 500.
+  // The form could only say "API request to /request-access failed:
+  // 500", which reads as "that didn't go through" -- so one relative
+  // resubmitted ten times over three hours while his account sat there
+  // the whole time, already created and waiting to be approved.
+  test('a failed notification says so plainly instead of 500ing', async () => {
+    verifyRecaptchaMock.mockResolvedValue({ success: true, score: 0.9 })
+    sendAdminNotificationMock.mockRejectedValueOnce(new Error('AccessDenied'))
+
+    const result = (await handler(
+      fakeEvent({
+        name: 'Jane',
+        email: 'jane@example.com',
+        connection: 'x',
+        recaptchaToken: 't',
+      }),
+    )) as APIGatewayProxyStructuredResultV2
+
+    // Still an error -- the archivist genuinely wasn't told -- but a
+    // dependency's error, not this request's.
+    expect(result.statusCode).toBe(502)
+
+    const { error } = JSON.parse(result.body as string)
+    // The two things the person needs: don't retry, do email instead.
+    expect(error).toMatch(/no need to submit the form again/i)
+    expect(error).toContain('FrauErica.archivist@gmail.com')
+
+    // And the account really was created, which is what makes "don't
+    // retry" true rather than merely soothing.
+    expect(sendMock).toHaveBeenCalled()
+  })
+
+  test('a notification failure does not mask a Cognito failure', async () => {
+    verifyRecaptchaMock.mockResolvedValue({ success: true, score: 0.9 })
+    sendMock.mockRejectedValueOnce(new Error('InvalidParameterException'))
+    sendAdminNotificationMock.mockRejectedValueOnce(new Error('AccessDenied'))
+
+    // No account exists, so "we've got your request" would be a lie.
+    // The Cognito error wins and the request fails outright.
+    await expect(
+      handler(
+        fakeEvent({
+          name: 'Jane',
+          email: 'jane@example.com',
+          connection: 'x',
+          recaptchaToken: 't',
+        }),
+      ),
+    ).rejects.toThrow('InvalidParameterException')
+  })
 })
