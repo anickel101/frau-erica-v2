@@ -40,6 +40,23 @@ describe('fixMojibake', () => {
     'Groß',
     'café naïve résumé',
     'Fritz Müllers Reise nach Amerika',
+
+    // The shape that actually broke, and that none of the cases above
+    // could catch: every one of them puts an ASCII letter between the
+    // punctuation and the umlaut. Two ADJACENT non-ASCII characters are
+    // what NON_ASCII_RUN matches, and Mac Roman's layout makes several
+    // such pairs encode to a valid UTF-8 two-byte sequence -- so they
+    // round-tripped silently into Cyrillic. Verified against the real
+    // function before the guard existed:
+    //   '1900–Über' -> '1900Іber'   '—Überall' -> 'цberall'
+    //   NBSP + 'ü'  -> 'ʟ'
+    '1900–Über',
+    '—Überall',
+    'Jahrgang 1865–Ölmühle',
+    '\u00a0ü',
+    '„Über alles“',
+    '»Köln«',
+    'Große–Ähren',
   ])('leaves correct text untouched: %j', (input) => {
     expect(fixMojibake(input)).toBe(input)
   })
