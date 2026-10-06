@@ -51,35 +51,76 @@ describe('buildRequestEmail', () => {
   })
 })
 
-// The half of this that tests could not see, until it broke.
+// The halves of this that tests could not see, until each one broke.
 //
-// SES authorises a send against the identity of the FROM address. The
-// test above asserts the sender is @frauerica.org and has always passed
-// -- but the IAM policy in template.yaml still granted ses:SendEmail on
-// identity/FrauErica.archivist@gmail.com, the address the sender used to
-// be. So every access-request notification failed with AccessDenied from
-// 2026-09-08 to 2026-10-05: four weeks, three real relatives who asked
-// for access and whose requests nobody was told about.
+// A send needs permission on TWO resources, and the facts that decide
+// which two live in three different files:
 //
-// Nothing in the type system or the test suite connected the two. This
-// reads the template and makes the connection explicit, so moving the
-// sender again fails here rather than in production four weeks later.
+//   lib/ses.ts        FROM_ADDRESS -> which identity SES authorises
+//   hosting/dns.yaml  the identity's DEFAULT configuration set
+//   api/template.yaml the IAM Resource ARNs that must name both
+//
+// Nothing in the type system connects a From address to an IAM ARN, so
+// both halves drifted in turn. The sender moved to @frauerica.org and
+// the policy kept naming the old gmail identity -- four weeks of
+// AccessDenied, three real relatives whose requests nobody was told
+// about. Granting the identity then moved the same error onto
+// configuration-set/frau-erica-default, because a default config set
+// applies to every send from the domain without appearing in the send
+// call at all.
+//
+// These read the real files and assert they agree. Both take the
+// granted values OUT of the template rather than restating them: a test
+// that merely agrees with itself passes while production fails.
+
+function templateYaml(): string {
+  return readFileSync(path.join(__dirname, '../../template.yaml'), 'utf-8')
+}
+
+// The Resource block of the SendAdminNotification statement, as ARNs.
+function grantedSesResources(): string[] {
+  return (
+    templateYaml()
+      .split('Sid: SendAdminNotification')[1]
+      .split('- Sid:')[0]
+      .match(/arn:aws:ses:\S+/g) ?? []
+  )
+}
+
 describe('the IAM policy behind the sender', () => {
   test('grants SendEmail on the identity the From address actually uses', () => {
-    const template = readFileSync(path.join(__dirname, '../../template.yaml'), 'utf-8')
     const senderDomain = buildRequestEmail(
       { name: 'n', email: 'e@example.com', connection: 'c' },
       'http://localhost:5173',
     ).Source!.match(/@([^\s>]+)/)![1]
 
-    // The granted identity, read out of the SendAdminNotification
-    // statement rather than hardcoded -- a test that restates the
-    // template's own string would pass no matter what either half said.
-    const granted = template
-      .split('Sid: SendAdminNotification')[1]
-      .split('- Sid:')[0]
-      .match(/identity\/(\S+)/)![1]
+    const identities = grantedSesResources()
+      .filter((arn) => arn.includes(':identity/'))
+      .map((arn) => arn.split(':identity/')[1])
 
-    expect(granted).toBe(senderDomain)
+    expect(identities).toContain(senderDomain)
+  })
+
+  // The identity alone is not enough, which is exactly how this failed
+  // the second time.
+  test("grants SendEmail on the identity's default configuration set", () => {
+    const dns = readFileSync(path.join(__dirname, '../../../hosting/dns.yaml'), 'utf-8')
+
+    // Only matters if the identity actually has a default config set --
+    // if that attachment is ever removed, this requirement goes with it.
+    const hasDefault = /ConfigurationSetAttributes:\s*\n\s*ConfigurationSetName:/.test(
+      dns,
+    )
+    expect(hasDefault).toBe(true)
+
+    const configSetName = dns
+      .split('Type: AWS::SES::ConfigurationSet')[1]
+      .match(/Name:\s*(\S+)/)![1]
+
+    const granted = grantedSesResources()
+      .filter((arn) => arn.includes(':configuration-set/'))
+      .map((arn) => arn.split(':configuration-set/')[1])
+
+    expect(granted).toContain(configSetName)
   })
 })
