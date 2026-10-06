@@ -329,6 +329,17 @@ Outputs:
     Value: !Ref HostedZone
     Export:
       Name: FrauEricaHostedZoneId
+  EmailIssuesTopicArn:
+    Description: >
+      The bounce/complaint topic, exported so api/template.yaml can point
+      an alarm at it. Reused rather than duplicated because the
+      archivist's subscription to this one is already confirmed -- a new
+      topic would need another confirmation click before it could warn
+      anybody, which is exactly the kind of half-finished alerting that
+      let the SES failure run for four weeks.
+    Value: !Ref BounceNotificationTopic
+    Export:
+      Name: FrauEricaEmailIssuesTopic
   NameServers:
     Description: >
       Set these four as the nameservers for frauerica.org at Network
