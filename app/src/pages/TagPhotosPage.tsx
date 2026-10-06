@@ -323,7 +323,6 @@ function TagGallery({ galleryId }: { galleryId: number }) {
         ) : photo ? (
           <PhotoTagger
             photo={photo}
-            galleryId={galleryId}
             galleryPersonIds={gallery.linkedPersonIds}
             allTags={tags ?? []}
             onAdd={(person) =>
@@ -357,14 +356,12 @@ function TagGallery({ galleryId }: { galleryId: number }) {
 
 function PhotoTagger({
   photo,
-  galleryId,
   galleryPersonIds,
   allTags,
   onAdd,
   onRemove,
 }: {
   photo: GalleryPhoto
-  galleryId: number
   galleryPersonIds: number[]
   allTags: PhotoTag[]
   onAdd: (person: Person) => void
@@ -517,9 +514,12 @@ function PhotoTagger({
             <li className="px-2 py-1 text-xs text-fe-ink/60">Nobody by that name.</li>
           )}
         </ul>
-        <p className="mt-4 text-[11px] text-fe-ink/50">
-          Gallery {galleryId}. Tags save as you tap them.
-        </p>
+        {/* No gallery id here any more. It was only ever a debugging
+            aid, and for the two synthetic groups it printed "Gallery
+            -2", which is both meaningless to a reader and a leak of how
+            those groups are stored. The heading above already says
+            which gallery this is. */}
+        <p className="mt-4 text-[11px] text-fe-ink/50">Tags save as you tap them.</p>
       </div>
     </div>
   )
