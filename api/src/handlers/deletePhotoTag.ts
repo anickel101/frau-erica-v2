@@ -46,4 +46,4 @@ async function baseHandler(
   return jsonResponse(200, { image_id: imageId, person_id: personId })
 }
 
-export const handler = withLogging('deletePhotoTag', baseHandler)
+export const handler = withLogging('delete-photo-tag', baseHandler)

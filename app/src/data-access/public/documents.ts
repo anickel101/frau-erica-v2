@@ -109,10 +109,11 @@ export function listDocuments(): DocumentListItem[] {
 // reader who lands on the German half's URL gets the pair rather than
 // an untitled German page with no way back.
 //
-// Exported and generic over the row shape so it can be tested directly:
-// no document in the archive is split yet, so there is no real fixture
-// to assert against, and the alternative would be mocking the generated
-// JSON module.
+// Exported and generic over the row shape so it can be tested directly
+// rather than through the generated JSON module. (This used to say no
+// document was split yet; 17 are, and both halves of every pair are
+// published -- so the generic signature is now a testing convenience
+// rather than a necessity.)
 export function resolveDocumentPair<
   T extends { document_id: number; parallel_of: number | null },
 >(all: T[], id: number): { entry: T; counterpart: T | undefined } | undefined {

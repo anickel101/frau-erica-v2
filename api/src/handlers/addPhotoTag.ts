@@ -87,4 +87,4 @@ async function baseHandler(
   return jsonResponse(200, { image_id: imageId, person_id: personId })
 }
 
-export const handler = withLogging('addPhotoTag', baseHandler)
+export const handler = withLogging('add-photo-tag', baseHandler)

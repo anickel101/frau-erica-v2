@@ -418,15 +418,16 @@ CREATE TABLE Lexicon (
 --   genre: the closed set the original cookbook's index used. Note
 --     "Little Plates" is stored AND displayed -- the old site stored
 --     that but displayed "Hors d'oeuvres"; the Archivist chose the
---     former. Unlike Documents.genre (94% 'Other'), this arrives
+--     former. Unlike Documents.genre (61% 'Other' as of Oct 2026),
+--     this arrives
 --     fully populated and evenly spread, so it is the organizing
 --     dimension the index page and its filters are built on.
 --   slug: URL identity, e.g. 'blueberry-buckle'. Verified collision
---     -free across all 50 indexed recipes at import time.
---   header_image_id: shared, not one-per-recipe -- 36 images serve
---     51 recipe pages (hdr.Blueberries.jpg alone serves 5), hence a
+--     -free across all 54 recipes at import time.
+--   header_image_id: shared, not one-per-recipe -- 37 images serve
+--     54 recipe pages (hdr.Blueberries.jpg alone serves 5), hence a
 --     plain many-to-one FK with no uniqueness constraint.
---   source_note: for the five recipes that credit an outside source
+--   source_note: for the 14 recipes that credit an outside source
 --     (James Beard, the New York Times, the Minnesota Centennial
 --     Cookbook, Frau Erica's own 1903 Deutsch-Amerikanisches
 --     Kochbuch, Cuisinart).
@@ -452,8 +453,8 @@ CREATE TABLE Recipes (
 --   "ingredients then steps" pair. The source pages interleave them
 --   -- Blueberry Buckle runs streusel ingredients, streusel steps,
 --   buckle ingredients, buckle steps; Sour Cherry Tart does it four
---   times. 42 of the 50 indexed recipes have one (usually unlabeled)
---   section, 8 have two to four.
+--   times. 42 of the 54 recipes have one (usually unlabeled)
+--   section, 12 have two to four.
 --
 --   Sections also carry the two other groupings found in the source:
 --   Molly's Fruitcake uses them for batch scales ("The basic recipe",

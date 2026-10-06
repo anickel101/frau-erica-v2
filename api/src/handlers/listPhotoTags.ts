@@ -48,4 +48,4 @@ async function baseHandler(
   return jsonResponse(200, { tags: await listPhotoTagsForGallery(galleryId) })
 }
 
-export const handler = withLogging('listPhotoTags', baseHandler)
+export const handler = withLogging('list-photo-tags', baseHandler)

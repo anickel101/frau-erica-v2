@@ -276,10 +276,12 @@ const documentRows = (
 // Header images for text pages. Opa asked that every text file have one,
 // as Family pages do, with hdr.MuellerFarm2.jpg as the fallback.
 //
-// The data was almost all there already: 124 of the 155 published
+// The data was almost all there already: 122 of the 170 published
 // documents have a published image linked whose filename begins "hdr."
 // -- the archive's own long-standing convention for a header photo, the
-// same one Family pages rely on. Only the remaining 31 need the default.
+// same one Family pages rely on. The remaining 48 fall back to it --
+// a share that grows as documents are added faster than headers are
+// chosen, so these figures are October 2026 and will drift again.
 //
 // ORDER BY image_id so the one document with two candidate headers
 // (document 75) resolves the same way on every export rather than
