@@ -577,26 +577,39 @@ Resources:
               Effect: Allow
               Action: kms:Decrypt
               Resource: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/ssm
-            # The DOMAIN identity, not the archivist's gmail address.
-            # SES authorises a send against the identity of the FROM
+            # TWO resources, and a send needs both.
+            #
+            # The identity is the domain, not the archivist's gmail
+            # address: SES authorises against the identity of the FROM
             # address, and lib/ses.ts sends from archivist@frauerica.org
             # (a deliverability fix -- gmail treats SES mail claiming to
-            # be from gmail.com as spoofing). This Resource was left
-            # pointing at the old gmail identity when that changed, so
-            # every single access-request notification failed with
-            # AccessDenied from 2026-09-08 until 2026-10-05 -- four
-            # weeks, three real relatives, nobody told. The requests
-            # themselves were fine; only the telling broke.
+            # be from gmail.com as spoofing). This was left naming the
+            # old gmail identity when the sender moved, so every
+            # access-request notification failed with AccessDenied from
+            # 2026-09-08 to 2026-10-05: four weeks, three real
+            # relatives, nobody told.
             #
-            # Keep this in step with FROM_ADDRESS in lib/ses.ts. They are
-            # two halves of one fact and nothing but this comment ties
-            # them together.
+            # The configuration set is the half that bit immediately
+            # after. hosting/dns.yaml attaches frau-erica-default to the
+            # identity as its DEFAULT configuration set, so it applies to
+            # every send from this domain without appearing anywhere in
+            # the send call -- and SES then authorises the config set as
+            # a resource in its own right. Granting the identity alone
+            # moved the AccessDenied from one ARN to the other.
+            #
+            # Three facts in three files that must agree: FROM_ADDRESS in
+            # lib/ses.ts, the ConfigurationSet name in hosting/dns.yaml,
+            # and these ARNs. ses.test.ts reads all three and fails if
+            # they drift -- which is the only thing tying them together,
+            # since nothing in the type system can.
             - Sid: SendAdminNotification
               Effect: Allow
               Action:
                 - ses:SendEmail
                 - ses:SendRawEmail
-              Resource: !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/frauerica.org
+              Resource:
+                - !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/frauerica.org
+                - !Sub arn:aws:ses:${AWS::Region}:${AWS::AccountId}:configuration-set/frau-erica-default
             # Creates the requester's own account, in 'pending', with no
             # usable credentials yet (MessageAction: SUPPRESS in the
             # handler) -- see adminApproveUser.ts for the only place
