@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { resolveAdminGateView } from './adminGateView'
 import Layout from './Layout'
 import { useAuth } from '../hooks/useAuth'
+import { linkButtonClassName } from '../utils/formStyles'
 
 function LoginTeaser() {
   return (
@@ -10,10 +11,7 @@ function LoginTeaser() {
       <div className="p-6 max-w-2xl">
         <h1 className="text-2xl font-bold mb-4">This page requires an admin account</h1>
         <p className="mb-6">
-          <Link
-            to="/login"
-            className="bg-fe-accent hover:bg-fe-accent-dark text-white px-4 py-2 rounded-sm text-sm font-bold inline-block"
-          >
+          <Link to="/login" className={linkButtonClassName}>
             Log in
           </Link>
         </p>
