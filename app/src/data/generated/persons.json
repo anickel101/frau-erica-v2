@@ -15809,7 +15809,7 @@
     "middle_name": "",
     "last_name": "Mani",
     "suffix": "",
-    "date_of_birth": null,
+    "date_of_birth": "1934-03-23",
     "birth_year": null,
     "date_of_death": null,
     "death_year": null,
@@ -16006,5 +16006,17 @@
     "date_of_death": null,
     "death_year": null,
     "linkedFamilyId": 942
+  },
+  {
+    "person_id": 1358,
+    "first_name": "Chandra",
+    "middle_name": "Mauli",
+    "last_name": "Mani",
+    "suffix": "",
+    "date_of_birth": "1929-02-08",
+    "birth_year": null,
+    "date_of_death": null,
+    "death_year": null,
+    "linkedFamilyId": 921
   }
 ]
