@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import documentsDetail from '../../data/generated/documents.json'
 import imagesRaw from '../../data/generated/images.json'
-import { getDocumentById, listDocuments, resolveDocumentPair } from './documents'
+import { listDocuments, resolveDocumentPair } from './documents'
+import { getDocumentById } from './documentDetail'
 
 // The fixture is FOUND, not hardcoded.
 //

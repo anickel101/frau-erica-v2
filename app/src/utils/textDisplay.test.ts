@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DocumentDetail } from '../data-access/public/documents'
+import { DocumentDetail } from '../data-access/public/documentDetail'
 import {
   displayKicker,
   filterTextEntries,
