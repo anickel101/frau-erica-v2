@@ -1,15 +1,15 @@
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
-import TextByline from '../components/TextByline'
 import InlineMarkdown from '../components/InlineMarkdown'
 import { getCollectionBySlug } from '../data-access/public/collections'
 import type { Collection } from '../data-access/public/collections'
 import { getSeriesChapters } from '../data-access/public/documents'
 import type { DocumentListItem } from '../data-access/public/documents'
 import { useHeaderRef } from '../hooks/useHeaderRef'
+import TextByline from '../components/TextByline'
 import {
-  getAuthorPerson,
-  getCollectionBylineChapter,
+  getCollectionAuthors,
+  getDocumentAuthors,
   getSeriesRepresentative,
 } from '../utils/textDisplay'
 
@@ -42,8 +42,7 @@ export default function CollectionPage() {
   const chapters = getSeriesChapters(collection.series_key)
   const ordered = orderFor(collection, chapters)
   const representative = chapters.length > 0 ? getSeriesRepresentative(chapters) : null
-  const bylineChapter = getCollectionBylineChapter(chapters)
-  const bylineAuthorPerson = bylineChapter ? getAuthorPerson(bylineChapter) : undefined
+  const authors = getCollectionAuthors(chapters)
 
   return (
     <Layout>
@@ -57,30 +56,17 @@ export default function CollectionPage() {
           </Link>
         </p>
         <h1 className="text-xl sm:text-2xl font-bold mb-2">{collection.name}</h1>
-        {/* Count, then who wrote it, then what kind of thing it is. The
-            byline comes from getCollectionBylineChapter, not from the
-            representative: the representative is the lowest-ordered
-            chapter, which here is the archivist's introduction, and
-            bylining Fritz Mueller's journal to its introducer would be
-            wrong. Linked the same way a chapter byline links. */}
+        {/* Count, then everyone who wrote it, then what kind of thing
+            it is. The names come from getCollectionAuthors, which lists
+            every author the chapters name rather than picking one:
+            Fritz Mueller's journal is his and the archivist's both, and
+            choosing between them misrepresented it either way.
+            Rendered by TextByline, so a collection byline and a chapter
+            byline link and separate identically. */}
         <p className="text-sm text-fe-ink/70 mb-4">
           {countLabel(collection)}
-          {bylineChapter?.author && (
-            <>
-              {' · '}
-              {bylineAuthorPerson?.linkedFamilyId != null ? (
-                <Link
-                  to={`/family/${bylineAuthorPerson.linkedFamilyId}`}
-                  className="text-fe-link hover:text-fe-link-dark"
-                >
-                  {bylineChapter.author}
-                </Link>
-              ) : (
-                bylineChapter.author
-              )}
-            </>
-          )}
-          {representative?.genre ? ` · ${representative.genre}` : ''}
+          {(authors.length > 0 || representative?.genre) && ' · '}
+          <TextByline authors={authors} genre={representative?.genre ?? null} />
         </p>
 
         {collection.blurb && (
@@ -182,8 +168,6 @@ function countLabel(collection: Collection): string {
 }
 
 function ChapterRow({ chapter }: { chapter: DocumentListItem }) {
-  const authorPerson = getAuthorPerson(chapter)
-
   return (
     <article className="py-3 border-b border-fe-brown/20">
       <Link
@@ -193,11 +177,7 @@ function ChapterRow({ chapter }: { chapter: DocumentListItem }) {
         {chapter.title}
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
-        <TextByline
-          author={chapter.author}
-          authorPerson={authorPerson}
-          genre={chapter.genre}
-        />
+        <TextByline authors={getDocumentAuthors(chapter)} genre={chapter.genre} />
       </p>
       {chapter.summary && (
         <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">
