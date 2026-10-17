@@ -3667,6 +3667,42 @@
         "height": 821,
         "url": "Gerhard7.jpg",
         "personIds": []
+      },
+      {
+        "image_id": 154,
+        "title": "*Immer eine Freude*",
+        "caption": "Gerhard got a local photographer to photograph St. John’s Church in Height of Land, Minnesota, a congregation his uncle Paul Mueller had served years earlier.",
+        "credit": "",
+        "year_taken": null,
+        "location": "",
+        "width": 630,
+        "height": 424,
+        "url": "Height_of_Land1.jpg",
+        "personIds": []
+      },
+      {
+        "image_id": 130,
+        "title": "Gerhard Mueller",
+        "caption": "",
+        "credit": "",
+        "year_taken": null,
+        "location": "",
+        "width": 288,
+        "height": 372,
+        "url": "Gerhard6.jpg",
+        "personIds": []
+      },
+      {
+        "image_id": 710,
+        "title": "Survivors",
+        "caption": "Gerhard's living siblings arrived in Height of Land for his funeral. From left: Herbert, Ernst, Frieda, Adelheid, and Kurt.",
+        "credit": "",
+        "year_taken": null,
+        "location": "",
+        "width": 1000,
+        "height": 669,
+        "url": "GerhardFuneral.jpg",
+        "personIds": []
       }
     ],
     "linkedPersonIds": [64]
