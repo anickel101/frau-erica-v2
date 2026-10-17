@@ -125,6 +125,26 @@ function createImageComponents(imageWidths: Map<string, number>) {
       if (hasImageChild) return <div className="mb-4">{children}</div>
       return <p className="mb-4">{children}</p>
     },
+    // Preflight strips list-style, padding and margin from <ul>/<ol>,
+    // exactly as it zeroes <p>'s margin above -- so a markdown list
+    // rendered as unmarked, unindented lines running straight into the
+    // paragraph after it. Nothing in the archive had a list until the
+    // Gerhard estate record, which is why this had never shown.
+    //
+    // The nested level gets a hollow marker and no bottom margin of its
+    // own, so sub-items read as subordinate to their category and sit
+    // tight under it. Only the outer list pushes the following
+    // paragraph away.
+    ul: ({ children }: ComponentPropsWithoutRef<'ul'>) => (
+      <ul className="mb-4 ml-6 list-disc space-y-1 marker:text-fe-brown [&_ul]:mt-1 [&_ul]:mb-0 [&_ul]:list-[circle]">
+        {children}
+      </ul>
+    ),
+    ol: ({ children }: ComponentPropsWithoutRef<'ol'>) => (
+      <ol className="mb-4 ml-6 list-decimal space-y-1 marker:text-fe-brown [&_ol]:mt-1 [&_ol]:mb-0">
+        {children}
+      </ol>
+    ),
   }
 }
 
