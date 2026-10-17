@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import {
   TextIndexEntry,
   FilteredTextEntry,
-  getAuthorPerson,
+  getCollectionAuthors,
   getSeriesRepresentative,
 } from '../utils/textDisplay'
 import InlineMarkdown from './InlineMarkdown'
@@ -31,7 +31,9 @@ export default function TextSeriesRow({
 }) {
   const { entry, matchedChapterIds } = filtered
   const representative = getSeriesRepresentative(entry.chapters)
-  const authorPerson = getAuthorPerson(representative)
+  // Every author the collection names, so a two-author work is not
+  // bylined to whichever of them happens to open it.
+  const authors = getCollectionAuthors(entry.chapters)
   const { collection } = entry
 
   const searching = query.trim() !== ''
@@ -57,11 +59,7 @@ export default function TextSeriesRow({
         {entry.seriesTitle}
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
-        <TextByline
-          author={representative.author}
-          authorPerson={authorPerson}
-          genre={representative.genre}
-        />
+        <TextByline authors={authors} genre={representative.genre} />
       </p>
       {description && (
         <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">

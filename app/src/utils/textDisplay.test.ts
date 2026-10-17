@@ -3,7 +3,8 @@ import { DocumentDetail } from '../data-access/public/documentDetail'
 import {
   displayKicker,
   filterTextEntries,
-  getCollectionBylineChapter,
+  getCollectionAuthors,
+  getDocumentAuthors,
   getSeriesRepresentative,
   groupTexts,
 } from './textDisplay'
@@ -246,14 +247,14 @@ describe('groupTexts and collections', () => {
   })
 })
 
-describe('getCollectionBylineChapter', () => {
+describe('getCollectionAuthors', () => {
   // The case this function exists for. Fritz Mueller's journal opens
   // with an introduction written by the archivist, so the lowest-ordered
   // chapter -- what getSeriesRepresentative returns -- carries the wrong
   // byline for the collection as a whole.
   // Six chapters by Fritz, two by the archivist, as the real collection
   // is shaped. An even split would tie, and the tie rule below would
-  // then hand it to the introduction -- so the margin is the point.
+  // then put the introduction first -- so the margin is the point.
   const fritz = [
     text({
       document_id: 86,
@@ -277,9 +278,26 @@ describe('getCollectionBylineChapter', () => {
     }),
   ]
 
-  it('picks the author most of the chapters share, not the first one', () => {
+  it('lists every author, most of the collection first', () => {
     expect(getSeriesRepresentative(fritz).author).toBe('Mark Nickel')
-    expect(getCollectionBylineChapter(fritz)?.author).toBe('Fritz Mueller')
+    expect(getCollectionAuthors(fritz).map((a) => a.name)).toEqual([
+      'Fritz Mueller',
+      'Mark Nickel',
+    ])
+  })
+
+  it('names each author once however many chapters they wrote', () => {
+    // Joel Nickel wrote all twenty-one Chicago memoirs; the byline is
+    // his name once, not twenty-one times.
+    const chicago = [1, 2, 3, 4].map((id) =>
+      text({
+        document_id: id,
+        title: `Part ${id}`,
+        series_order: id,
+        author: 'Joel Nickel',
+      }),
+    )
+    expect(getCollectionAuthors(chicago).map((a) => a.name)).toEqual(['Joel Nickel'])
   })
 
   it('breaks a tie toward the earliest chapter in reading order', () => {
@@ -287,17 +305,26 @@ describe('getCollectionBylineChapter', () => {
       text({ document_id: 2, title: 'Second', series_order: 2, author: 'B' }),
       text({ document_id: 1, title: 'First', series_order: 1, author: 'A' }),
     ]
-    expect(getCollectionBylineChapter(tied)?.author).toBe('A')
+    expect(getCollectionAuthors(tied).map((a) => a.name)).toEqual(['A', 'B'])
   })
 
-  it('ignores chapters with no author, and returns undefined when none has one', () => {
+  it('ignores chapters with no author, and returns nothing when none has one', () => {
     const some = [
       text({ document_id: 1, title: 'One', series_order: 1 }),
       text({ document_id: 2, title: 'Two', series_order: 2, author: 'Only' }),
     ]
-    expect(getCollectionBylineChapter(some)?.author).toBe('Only')
+    expect(getCollectionAuthors(some).map((a) => a.name)).toEqual(['Only'])
+    expect(getCollectionAuthors([text({ document_id: 9, title: 'None' })])).toEqual([])
+  })
+})
+
+describe('getDocumentAuthors', () => {
+  it('gives one author as a one-element list, and none as an empty one', () => {
     expect(
-      getCollectionBylineChapter([text({ document_id: 9, title: 'None' })]),
-    ).toBeUndefined()
+      getDocumentAuthors(
+        text({ document_id: 1, title: 'T', author: 'Kurt Mueller' }),
+      ).map((a) => a.name),
+    ).toEqual(['Kurt Mueller'])
+    expect(getDocumentAuthors(text({ document_id: 2, title: 'T' }))).toEqual([])
   })
 })

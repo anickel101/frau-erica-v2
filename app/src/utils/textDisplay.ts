@@ -63,37 +63,53 @@ export function getSeriesRepresentative(chapters: DocumentListItem[]): DocumentL
   )
 }
 
-// The chapter whose byline stands for the whole collection, for the line
-// under a collection's title. Deliberately NOT the representative above.
+// A byline as displayed: the name to print, and the person record that
+// decides whether it links. See TextByline, which renders these.
+export interface ByAuthor {
+  name: string
+  person: Person | undefined
+}
+
+// One document's byline, as a list of none or one, so that TextByline
+// has a single shape to render whether it was handed a document or a
+// whole collection.
+export function getDocumentAuthors(document: DocumentListItem): ByAuthor[] {
+  if (!document.author) return []
+  return [{ name: document.author, person: getAuthorPerson(document) }]
+}
+
+// Every author a collection's chapters name, each once.
 //
-// The representative is the lowest-ordered chapter, which for a work
-// introduced by the archive is the introduction -- so Fritz Mueller's
-// journal would be bylined to the archivist who introduced it rather
-// than to the man who kept it. The author most of the chapters share is
-// the one that describes the collection: Fritz for his journal (six
-// chapters to the archivist's two), Joel Nickel for the Chicago memoirs
-// (all twenty-one).
+// Ordered by how much of the collection each one wrote, NOT by reading
+// order, and that is the whole point. A work introduced by the archive
+// has the archivist's introduction as its lowest-ordered chapter, so
+// reading order would open Fritz Mueller's journal with the name of the
+// man who introduced it rather than the man who kept it -- the same
+// mistake getSeriesRepresentative makes here, for its own good reasons.
+// Fritz wrote six of the eight chapters, so Fritz comes first:
+//
+//   Fritz Mueller, Mark Nickel
 //
 // Ties break toward the earliest chapter in reading order, so the answer
-// is stable rather than dependent on array order.
-export function getCollectionBylineChapter(
-  chapters: DocumentListItem[],
-): DocumentListItem | undefined {
-  const byAuthor = new Map<string, { count: number; first: DocumentListItem }>()
+// is stable rather than dependent on the order the export happened to
+// list them in.
+export function getCollectionAuthors(chapters: DocumentListItem[]): ByAuthor[] {
+  const byName = new Map<
+    string,
+    { count: number; order: number; first: DocumentListItem }
+  >()
   const inOrder = [...chapters].sort(
     (a, b) => (a.series_order ?? Infinity) - (b.series_order ?? Infinity),
   )
-  for (const chapter of inOrder) {
-    if (!chapter.author) continue
-    const seen = byAuthor.get(chapter.author)
+  inOrder.forEach((chapter, index) => {
+    if (!chapter.author) return
+    const seen = byName.get(chapter.author)
     if (seen) seen.count += 1
-    else byAuthor.set(chapter.author, { count: 1, first: chapter })
-  }
-  let best: { count: number; first: DocumentListItem } | undefined
-  for (const entry of byAuthor.values()) {
-    if (!best || entry.count > best.count) best = entry
-  }
-  return best?.first
+    else byName.set(chapter.author, { count: 1, order: index, first: chapter })
+  })
+  return [...byName.values()]
+    .sort((a, b) => b.count - a.count || a.order - b.order)
+    .map((entry) => ({ name: entry.first.author!, person: getAuthorPerson(entry.first) }))
 }
 
 export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
@@ -191,10 +207,12 @@ export function filterTextEntries(
       continue
     }
 
-    const representative = getSeriesRepresentative(entry.chapters)
+    // Every author the collection names, not just the representative's:
+    // searching "Fritz" should find his journal from the header, and
+    // the representative chapter is the archivist's introduction.
     const headerMatches =
       entry.seriesTitle.toLowerCase().includes(q) ||
-      includesQuery(representative.author, q)
+      getCollectionAuthors(entry.chapters).some((a) => a.name.toLowerCase().includes(q))
 
     const matchedChapterIds = entry.chapters
       .filter((c) => includesQuery(c.title, q) || includesQuery(c.author, q))

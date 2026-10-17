@@ -10,7 +10,7 @@ import ParallelText from '../components/ParallelText'
 import { getSeriesChapters } from '../data-access/public/documents'
 import { getDocumentById } from '../data-access/public/documentDetail'
 import { useHeaderRef } from '../hooks/useHeaderRef'
-import { displayKicker, getAuthorPerson } from '../utils/textDisplay'
+import { displayKicker, getDocumentAuthors } from '../utils/textDisplay'
 import { resolveImageUrl } from '../utils/imageUrl'
 import { markdownLink } from '../utils/markdownLink'
 
@@ -180,7 +180,6 @@ export default function TextPage() {
     )
   }
 
-  const authorPerson = getAuthorPerson(document)
   const seriesChapters = document.series_key ? getSeriesChapters(document.series_key) : []
   // document.content only -- {{image:ID}} shortcodes in a summary are
   // never resolved to real markdown image syntax in the first place (see
@@ -233,11 +232,7 @@ export default function TextPage() {
             unless it served a purpose -- it does, so it's kept here and
             on the index rows. */}
         <p className="text-sm text-fe-ink/70 mb-4">
-          <TextByline
-            author={document.author}
-            authorPerson={authorPerson}
-            genre={document.genre}
-          />
+          <TextByline authors={getDocumentAuthors(document)} genre={document.genre} />
         </p>
 
         {document.summary && (

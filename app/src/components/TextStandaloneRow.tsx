@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom'
 import { DocumentListItem } from '../data-access/public/documents'
-import { getAuthorPerson } from '../utils/textDisplay'
+import { getDocumentAuthors } from '../utils/textDisplay'
 import InlineMarkdown from './InlineMarkdown'
 import TextByline from './TextByline'
 
 export default function TextStandaloneRow({ document }: { document: DocumentListItem }) {
-  const authorPerson = getAuthorPerson(document)
-
   return (
     <article className="py-3 border-b border-fe-brown/20">
       <Link
@@ -16,11 +14,7 @@ export default function TextStandaloneRow({ document }: { document: DocumentList
         {document.title}
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
-        <TextByline
-          author={document.author}
-          authorPerson={authorPerson}
-          genre={document.genre}
-        />
+        <TextByline authors={getDocumentAuthors(document)} genre={document.genre} />
       </p>
       {document.summary && (
         <p className="text-xs text-fe-ink/80 mt-1 line-clamp-2">
