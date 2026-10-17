@@ -7,7 +7,11 @@ import type { Collection } from '../data-access/public/collections'
 import { getSeriesChapters } from '../data-access/public/documents'
 import type { DocumentListItem } from '../data-access/public/documents'
 import { useHeaderRef } from '../hooks/useHeaderRef'
-import { getAuthorPerson, getSeriesRepresentative } from '../utils/textDisplay'
+import {
+  getAuthorPerson,
+  getCollectionBylineChapter,
+  getSeriesRepresentative,
+} from '../utils/textDisplay'
 
 // One collection: its cover, what it is, and everything in it.
 //
@@ -38,6 +42,8 @@ export default function CollectionPage() {
   const chapters = getSeriesChapters(collection.series_key)
   const ordered = orderFor(collection, chapters)
   const representative = chapters.length > 0 ? getSeriesRepresentative(chapters) : null
+  const bylineChapter = getCollectionBylineChapter(chapters)
+  const bylineAuthorPerson = bylineChapter ? getAuthorPerson(bylineChapter) : undefined
 
   return (
     <Layout>
@@ -51,8 +57,29 @@ export default function CollectionPage() {
           </Link>
         </p>
         <h1 className="text-xl sm:text-2xl font-bold mb-2">{collection.name}</h1>
+        {/* Count, then who wrote it, then what kind of thing it is. The
+            byline comes from getCollectionBylineChapter, not from the
+            representative: the representative is the lowest-ordered
+            chapter, which here is the archivist's introduction, and
+            bylining Fritz Mueller's journal to its introducer would be
+            wrong. Linked the same way a chapter byline links. */}
         <p className="text-sm text-fe-ink/70 mb-4">
           {countLabel(collection)}
+          {bylineChapter?.author && (
+            <>
+              {' · '}
+              {bylineAuthorPerson?.linkedFamilyId != null ? (
+                <Link
+                  to={`/family/${bylineAuthorPerson.linkedFamilyId}`}
+                  className="text-fe-link hover:text-fe-link-dark"
+                >
+                  {bylineChapter.author}
+                </Link>
+              ) : (
+                bylineChapter.author
+              )}
+            </>
+          )}
           {representative?.genre ? ` · ${representative.genre}` : ''}
         </p>
 

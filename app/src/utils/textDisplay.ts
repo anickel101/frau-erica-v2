@@ -63,6 +63,39 @@ export function getSeriesRepresentative(chapters: DocumentListItem[]): DocumentL
   )
 }
 
+// The chapter whose byline stands for the whole collection, for the line
+// under a collection's title. Deliberately NOT the representative above.
+//
+// The representative is the lowest-ordered chapter, which for a work
+// introduced by the archive is the introduction -- so Fritz Mueller's
+// journal would be bylined to the archivist who introduced it rather
+// than to the man who kept it. The author most of the chapters share is
+// the one that describes the collection: Fritz for his journal (six
+// chapters to the archivist's two), Joel Nickel for the Chicago memoirs
+// (all twenty-one).
+//
+// Ties break toward the earliest chapter in reading order, so the answer
+// is stable rather than dependent on array order.
+export function getCollectionBylineChapter(
+  chapters: DocumentListItem[],
+): DocumentListItem | undefined {
+  const byAuthor = new Map<string, { count: number; first: DocumentListItem }>()
+  const inOrder = [...chapters].sort(
+    (a, b) => (a.series_order ?? Infinity) - (b.series_order ?? Infinity),
+  )
+  for (const chapter of inOrder) {
+    if (!chapter.author) continue
+    const seen = byAuthor.get(chapter.author)
+    if (seen) seen.count += 1
+    else byAuthor.set(chapter.author, { count: 1, first: chapter })
+  }
+  let best: { count: number; first: DocumentListItem } | undefined
+  for (const entry of byAuthor.values()) {
+    if (!best || entry.count > best.count) best = entry
+  }
+  return best?.first
+}
+
 export function groupTexts(documents: DocumentListItem[]): TextIndexEntry[] {
   const entries: TextIndexEntry[] = []
   const seriesByKey = new Map<string, Extract<TextIndexEntry, { kind: 'series' }>>()
