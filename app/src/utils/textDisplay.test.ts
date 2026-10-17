@@ -3,6 +3,7 @@ import { DocumentDetail } from '../data-access/public/documentDetail'
 import {
   displayKicker,
   filterTextEntries,
+  getCollectionBylineChapter,
   getSeriesRepresentative,
   groupTexts,
 } from './textDisplay'
@@ -242,5 +243,61 @@ describe('groupTexts and collections', () => {
   it('leaves a document with no series alone', () => {
     const entries = groupTexts([text({ document_id: 1, title: 'A single text' })])
     expect(entries[0].kind).toBe('standalone')
+  })
+})
+
+describe('getCollectionBylineChapter', () => {
+  // The case this function exists for. Fritz Mueller's journal opens
+  // with an introduction written by the archivist, so the lowest-ordered
+  // chapter -- what getSeriesRepresentative returns -- carries the wrong
+  // byline for the collection as a whole.
+  // Six chapters by Fritz, two by the archivist, as the real collection
+  // is shaped. An even split would tie, and the tie rule below would
+  // then hand it to the introduction -- so the margin is the point.
+  const fritz = [
+    text({
+      document_id: 86,
+      title: 'Introduction',
+      series_order: 0,
+      author: 'Mark Nickel',
+    }),
+    ...[87, 88, 89, 90, 91, 92].map((id, i) =>
+      text({
+        document_id: id,
+        title: `Chapter ${i + 1}`,
+        series_order: i + 1,
+        author: 'Fritz Mueller',
+      }),
+    ),
+    text({
+      document_id: 93,
+      title: 'Postscript',
+      series_order: 7,
+      author: 'Mark Nickel',
+    }),
+  ]
+
+  it('picks the author most of the chapters share, not the first one', () => {
+    expect(getSeriesRepresentative(fritz).author).toBe('Mark Nickel')
+    expect(getCollectionBylineChapter(fritz)?.author).toBe('Fritz Mueller')
+  })
+
+  it('breaks a tie toward the earliest chapter in reading order', () => {
+    const tied = [
+      text({ document_id: 2, title: 'Second', series_order: 2, author: 'B' }),
+      text({ document_id: 1, title: 'First', series_order: 1, author: 'A' }),
+    ]
+    expect(getCollectionBylineChapter(tied)?.author).toBe('A')
+  })
+
+  it('ignores chapters with no author, and returns undefined when none has one', () => {
+    const some = [
+      text({ document_id: 1, title: 'One', series_order: 1 }),
+      text({ document_id: 2, title: 'Two', series_order: 2, author: 'Only' }),
+    ]
+    expect(getCollectionBylineChapter(some)?.author).toBe('Only')
+    expect(
+      getCollectionBylineChapter([text({ document_id: 9, title: 'None' })]),
+    ).toBeUndefined()
   })
 })
