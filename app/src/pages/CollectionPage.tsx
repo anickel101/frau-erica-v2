@@ -108,10 +108,22 @@ export default function CollectionPage() {
           </>
         )}
 
+        {/* An <ol> for the reading order it carries, but the numbers
+            are not printed. series_order is a sort key, not a label.
+            Half the works already number themselves in the title --
+            Ludwig Knief, Carl de Haas, Alida Bigelow and Wilhelm
+            Mueller all run "I.", "II.", "III." -- so printing it on
+            top read "2. II. Girlhood in Ohio and Massachusetts", and
+            that list starts at 2 because Part I is unpublished, so the
+            printed numbering began at 2 with no 1 above it. The order
+            of the rows is the only ordering a reader needs. Removed at
+            the archivist's request, 2026-10-17; the same numbers came
+            off TextSeriesRow and TextPage's chapter list in the same
+            change, so a chapter reads identically everywhere. */}
         <ol className="space-y-0">
           {ordered.map((chapter) => (
             <li key={chapter.document_id}>
-              <ChapterRow chapter={chapter} showNumber={collection.kind === 'work'} />
+              <ChapterRow chapter={chapter} />
             </li>
           ))}
         </ol>
@@ -169,13 +181,7 @@ function countLabel(collection: Collection): string {
   return `${n} texts`
 }
 
-function ChapterRow({
-  chapter,
-  showNumber,
-}: {
-  chapter: DocumentListItem
-  showNumber: boolean
-}) {
+function ChapterRow({ chapter }: { chapter: DocumentListItem }) {
   const authorPerson = getAuthorPerson(chapter)
 
   return (
@@ -184,12 +190,6 @@ function ChapterRow({
         to={`/documents/${chapter.document_id}`}
         className="text-base font-bold text-fe-ink hover:text-fe-link-dark"
       >
-        {/* series_order 0 marks the piece that introduces the rest
-            rather than a chapter of it, and a null order means none was
-            recorded -- neither should print a number. Falsy check, not
-            === 0, so both cases are covered (see TextSeriesRow, where
-            this rule was established). */}
-        {showNumber && chapter.series_order ? `${chapter.series_order}. ` : ''}
         {chapter.title}
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">

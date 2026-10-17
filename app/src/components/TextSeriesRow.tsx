@@ -77,12 +77,6 @@ export default function TextSeriesRow({
                 to={`/documents/${chapter.document_id}`}
                 className="text-fe-link hover:text-fe-link-dark"
               >
-                {/* series_order 0 marks the piece that introduces the
-                    rest rather than a chapter of it, and a null order
-                    means none was recorded -- neither should print a
-                    number. Falsy check rather than === 0 so both cases
-                    are covered. */}
-                {chapter.series_order ? `${chapter.series_order}. ` : ''}
                 {chapter.title}
               </Link>
             </li>

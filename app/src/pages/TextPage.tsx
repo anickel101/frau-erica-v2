@@ -345,7 +345,6 @@ export default function TextPage() {
               {seriesChapters.map((chapter) =>
                 chapter.document_id === document.document_id ? (
                   <li key={chapter.document_id} className="font-bold">
-                    {chapter.series_order ? `${chapter.series_order}. ` : ''}
                     {chapter.title}
                   </li>
                 ) : (
@@ -354,7 +353,6 @@ export default function TextPage() {
                       to={`/documents/${chapter.document_id}`}
                       className="text-fe-link hover:text-fe-link-dark"
                     >
-                      {chapter.series_order ? `${chapter.series_order}. ` : ''}
                       {chapter.title}
                     </Link>
                   </li>
