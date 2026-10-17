@@ -612,6 +612,18 @@
     "personIds": []
   },
   {
+    "image_id": 130,
+    "title": "Gerhard Mueller",
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 288,
+    "height": 372,
+    "url": "Gerhard6.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 131,
     "title": "A note on the obituary",
     "caption": "The obituary ran in the Becker County Record on Thursday, September 10, 1970, page 5. There are a few errors. Gerhard actually arrived in northern Minnesota in 1948; his failed tenure at Tenstrike and Blackduck is ignored. His brother was Ernest, not Earnest; his sister was Frieda, not Freda; his sister Adelheid was Mrs. Hilbert Nickel, not Mrs. Henry; and his sister Norma, oddly, was not mentioned.",
@@ -645,6 +657,18 @@
     "width": 1008,
     "height": 750,
     "url": "Gerhard12.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 134,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 977,
+    "url": "GerhardObit.jpg",
     "personIds": []
   },
   {
@@ -4761,6 +4785,18 @@
     "width": 612,
     "height": 786,
     "url": "MarkAlliChristmas2022.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 710,
+    "title": "Survivors",
+    "caption": "Gerhard's living siblings arrived in Height of Land for his funeral. From left: Herbert, Ernst, Frieda, Adelheid, and Kurt.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1000,
+    "height": 669,
+    "url": "GerhardFuneral.jpg",
     "personIds": []
   },
   {
