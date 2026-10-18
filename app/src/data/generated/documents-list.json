@@ -39,6 +39,19 @@
     "language": null
   },
   {
+    "document_id": 11,
+    "series_key": "AlidaBigelow",
+    "series_title": "Alida Wood Bigelow: *Memories*",
+    "series_order": 1,
+    "title": "I. The Lyman and Wood families",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "Alida’s prologue:  \n*For more than a year, Emma has been coaxing and insisting that I write the memoirs of my family and about my early life. It seems to me a foolish undertaking, as every scrap of paper or records that might help went up in smoke long ago and there is only a very poor memory to depend upon.*",
+    "genre": "Memoir",
+    "tags": "Bigelow, Alida Wood Lyman",
+    "language": null
+  },
+  {
     "document_id": 12,
     "series_key": "AlidaBigelow",
     "series_title": "Alida Wood Bigelow: *Memories*",
@@ -520,6 +533,19 @@
     "language": null
   },
   {
+    "document_id": 56,
+    "series_key": "Chicago",
+    "series_title": "The Chicago Memoirs:",
+    "series_order": 0,
+    "title": "Introduction",
+    "author": "Joel Nickel",
+    "authorPersonId": 33,
+    "summary": "Written in 1973 from notes and the \"little red books\" in which he kept his appointments. Why he set the story down, and his warning that it is not a success story.",
+    "genre": "Memoir",
+    "tags": "Nickel, Joel",
+    "language": null
+  },
+  {
     "document_id": 57,
     "series_key": null,
     "series_title": "The Chicago Memoirs:",
@@ -621,6 +647,58 @@
     "summary": "Some beachcombers make little piles of stones, call them cairns, and walk on. For the LeRoi-Nickel household in Portland, Oregon, that spur-of-the-moment creative task has evolved into a planful, aspirational, competitive art form evocative of work by the sculptor [Isamu Noguchi](https://en.wikipedia.org/wiki/Isamu_Noguchi) (1904–1988). The annual roster of invited participants grows; the rules continue to evolve.",
     "genre": "Other",
     "tags": "Five Rocks",
+    "language": null
+  },
+  {
+    "document_id": 76,
+    "series_key": "FrauErica",
+    "series_title": "Adelheid (Frau Erica) Rickmeyer:",
+    "series_order": 0,
+    "title": "Frau Erica recipes",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "**Writing for old friends in new circumstances**  \nBetween 1850 and 1900, more than 4.4 million German immigrants arrived in the United States. When Frau Erica arrived in the 1860s, there were already about 2.45 million Germans in a country of about 35 million people. Someone needed to provide books, magazines, and newspapers.",
+    "genre": "Literary",
+    "tags": "Rickmeyer/Mueller, Adelheid (Frau Erica)",
+    "language": null
+  },
+  {
+    "document_id": 77,
+    "series_key": "FrauErica",
+    "series_title": null,
+    "series_order": 1,
+    "title": "From Frau Erica’s cookbook: *Johann im Sack*",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "**Großer Hefenkloß (Giant Yeast Dumpling)**  \nThis giant dumpling recipe, also known among older family members as *“Johann im Sack,”* comes from Frau Erica’s *Deutsch-Amerikanisches Kochbuch* (Rundschau Publishing Co., Milwaukee und Chicago, 1903; Eleventh Edition, Page 195)",
+    "genre": "Recipe",
+    "tags": "Rickmeyer/Mueller, Adelheid (Frau Erica)",
+    "language": null
+  },
+  {
+    "document_id": 78,
+    "series_key": "FrauErica",
+    "series_title": null,
+    "series_order": 2,
+    "title": "From Frau Erica’s Cookbook: Twenty Recipes for Catsup",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "These recipes come from a chapter on *Scharf gewürzte, eingekochte Beigüße* — Sharply spiced, cooked sauces. None has been kitchen-tested, so heed Frau Erica’s warning: *“Die scharfen Würzen sind besonders Kindern nicht zu gestatten und selbst Erwachsene sollten hierin mäßig sein* — The sharp spices are especially not suited for children, and even grownups should use these catsups in moderation.” (Rundschau Publishing Co., Milwaukee und Chicago, 1903; Eleventh Edition, Page 195)",
+    "genre": "Recipe",
+    "tags": "Rickmeyer/Mueller, Adelheid (Frau Erica)",
+    "language": null
+  },
+  {
+    "document_id": 79,
+    "series_key": "FrauErica",
+    "series_title": "Adelheid (Frau Erica) Rickmeyer:",
+    "series_order": 3,
+    "title": "Keinen Heiland",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "**A sample of Frau Erica’s devotional verse**  \nIn her her last two years, Adelheid lived with her daughter Frieda in Wheatridge, Colorado, where her son-in-law Heinrich Feiertag directed a Lutheran tuberculosis sanitarium. With her cookbook published and her syndicated column now being written by her daughter Dora Knief, Frau Erica continued to write devotional verse, a habit since her teenage years in Germany. On January 16, 1921, four days before her death, she composed this devotional poem for the *Stadtmissionar.* The editors described it as *“fragmentärisch.”*",
+    "genre": "Literary",
+    "tags": "Rickmeyer/Mueller, Adelheid (Frau Erica)",
     "language": null
   },
   {
@@ -897,6 +975,19 @@
     "language": null
   },
   {
+    "document_id": 110,
+    "series_key": "Hib",
+    "series_title": null,
+    "series_order": 1,
+    "title": "H.C. Nickel, stock seller, teacher, dies",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "The *Chicago Tribune’s* obituary for H.C. Nickel ran on Wednesday, October 19, 1966 (page E14). Though he never subscribed for delivery, H.C. bought and read a copy almost every day, usually from a Lake Street El news stand as he started his trip home.",
+    "genre": "Biography",
+    "tags": "Nickel, Hilbert C.",
+    "language": null
+  },
+  {
     "document_id": 111,
     "series_key": "Hib",
     "series_title": "Stop financial troubles before they start",
@@ -949,6 +1040,19 @@
     "language": "en"
   },
   {
+    "document_id": 116,
+    "series_key": "JimNickel",
+    "series_title": null,
+    "series_order": 1,
+    "title": "Oak Park, Illinois",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "**I. Oak Park, Illinois**  \nWhat follows is a fraternal *Festschrift* written by brother Joel in celebration of the artist’s 55th birthday, November 30, 1998. The unpublished text was written for readers who may have encountered the work but not the artist, which accounts for the formal references to “Nickel” rather than the more familial “Binyon.”",
+    "genre": "Other",
+    "tags": "Nickel, James",
+    "language": null
+  },
+  {
     "document_id": 117,
     "series_key": "JimNickel",
     "series_title": null,
@@ -998,6 +1102,19 @@
     "summary": "Joel expanded a bit more about his use of geometric abstraction in the following essay, available to viewers at his 2026 Keizer show.",
     "genre": "Other",
     "tags": null,
+    "language": null
+  },
+  {
+    "document_id": 121,
+    "series_key": "JoelNickel",
+    "series_title": null,
+    "series_order": 1,
+    "title": "Joel Thomas Nickel: Reflections on 40 Years of Ministry",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "![](../Images/JoelNickel1.jpg)\nIn August 2005, Joel wrote the following reminiscence of his years in the Lutheran ministry. He was looking ahead toward his retirement on January 15, 2006. It ran in *The Clarion,* the parish newsletter of Calvary Lutheran Church in Stayton, Oregon. The woodcut of the scribe, right, accompanied Joel’s article in *The Clarion,* though in the interest of accuracy it has been flopped horizontally to make the scribe left-handed. The pectoral crosses, below, are Joel’s own work.",
+    "genre": "Memoir",
+    "tags": "Nickel, Joel",
     "language": null
   },
   {
@@ -1794,6 +1911,19 @@
     "language": null
   },
   {
+    "document_id": 201,
+    "series_key": "OpaObit",
+    "series_title": null,
+    "series_order": 1,
+    "title": "Obituary: The Rev. E.H.C. Mueller (The Lutheran Witness)",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "This obituary appeared in the printed program for Opa Mueller’s funeral August 25 and on page 324 of *The Lutheran Witness* for October 5, 1948. A [*Todesanzeige*](/documents/202), written *auf Deutsch* by his son, Rev. Herbert C. Mueller, appeared on page 356 in *Der Lutheraner*, “The Official Organ of The Lutheran Church–Missouri Synod,” October 26, 1948.",
+    "genre": "Biography",
+    "tags": "Mueller, Rev. Ernst",
+    "language": null
+  },
+  {
     "document_id": 202,
     "series_key": "OpaObit",
     "series_title": null,
@@ -1937,6 +2067,19 @@
     "language": null
   },
   {
+    "document_id": 216,
+    "series_key": "TanteFieks",
+    "series_title": null,
+    "series_order": 1,
+    "title": "Fieks looks back",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "Here follows a biographical essay by Frieda Katharine Magdalena Caroline Mueller Feiertag (a.k.a., Tante Fieks). Fieks wrote this in April of her 85th year for — perhaps at the invitation of — her daughter Ellen and her nieces Frieda Elizabeth Mueller and Adelheid Mueller Nickel in Chicago.",
+    "genre": "Memoir",
+    "tags": "Mueller/Feiertag, Frieda",
+    "language": null
+  },
+  {
     "document_id": 217,
     "series_key": "TanteFieks",
     "series_title": null,
@@ -1963,6 +2106,19 @@
     "language": null
   },
   {
+    "document_id": 221,
+    "series_key": "Waldschmidt",
+    "series_title": null,
+    "series_order": 1,
+    "title": "Anna’s history, Part I",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "**Part One: From Göttingen, Germany, to Champaign County, Illinois**  \nAnna’s people, the Wolters and Schepelmanns, lived at Göttingen, near Hannover, in Lower Saxony. They were university-educated teachers and musicians. Her parents, Christian Wolter and Emelia Schepelmann, traveled to New York for what was supposed to be a visit of a few years. They settled permanently in the middle of Illinois. (The double-n German *Hannover*, Anglicized to Hanover, is said to be making a comeback in proper usage.)",
+    "genre": "Memoir",
+    "tags": "Wolter/Waldschmidt, Anna",
+    "language": null
+  },
+  {
     "document_id": 222,
     "series_key": "Waldschmidt",
     "series_title": null,
@@ -1973,6 +2129,32 @@
     "summary": "**Part Two: Marriage, family, West Ely, Missouri, and Woodworth, Illinois**  \nAnna Wolter and Henry Waldschmidt — she first knew him as “Jake” — went their separate ways after high school. Henry went off to college; Anna took a job at the phone company. They met again as maid of honor and best man at the wedding of mutual friends.",
     "genre": "Other",
     "tags": null,
+    "language": null
+  },
+  {
+    "document_id": 223,
+    "series_key": "Waldschmidt",
+    "series_title": null,
+    "series_order": 3,
+    "title": "Henry Waldschmidt writes his history",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "Like the Muellers, the Waldschmidts emigrated to the American Midwest shortly after the Civil War, motivated partly by the threat of military conscription. Henry’s essay contains family history and a bit about his own childhood, up to his first meeting with Anna Wolter.",
+    "genre": "Memoir",
+    "tags": "Waldschmidt, Henry",
+    "language": null
+  },
+  {
+    "document_id": 224,
+    "series_key": "WilhelmMueller",
+    "series_title": "Wilhelm and Frau Erica:",
+    "series_order": 1,
+    "title": "I. Kendallville, Indiana",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "**I. Kendallville, Indiana**  \nTwo generations of Muellers emigrated together and gained a precarious foothold on American life near Kendallville, Indiana. If the business of emigration — selling the Bosenbüttel estate, transferring funds, booking passage for the family, finding a new home in Indiana — fell to Fritz and Johanne, the business of establishing the Mueller family in the New World fell to 19-year-old Wilhelm and his wife Adelheid. Much of this narrative, divided here into three parts, derives from three sources: Wilhelm and Adelheid’s son Ernst (Opa) Mueller, their daughter Frieda Mueller Feiertag, and their son-in-law Friedrich (Fred) Knief.",
+    "genre": "History",
+    "tags": "Mueller, Wilhelm",
     "language": null
   },
   {
