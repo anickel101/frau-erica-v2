@@ -276,6 +276,18 @@
     "personIds": [18, 23]
   },
   {
+    "image_id": 50,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 360,
+    "height": 866,
+    "url": "Chicago1.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 67,
     "title": null,
     "caption": null,
@@ -549,6 +561,42 @@
     "width": 1200,
     "height": 849,
     "url": "FrauErica6.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 119,
+    "title": "At Wheatridge",
+    "caption": "Frau Erica spent her final years with daughter Frieda and son-in-law Hai Feiertag in Colorado.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 485,
+    "height": 372,
+    "url": "FrauErica7.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 120,
+    "title": "Author",
+    "caption": "Frau Erica wrote devotional poetry until her death. “Wenn wir keinen Heiland hatten,” her last work, was published as “fragmentarisch.”",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 543,
+    "height": 553,
+    "url": "FrauErica8.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 121,
+    "title": "Competition",
+    "caption": "Frau Katharina’s *Deutsch-Amerikanische Kochbuch* was in print before Frau Erica’s *Deutsch-Amerikanisches Kochbuch,* but Frau Erica probably sold more.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 570,
+    "height": 412,
+    "url": "FrauErica9.jpg",
     "personIds": []
   },
   {
@@ -840,6 +888,18 @@
     "personIds": []
   },
   {
+    "image_id": 164,
+    "title": null,
+    "caption": "Standard Pipe Protection Inc., next door to Jim’s studio in Brentwood, Missouri, was a productive source for raw materials and a visually intriguing site for photography.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 845,
+    "url": "JimNickel1.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 174,
     "title": "Easter",
     "caption": "Jimmy and Jerry Nickel with their Easter egg haul.",
@@ -861,6 +921,66 @@
     "width": 432,
     "height": 634,
     "url": "JoelJim3.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 176,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 305,
+    "height": 305,
+    "url": "JoelNickel1.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 177,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 627,
+    "url": "JoelNickel2.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 178,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 690,
+    "url": "JoelNickel3.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 179,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 663,
+    "url": "JoelNickel4.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 180,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 709,
+    "url": "JoelNickel5.jpg",
     "personIds": []
   },
   {
@@ -1269,6 +1389,30 @@
     "width": 1000,
     "height": 594,
     "url": "UlrickaJoel1.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 258,
+    "title": null,
+    "caption": null,
+    "credit": "Gilvarg",
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 1036,
+    "url": "WilhelmMueller5.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 259,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 1036,
+    "url": "WilhelmMueller6.jpg",
     "personIds": []
   },
   {
@@ -1821,6 +1965,18 @@
     "width": 509,
     "height": 610,
     "url": "Thomas.20170719.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 315,
+    "title": "H.C. Nickel",
+    "caption": "Obituary from Chicago Tribune of Wednesday, October 19, 1966, page E14.",
+    "credit": "<em>Chicago Tribune</em>, Courtesy of the Newberry Library",
+    "year_taken": null,
+    "location": null,
+    "width": 250,
+    "height": 673,
+    "url": "HCNickel7.jpg",
     "personIds": []
   },
   {

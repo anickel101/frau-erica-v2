@@ -14,8 +14,8 @@
     "name": "The Chicago Memoirs",
     "kind": "work",
     "blurb": "In 1967 Joel Nickel accepted a call to Our Redeemer Lutheran Church in Englewood, on Chicago’s South Side — a 1,700-seat \"Cathedral of Gospel Art\" built for a congregation that had long since moved to the suburbs. His predecessor’s advice was \"Don’t come.\"\n\nHe and Susan stayed five years: through the Parker High School walkout, the riots that followed Martin Luther King’s murder, the Disciples asking to meet in the parish hall, and the slow collapse of the buildings around them. The congregation was really two — a white Sunday congregation driving in from the suburbs and a black weekday one from the neighbourhood — and most of the story is the effort to make them one church.\n\nWritten from notes in 1973, and in his own words \"not a success story.\"",
-    "cover_image_url": "hdr.Chicago2.jpg",
-    "chapterCount": 20
+    "cover_image_url": "hdr.Chicago1.jpg",
+    "chapterCount": 21
   },
   {
     "series_key": "NanaLifeTimes",
@@ -54,6 +54,15 @@
     "chapterCount": 7
   },
   {
+    "series_key": "FrauErica",
+    "slug": "frau-erica",
+    "name": "Adelheid Rickmeyer, Frau Erica",
+    "kind": "person",
+    "blurb": "The Frau Erica of the archive's name, and her cookbook.",
+    "cover_image_url": "hdr.Frauenfleisz.jpg",
+    "chapterCount": 6
+  },
+  {
     "series_key": "GerhardMueller",
     "slug": "gerhard-mueller",
     "name": "Gerhard Mueller",
@@ -69,7 +78,7 @@
     "kind": "work",
     "blurb": "Written at her daughter Emma's insistence — \"It seems to me a foolish undertaking,\" Alida begins, \"as every scrap of paper or records that might help went up in smoke long ago.\"",
     "cover_image_url": "hdr.StPaul.jpg",
-    "chapterCount": 3
+    "chapterCount": 4
   },
   {
     "series_key": "WilhelmMueller",
@@ -77,17 +86,35 @@
     "name": "Wilhelm and Frau Erica",
     "kind": "work",
     "blurb": "Wilhelm Mueller and Adelheid, the Frau Erica this archive is named for: Kendallville, then careers in Chicago.",
-    "cover_image_url": "hdr.MuellerFarm3.jpg",
+    "cover_image_url": "hdr.MuellerFarm4.jpg",
+    "chapterCount": 4
+  },
+  {
+    "series_key": "JimNickel",
+    "slug": "jim-nickel-three-cities",
+    "name": "Jim Nickel: Three Cities",
+    "kind": "work",
+    "blurb": "Oak Park, Brentwood, New York — a life told through the places it was lived in.",
+    "cover_image_url": "hdr.JimNickel1.jpg",
     "chapterCount": 3
   },
   {
-    "series_key": "FrauErica",
-    "slug": "frau-erica",
-    "name": "Adelheid Rickmeyer, Frau Erica",
+    "series_key": "JoelNickel",
+    "slug": "joel-nickel",
+    "name": "Joel Nickel",
     "kind": "person",
-    "blurb": "The Frau Erica of the archive's name, and her cookbook.",
-    "cover_image_url": "hdr.Frauenfleisz.jpg",
-    "chapterCount": 2
+    "blurb": "Forty years of ministry, and a second life in art.",
+    "cover_image_url": "hdr.Chicago1.jpg",
+    "chapterCount": 3
+  },
+  {
+    "series_key": "Waldschmidt",
+    "slug": "the-waldschmidts",
+    "name": "The Waldschmidts",
+    "kind": "person",
+    "blurb": "Anna's history, and Henry's.",
+    "cover_image_url": "hdr.Goettingen_1585.jpg",
+    "chapterCount": 3
   },
   {
     "series_key": "FredKnief",
@@ -99,21 +126,12 @@
     "chapterCount": 2
   },
   {
-    "series_key": "JimNickel",
-    "slug": "jim-nickel-three-cities",
-    "name": "Jim Nickel: Three Cities",
-    "kind": "work",
-    "blurb": "Oak Park, Brentwood, New York — a life told through the places it was lived in.",
-    "cover_image_url": "hdr.JimNickel1.jpg",
-    "chapterCount": 2
-  },
-  {
-    "series_key": "JoelNickel",
-    "slug": "joel-nickel",
-    "name": "Joel Nickel",
+    "series_key": "Hib",
+    "slug": "hc-nickel",
+    "name": "H.C. Nickel",
     "kind": "person",
-    "blurb": "Forty years of ministry, and a second life in art.",
-    "cover_image_url": "hdr.Chicago1.jpg",
+    "blurb": "Stock seller, teacher, and a newspaper column on money and happiness.",
+    "cover_image_url": "hdr.MuellerFarm3.jpg",
     "chapterCount": 2
   },
   {
@@ -126,6 +144,15 @@
     "chapterCount": 2
   },
   {
+    "series_key": "TanteFieks",
+    "slug": "tante-fieks",
+    "name": "Tante Fieks",
+    "kind": "person",
+    "blurb": "Sofie Mueller — Tante Fieks — looking back on bright and dark days.",
+    "cover_image_url": "hdr.MuellerFarm3.jpg",
+    "chapterCount": 2
+  },
+  {
     "series_key": "Janzow",
     "slug": "the-bethlehem-congregation",
     "name": "The Bethlehem Congregation Case",
@@ -135,39 +162,12 @@
     "chapterCount": 2
   },
   {
-    "series_key": "Hib",
-    "slug": "hc-nickel",
-    "name": "H.C. Nickel",
-    "kind": "person",
-    "blurb": "Stock seller, teacher, and a newspaper column on money and happiness.",
-    "cover_image_url": "hdr.GaryPostTribune.jpg",
-    "chapterCount": 1
-  },
-  {
-    "series_key": "TanteFieks",
-    "slug": "tante-fieks",
-    "name": "Tante Fieks",
-    "kind": "person",
-    "blurb": "Sofie Mueller — Tante Fieks — looking back on bright and dark days.",
-    "cover_image_url": "hdr.MuellerFarm3.jpg",
-    "chapterCount": 1
-  },
-  {
     "series_key": "OpaObit",
     "slug": "ehc-mueller",
     "name": "The Rev. E.H.C. Mueller",
     "kind": "person",
     "blurb": "Two obituaries of the same man, one in English and one in German.",
     "cover_image_url": "hdr.Freedom1.jpg",
-    "chapterCount": 1
-  },
-  {
-    "series_key": "Waldschmidt",
-    "slug": "the-waldschmidts",
-    "name": "The Waldschmidts",
-    "kind": "person",
-    "blurb": "Anna's history, and Henry's.",
-    "cover_image_url": "hdr.Woodworth1.jpg",
-    "chapterCount": 1
+    "chapterCount": 2
   }
 ]
