@@ -572,6 +572,32 @@
     "language": null
   },
   {
+    "document_id": 61,
+    "series_key": "DodoKnief",
+    "series_title": null,
+    "series_order": 1,
+    "title": "‘Der Little Guy’ gets married",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "A big sister’s account of Paul Mueller’s marriage to Henrietta Strelow. For various reasons, not all the Muellers made it to Milwaukee for their kid brother’s wedding.",
+    "genre": "Letter",
+    "tags": "Mueller/Knief, Dora Elizabeth (Dodo)",
+    "language": null
+  },
+  {
+    "document_id": 62,
+    "series_key": "DodoKnief",
+    "series_title": null,
+    "series_order": 2,
+    "title": "Dodo Knief: Live wire, columnist, woman of mystery",
+    "author": null,
+    "authorPersonId": null,
+    "summary": "Dodo Knief seems to have been a free spirit whose relationships with certain of her siblings were not always close. She took over her mother’s newspaper columns (*Daheim* and *Frauenfleiß,* possibly others) and wrote them for more than two decades until the German-language publications were discontinued in the 1940s.",
+    "genre": "Biography",
+    "tags": "Mueller/Knief, Dora Elizabeth (Dodo)",
+    "language": null
+  },
+  {
     "document_id": 63,
     "series_key": null,
     "series_title": "Everything Old Is New Again",
