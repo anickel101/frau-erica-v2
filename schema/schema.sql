@@ -182,8 +182,13 @@ CREATE TABLE Series (
 --     blank. This replaces the old site's approach of hand-maintained
 --     "table of contents" links copy-pasted into every chapter file,
 --     which had already drifted out of sync in the original source.
---   genre: closed set, taken directly from the original site's own
---     genre index page.
+--   genre: closed set, taken from the original site's own genre index
+--     page, plus 'Obituary'. That one is an addition rather than a
+--     recovery: the old site had no such category, but the archive
+--     holds a good many obituaries -- newspaper notices, church-paper
+--     death notices -- and they were all landing in 'Other', which is
+--     the bucket that says nothing. Added on the archivist's
+--     instruction, 2026-10-19. 'Other' stays last as the catch-all.
 --   language/parallel_of: a work held in two languages is two rows,
 --     not one row with both interleaved — see the note below the table.
 -- ------------------------------------------------------------
@@ -197,7 +202,7 @@ CREATE TABLE Documents (
     author_person_id INTEGER REFERENCES Persons(person_id),
     summary      TEXT,
     content      TEXT,
-    genre        TEXT CHECK (genre IN ('Biography', 'Memoir', 'History', 'Literary', 'Letter', 'Recipe', 'Other')),
+    genre        TEXT CHECK (genre IN ('Biography', 'Memoir', 'History', 'Literary', 'Letter', 'Recipe', 'Obituary', 'Other')),
     tags         TEXT,
     notes        TEXT,
     language     TEXT CHECK (language IN ('en', 'de')),
