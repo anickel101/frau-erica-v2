@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Collection } from '../data-access/public/collections'
+import InlineMarkdown from './InlineMarkdown'
 
 // What a collection's kind is called on the card. The kind itself is
 // structural -- how the texts relate to each other -- so the label says
@@ -45,7 +46,7 @@ export default function CollectionCard({ collection }: { collection: Collection 
         )}
         <div className="p-3">
           <h3 className="text-sm font-bold leading-snug text-fe-ink group-hover:text-fe-link-dark">
-            {collection.name}
+            <InlineMarkdown>{collection.name}</InlineMarkdown>
           </h3>
           <p className="mt-1 text-[11px] uppercase tracking-wide text-fe-brown">
             {kindLabel(collection)}

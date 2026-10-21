@@ -29,7 +29,7 @@
   {
     "series_key": "CarlDeHaas",
     "slug": "winke-fuer-auswanderer",
-    "name": "Winke für Auswanderer",
+    "name": "*Winke für Auswanderer*",
     "kind": "work",
     "blurb": "Carl de Haas arrived on the Wisconsin frontier in 1847. His booklet of advice for people considering emigration was widely available in Germany and went through at least two printings.",
     "cover_image_url": "hdr.CarlDeHaas3.jpg",
@@ -47,7 +47,7 @@
   {
     "series_key": "LudwigKnief",
     "slug": "ludwig-kniefs-lebenslauf",
-    "name": "Ludwig Knief's Lebenslauf",
+    "name": "Ludwig Knief's *Lebenslauf*",
     "kind": "work",
     "blurb": "Written from memory in August 1902 and addressed to his children: a farm childhood near Bremen, the California gold rush, and a life in the ministry in America. German and English side by side.",
     "cover_image_url": "hdr.Knief2.jpg",

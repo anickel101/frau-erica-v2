@@ -91,6 +91,14 @@ function createImageComponents(imageWidths: Map<string, number>) {
     img: ({ src, alt, title }: ComponentPropsWithoutRef<'img'> & ExtraProps) => {
       if (!src) return null
       if (title === 'wide') return <DocumentWideImage src={src} alt={alt} />
+      // "stack": out of the float, at the photograph's own size. For a
+      // run of images that would otherwise sit one above another down
+      // the right-hand edge, squeezing the text into a narrow channel.
+      // Distinct from "wide", which fills the column and would enlarge
+      // a small photograph to do it.
+      if (title === 'stack') {
+        return <DocumentEmbeddedImage src={src} alt={alt} floated={false} />
+      }
       const explicitWidth = title && /^\d+$/.test(title) ? Number(title) : undefined
       return (
         <DocumentEmbeddedImage
@@ -172,10 +180,19 @@ function TextHeader({ imageUrl, caption }: { imageUrl: string; caption: string |
           stub on the second. The Family page's own header caption
           already solved this with text-pretty and a width search (see
           FamilyCaption there); this one had nothing. */}
+      {/* Flush right under the image, and held to three quarters of its
+          width, so a long caption breaks into several short lines
+          instead of running the full span of the photograph. Both at
+          the archivist's request. The treatment starts at sm: on a
+          phone three quarters of an already narrow column would set the
+          caption in a ribbon, so there it stays full width and ranged
+          left, as it was. */}
       {caption && (
-        <p className="max-w-4xl mt-2 text-[11px] leading-tight text-fe-ink/60 text-balance">
-          <InlineMarkdown>{caption}</InlineMarkdown>
-        </p>
+        <div className="max-w-4xl mt-2">
+          <p className="text-[11px] leading-tight text-fe-ink/60 text-balance sm:ml-auto sm:w-3/4 sm:text-right">
+            <InlineMarkdown>{caption}</InlineMarkdown>
+          </p>
+        </div>
       )}
     </>
   )
@@ -216,21 +233,6 @@ export default function TextPage() {
     ),
   )
 
-  // Where this chapter sits in its series, for the previous/next links
-  // below. These used to be written by hand into the end of each
-  // document ("**Next:** [On the High Seas](/documents/88)"); splitting
-  // a parallel text strips them, since an English-only navigation line
-  // has no German counterpart to pair with. Derived here instead, which
-  // also means they cannot go stale.
-  const chapterIndex = seriesChapters.findIndex(
-    (chapter) => chapter.document_id === document.document_id,
-  )
-  const previousChapter = chapterIndex > 0 ? seriesChapters[chapterIndex - 1] : null
-  const nextChapter =
-    chapterIndex >= 0 && chapterIndex < seriesChapters.length - 1
-      ? seriesChapters[chapterIndex + 1]
-      : null
-
   return (
     <Layout>
       {document.header_image_url && (
@@ -247,7 +249,9 @@ export default function TextPage() {
         )}
         {/* text-xl/2xl, not text-2xl/3xl -- see FamilyPage.tsx's own
             comment on this: gives a long document title more room. */}
-        <h1 className="text-xl sm:text-2xl font-bold mb-2">{document.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-2">
+          <InlineMarkdown>{document.title}</InlineMarkdown>
+        </h1>
         {/* The genre stamp stays. Opa asked to "consider removing" it
             unless it served a purpose -- it does, so it's kept here and
             on the index rows. */}
@@ -325,31 +329,11 @@ export default function TextPage() {
           </p>
         )}
 
-        {/* Only where the hand-written links were removed. Documents
-            that still carry their own "Next:" line would otherwise show
-            the same link twice. */}
-        {document.parallel && (previousChapter || nextChapter) && (
-          <nav className="mt-8 flex justify-between gap-4 text-sm">
-            {previousChapter ? (
-              <Link
-                to={`/documents/${previousChapter.document_id}`}
-                className="text-fe-link hover:text-fe-link-dark"
-              >
-                &larr; {previousChapter.title}
-              </Link>
-            ) : (
-              <span />
-            )}
-            {nextChapter && (
-              <Link
-                to={`/documents/${nextChapter.document_id}`}
-                className="text-fe-link hover:text-fe-link-dark text-right"
-              >
-                {nextChapter.title} &rarr;
-              </Link>
-            )}
-          </nav>
-        )}
+        {/* There was a previous/next pair of arrows here, shown on
+            every parallel text. It went at the archivist's request: the
+            full chapter list sits directly beneath it, every entry
+            already a link, so the arrows offered a second route to two
+            of the places that list already goes. */}
 
         {seriesChapters.length > 0 && (
           <div className="mt-8">
@@ -360,7 +344,7 @@ export default function TextPage() {
               {seriesChapters.map((chapter) =>
                 chapter.document_id === document.document_id ? (
                   <li key={chapter.document_id} className="font-bold">
-                    {chapter.title}
+                    <InlineMarkdown>{chapter.title}</InlineMarkdown>
                   </li>
                 ) : (
                   <li key={chapter.document_id}>
@@ -368,7 +352,7 @@ export default function TextPage() {
                       to={`/documents/${chapter.document_id}`}
                       className="text-fe-link hover:text-fe-link-dark"
                     >
-                      {chapter.title}
+                      <InlineMarkdown>{chapter.title}</InlineMarkdown>
                     </Link>
                   </li>
                 ),
