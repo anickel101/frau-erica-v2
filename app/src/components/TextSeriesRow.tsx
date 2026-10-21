@@ -56,7 +56,7 @@ export default function TextSeriesRow({
   return (
     <article className="py-3 border-b border-fe-brown/20">
       <Link to={to} className="text-base font-bold text-fe-ink hover:text-fe-link-dark">
-        {entry.seriesTitle}
+        <InlineMarkdown>{entry.seriesTitle}</InlineMarkdown>
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
         <TextByline authors={authors} genre={representative.genre} />
@@ -75,7 +75,7 @@ export default function TextSeriesRow({
                 to={`/documents/${chapter.document_id}`}
                 className="text-fe-link hover:text-fe-link-dark"
               >
-                {chapter.title}
+                <InlineMarkdown>{chapter.title}</InlineMarkdown>
               </Link>
             </li>
           ))}

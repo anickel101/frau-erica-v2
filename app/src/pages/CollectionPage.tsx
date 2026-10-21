@@ -55,7 +55,9 @@ export default function CollectionPage() {
             Collections
           </Link>
         </p>
-        <h1 className="text-xl sm:text-2xl font-bold mb-2">{collection.name}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-2">
+          <InlineMarkdown>{collection.name}</InlineMarkdown>
+        </h1>
         {/* Count, then everyone who wrote it, then what kind of thing
             it is. The names come from getCollectionAuthors, which lists
             every author the chapters name rather than picking one:
@@ -174,7 +176,7 @@ function ChapterRow({ chapter }: { chapter: DocumentListItem }) {
         to={`/documents/${chapter.document_id}`}
         className="text-base font-bold text-fe-ink hover:text-fe-link-dark"
       >
-        {chapter.title}
+        <InlineMarkdown>{chapter.title}</InlineMarkdown>
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
         <TextByline authors={getDocumentAuthors(chapter)} genre={chapter.genre} />

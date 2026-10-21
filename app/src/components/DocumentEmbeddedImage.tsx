@@ -18,16 +18,28 @@ export default function DocumentEmbeddedImage({
   src,
   alt,
   width = 300,
+  floated = true,
 }: {
   src?: string
   alt?: string
   width?: number
+  floated?: boolean
 }) {
   const [isZoomed, setIsZoomed] = useState(false)
   if (!src) return null
 
+  // floated={false} takes the figure out of the float and drops the
+  // fixed width, so the photograph prints at its own size (preflight's
+  // max-width:100% still keeps it inside the column). For a run of
+  // images that would otherwise stack down the right-hand edge and
+  // squeeze the text into a channel beside them. Not the same as the
+  // "wide" treatment, which fills the column and so enlarges anything
+  // narrower than it.
   return (
-    <figure className="float-right ml-4 mb-2" style={{ width }}>
+    <figure
+      className={floated ? 'float-right ml-4 mb-2' : 'mb-4'}
+      style={floated ? { width } : undefined}
+    >
       {/* A real <button>, not a <div onClick>. The div gave the zoom no
           tab stop and no Enter/Space handling, so on a public page every
           embedded photo was unreachable without a mouse. block w-full

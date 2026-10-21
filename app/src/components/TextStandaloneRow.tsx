@@ -11,7 +11,7 @@ export default function TextStandaloneRow({ document }: { document: DocumentList
         to={`/documents/${document.document_id}`}
         className="text-base font-bold text-fe-ink hover:text-fe-link-dark"
       >
-        {document.title}
+        <InlineMarkdown>{document.title}</InlineMarkdown>
       </Link>
       <p className="text-xs text-fe-ink/70 mt-0.5">
         <TextByline authors={getDocumentAuthors(document)} genre={document.genre} />

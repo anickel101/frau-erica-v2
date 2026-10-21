@@ -209,7 +209,9 @@ describe('groupTexts and collections', () => {
     expect(entry.kind).toBe('series')
     if (entry.kind === 'series') {
       // Not "Lebenslauf I", which is what deriving from the kicker gave.
-      expect(entry.seriesTitle).toBe("Ludwig Knief's Lebenslauf")
+      // The asterisks are markdown: titles render through InlineMarkdown
+      // now, so the German sets in italics as the archivist asked.
+      expect(entry.seriesTitle).toBe("Ludwig Knief's *Lebenslauf*")
       expect(entry.collection?.slug).toBe('ludwig-kniefs-lebenslauf')
     }
   })
