@@ -153,15 +153,6 @@
     "chapterCount": 2
   },
   {
-    "series_key": "TanteFieks",
-    "slug": "tante-fieks",
-    "name": "Tante Fieks",
-    "kind": "person",
-    "blurb": "Sofie Mueller — Tante Fieks — looking back on bright and dark days.",
-    "cover_image_url": "hdr.MuellerFarm3.jpg",
-    "chapterCount": 2
-  },
-  {
     "series_key": "Janzow",
     "slug": "the-bethlehem-congregation",
     "name": "The Bethlehem Congregation Case",
@@ -178,5 +169,14 @@
     "blurb": "Two obituaries of the same man, one in English and one in German.",
     "cover_image_url": "hdr.Freedom1.jpg",
     "chapterCount": 2
+  },
+  {
+    "series_key": "TanteFieks",
+    "slug": "tante-fieks",
+    "name": "Tante Fieks",
+    "kind": "person",
+    "blurb": "Frieda Mueller — Tante Fieks — looking back on bright and dark days.",
+    "cover_image_url": "hdr.MuellerFarm3.jpg",
+    "chapterCount": 1
   }
 ]
