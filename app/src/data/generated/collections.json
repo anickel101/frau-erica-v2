@@ -9,6 +9,15 @@
     "chapterCount": 29
   },
   {
+    "series_key": "DodoKnief",
+    "slug": "dodo-knief",
+    "name": "Dodo Knief",
+    "kind": "person",
+    "blurb": "Live wire, columnist, woman of mystery.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 27
+  },
+  {
     "series_key": "Chicago",
     "slug": "chicago-memoirs",
     "name": "The Chicago Memoirs",
@@ -34,15 +43,6 @@
     "blurb": "The Frau Erica of the archive's name: her cookbook, and the poems, hymn texts and one essay she contributed to the *Sängerbote*, a German-Lutheran literary quarterly.",
     "cover_image_url": "hdr.Frauenfleisz.jpg",
     "chapterCount": 16
-  },
-  {
-    "series_key": "DodoKnief",
-    "slug": "dodo-knief",
-    "name": "Dodo Knief",
-    "kind": "person",
-    "blurb": "Live wire, columnist, woman of mystery.",
-    "cover_image_url": "hdr.Knief.jpg",
-    "chapterCount": 15
   },
   {
     "series_key": "CarlDeHaas",
