@@ -2494,5 +2494,57 @@
     "genre": "Literary",
     "tags": "Mueller, Ernst H.C. (Opa)",
     "language": "en"
+  },
+  {
+    "document_id": 288,
+    "series_key": "FredKnief",
+    "series_title": null,
+    "series_order": 3,
+    "title": "Latin Church Hymns",
+    "author": "Fred Knief",
+    "authorPersonId": 136,
+    "summary": "Friedrich Knief was the first child of Theodora Mueller, eldest of the nine original Mueller immigrant children, and the Rev. Ludwig Knief. Friedrich and his wife Dora Mueller, first cousins, were writers and editors for German periodicals in Milwaukee. Fred contributed longer essays and a humorous piece to the *Sängerbote*. He also wrote a brief history of the Mueller family in America and edited his father's *Lebenslauf* (autobiography). [View the original *Sängerbote* page](/galleries/33?image=763).",
+    "genre": "Literary",
+    "tags": "Knief, Friedrich Constantinus (Fred)",
+    "language": "en"
+  },
+  {
+    "document_id": 290,
+    "series_key": "FredKnief",
+    "series_title": null,
+    "series_order": 4,
+    "title": "Michelangelo as Poet",
+    "author": "Fred Knief",
+    "authorPersonId": 136,
+    "summary": "Friedrich Knief, son of a Lutheran minister, was well-schooled in the teachings of Martin Luther, particularly the *sola gratia* part. In Michelangelo's sonnets, written late in life, Knief found evidence that Michelangelo recognized grace rather than good works as the essential key, an insight Knief explored in a later essay on the poet [Vittoria Colonna](/documents/292). [View the original *Sängerbote* page](/galleries/33?image=765).",
+    "genre": "Literary",
+    "tags": "Knief, Friedrich Constantinus (Fred)",
+    "language": "en"
+  },
+  {
+    "document_id": 292,
+    "series_key": "FredKnief",
+    "series_title": null,
+    "series_order": 5,
+    "title": "Vittoria Colonna",
+    "author": "Fred Knief",
+    "authorPersonId": 136,
+    "summary": "Friedrich Knief's essay on [Michelangelo as poet](/documents/290) (*Sängerbote* No. 7, August 1914) explored a significant theological insight that the elder Michelangelo developed through friendship and correspondence with the poet Vittoria Colonna. [View the original *Sängerbote* page](/galleries/33?image=768).",
+    "genre": "Literary",
+    "tags": "Knief, Friedrich Constantinus (Fred)",
+    "language": "en"
+  },
+  {
+    "document_id": 294,
+    "series_key": "FredKnief",
+    "series_title": null,
+    "series_order": 6,
+    "title": "The Glorious!",
+    "author": "Fred Knief",
+    "authorPersonId": 136,
+    "summary": "Fred Knief — Friedrich Constantinus Knief — contributed some longer essays to the *Sängerbote*, including this humorous encounter with a player piano in a Milwaukee department store. [View the original *Sängerbote* page](/galleries/33?image=771).",
+    "genre": "Literary",
+    "tags": "Knief, Friedrich Constantinus (Fred)",
+    "language": "en"
   }
 ]

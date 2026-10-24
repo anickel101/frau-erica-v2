@@ -72,6 +72,15 @@
     "chapterCount": 7
   },
   {
+    "series_key": "FredKnief",
+    "slug": "fred-knief",
+    "name": "Fred Knief",
+    "kind": "person",
+    "blurb": "A brother-in-law's account of a Mueller wedding, and the story of his own -- plus the four essays Fred contributed to the *Sängerbote*, a German-Lutheran literary quarterly.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 6
+  },
+  {
     "series_key": "GerhardMueller",
     "slug": "gerhard-mueller",
     "name": "Gerhard Mueller",
@@ -133,15 +142,6 @@
     "blurb": "Anna's history, and Henry's.",
     "cover_image_url": "hdr.Goettingen_1585.jpg",
     "chapterCount": 3
-  },
-  {
-    "series_key": "FredKnief",
-    "slug": "fred-knief",
-    "name": "Fred Knief",
-    "kind": "person",
-    "blurb": "A brother-in-law's account of a Mueller wedding, and the story of his own.",
-    "cover_image_url": "hdr.Knief.jpg",
-    "chapterCount": 2
   },
   {
     "series_key": "Hib",
