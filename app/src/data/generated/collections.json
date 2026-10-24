@@ -1,5 +1,14 @@
 [
   {
+    "series_key": "DodoKnief",
+    "slug": "dodo-knief",
+    "name": "Dodo Knief",
+    "kind": "person",
+    "blurb": "The wedding of her brother Paul, her own live-wire reputation as a columnist -- and the 35 poems and essays, the single largest contribution by any Mueller, that Dora wrote for the *Sängerbote*, a German-Lutheran literary quarterly.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 38
+  },
+  {
     "series_key": "MarkAlliChristmas",
     "slug": "christmas-letters",
     "name": "Mark and Alli's Christmas Letters",
@@ -45,6 +54,15 @@
     "chapterCount": 10
   },
   {
+    "series_key": "ErnstHelen",
+    "slug": "ernst-and-helen",
+    "name": "Ernst and Helen Mueller",
+    "kind": "person",
+    "blurb": "The Muellers of Freedom Township, and life in the bakerhouse, 1911-1948 -- plus the eight poems and one unpublished sequel Ernst (Opa) contributed to the *Sängerbote*, a German-Lutheran literary quarterly.",
+    "cover_image_url": "hdr.MuellerFarm2.jpg",
+    "chapterCount": 9
+  },
+  {
     "series_key": "FritzReise",
     "slug": "fritz-muellers-journal",
     "name": "Fritz Mueller's Journal of the Voyage to America",
@@ -61,6 +79,15 @@
     "blurb": "Written from memory in August 1902 and addressed to his children: a farm childhood near Bremen, the California gold rush, and a life in the ministry in America. German and English side by side.",
     "cover_image_url": "hdr.Knief2.jpg",
     "chapterCount": 7
+  },
+  {
+    "series_key": "FredKnief",
+    "slug": "fred-knief",
+    "name": "Fred Knief",
+    "kind": "person",
+    "blurb": "A brother-in-law's account of a Mueller wedding, and the story of his own -- plus the four essays Fred contributed to the *Sängerbote*, a German-Lutheran literary quarterly.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 6
   },
   {
     "series_key": "GerhardMueller",
@@ -90,15 +117,6 @@
     "chapterCount": 4
   },
   {
-    "series_key": "DodoKnief",
-    "slug": "dodo-knief",
-    "name": "Dodo Knief",
-    "kind": "person",
-    "blurb": "Live wire, columnist, woman of mystery.",
-    "cover_image_url": "hdr.Knief.jpg",
-    "chapterCount": 3
-  },
-  {
     "series_key": "JimNickel",
     "slug": "jim-nickel-three-cities",
     "name": "Jim Nickel: Three Cities",
@@ -124,15 +142,6 @@
     "blurb": "Anna's history, and Henry's.",
     "cover_image_url": "hdr.Goettingen_1585.jpg",
     "chapterCount": 3
-  },
-  {
-    "series_key": "FredKnief",
-    "slug": "fred-knief",
-    "name": "Fred Knief",
-    "kind": "person",
-    "blurb": "A brother-in-law's account of a Mueller wedding, and the story of his own.",
-    "cover_image_url": "hdr.Knief.jpg",
-    "chapterCount": 2
   },
   {
     "series_key": "Hib",
