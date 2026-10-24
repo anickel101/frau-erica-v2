@@ -36,6 +36,15 @@
     "chapterCount": 10
   },
   {
+    "series_key": "FrauErica",
+    "slug": "frau-erica",
+    "name": "Adelheid Rickmeyer, Frau Erica",
+    "kind": "person",
+    "blurb": "The Frau Erica of the archive's name, and her cookbook.",
+    "cover_image_url": "hdr.Frauenfleisz.jpg",
+    "chapterCount": 8
+  },
+  {
     "series_key": "FritzReise",
     "slug": "fritz-muellers-journal",
     "name": "Fritz Mueller's Journal of the Voyage to America",
@@ -52,15 +61,6 @@
     "blurb": "Written from memory in August 1902 and addressed to his children: a farm childhood near Bremen, the California gold rush, and a life in the ministry in America. German and English side by side.",
     "cover_image_url": "hdr.Knief2.jpg",
     "chapterCount": 7
-  },
-  {
-    "series_key": "FrauErica",
-    "slug": "frau-erica",
-    "name": "Adelheid Rickmeyer, Frau Erica",
-    "kind": "person",
-    "blurb": "The Frau Erica of the archive's name, and her cookbook.",
-    "cover_image_url": "hdr.Frauenfleisz.jpg",
-    "chapterCount": 6
   },
   {
     "series_key": "GerhardMueller",
