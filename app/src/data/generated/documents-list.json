@@ -3001,5 +3001,18 @@
     "genre": "Literary",
     "tags": "Mueller/Knief, Dora Elizabeth (Dodo)",
     "language": "en"
+  },
+  {
+    "document_id": 366,
+    "series_key": null,
+    "series_title": null,
+    "series_order": null,
+    "title": "Stars and Stripes",
+    "author": "O.F. Meissner",
+    "authorPersonId": null,
+    "summary": "The *Sängerbote*'s *Amerikanische Vaterlandslieder* section led with O.F. Meissner's singable German text for the Star-Spangled Banner — this less than a year before the United States entered The Great War. The song was broadly popular long before Meissner's version appeared here; Meissner set three stanzas, where Francis Scott Key had originally composed four. The song wasn't yet the national anthem — Woodrow Wilson designated it so by executive order in 1916, and Congress made it official only in 1931 — and wouldn't be sung at a sporting event until the 1918 World Series. Not one of the 55 Mueller family contributions; Meissner was an unrelated contributor to the same volume.",
+    "genre": "Literary",
+    "tags": "Sängerbote",
+    "language": "en"
   }
 ]
