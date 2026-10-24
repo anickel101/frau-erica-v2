@@ -35,6 +35,13 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Collections', to: '/collections' },
       { label: 'The Mueller Lexicon', to: '/lexicon' },
       { label: 'Today in Frau Erica', to: '/anniversaries' },
+      // Not a real Collection -- the 55 Sängerbote works stay filed under
+      // each contributor's own collection (a document belongs to exactly
+      // one series, and splitting them out would mean losing them from
+      // Frau Erica's/Ernst's/Dora's/Fred's own pages). This points at the
+      // collection-level intro document instead, which was extended with
+      // a full reading list linking every work, grouped by contributor.
+      { label: 'Sängerbote', to: '/documents/255' },
     ],
   },
 ]
