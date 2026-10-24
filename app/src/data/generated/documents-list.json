@@ -577,10 +577,10 @@
     "series_title": null,
     "series_order": 1,
     "title": "‘Der Little Guy’ gets married",
-    "author": null,
-    "authorPersonId": null,
-    "summary": "A big sister’s account of Paul Mueller’s marriage to Henrietta Strelow. For various reasons, not all the Muellers made it to Milwaukee for their kid brother’s wedding.",
-    "genre": "Letter",
+    "author": "Mark Nickel",
+    "authorPersonId": 18,
+    "summary": "Paul Gerhard Mueller, the youngest of Wilhelm and Adelheid's ten children, married Henrietta Strelow in Milwaukee on June 3, 1909. Frau Erica stayed home with health troubles, the Schumms hadn't visited in nine years, and Wilhelm made only a brief, late appearance before catching the 4 a.m. train out. Two accounts of the day survive: Fred Knief's, of which only the first page remains, and his wife Dodo's complete letter to her brother Ernst, who could not attend — published separately as [Dodo Knief's Wedding Story](/documents/247).",
+    "genre": "History",
     "tags": "Mueller/Knief, Dora Elizabeth (Dodo)",
     "language": null
   },
@@ -588,7 +588,7 @@
     "document_id": 62,
     "series_key": "DodoKnief",
     "series_title": null,
-    "series_order": 2,
+    "series_order": 3,
     "title": "Dodo Knief: Live wire, columnist, woman of mystery",
     "author": null,
     "authorPersonId": null,
@@ -2221,5 +2221,18 @@
     "genre": "History",
     "tags": null,
     "language": null
+  },
+  {
+    "document_id": 247,
+    "series_key": "DodoKnief",
+    "series_title": null,
+    "series_order": 2,
+    "title": "Dodo Knief's Wedding Story",
+    "author": "Dodo Knief",
+    "authorPersonId": 26,
+    "summary": "Dodo Knief's account of her youngest brother Paul's wedding, written a week after the June 3, 1909 ceremony in Milwaukee, for her brother Ernst and his wife Helen — who were home in Chicago expecting their fifth child. Dodo describes the music, the bridal party and who did and didn't make the trip, alongside family worries closer to home: a sister going thin with exhaustion, a brother-in-law too poor to afford an operation he needs.",
+    "genre": "Letter",
+    "tags": "Mueller/Knief, Dora Elizabeth (Dodo)",
+    "language": "en"
   }
 ]
