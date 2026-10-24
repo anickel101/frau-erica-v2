@@ -36,6 +36,15 @@
     "chapterCount": 16
   },
   {
+    "series_key": "DodoKnief",
+    "slug": "dodo-knief",
+    "name": "Dodo Knief",
+    "kind": "person",
+    "blurb": "Live wire, columnist, woman of mystery.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 15
+  },
+  {
     "series_key": "CarlDeHaas",
     "slug": "winke-fuer-auswanderer",
     "name": "*Winke für Auswanderer*",
@@ -106,15 +115,6 @@
     "blurb": "Wilhelm Mueller and Adelheid, the Frau Erica this archive is named for: Kendallville, then careers in Chicago.",
     "cover_image_url": "hdr.MuellerFarm4.jpg",
     "chapterCount": 4
-  },
-  {
-    "series_key": "DodoKnief",
-    "slug": "dodo-knief",
-    "name": "Dodo Knief",
-    "kind": "person",
-    "blurb": "Live wire, columnist, woman of mystery.",
-    "cover_image_url": "hdr.Knief.jpg",
-    "chapterCount": 3
   },
   {
     "series_key": "JimNickel",
