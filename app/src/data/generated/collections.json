@@ -90,6 +90,15 @@
     "chapterCount": 4
   },
   {
+    "series_key": "DodoKnief",
+    "slug": "dodo-knief",
+    "name": "Dodo Knief",
+    "kind": "person",
+    "blurb": "Live wire, columnist, woman of mystery.",
+    "cover_image_url": "hdr.Knief.jpg",
+    "chapterCount": 3
+  },
+  {
     "series_key": "JimNickel",
     "slug": "jim-nickel-three-cities",
     "name": "Jim Nickel: Three Cities",
@@ -115,15 +124,6 @@
     "blurb": "Anna's history, and Henry's.",
     "cover_image_url": "hdr.Goettingen_1585.jpg",
     "chapterCount": 3
-  },
-  {
-    "series_key": "DodoKnief",
-    "slug": "dodo-knief",
-    "name": "Dodo Knief",
-    "kind": "person",
-    "blurb": "Live wire, columnist, woman of mystery.",
-    "cover_image_url": "hdr.Knief.jpg",
-    "chapterCount": 2
   },
   {
     "series_key": "FredKnief",
