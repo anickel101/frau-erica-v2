@@ -27,6 +27,15 @@
     "chapterCount": 17
   },
   {
+    "series_key": "FrauErica",
+    "slug": "frau-erica",
+    "name": "Adelheid Rickmeyer, Frau Erica",
+    "kind": "person",
+    "blurb": "The Frau Erica of the archive's name: her cookbook, and the poems, hymn texts and one essay she contributed to the *Sängerbote*, a German-Lutheran literary quarterly.",
+    "cover_image_url": "hdr.Frauenfleisz.jpg",
+    "chapterCount": 16
+  },
+  {
     "series_key": "CarlDeHaas",
     "slug": "winke-fuer-auswanderer",
     "name": "*Winke für Auswanderer*",
@@ -34,15 +43,6 @@
     "blurb": "Carl de Haas arrived on the Wisconsin frontier in 1847. His booklet of advice for people considering emigration was widely available in Germany and went through at least two printings.",
     "cover_image_url": "hdr.CarlDeHaas3.jpg",
     "chapterCount": 10
-  },
-  {
-    "series_key": "FrauErica",
-    "slug": "frau-erica",
-    "name": "Adelheid Rickmeyer, Frau Erica",
-    "kind": "person",
-    "blurb": "The Frau Erica of the archive's name, and her cookbook.",
-    "cover_image_url": "hdr.Frauenfleisz.jpg",
-    "chapterCount": 9
   },
   {
     "series_key": "FritzReise",

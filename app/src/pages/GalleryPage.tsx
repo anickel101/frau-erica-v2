@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { markdownLink } from '../utils/markdownLink'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import PhotoPeople from '../components/PhotoPeople'
 import GalleryLargeImage from '../components/GalleryLargeImage'
@@ -16,14 +16,25 @@ function wrap(index: number, length: number): number {
 
 export default function GalleryPage() {
   const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
   const gallery = getGalleryById(Number(id))
   const photos = gallery?.photos ?? []
 
+  // A document's summary can point at one page of a multi-image gallery
+  // (e.g. a specific Sängerbote scan) via ?image=<image_id>, rather than
+  // just the gallery's own lead image. Falls back to the lead image when
+  // the param is absent or doesn't match anything in this gallery.
+  const requestedImageId = Number(searchParams.get('image'))
+  const requestedIndex = requestedImageId
+    ? photos.findIndex((p) => p.image_id === requestedImageId)
+    : -1
   const initialIndex = gallery
-    ? Math.max(
-        0,
-        photos.findIndex((p) => p.image_id === gallery.lead_image_id),
-      )
+    ? requestedIndex >= 0
+      ? requestedIndex
+      : Math.max(
+          0,
+          photos.findIndex((p) => p.image_id === gallery.lead_image_id),
+        )
     : 0
 
   // All hooks are called unconditionally, before the not-found early
