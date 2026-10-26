@@ -9,8 +9,8 @@ version = 0.1
 #                    once step 1's zone is authoritative, because ACM
 #                    validates the certificate by writing into it.
 #   3. dns again  -- redeploy with CloudFrontDomain set to site's
-#                    DistributionDomainName output. That redeploy is the
-#                    actual cutover; clearing the parameter rolls back.
+#                    DistributionDomainName output. That redeploy was the
+#                    actual cutover, 2026-09-06.
 #
 # Same AWS profile and region as api/ -- one account, one place.
 
@@ -21,13 +21,12 @@ region = "us-east-1"
 profile = "frau-erica-v2-deploy"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-# THE CUTOVER SWITCH. With CloudFrontDomain set, the apex and www become
-# CloudFront aliases; comment this line out (or set it to "") and
-# redeploy to send both straight back to the legacy EC2 instance. Kept
-# here rather than passed as a --parameter-overrides flag so the live
-# state is committed and reviewable, and so a later routine deploy can't
-# silently revert the cutover by forgetting the flag. Records carry a
-# 300s TTL, so either direction takes about five minutes.
+# Apex and www are CloudFront aliases. Used to be a rollback switch --
+# clearing this sent both back to the legacy EC2 instance -- but that
+# instance was decommissioned 2026-10-26 (terminated, Elastic IP
+# released), so dns.yaml no longer has a legacy branch to fall back to.
+# CloudFrontDomain is now just the distribution's DistributionDomainName
+# output, required rather than optional.
 parameter_overrides = "CloudFrontDomain=\"d1i3m727t42pv3.cloudfront.net\""
 
 [site.deploy.parameters]

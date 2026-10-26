@@ -17,12 +17,6 @@ Parameters:
   DomainName:
     Type: String
     Default: frauerica.org
-  LegacySiteIPv4:
-    Type: String
-    Description: >
-      The existing EC2 instance (i-0c4ed2e0ef1fdc840) still serving the
-      old Laravel site. The apex and www point here until the cutover.
-    Default: 52.22.167.47
   ArchivistEmail:
     Type: String
     Description: >
@@ -33,16 +27,9 @@ Parameters:
   CloudFrontDomain:
     Type: String
     Description: >
-      Empty until cutover. Once site.yaml has been deployed, redeploy this
-      stack with its DistributionDomainName output (dxxxxxxxx.cloudfront.net)
-      and the apex/www records flip from the legacy EC2 A records to
-      CloudFront ALIAS records. That redeploy IS the go-live moment --
-      and setting this back to empty is a complete, one-parameter
-      rollback to the old site.
-    Default: ""
-
-Conditions:
-  CutOverToCloudFront: !Not [!Equals [!Ref CloudFrontDomain, ""]]
+      The CloudFront distribution's DistributionDomainName output
+      (dxxxxxxxx.cloudfront.net), from site.yaml. The apex and www
+      records are CloudFront ALIAS records.
 
 Resources:
   HostedZone:
@@ -50,27 +37,25 @@ Resources:
     Properties:
       Name: !Ref DomainName
 
-  # --- The site itself: legacy EC2 today, CloudFront after cutover ---
-  # Short TTL (300s, vs the 7200 Network Solutions was serving) so the
-  # cutover takes effect in minutes and, more importantly, so rolling it
-  # back also takes minutes rather than two hours of stale caches.
+  # --- The site itself: CloudFront ---
+  # The legacy EC2 instance this used to be able to roll back to
+  # (i-0c4ed2e0ef1fdc840) was decommissioned 2026-10-26 -- terminated,
+  # its Elastic IP released. There is nothing left to roll back to, so
+  # the conditional legacy-vs-CloudFront logic that used to live here is
+  # gone too, rather than left pointing at a dead IP that would silently
+  # fail if anyone ever tried to use it.
   ApexRecord:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: !Ref HostedZone
       Name: !Ref DomainName
       Type: A
-      TTL: !If [CutOverToCloudFront, !Ref "AWS::NoValue", 300]
-      ResourceRecords:
-        !If [CutOverToCloudFront, !Ref "AWS::NoValue", [!Ref LegacySiteIPv4]]
-      AliasTarget: !If
-        - CutOverToCloudFront
-        - DNSName: !Ref CloudFrontDomain
-          # Fixed, global, documented constant for every CloudFront
-          # distribution -- not this account's zone id.
-          HostedZoneId: Z2FDTNDATAQYW2
-          EvaluateTargetHealth: false
-        - !Ref "AWS::NoValue"
+      AliasTarget:
+        DNSName: !Ref CloudFrontDomain
+        # Fixed, global, documented constant for every CloudFront
+        # distribution -- not this account's zone id.
+        HostedZoneId: Z2FDTNDATAQYW2
+        EvaluateTargetHealth: false
 
   WwwRecord:
     Type: AWS::Route53::RecordSet
@@ -78,23 +63,13 @@ Resources:
       HostedZoneId: !Ref HostedZone
       Name: !Sub www.${DomainName}
       Type: A
-      TTL: !If [CutOverToCloudFront, !Ref "AWS::NoValue", 300]
-      ResourceRecords:
-        !If [CutOverToCloudFront, !Ref "AWS::NoValue", [!Ref LegacySiteIPv4]]
-      AliasTarget: !If
-        - CutOverToCloudFront
-        - DNSName: !Ref CloudFrontDomain
-          HostedZoneId: Z2FDTNDATAQYW2
-          EvaluateTargetHealth: false
-        - !Ref "AWS::NoValue"
+      AliasTarget:
+        DNSName: !Ref CloudFrontDomain
+        HostedZoneId: Z2FDTNDATAQYW2
+        EvaluateTargetHealth: false
 
-  # IPv6, and only after cutover -- the legacy EC2 instance is IPv4-only,
-  # so there is nothing to point an AAAA record at until CloudFront is
-  # serving. CloudFront has IPv6 enabled, which does nothing for visitors
-  # unless these exist.
   ApexRecordIPv6:
     Type: AWS::Route53::RecordSet
-    Condition: CutOverToCloudFront
     Properties:
       HostedZoneId: !Ref HostedZone
       Name: !Ref DomainName
@@ -106,7 +81,6 @@ Resources:
 
   WwwRecordIPv6:
     Type: AWS::Route53::RecordSet
-    Condition: CutOverToCloudFront
     Properties:
       HostedZoneId: !Ref HostedZone
       Name: !Sub www.${DomainName}

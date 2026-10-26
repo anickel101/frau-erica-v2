@@ -10,10 +10,10 @@ Description: >
   authoritative for the domain. Deployed too early, the stack sits in
   CREATE_IN_PROGRESS until ACM gives up (roughly an hour), then rolls back.
 
-  Creating this changes nothing for visitors. The distribution is reachable
-  at its own *.cloudfront.net name, but the domain keeps pointing at the
-  legacy EC2 instance until dns.yaml is redeployed with CloudFrontDomain
-  set. That redeploy is the cutover.
+  Creating this changes nothing for visitors by itself. The distribution
+  is reachable at its own *.cloudfront.net name; the domain only points
+  at it once dns.yaml is deployed with this stack's DistributionDomainName
+  output as its CloudFrontDomain parameter -- that deploy is the cutover.
 
 Parameters:
   DomainName:
