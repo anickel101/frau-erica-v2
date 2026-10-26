@@ -93,11 +93,11 @@ sam deploy --config-env site    # S3 + CloudFront + ACM
 keeps its settings under named environments, so without it `sam deploy`
 can't even find the stack name. Worse, if you supply `--stack-name` by
 hand to get past that error, you lose the environment's
-`parameter_overrides` — and `CloudFrontDomain` defaults to `""` in
-`dns.yaml`. That parameter is the cutover switch. Deploying the dns
-stack without it points the apex and www back at the legacy EC2 box
-(52.22.167.47) and takes the live site down, in about five minutes at
-the 300s TTL.
+`parameter_overrides` — and `CloudFrontDomain` has no default in
+`dns.yaml`, so the deploy fails outright rather than silently reverting
+anything. (It used to default to `""` and fall back to the legacy EC2
+box at 52.22.167.47 — that instance was decommissioned 2026-10-26, so
+`dns.yaml` no longer has a legacy branch to fall back to at all.)
 
 The api stack imports `FrauEricaEmailIssuesTopic` from the dns stack, so
 **dns deploys before api** when both change.
