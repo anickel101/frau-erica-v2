@@ -122,7 +122,7 @@
   {
     "image_id": 18,
     "title": null,
-    "caption": null,
+    "caption": "The *Boston Globe* review of the Liz Gerring Dance Company's performance at Jacob's Pillow, August 18, 2012.",
     "credit": null,
     "year_taken": null,
     "location": null,
@@ -146,7 +146,7 @@
   {
     "image_id": 22,
     "title": null,
-    "caption": null,
+    "caption": "The *New York Times* review of the Liz Gerring Dance Company's *Glacier*, performed at Jacob's Pillow in August 2012.",
     "credit": null,
     "year_taken": null,
     "location": null,
@@ -2868,6 +2868,42 @@
     "personIds": []
   },
   {
+    "image_id": 407,
+    "title": "Caveat emptor",
+    "caption": "In the summer of 1940, Opa agreed to buy 10 shares of stock in J.B. Ford & Co., a North Carolina mining company. H.J. Meier, the company’s agent gave Opa a receipt and promissory note, but no stock certificate was ever issued. Six months after the purchase, J.B. Ford & Co. was suspended by the state for failing to file tax reports.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 670,
+    "url": "OpaFleeced1.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 408,
+    "title": "As I feared",
+    "caption": "At his sister-in-law’s request, H.C. Nickel investigated the J.B. Ford & Co. stock Opa believed he had bought. The bad news: “I’m afraid that this whole thing has been a fraud from the start.”",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 964,
+    "url": "OpaFleeced2.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 409,
+    "title": "It’s official",
+    "caption": "Thad Eure, North Carolina secretary of state, responded to H.C. Nickel’s letter of inquiry. About six months after Opa bought his 10 shares of stock, J.C. Ford & Co. was suspended for failure to file tax reports.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 1039,
+    "url": "OpaFleeced3.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 410,
     "title": "With Oma and Opa",
     "caption": "Jerry (Joel) and Jimmy visited Oma and Opa at Freedom township, probably in the mid-1940s.",
@@ -5241,6 +5277,18 @@
     "width": 612,
     "height": 792,
     "url": "MarkAlliChristmas2023.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 739,
+    "title": "Theodora Mueller Knief",
+    "caption": "“Her Lord and Savior released her from this great suffering on Thursday, August 25, 1898, at quarter to eleven in the morning, making hers an earthly journey of 54 years, six months and 14 days,” Ludwig Knief wrote in his *Lebenslauf*. “Her body now lies in the church cemetery of the St. Peter’s congregation at Cushing, Payne County, Oklahoma, and an iron cross on her grave honors her memory.”",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 750,
+    "height": 1000,
+    "url": "Theodora1.jpg",
     "personIds": []
   },
   {
