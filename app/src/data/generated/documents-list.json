@@ -3118,5 +3118,18 @@
     "genre": "Memoir",
     "tags": "Mueller, Frieda Elisabeth (Flett)",
     "language": null
+  },
+  {
+    "document_id": 376,
+    "series_key": null,
+    "series_title": null,
+    "series_order": null,
+    "title": "McMillan Manufacturing Company",
+    "author": "Molly Bigelow McMillan",
+    "authorPersonId": 114,
+    "summary": "In September 2002, Molly Bigelow McMillan wrote this historical account of McMillan Manufacturing Company, the corporate predecessor of McMillan Electric Company.",
+    "genre": "Memoir",
+    "tags": "McMillan, Molly Bigelow",
+    "language": null
   }
 ]
