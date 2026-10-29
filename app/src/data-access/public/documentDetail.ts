@@ -87,7 +87,7 @@ const imagesById = new Map(
 // (a bare number), instead of the usual floated/rotating-width image.
 const IMAGE_PLACEHOLDER = /\{\{image:(\d+)(?::(\w+))?\}\}/g
 
-function resolveImagePlaceholders(content: string): string {
+export function resolveImagePlaceholders(content: string): string {
   return content.replace(
     IMAGE_PLACEHOLDER,
     (_match, idStr: string, modifier: string | undefined) => {
