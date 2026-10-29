@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import documentsDetail from '../../data/generated/documents.json'
 import imagesRaw from '../../data/generated/images.json'
 import { listDocuments, resolveDocumentPair } from './documents'
-import { getDocumentById } from './documentDetail'
+import { getDocumentById, resolveImagePlaceholders } from './documentDetail'
 
 // The fixture is FOUND, not hardcoded.
 //
@@ -17,37 +17,42 @@ import { getDocumentById } from './documentDetail'
 // keeps the assertion real while making it immune to ordinary content
 // work. If the archive ever contains no such document, the guard below
 // says so plainly rather than letting the test pass vacuously.
+//
+// Stripping an unresolvable placeholder used to be proved the same way,
+// from a real document that had one. Since 2026-10-29 none does -- every
+// embedded image was published -- so that half is tested directly.
 const PLACEHOLDER = /\{\{image:(\d+)(?::\w+)?\}\}/g
 
-function findDocumentWithBothPlaceholderKinds(): number {
+function findDocumentWithResolvablePlaceholder(): number {
   const publishedImageIds = new Set(
     (imagesRaw as { image_id: number }[]).map((image) => image.image_id),
   )
   for (const document of documentsDetail as { document_id: number; content: string }[]) {
     const ids = [...document.content.matchAll(PLACEHOLDER)].map((m) => Number(m[1]))
-    const resolvable = ids.some((id) => publishedImageIds.has(id))
-    const unresolvable = ids.some((id) => !publishedImageIds.has(id))
-    if (resolvable && unresolvable) return document.document_id
+    if (ids.some((id) => publishedImageIds.has(id))) return document.document_id
   }
   return -1
 }
 
 describe('getDocumentById', () => {
-  it('resolves {{image:ID}} placeholders to markdown image syntax, and strips unresolvable ones', () => {
-    const id = findDocumentWithBothPlaceholderKinds()
+  it('resolves {{image:ID}} placeholders to markdown image syntax', () => {
+    const id = findDocumentWithResolvablePlaceholder()
     expect(
       id,
-      'no published document contains both a resolvable and an unresolvable {{image:ID}} placeholder, so this test can no longer prove anything',
+      'no published document contains a resolvable {{image:ID}} placeholder, so this test can no longer prove anything',
     ).toBeGreaterThan(0)
 
     const document = getDocumentById(id)
 
     expect(document).toBeDefined()
-    // Every placeholder is gone: the resolvable ones became markdown
-    // image syntax, the unresolvable ones were stripped entirely rather
-    // than left as literal braces on the page.
     expect(document?.content).not.toContain('{{image:')
     expect(document?.content).toContain('![')
+  })
+
+  it('strips a placeholder for an unknown or unpublished image rather than leaving braces on the page', () => {
+    expect(resolveImagePlaceholders('Before.\n\n{{image:999999}}\n\nAfter.')).toBe(
+      'Before.\n\n\n\nAfter.',
+    )
   })
 
   it('returns undefined for an unknown or unpublished document id', () => {

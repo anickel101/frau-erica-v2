@@ -96,6 +96,30 @@
     "personIds": []
   },
   {
+    "image_id": 14,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 612,
+    "height": 828,
+    "url": "AddieCall2.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 15,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 612,
+    "height": 828,
+    "url": "AddieCall3.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 16,
     "title": null,
     "caption": null,
@@ -288,6 +312,198 @@
     "personIds": []
   },
   {
+    "image_id": 51,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 360,
+    "height": 866,
+    "url": "Chicago10.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 52,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 864,
+    "height": 645,
+    "url": "Chicago11.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 53,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1080,
+    "height": 285,
+    "url": "Chicago12.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 54,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 866,
+    "height": 343,
+    "url": "Chicago13.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 55,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 720,
+    "height": 1080,
+    "url": "Chicago14.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 56,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 864,
+    "height": 993,
+    "url": "Chicago15.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 57,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 576,
+    "height": 835,
+    "url": "Chicago16.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 58,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 541,
+    "height": 816,
+    "url": "Chicago17.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 59,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1080,
+    "height": 636,
+    "url": "Chicago18.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 60,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1080,
+    "height": 680,
+    "url": "Chicago19.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 61,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 720,
+    "height": 1103,
+    "url": "Chicago2.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 62,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 720,
+    "height": 889,
+    "url": "Chicago20.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 63,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1080,
+    "height": 720,
+    "url": "Chicago21.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 64,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 864,
+    "height": 539,
+    "url": "Chicago22.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 65,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 404,
+    "height": 513,
+    "url": "Chicago23.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 66,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 486,
+    "height": 400,
+    "url": "Chicago24.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 67,
     "title": null,
     "caption": null,
@@ -297,6 +513,54 @@
     "width": 322,
     "height": 265,
     "url": "Chicago25.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 68,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 864,
+    "height": 580,
+    "url": "Chicago26.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 69,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1071,
+    "height": 286,
+    "url": "Chicago27.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 70,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1080,
+    "height": 280,
+    "url": "Chicago28.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 71,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 576,
+    "height": 1237,
+    "url": "Chicago29.jpg",
     "personIds": []
   },
   {
@@ -312,6 +576,114 @@
     "personIds": []
   },
   {
+    "image_id": 73,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 576,
+    "height": 758,
+    "url": "Chicago30.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 74,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 877,
+    "height": 598,
+    "url": "Chicago31.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 75,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 945,
+    "height": 627,
+    "url": "Chicago32.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 76,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 500,
+    "height": 285,
+    "url": "Chicago33.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 78,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 720,
+    "height": 1215,
+    "url": "Chicago4.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 80,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 551,
+    "height": 817,
+    "url": "Chicago6.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 81,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 905,
+    "height": 669,
+    "url": "Chicago7.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 82,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 864,
+    "height": 550,
+    "url": "Chicago8.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 83,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 1080,
+    "height": 719,
+    "url": "Chicago9.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 85,
     "title": "Early cousins",
     "caption": "**Early cousins:** The first four of Oma and Opa Mueller᾿s 17 grandchildren were Irma and Enno Marquardt (top and middle left) and Joel and James Nickel (middle and bottom right). The remaining two children are not identified but could be Marquardt cousins, possible Phil or Len.",
@@ -321,6 +693,18 @@
     "width": 500,
     "height": 808,
     "url": "Cousins1.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 88,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 180,
+    "height": 240,
+    "url": "DodoKnief1_eee.jpg",
     "personIds": []
   },
   {
@@ -912,6 +1296,66 @@
     "personIds": []
   },
   {
+    "image_id": 166,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 420,
+    "url": "JimNickel2.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 167,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 400,
+    "height": 596,
+    "url": "JimNickel3.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 168,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 450,
+    "height": 637,
+    "url": "JimNickel4.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 169,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 810,
+    "url": "JimNickel5.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 170,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 425,
+    "url": "JimNickel6.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 174,
     "title": "Easter",
     "caption": "Jimmy and Jerry Nickel with their Easter egg haul.",
@@ -1041,6 +1485,18 @@
     "width": 400,
     "height": 635,
     "url": "KurtMueller5.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 192,
+    "title": "Aunt Lal and Aunt Ellen",
+    "caption": "Adelheid Mueller Amling (Aunt Lal) and Aunt Ellen, seated, sold real estate in California.",
+    "credit": "Photo, August 1955, from Frieda Gilvarg",
+    "year_taken": null,
+    "location": null,
+    "width": 360,
+    "height": 519,
+    "url": "LalEllen1.jpg",
     "personIds": []
   },
   {
@@ -1401,6 +1857,30 @@
     "width": 1000,
     "height": 594,
     "url": "UlrickaJoel1.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 255,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 600,
+    "height": 348,
+    "url": "WilhelmMueller2.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 256,
+    "title": "Hiermit sind Sie herzlich eingeladen",
+    "caption": "“You are herewith cordially invited to join in the silver anniversary celebration for our parents on Monday, November 28, at 6 p.m.” Sent by the children on November 18, 1892, from Oak Park, Illinois.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 523,
+    "url": "WilhelmMueller3.jpg",
     "personIds": []
   },
   {
@@ -3612,6 +4092,18 @@
     "personIds": []
   },
   {
+    "image_id": 488,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 350,
+    "height": 579,
+    "url": "Essig1.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 490,
     "title": "Explorer",
     "caption": "Thomas found a special hiding place near the back door in the kitchen of his new house.",
@@ -3825,6 +4317,18 @@
     "width": 850,
     "height": 896,
     "url": "ArenaChurch.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 509,
+    "title": "Herbert Christian Mueller",
+    "caption": null,
+    "credit": "LCMS",
+    "year_taken": null,
+    "location": null,
+    "width": 500,
+    "height": 749,
+    "url": "HerbertMueller_II.jpg",
     "personIds": []
   },
   {
@@ -6585,6 +7089,18 @@
     "width": 800,
     "height": 991,
     "url": "Alli_Chatterton.jpg",
+    "personIds": []
+  },
+  {
+    "image_id": 901,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 600,
+    "url": "RobertMueller.jpg",
     "personIds": []
   },
   {
