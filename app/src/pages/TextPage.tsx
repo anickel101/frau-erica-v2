@@ -2,46 +2,25 @@ import { type ComponentPropsWithoutRef } from 'react'
 import ReactMarkdown, { type ExtraProps } from 'react-markdown'
 import { Link, useParams } from 'react-router-dom'
 import DocumentEmbeddedImage from '../components/DocumentEmbeddedImage'
+import DocumentImageStrip from '../components/DocumentImageStrip'
 import DocumentWideImage from '../components/DocumentWideImage'
 import InlineMarkdown from '../components/InlineMarkdown'
 import TextByline from '../components/TextByline'
 import Layout from '../components/Layout'
 import ParallelText from '../components/ParallelText'
 import { getSeriesChapters } from '../data-access/public/documents'
-import { getDocumentById } from '../data-access/public/documentDetail'
+import { getDocumentById, getImageDimensions } from '../data-access/public/documentDetail'
+import {
+  floatWidth,
+  imagesIn,
+  isExhibit,
+  segmentContent,
+  type ContentSegment,
+} from '../utils/documentImageLayout'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import { displayKicker, getDocumentAuthors } from '../utils/textDisplay'
 import { resolveImageUrl } from '../utils/imageUrl'
 import { markdownLink } from '../utils/markdownLink'
-
-// Modest variation around the old fixed 300px -- per review feedback,
-// images at a single uniform width read as a stacked column running
-// down the page.
-const IMAGE_WIDTHS = [240, 300, 360]
-
-// A bounce (240, 300, 360, 300, 240, 300, ...), not a hard reset-to-start
-// cycle (240, 300, 360, 240, 300, ...) -- a plain modulo cycle can drop
-// straight from the largest size back to the smallest between two
-// adjacent images purely by coincidence of where a document's image
-// count happens to land in the cycle (confirmed against a real document:
-// its 4th and last image landed back on the smallest size, the opposite
-// of "the last image should be larger" from review feedback for that
-// exact page). Bouncing back down one step at a time instead of resetting
-// guarantees that jump never happens, for any document length -- not
-// just a fix for one specific image count.
-function widthForImageIndex(index: number): number {
-  const period = 2 * (IMAGE_WIDTHS.length - 1)
-  const pos = index % period
-  const bounceIndex = pos < IMAGE_WIDTHS.length ? pos : period - pos
-  return IMAGE_WIDTHS[bounceIndex]
-}
-
-// Resolved markdown image syntax -- by the time content reaches here,
-// {{image:ID}} shortcodes are already resolved to ![caption](url) or, for
-// a {{image:ID:modifier}} shortcode, ![caption](url "modifier") (see
-// data-access/public/documents.ts), which is the form actually rendered.
-// Group 2 (the modifier) is undefined for a plain, unmodified image.
-const MARKDOWN_IMAGE = /!\[[^\]]*\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g
 
 // A pure, one-time scan over the resolved content, not a counter
 // incremented as a side effect of rendering each <img> -- an earlier
@@ -55,18 +34,16 @@ const MARKDOWN_IMAGE = /!\[[^\]]*\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g
 // times. Keyed by URL (not just counted) so the same photo reused twice
 // keeps a consistent size rather than picking up wherever the sequence
 // happens to be on its second appearance.
-function buildImageWidths(content: string): Map<string, number> {
+// Only floated images take a slot -- a modified image ("wide", an
+// explicit pixel width) and a strip member are sized by other rules, so
+// they shouldn't shift the variation the floated ones step through.
+function buildImageWidths(floatedMarkdown: string): Map<string, number> {
   const widths = new Map<string, number>()
   let index = 0
-  for (const match of content.matchAll(MARKDOWN_IMAGE)) {
-    const [, src, modifier] = match
-    // A modifier ("wide", or an explicit pixel width) means this image
-    // opts out of the rotation entirely -- TextPage's img renderer below
-    // handles it directly from the modifier, so it shouldn't consume a
-    // slot in the sequence the remaining, unmodified images rotate through.
+  for (const { src, modifier } of imagesIn(floatedMarkdown)) {
     if (modifier) continue
     if (!widths.has(src)) {
-      widths.set(src, widthForImageIndex(index))
+      widths.set(src, floatWidth(getImageDimensions(src), index))
       index += 1
     }
   }
@@ -74,37 +51,42 @@ function buildImageWidths(content: string): Map<string, number> {
 }
 
 // Renders every embedded <img> (from {{image:ID}} shortcodes, resolved
-// to markdown image syntax -- see data-access/public/documents.ts) via
-// DocumentEmbeddedImage instead of a bare <img> -- floats it so text
-// wraps around it, and gets the zoom-on-click modal.
-function createImageComponents(imageWidths: Map<string, number>) {
+// to markdown image syntax -- see data-access/public/documentDetail.ts)
+// via DocumentEmbeddedImage instead of a bare <img>, with the
+// zoom-on-click modal. Images in a strip never reach here; TextPage hands
+// those to DocumentImageStrip directly.
+function createImageComponents(imageWidths: Map<string, number>, exhibit: boolean) {
   return {
     ...markdownLink,
     // title carries the {{image:ID:modifier}} modifier through markdown's
-    // own image-title slot (see MARKDOWN_IMAGE's comment above and
-    // data-access/public/documents.ts's resolveImagePlaceholders) --
-    // "wide" renders a full-width, non-floated hero image; a bare number
-    // pins an explicit pixel width, overriding the rotation both here use
-    // in place of. Neither case looks the src up in imageWidths, since
-    // buildImageWidths deliberately skipped modified images when building
-    // that map.
+    // own image-title slot (see documentDetail.ts's
+    // resolveImagePlaceholders) -- "wide" renders a full-width hero image;
+    // a bare number pins an explicit floated width.
     img: ({ src, alt, title }: ComponentPropsWithoutRef<'img'> & ExtraProps) => {
       if (!src) return null
       if (title === 'wide') return <DocumentWideImage src={src} alt={alt} />
-      // "stack": out of the float, at the photograph's own size. For a
-      // run of images that would otherwise sit one above another down
-      // the right-hand edge, squeezing the text into a narrow channel.
-      // Distinct from "wide", which fills the column and would enlarge
-      // a small photograph to do it.
-      if (title === 'stack') {
-        return <DocumentEmbeddedImage src={src} alt={alt} floated={false} />
+      // "stack" (a lone one -- a run of them becomes a strip): out of the
+      // float, at the file's own size. Exhibit documents show every image
+      // this way. Distinct from "wide", which fills the column and would
+      // enlarge a small scan to do it.
+      if (exhibit || title === 'stack') {
+        return (
+          <DocumentEmbeddedImage
+            src={src}
+            alt={alt}
+            layout={{ kind: 'large', maxWidth: getImageDimensions(src)?.width }}
+          />
+        )
       }
       const explicitWidth = title && /^\d+$/.test(title) ? Number(title) : undefined
       return (
         <DocumentEmbeddedImage
           src={src}
           alt={alt}
-          width={explicitWidth ?? imageWidths.get(src)}
+          layout={{
+            kind: 'float',
+            width: explicitWidth ?? imageWidths.get(src) ?? floatWidth(undefined, 0),
+          }}
         />
       )
     },
@@ -225,12 +207,20 @@ export default function TextPage() {
   // Both halves feed one width sequence, so a photo in the German
   // column and one in the English column don't independently restart the
   // rotation and land on the same size beside each other.
+  // Exhibit and strips apply to single-language texts. The parallel
+  // layout pairs paragraph against paragraph, so its images stay one per
+  // block, where they float within their own column.
+  const exhibit = !document.parallel && isExhibit(document.content)
+  const segments: ContentSegment[] =
+    document.parallel || exhibit
+      ? [{ kind: 'markdown', text: document.content }]
+      : segmentContent(document.content)
+  const floatedMarkdown = document.parallel
+    ? `${document.content}\n\n${document.parallel.content}`
+    : segments.flatMap((s) => (s.kind === 'markdown' ? [s.text] : [])).join('\n\n')
   const imageComponents = createImageComponents(
-    buildImageWidths(
-      document.parallel
-        ? `${document.content}\n\n${document.parallel.content}`
-        : document.content,
-    ),
+    buildImageWidths(floatedMarkdown),
+    exhibit,
   )
 
   return (
@@ -311,7 +301,19 @@ export default function TextPage() {
           />
         ) : document.content.trim() ? (
           <div className="max-w-none text-[12px] text-fe-ink flow-root">
-            <ReactMarkdown components={imageComponents}>{document.content}</ReactMarkdown>
+            {segments.map((segment, i) =>
+              segment.kind === 'strip' ? (
+                <DocumentImageStrip
+                  key={i}
+                  images={segment.images}
+                  dimensions={getImageDimensions}
+                />
+              ) : (
+                <ReactMarkdown key={i} components={imageComponents}>
+                  {segment.text}
+                </ReactMarkdown>
+              ),
+            )}
           </div>
         ) : (
           // Five published documents have a summary and no text at all

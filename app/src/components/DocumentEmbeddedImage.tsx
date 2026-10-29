@@ -1,45 +1,73 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import Modal from './Modal'
 
-// Custom ReactMarkdown <img> renderer for Document content -- markdown
-// image syntax (![caption](url), resolved from {{image:ID}} shortcodes
-// by data-access/public/documents.ts's resolveImagePlaceholders) renders
-// through this instead of a bare, unstyled <img>. Floats right (not
-// left) so paragraph text wraps around it instead of the image sitting
-// on its own full-width row, with a real visible caption underneath --
-// the caption text already lives in `alt` (resolveImagePlaceholders sets
-// it from Images.caption), just never rendered visibly until now. Every
-// embedded image gets the same click-to-zoom Modal GalleryLargeImage.tsx
-// uses. width is a per-image pixel value (see TextPage.tsx's rotating
-// size sequence) rather than a fixed Tailwind class, so images read as
-// varied rather than a uniform stacked column; defaults to 300 (the
-// previous fixed size) for any caller that doesn't pass one.
+// One embedded document image -- markdown image syntax resolved from an
+// {{image:ID}} shortcode (see data-access/public/documentDetail.ts) --
+// with a visible caption (the caption already lives in `alt`) and the
+// same click-to-zoom Modal GalleryLargeImage.tsx uses. Where it sits is
+// TextPage's decision, passed in as `layout`:
+//
+// - float: beside the text, right-hand side. Clears any earlier float, so
+//   two images close together stack down the margin instead of lining up
+//   across the column and squeezing the text into a channel between
+//   them. Below sm: it doesn't float at all -- a 240px float in a 342px
+//   phone column left the text one word per line. And it never takes
+//   more than 45% of the column, which on a tablet (no sidebar until md:,
+//   narrower column) the fixed pixel width alone would.
+// - large: on its own, centred, as big as the column or the file allows.
+//   For documents whose images are the substance (see isExhibit).
+// - strip: one of several side by side (see DocumentImageStrip). Grows in
+//   proportion to its aspect ratio so the row comes out one height.
+export type EmbeddedImageLayout =
+  | { kind: 'float'; width: number }
+  | { kind: 'large'; maxWidth: number | undefined }
+  | { kind: 'strip'; aspect: number; mobileMaxWidth: number }
+
+function figureProps(layout: EmbeddedImageLayout): {
+  className: string
+  style: CSSProperties
+} {
+  switch (layout.kind) {
+    case 'float':
+      return {
+        className:
+          'mx-auto mb-4 w-full max-w-(--fig-w) sm:float-right sm:clear-right sm:ml-4 sm:mb-2 sm:w-[min(var(--fig-w),45%)] sm:max-w-none',
+        style: { '--fig-w': `${layout.width}px` } as CSSProperties,
+      }
+    case 'large':
+      return {
+        className: 'mx-auto mb-6 clear-both',
+        style: layout.maxWidth ? { maxWidth: layout.maxWidth } : {},
+      }
+    case 'strip':
+      return {
+        className:
+          'mx-auto w-full min-w-0 max-w-(--mw) sm:mx-0 sm:min-w-[40%] sm:max-w-none sm:flex-[var(--ar)_1_0%] lg:min-w-0',
+        // Scaled up because grow factors summing to under 1 take only that
+        // fraction of the row: a lone portrait (0.75) filled 75% of it.
+        // Only the ratio between items matters.
+        style: {
+          '--ar': layout.aspect * 100,
+          '--mw': `${layout.mobileMaxWidth}px`,
+        } as CSSProperties,
+      }
+  }
+}
+
 export default function DocumentEmbeddedImage({
   src,
   alt,
-  width = 300,
-  floated = true,
+  layout,
 }: {
   src?: string
   alt?: string
-  width?: number
-  floated?: boolean
+  layout: EmbeddedImageLayout
 }) {
   const [isZoomed, setIsZoomed] = useState(false)
   if (!src) return null
 
-  // floated={false} takes the figure out of the float and drops the
-  // fixed width, so the photograph prints at its own size (preflight's
-  // max-width:100% still keeps it inside the column). For a run of
-  // images that would otherwise stack down the right-hand edge and
-  // squeeze the text into a channel beside them. Not the same as the
-  // "wide" treatment, which fills the column and so enlarges anything
-  // narrower than it.
   return (
-    <figure
-      className={floated ? 'float-right ml-4 mb-2' : 'mb-4'}
-      style={floated ? { width } : undefined}
-    >
+    <figure {...figureProps(layout)}>
       {/* A real <button>, not a <div onClick>. The div gave the zoom no
           tab stop and no Enter/Space handling, so on a public page every
           embedded photo was unreachable without a mouse. block w-full
