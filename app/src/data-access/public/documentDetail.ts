@@ -1,5 +1,6 @@
 import documentsDetailRaw from '../../data/generated/documents.json'
 import imagesRaw from '../../data/generated/images.json'
+import type { ImageDimensions } from '../../utils/documentImageLayout'
 import { resolveImageUrl } from '../../utils/imageUrl'
 import { resolveDocumentPair } from './documents'
 import type { DocumentListItem, DocumentLanguage } from './documents'
@@ -54,6 +55,8 @@ interface GeneratedImage {
   image_id: number
   caption: string | null
   url: string
+  width: number | null
+  height: number | null
 }
 
 // The shape actually stored in documents.json: parallel_of is a raw id,
@@ -98,6 +101,20 @@ function resolveImagePlaceholders(content: string): string {
       return modifier ? `![${caption}](${url} "${modifier}")` : `![${caption}](${url})`
     },
   )
+}
+
+// Keyed by the resolved src, since that is all an embedded image carries
+// once its placeholder has become markdown.
+const dimensionsBySrc = new Map(
+  (imagesRaw as GeneratedImage[]).flatMap((img) =>
+    img.width && img.height
+      ? [[resolveImageUrl(img.url), { width: img.width, height: img.height }] as const]
+      : [],
+  ),
+)
+
+export function getImageDimensions(src: string): ImageDimensions | undefined {
+  return dimensionsBySrc.get(src)
 }
 
 export function getDocumentById(id: number): DocumentDetail | undefined {
