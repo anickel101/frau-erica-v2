@@ -135,6 +135,12 @@ function createImageComponents(imageWidths: Map<string, number>, exhibit: boolea
         {children}
       </ol>
     ),
+    // A markdown `---`. Preflight zeroes <hr>'s margin too, so the only
+    // space around the rule was the mb-4 of the paragraph above it, and
+    // the next line sat hard against it (the Sängerbote introduction, doc
+    // 255, per the Archivist). Same mb-4 below, so the rule sits evenly
+    // between the two. Also the footnote separator in 81, 98 and 169.
+    hr: () => <hr className="mb-4" />,
   }
 }
 
