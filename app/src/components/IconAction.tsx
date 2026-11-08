@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useLayoutEffect, useRef, useState } from 'react'
 
 // An icon-only action button with a tooltip.
 //
@@ -15,6 +15,43 @@ import { ReactNode } from 'react'
 // Not the native `title` attribute: it waits about a second before
 // appearing, can't be styled to match anything, and is announced
 // inconsistently across screen readers.
+
+// Where the tooltip sits relative to its button.
+type Align = 'center' | 'end' | 'start'
+
+const ALIGN_CLASS: Record<Align, string> = {
+  center: 'left-1/2 -translate-x-1/2',
+  // Right edges lined up, so it grows leftward.
+  end: 'right-0',
+  // Left edges lined up, so it grows rightward.
+  start: 'left-0',
+}
+
+// Breathing room kept between a tooltip and the edge it would cross.
+const EDGE_MARGIN = 4
+
+// Centred over the button when that fits; otherwise grown away from
+// whichever edge it would cross.
+//
+// The edge is the content column's (<main>), not just the window's. The
+// desktop sidebar sits beside the column on a higher layer with a solid
+// background, so a tooltip reaching left past the column was painted
+// over rather than clipped -- the More info icon on a family page's
+// left-hand box showed "...d McMillan". On a phone, where the sidebar is
+// a drawer, the column is the window and the window is the edge.
+function chooseAlign(
+  button: DOMRect,
+  width: number,
+  bounds: { left: number; right: number },
+): Align {
+  const left = bounds.left + EDGE_MARGIN
+  const right = bounds.right - EDGE_MARGIN
+  const centre = button.left + button.width / 2
+  if (centre - width / 2 >= left && centre + width / 2 <= right) return 'center'
+  if (button.right - width >= left) return 'end'
+  return 'start'
+}
+
 export default function IconAction({
   label,
   onClick,
@@ -71,8 +108,35 @@ export default function IconAction({
           ? 'text-fe-brown border-[1.5px] border-current hover:bg-fe-brown hover:text-white'
           : 'text-fe-link border-[1.5px] border-current hover:bg-fe-link hover:text-white'
 
+  // Shown on hover or focus, tracked in state rather than left to CSS
+  // (group-hover) so the tooltip can be measured the moment it appears.
+  const [open, setOpen] = useState(false)
+  const [align, setAlign] = useState<Align>('center')
+  const wrapperRef = useRef<HTMLSpanElement>(null)
+  const tipRef = useRef<HTMLSpanElement>(null)
+
+  // Layout effect, so the position is settled before the browser paints:
+  // no frame where the tooltip flashes in the wrong place and jumps.
+  useLayoutEffect(() => {
+    if (!open || !wrapperRef.current || !tipRef.current) return
+    const button = wrapperRef.current.getBoundingClientRect()
+    const column = wrapperRef.current.closest('main')?.getBoundingClientRect()
+    const bounds = {
+      left: Math.max(column?.left ?? 0, 0),
+      right: Math.min(column?.right ?? window.innerWidth, window.innerWidth),
+    }
+    setAlign(chooseAlign(button, tipRef.current.offsetWidth, bounds))
+  }, [open, label])
+
   return (
-    <span className="relative inline-flex group">
+    <span
+      ref={wrapperRef}
+      className="relative inline-flex"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+    >
       <button
         type="button"
         onClick={onClick}
@@ -87,27 +151,24 @@ export default function IconAction({
       >
         {children}
       </button>
-      {/* `hidden`, not `opacity-0`. An invisible-but-laid-out tooltip
-          still occupies space, and a nowrap label roughly three times the
-          width of its button pushed the whole page into horizontal scroll
-          on narrow screens -- while showing nothing at all. display:none
-          costs the fade, which is a fair trade for a page that doesn't
-          scroll sideways.
-
-          Anchored right, not centered: these sit in the last column, so a
-          centered tooltip grows off the edge of the page. Growing leftward
-          keeps it over the table, where there's always room.
+      {/* Not rendered at all until shown, rather than laid out
+          invisibly: an invisible nowrap label roughly three times the
+          width of its button pushed the whole page into horizontal
+          scroll on narrow screens -- while showing nothing.
 
           Above the button rather than below, so the last row's tooltip
-          doesn't extend past the end of the page. pointer-events-none so
-          it can never sit between the cursor and the button it
-          describes. */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-full right-0 z-10 mb-1 hidden whitespace-nowrap rounded-sm bg-fe-ink px-2 py-1 text-xs text-white group-hover:block group-focus-within:block"
-      >
-        {label}
-      </span>
+          doesn't extend past the end of the page. Sideways, see
+          chooseAlign. pointer-events-none so it can never sit between
+          the cursor and the button it describes. */}
+      {open && (
+        <span
+          ref={tipRef}
+          aria-hidden="true"
+          className={`pointer-events-none absolute bottom-full z-10 mb-1 whitespace-nowrap rounded-sm bg-fe-ink px-2 py-1 text-xs text-white ${ALIGN_CLASS[align]}`}
+        >
+          {label}
+        </span>
+      )}
     </span>
   )
 }
