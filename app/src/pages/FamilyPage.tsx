@@ -1,9 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { markdownLink } from '../utils/markdownLink'
-import { useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import PersonCard from '../components/PersonCard'
+import PersonInfoDialog from '../components/PersonInfoDialog'
+import { usePersonLinks } from '../hooks/usePersonLinks'
 import { ApiError } from '../data-access/gated/apiClient'
 import { getFamilyById } from '../data-access/gated/families'
 import { useAuth } from '../hooks/useAuth'
@@ -217,6 +219,44 @@ export default function FamilyPage() {
   const { id } = useParams<{ id: string }>()
   const { status: authStatus, germlineIds } = useAuth()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
+  const personLinks = usePersonLinks()
+
+  // The open "More info" pop-up lives in the URL (?about=<person_id>),
+  // not in component state. That is what brings a reader back to it: a
+  // text or gallery opened from the pop-up is an ordinary navigation, so
+  // Back returns to this page with the pop-up still open -- the
+  // Archivist's old site had its own trick for "return the user to the
+  // Family page after closing a lefthand column item".
+  //
+  // Opening pushes a history entry, so on a phone Back closes the pop-up
+  // rather than leaving the page. Closing pops that same entry when this
+  // page pushed it, and otherwise just drops the parameter -- so a link
+  // that arrives with ?about= already set doesn't send Back off-site.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const aboutId = Number(searchParams.get('about')) || null
+  const openAbout = (personId: number) =>
+    setSearchParams(
+      (params) => {
+        params.set('about', String(personId))
+        return params
+      },
+      { state: { aboutPushed: true } },
+    )
+  const closeAbout = () => {
+    if ((location.state as { aboutPushed?: boolean } | null)?.aboutPushed) {
+      navigate(-1)
+      return
+    }
+    setSearchParams(
+      (params) => {
+        params.delete('about')
+        return params
+      },
+      { replace: true },
+    )
+  }
 
   useEffect(() => {
     const familyId = Number(id)
@@ -293,6 +333,15 @@ export default function FamilyPage() {
     family.person_2 !== null &&
     family.coupleStatus === 'divorced'
   const coupleGridCols = isDivorced ? 'sm:grid-cols-[1fr_auto_1fr]' : 'sm:grid-cols-2'
+
+  // An icon only for someone the archive connects something to.
+  const moreInfoFor = (person: LinkedPersonSummary) =>
+    personLinks?.(person.person_id) ? () => openAbout(person.person_id) : undefined
+  // Only the couple on this page: ?about= naming anyone else is ignored.
+  const aboutPerson =
+    [family.person_1, family.person_2].find(
+      (p) => p !== null && p.person_id === aboutId,
+    ) ?? null
 
   return (
     <Layout>
@@ -382,6 +431,7 @@ export default function FamilyPage() {
                 person={family.person_1}
                 generation="couple"
                 isInGermline={false}
+                onMoreInfo={moreInfoFor(family.person_1)}
               />
             ) : (
               // An empty cell, not nothing. The grandparent grid above
@@ -409,6 +459,7 @@ export default function FamilyPage() {
                 person={family.person_2}
                 generation="couple"
                 isInGermline={false}
+                onMoreInfo={moreInfoFor(family.person_2)}
               />
             )}
           </div>
@@ -435,6 +486,15 @@ export default function FamilyPage() {
           <div className="h-6 bg-fe-accent mt-8" />
         </div>
       </div>
+      {aboutPerson && (
+        <PersonInfoDialog
+          person={aboutPerson}
+          links={personLinks?.(aboutPerson.person_id) ?? null}
+          currentFamilyId={family.family_id}
+          open
+          onClose={closeAbout}
+        />
+      )}
     </Layout>
   )
 }

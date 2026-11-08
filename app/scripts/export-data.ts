@@ -45,8 +45,15 @@ async function writeJson(filename: string, data: unknown): Promise<void> {
   // output always already satisfies `npm run format:check` -- Prettier's
   // JSON printer collapses short arrays onto one line, which a plain
   // indent-by-level stringify doesn't replicate.
+  //
+  // With the project's own config resolved, not Prettier's defaults: the
+  // API's format() doesn't read .prettierrc on its own, so output came
+  // out at the default width while the check runs at the project's. No
+  // export had an array long enough to notice until person-links.json.
   const outPath = path.join(OUTPUT_DIR, filename)
+  const config = await prettier.resolveConfig(outPath)
   const formatted = await prettier.format(JSON.stringify(data), {
+    ...config,
     filepath: outPath,
   })
   writeFileSync(outPath, formatted, 'utf8')
@@ -674,6 +681,197 @@ const galleries = galleryRows
 
 await writeJson('galleries.json', galleries)
 
+// ---------- Person links (the Family page "More info" pop-up) ----------
+
+// Everything the archive connects to each person, for the pop-up on a
+// Family page's yellow boxes. Derived entirely from tags and link rows,
+// never from a hand-kept list -- the coverage improves as the tags do.
+// The rules, which are the whole design:
+//
+//   photos      tagged in it (ImageLinks.person_id)
+//   writings    wrote it (Documents.author_person_id)
+//   texts       linked to it (DocumentLinks.person_id), or it shows a
+//               photo they are tagged in -- embedded as {{image:ID}} or
+//               linked through ImageLinks.document_id, header images
+//               excepted (a banner is decoration, not the text's subject)
+//   galleries   linked to it (GalleryLinks), or it holds a photo they
+//               are tagged in -- exactly galleries.json's linkedPersonIds
+//   collections holds one of their writings or texts
+//
+// Kinship is deliberately not a link: a child's photos are on the
+// child's own box, not their parents'.
+//
+// Normalised (people -> ids, then one table per kind) because the same
+// photo or text is shared by many people. Only the fields the pop-up
+// shows; everything here is already public in the other exports.
+
+// A German half resolves to its English entry point, as the Index of
+// Texts does, so a pop-up never links to an untitled half.
+const entryIdByDocument = new Map(
+  documentRows.map((row) => [row.document_id, row.parallel_of ?? row.document_id]),
+)
+const listedDocuments = new Map(documentsList.map((doc) => [doc.document_id, doc]))
+
+const writingsByPerson = new Map<number, Set<number>>()
+const textsByPerson = new Map<number, Set<number>>()
+function addTo(map: Map<number, Set<number>>, personId: number, documentId: number) {
+  const entry = entryIdByDocument.get(documentId)
+  if (entry === undefined || !listedDocuments.has(entry)) return
+  const set = map.get(personId) ?? new Set<number>()
+  set.add(entry)
+  map.set(personId, set)
+}
+
+for (const row of documentRows) {
+  if (row.author_person_id !== null)
+    addTo(writingsByPerson, row.author_person_id, row.document_id)
+}
+
+const documentLinkRows = db
+  .prepare(`SELECT document_id, person_id FROM DocumentLinks WHERE person_id IS NOT NULL`)
+  .all() as unknown as { document_id: number; person_id: number }[]
+for (const row of documentLinkRows) addTo(textsByPerson, row.person_id, row.document_id)
+
+// Photos shown by each text: embedded shortcodes, plus image links.
+const imagesByDocument = new Map<number, Set<number>>()
+const PLACEHOLDER = /\{\{image:(\d+)(?::\w+)?\}\}/g
+for (const row of documentRows) {
+  for (const match of (row.content ?? '').matchAll(PLACEHOLDER)) {
+    const set = imagesByDocument.get(row.document_id) ?? new Set<number>()
+    set.add(Number(match[1]))
+    imagesByDocument.set(row.document_id, set)
+  }
+}
+const documentImageRows = db
+  .prepare(
+    `SELECT il.document_id, il.image_id FROM ImageLinks il
+       JOIN Images i ON i.image_id = il.image_id
+      WHERE il.document_id IS NOT NULL AND i.url NOT LIKE 'hdr.%'`,
+  )
+  .all() as unknown as { document_id: number; image_id: number }[]
+for (const row of documentImageRows) {
+  const set = imagesByDocument.get(row.document_id) ?? new Set<number>()
+  set.add(row.image_id)
+  imagesByDocument.set(row.document_id, set)
+}
+for (const [documentId, imageIds] of imagesByDocument) {
+  for (const imageId of imageIds) {
+    if (!imagesById.has(imageId)) continue
+    for (const personId of personIdsByImage.get(imageId) ?? []) {
+      addTo(textsByPerson, personId, documentId)
+    }
+  }
+}
+
+const photosByPerson = new Map<number, number[]>()
+for (const [imageId, personIds] of personIdsByImage) {
+  if (!imagesById.has(imageId)) continue
+  for (const personId of personIds) {
+    photosByPerson.set(personId, [...(photosByPerson.get(personId) ?? []), imageId])
+  }
+}
+// Photographs of this person alone first -- those are the portraits,
+// and the first few are all a pop-up shows. Group shots after, header
+// banners last (cropped wide, they make poor thumbnails).
+function photoOrder(a: number, b: number): number {
+  const rank = (id: number) =>
+    (imagesById.get(id)?.url.startsWith('hdr.') ? 2 : 0) +
+    ((personIdsByImage.get(id)?.length ?? 0) > 1 ? 1 : 0)
+  return rank(a) - rank(b) || a - b
+}
+
+const galleriesByPerson = new Map<number, number[]>()
+for (const gallery of galleries) {
+  for (const personId of gallery.linkedPersonIds) {
+    galleriesByPerson.set(personId, [
+      ...(galleriesByPerson.get(personId) ?? []),
+      gallery.gallery_id,
+    ])
+  }
+}
+
+const collectionByKey = new Map(collections.map((c) => [c.series_key, c]))
+
+const personLinkIds = new Set([
+  ...photosByPerson.keys(),
+  ...writingsByPerson.keys(),
+  ...textsByPerson.keys(),
+  ...galleriesByPerson.keys(),
+])
+const usedPhotos = new Set<number>()
+const usedTexts = new Set<number>()
+const usedGalleries = new Set<number>()
+const usedCollections = new Set<string>()
+
+const people: Record<number, unknown> = {}
+for (const personId of [...personLinkIds].sort((a, b) => a - b)) {
+  const photos = (photosByPerson.get(personId) ?? []).sort(photoOrder)
+  const writings = [...(writingsByPerson.get(personId) ?? [])].sort((a, b) => a - b)
+  const writingSet = new Set(writings)
+  const texts = [...(textsByPerson.get(personId) ?? [])]
+    .filter((id) => !writingSet.has(id))
+    .sort((a, b) => a - b)
+  const galleryIds = galleriesByPerson.get(personId) ?? []
+  const collectionKeys = [
+    ...new Set(
+      [...writings, ...texts]
+        .map((id) => listedDocuments.get(id)?.series_key)
+        .filter((key): key is string => !!key && collectionByKey.has(key)),
+    ),
+  ]
+  photos.forEach((id) => usedPhotos.add(id))
+  ;[...writings, ...texts].forEach((id) => usedTexts.add(id))
+  galleryIds.forEach((id) => usedGalleries.add(id))
+  collectionKeys.forEach((key) => usedCollections.add(key))
+  people[personId] = {
+    photos,
+    writings,
+    texts,
+    galleries: galleryIds,
+    collections: collectionKeys,
+  }
+}
+
+const personLinks = {
+  people,
+  photos: Object.fromEntries(
+    [...usedPhotos].map((id) => {
+      const img = imagesById.get(id)!
+      return [
+        id,
+        {
+          url: img.url,
+          caption: img.caption ?? '',
+          width: img.width,
+          height: img.height,
+        },
+      ]
+    }),
+  ),
+  texts: Object.fromEntries(
+    [...usedTexts].map((id) => {
+      const doc = listedDocuments.get(id)!
+      return [id, { title: doc.title }]
+    }),
+  ),
+  galleries: Object.fromEntries(
+    galleries
+      .filter((g) => usedGalleries.has(g.gallery_id))
+      .map((g) => [
+        g.gallery_id,
+        { name: g.name, lead_url: imagesById.get(g.lead_image_id)?.url ?? null },
+      ]),
+  ),
+  collections: Object.fromEntries(
+    [...usedCollections].map((key) => {
+      const c = collectionByKey.get(key)!
+      return [key, { name: c.name, slug: c.slug }]
+    }),
+  ),
+}
+
+await writeJson('person-links.json', personLinks)
+
 db.close()
 
 console.log('Export complete:')
@@ -682,4 +880,7 @@ console.log(`  documents:         ${documentsDetail.length} (published)
 console.log(`  galleries:         ${galleries.length} (with >=1 published photo)`)
 console.log(`  lexicon:           ${lexicon.length}`)
 console.log(`  persons:           ${persons.length}`)
+console.log(
+  `  person links:      ${Object.keys(people).length} people with something to show`,
+)
 console.log(`  images (internal): ${images.length} (published)`)

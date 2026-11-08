@@ -57,9 +57,14 @@ export default function PersonCard({
   person,
   generation,
   isInGermline = false,
+  onMoreInfo,
 }: {
   person: LinkedPersonSummary
   generation: Generation
+  // Opens the "More info" pop-up (PersonInfoDialog). Couple boxes only,
+  // and only passed when the archive connects something to this person
+  // -- an icon that opens an empty pop-up is worse than no icon.
+  onMoreInfo?: () => void
   // True when this person is one of the logged-in user's own biological
   // ancestors (see hooks/useAuth.tsx's germlineIds) -- shows a diamond
   // in the glyph slot, letting someone trace their own direct line
@@ -107,13 +112,7 @@ export default function PersonCard({
           paragraph above the tree is indented to match. A couple box
           never shows a diamond (FamilyPage passes isInGermline={false}
           for the couple, deliberately -- see its comment there), so the
-          slot is free for the icons.
-
-          Neither icon does anything yet; both are present so the layout
-          is settled before there is something behind them. The info
-          dialog is built (PersonInfoDialog.tsx) and was working; it is
-          deliberately not wired up until the Archivist has decided what
-          it should show. */}
+          slot is free for the More info icon. */}
       <GlyphSlot>{isInGermline && <DiamondGlyph />}</GlyphSlot>
 
       {/* pointer-events-none so a click on the name reaches the
@@ -143,13 +142,7 @@ export default function PersonCard({
           Right-aligned rather than floating just after the name: a
           fixed home at the box's edge reads as part of the box, where
           sitting against the text left them drifting with the length of
-          each name.
-
-          Neither icon does anything yet; both are present so the layout
-          is settled before there is something behind them. The info
-          dialog is built (PersonInfoDialog.tsx) and was working; it is
-          deliberately not wired up until the Archivist has decided what
-          it should show. */}
+          each name. */}
       {/* Centred in the band between the box's left edge and where the
           name starts -- 62px, the same measure that lines every name on
           the page up with every other (border 2 + p-4 16 + the glyph
@@ -171,10 +164,6 @@ export default function PersonCard({
           isInGermline={false} for the couple, deliberately), so the slot
           is empty underneath and there is nothing to collide with.
 
-          The icon does nothing yet. PersonInfoDialog.tsx is built and
-          was working; it stays unwired until the Archivist has decided
-          what it should show.
-
           THE EDIT BUTTON USED TO SIT BESIDE THIS ONE and was removed on
           request, not abandoned. To put it back:
 
@@ -194,9 +183,9 @@ export default function PersonCard({
           Family page) is designed in full and deliberately not built:
           see the "dad-database-interface-plan" writeup for why, and for
           what it would cost. */}
-      {isCouple && (
+      {isCouple && onMoreInfo && (
         <div className="absolute inset-y-0 left-0 z-10 flex w-[58px] items-center justify-center">
-          <IconAction variant="brown" label="More info (coming soon)" onClick={() => {}}>
+          <IconAction variant="brown" label={`More about ${name}`} onClick={onMoreInfo}>
             <InfoGlyph />
           </IconAction>
         </div>

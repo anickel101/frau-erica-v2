@@ -24,6 +24,7 @@ const LexiconPage = lazy(() => import('./pages/LexiconPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const PersonPage = lazy(() => import('./pages/PersonPage'))
+const PersonPhotosPage = lazy(() => import('./pages/PersonPhotosPage'))
 const PersonsPage = lazy(() => import('./pages/PersonsPage'))
 const RecipePage = lazy(() => import('./pages/RecipePage'))
 const RequestAccessPage = lazy(() => import('./pages/RequestAccessPage'))
@@ -129,6 +130,14 @@ export default function App() {
             element={
               <RequireApproved>
                 <PersonPage />
+              </RequireApproved>
+            }
+          />
+          <Route
+            path="/persons/:id/photos"
+            element={
+              <RequireApproved>
+                <PersonPhotosPage />
               </RequireApproved>
             }
           />

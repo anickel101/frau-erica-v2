@@ -1,0 +1,2746 @@
+{
+  "people": {
+    "1": {
+      "photos": [585, 589],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 30],
+      "collections": []
+    },
+    "5": {
+      "photos": [466, 560, 589, 908],
+      "writings": [87, 88, 89, 90, 91, 92],
+      "texts": [86, 93],
+      "galleries": [24, 30, 32],
+      "collections": ["FritzReise"]
+    },
+    "11": {
+      "photos": [471, 466, 560, 908],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 30, 32],
+      "collections": []
+    },
+    "12": {
+      "photos": [258, 108, 466, 589, 908],
+      "writings": [],
+      "texts": [224, 227],
+      "galleries": [18, 21, 24, 30, 32],
+      "collections": ["WilhelmMueller"]
+    },
+    "13": {
+      "photos": [118, 119, 120],
+      "writings": [249, 256, 258, 260, 262, 264, 266, 268],
+      "texts": [76, 77, 78, 79, 255],
+      "galleries": [30, 33],
+      "collections": ["FrauErica"]
+    },
+    "14": {
+      "photos": [108, 239, 317, 410, 452, 477, 507, 589],
+      "writings": [270, 272, 274, 276, 278, 280, 282, 284, 286],
+      "texts": [201, 255],
+      "galleries": [18, 21, 30, 33],
+      "collections": ["ErnstHelen", "OpaObit"]
+    },
+    "15": {
+      "photos": [238, 108, 234, 236, 317, 402, 410, 452, 477, 507],
+      "writings": [],
+      "texts": [],
+      "galleries": [7, 18, 21],
+      "collections": []
+    },
+    "16": {
+      "photos": [
+        5, 7, 8, 9, 12, 342, 360, 411, 10, 17, 108, 112, 155, 159, 236, 316, 341, 394,
+        427, 479, 480, 505, 508, 710
+      ],
+      "writings": [],
+      "texts": [3, 371],
+      "galleries": [5, 6, 7, 8, 10, 18, 19, 21, 25],
+      "collections": ["FriedaMueller"]
+    },
+    "17": {
+      "photos": [143, 144, 145, 146, 148, 424, 3035, 147, 159, 249, 478],
+      "writings": [],
+      "texts": [3, 110, 371],
+      "galleries": [5, 6, 10, 31],
+      "collections": ["Hib", "FriedaMueller"]
+    },
+    "18": {
+      "photos": [
+        423, 626, 634, 20, 37, 91, 199, 202, 231, 234, 235, 303, 307, 332, 341, 345, 354,
+        355, 361, 368, 369, 394, 395, 398, 399, 412, 414, 421, 422, 426, 427, 430, 431,
+        432, 460, 468, 500, 512, 541, 559, 612, 625, 630, 643
+      ],
+      "writings": [
+        61, 76, 77, 78, 86, 93, 95, 98, 99, 143, 144, 145, 146, 147, 148, 149, 150, 151,
+        152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167,
+        168, 169, 170, 171, 255
+      ],
+      "texts": [374],
+      "galleries": [1, 5, 7, 11, 12, 13, 14, 15, 17, 19, 23],
+      "collections": [
+        "DodoKnief",
+        "FrauErica",
+        "FritzReise",
+        "GerhardMueller",
+        "MarkAlliChristmas",
+        "FriedaMueller"
+      ]
+    },
+    "19": {
+      "photos": [
+        371, 25, 199, 202, 303, 333, 355, 361, 364, 368, 369, 395, 421, 430, 431, 432,
+        460, 541, 559, 588, 612, 628, 630, 643, 647
+      ],
+      "writings": [],
+      "texts": [144],
+      "galleries": [1, 3, 11, 13, 14, 15, 16, 17, 19, 23, 28],
+      "collections": ["MarkAlliChristmas"]
+    },
+    "20": {
+      "photos": [340, 591],
+      "writings": [],
+      "texts": [],
+      "galleries": [13],
+      "collections": []
+    },
+    "21": {
+      "photos": [
+        336, 337, 338, 339, 348, 349, 199, 202, 332, 335, 340, 347, 361, 394, 421, 422,
+        430, 431, 432, 586, 591, 612, 616, 662
+      ],
+      "writings": [],
+      "texts": [144],
+      "galleries": [13, 15, 19],
+      "collections": ["MarkAlliChristmas"]
+    },
+    "22": {
+      "photos": [
+        334, 343, 344, 485, 486, 498, 199, 202, 333, 345, 346, 430, 431, 432, 449, 612
+      ],
+      "writings": [],
+      "texts": [144],
+      "galleries": [11, 14, 19],
+      "collections": ["MarkAlliChristmas"]
+    },
+    "23": {
+      "photos": [
+        35, 36, 326, 327, 328, 329, 330, 331, 502, 609, 621, 37, 199, 202, 345, 351, 352,
+        359, 430, 431, 468, 497, 499, 500, 574, 611, 614, 625
+      ],
+      "writings": [],
+      "texts": [144],
+      "galleries": [12, 14, 15, 19, 23, 28, 29],
+      "collections": ["MarkAlliChristmas"]
+    },
+    "26": {
+      "photos": [],
+      "writings": [
+        247, 296, 298, 300, 302, 304, 306, 308, 310, 312, 314, 316, 318, 320, 322, 324,
+        326, 328, 330, 332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356,
+        358, 360, 362, 364
+      ],
+      "texts": [61, 62, 255],
+      "galleries": [33],
+      "collections": ["DodoKnief"]
+    },
+    "28": {
+      "photos": [244],
+      "writings": [],
+      "texts": [216],
+      "galleries": [],
+      "collections": ["TanteFieks"]
+    },
+    "33": {
+      "photos": [
+        10, 147, 231, 234, 235, 249, 307, 341, 398, 399, 410, 426, 479, 480, 512
+      ],
+      "writings": [
+        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56
+      ],
+      "texts": [121, 372],
+      "galleries": [5, 6, 7, 10, 18],
+      "collections": ["Chicago", "JoelNickel", "FriedaMueller"]
+    },
+    "34": {
+      "photos": [
+        164, 91, 147, 231, 234, 235, 307, 341, 398, 399, 410, 414, 426, 427, 499, 512
+      ],
+      "writings": [],
+      "texts": [98, 116, 373],
+      "galleries": [5, 6, 7, 12, 18],
+      "collections": ["GerhardMueller", "JimNickel", "FriedaMueller"]
+    },
+    "35": {
+      "photos": [91, 231, 234, 235, 307, 341, 399, 414, 432],
+      "writings": [],
+      "texts": [98],
+      "galleries": [7, 19],
+      "collections": ["GerhardMueller"]
+    },
+    "36": {
+      "photos": [28, 26, 27, 478, 3070, 3071],
+      "writings": [],
+      "texts": [228],
+      "galleries": [6, 31],
+      "collections": []
+    },
+    "37": {
+      "photos": [26, 27, 249, 478],
+      "writings": [],
+      "texts": [],
+      "galleries": [6, 10, 31],
+      "collections": []
+    },
+    "38": {
+      "photos": [3070, 3071],
+      "writings": [],
+      "texts": [228],
+      "galleries": [],
+      "collections": []
+    },
+    "39": {
+      "photos": [3070, 3071],
+      "writings": [],
+      "texts": [228],
+      "galleries": [],
+      "collections": []
+    },
+    "47": {
+      "photos": [249],
+      "writings": [],
+      "texts": [],
+      "galleries": [10],
+      "collections": []
+    },
+    "53": {
+      "photos": [466, 908],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 32],
+      "collections": []
+    },
+    "54": {
+      "photos": [],
+      "writings": [134, 135, 136, 137, 138, 139, 140],
+      "texts": [],
+      "galleries": [],
+      "collections": ["LudwigKnief"]
+    },
+    "55": {
+      "photos": [908],
+      "writings": [],
+      "texts": [],
+      "galleries": [32],
+      "collections": []
+    },
+    "56": {
+      "photos": [466, 908],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 32],
+      "collections": []
+    },
+    "57": {
+      "photos": [98, 583, 908],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 32],
+      "collections": []
+    },
+    "58": {
+      "photos": [551, 553, 552, 908],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 32],
+      "collections": []
+    },
+    "59": {
+      "photos": [908],
+      "writings": [],
+      "texts": [],
+      "galleries": [32],
+      "collections": []
+    },
+    "60": {
+      "photos": [465, 908],
+      "writings": [],
+      "texts": [],
+      "galleries": [24, 32],
+      "collections": []
+    },
+    "61": {
+      "photos": [908],
+      "writings": [],
+      "texts": [],
+      "galleries": [32],
+      "collections": []
+    },
+    "62": {
+      "photos": [108, 236, 480, 505, 508],
+      "writings": [],
+      "texts": [],
+      "galleries": [10, 18, 21],
+      "collections": []
+    },
+    "63": {
+      "photos": [111, 113, 646, 108, 112, 159, 236, 398, 505, 508, 710],
+      "writings": [368, 369, 370, 371, 372, 373, 374, 375],
+      "texts": [3],
+      "galleries": [5, 6, 7, 18, 21, 25],
+      "collections": ["FriedaMueller"]
+    },
+    "64": {
+      "photos": [126, 127, 128, 129, 130, 131, 132, 133, 645, 108, 239, 505, 508, 710],
+      "writings": [96],
+      "texts": [95, 97, 98, 99, 101],
+      "galleries": [18, 21, 25],
+      "collections": ["GerhardMueller"]
+    },
+    "65": {
+      "photos": [102, 105, 103, 106, 107, 155, 239, 316, 505, 508, 710],
+      "writings": [],
+      "texts": [3],
+      "galleries": [5, 8, 18, 25],
+      "collections": []
+    },
+    "66": {
+      "photos": [191, 108, 155, 239, 316, 505, 710],
+      "writings": [],
+      "texts": [3],
+      "galleries": [5, 8, 18, 21, 25],
+      "collections": []
+    },
+    "67": {
+      "photos": [108, 155, 239, 710],
+      "writings": [],
+      "texts": [3],
+      "galleries": [8, 18, 21, 25],
+      "collections": []
+    },
+    "68": {
+      "photos": [17],
+      "writings": [],
+      "texts": [],
+      "galleries": [5],
+      "collections": []
+    },
+    "69": {
+      "photos": [108, 159, 236, 316, 427],
+      "writings": [],
+      "texts": [3],
+      "galleries": [5, 6, 18, 21],
+      "collections": []
+    },
+    "100": {
+      "photos": [20, 23],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "101": {
+      "photos": [23],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "102": {
+      "photos": [156],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "103": {
+      "photos": [196],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "104": {
+      "photos": [242],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "107": {
+      "photos": [263, 264, 265, 288, 266, 267, 271, 287, 291, 293, 295, 296, 297, 312],
+      "writings": [],
+      "texts": [],
+      "galleries": [2, 3, 4],
+      "collections": []
+    },
+    "108": {
+      "photos": [
+        268, 269, 270, 277, 278, 289, 25, 271, 273, 285, 287, 291, 293, 295, 296, 297,
+        312, 335, 346
+      ],
+      "writings": [],
+      "texts": [182, 376],
+      "galleries": [2, 3, 4, 9, 13, 14],
+      "collections": ["NanaLifeTimes"]
+    },
+    "111": {
+      "photos": [639, 640],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "114": {
+      "photos": [273, 294],
+      "writings": [376],
+      "texts": [],
+      "galleries": [3, 4, 9],
+      "collections": []
+    },
+    "125": {
+      "photos": [640],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "136": {
+      "photos": [],
+      "writings": [288, 290, 292, 294],
+      "texts": [255],
+      "galleries": [33],
+      "collections": ["FredKnief"]
+    },
+    "150": {
+      "photos": [583],
+      "writings": [],
+      "texts": [],
+      "galleries": [24],
+      "collections": []
+    },
+    "176": {
+      "photos": [593, 552],
+      "writings": [],
+      "texts": [],
+      "galleries": [24],
+      "collections": []
+    },
+    "190": {
+      "photos": [465],
+      "writings": [],
+      "texts": [],
+      "galleries": [24],
+      "collections": []
+    },
+    "552": {
+      "photos": [480],
+      "writings": [],
+      "texts": [],
+      "galleries": [10],
+      "collections": []
+    },
+    "553": {
+      "photos": [427],
+      "writings": [],
+      "texts": [],
+      "galleries": [5],
+      "collections": []
+    },
+    "564": {
+      "photos": [103, 106, 107],
+      "writings": [],
+      "texts": [],
+      "galleries": [8],
+      "collections": []
+    },
+    "679": {
+      "photos": [121],
+      "writings": [],
+      "texts": [76],
+      "galleries": [],
+      "collections": ["FrauErica"]
+    },
+    "727": {
+      "photos": [],
+      "writings": [],
+      "texts": [221],
+      "galleries": [],
+      "collections": ["Waldschmidt"]
+    },
+    "728": {
+      "photos": [],
+      "writings": [],
+      "texts": [223],
+      "galleries": [],
+      "collections": ["Waldschmidt"]
+    },
+    "750": {
+      "photos": [402],
+      "writings": [],
+      "texts": [],
+      "galleries": [18],
+      "collections": []
+    },
+    "757": {
+      "photos": [592],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "759": {
+      "photos": [347, 592],
+      "writings": [],
+      "texts": [],
+      "galleries": [13],
+      "collections": []
+    },
+    "802": {
+      "photos": [125],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "831": {
+      "photos": [34, 273, 294],
+      "writings": [],
+      "texts": [],
+      "galleries": [3, 4, 9],
+      "collections": []
+    },
+    "832": {
+      "photos": [272, 274, 283, 284, 286, 273, 281],
+      "writings": [],
+      "texts": [],
+      "galleries": [3, 9],
+      "collections": []
+    },
+    "856": {
+      "photos": [25],
+      "writings": [],
+      "texts": [],
+      "galleries": [3],
+      "collections": []
+    },
+    "868": {
+      "photos": [],
+      "writings": [],
+      "texts": [11],
+      "galleries": [],
+      "collections": ["AlidaBigelow"]
+    },
+    "872": {
+      "photos": [34],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "878": {
+      "photos": [267],
+      "writings": [],
+      "texts": [],
+      "galleries": [2],
+      "collections": []
+    },
+    "880": {
+      "photos": [266, 267, 271],
+      "writings": [],
+      "texts": [],
+      "galleries": [2],
+      "collections": []
+    },
+    "881": {
+      "photos": [271],
+      "writings": [],
+      "texts": [],
+      "galleries": [2],
+      "collections": []
+    },
+    "908": {
+      "photos": [],
+      "writings": [],
+      "texts": [23],
+      "galleries": [],
+      "collections": ["CarlDeHaas"]
+    },
+    "911": {
+      "photos": [275, 276],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "918": {
+      "photos": [285],
+      "writings": [],
+      "texts": [],
+      "galleries": [3],
+      "collections": []
+    },
+    "928": {
+      "photos": [242],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "932": {
+      "photos": [351, 358, 556],
+      "writings": [],
+      "texts": [],
+      "galleries": [15, 23],
+      "collections": []
+    },
+    "933": {
+      "photos": [355],
+      "writings": [],
+      "texts": [],
+      "galleries": [15],
+      "collections": []
+    },
+    "934": {
+      "photos": [355],
+      "writings": [],
+      "texts": [],
+      "galleries": [15],
+      "collections": []
+    },
+    "1016": {
+      "photos": [
+        298, 299, 300, 301, 302, 304, 305, 309, 310, 313, 314, 318, 319, 321, 322, 323,
+        362, 363, 415, 416, 418, 419, 429, 447, 455, 464, 469, 470, 490, 494, 538, 546,
+        608, 623, 303, 354, 364, 367, 412, 433, 449, 459, 475, 491, 501, 503, 540, 545,
+        547, 557, 562, 571, 580, 587, 606, 647
+      ],
+      "writings": [],
+      "texts": [],
+      "galleries": [1, 11, 20, 23, 26],
+      "collections": []
+    },
+    "1031": {
+      "photos": [276],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
+    "1035": {
+      "photos": [281],
+      "writings": [],
+      "texts": [],
+      "galleries": [9],
+      "collections": []
+    },
+    "1062": {
+      "photos": [
+        350, 353, 356, 397, 403, 413, 420, 435, 450, 453, 462, 463, 473, 492, 493, 504,
+        510, 537, 543, 555, 563, 579, 601, 613, 622, 631, 351, 352, 355, 358, 359, 361,
+        497, 556, 565, 582, 584, 606, 611, 614, 630, 658
+      ],
+      "writings": [],
+      "texts": [],
+      "galleries": [15, 23, 29],
+      "collections": []
+    },
+    "1068": {
+      "photos": [
+        365, 366, 400, 428, 434, 448, 458, 461, 472, 495, 539, 544, 554, 558, 572, 581,
+        607, 367, 433, 459, 475, 491, 501, 503, 540, 545, 547, 557, 562, 571, 580, 587,
+        588, 606
+      ],
+      "writings": [],
+      "texts": [],
+      "galleries": [11, 16, 20, 23],
+      "collections": []
+    },
+    "1137": {
+      "photos": [],
+      "writings": [],
+      "texts": [10],
+      "galleries": [],
+      "collections": []
+    },
+    "1159": {
+      "photos": [
+        573, 575, 576, 577, 578, 610, 627, 629, 632, 633, 636, 638, 659, 565, 574, 582,
+        584, 614, 628, 658
+      ],
+      "writings": [],
+      "texts": [],
+      "galleries": [28, 29],
+      "collections": []
+    },
+    "1189": {
+      "photos": [361, 421, 586, 616, 661],
+      "writings": [],
+      "texts": [],
+      "galleries": [13, 15],
+      "collections": []
+    },
+    "1248": {
+      "photos": [661, 662],
+      "writings": [],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    }
+  },
+  "photos": {
+    "5": {
+      "url": "Addie1.jpg",
+      "caption": "The childhood photo is a detail from a snapshot of Adelheid with her two younger brothers, Ernst and Kurt. Adelheid was six and a half, according to Opa’s handwritten note on the back.",
+      "width": 400,
+      "height": 619
+    },
+    "7": {
+      "url": "Addie11.jpg",
+      "caption": "Adelheid’s first teaching job was in La Crosse, Wisconsin, just as the Great Depression was starting.",
+      "width": 762,
+      "height": 418
+    },
+    "8": {
+      "url": "Addie12.jpg",
+      "caption": "Adelheid would go from her teaching job in La Crosse to a school at St. Lucas Church in Milwaukee.",
+      "width": 400,
+      "height": 590
+    },
+    "9": { "url": "Addie13.jpg", "caption": "", "width": 432, "height": 645 },
+    "10": {
+      "url": "Addie14.jpg",
+      "caption": "Adelheid was gardening as a kid in Freedom Township, Minnesota, and continued well into her 80s in Oregon – here at Joel’s house in Stayton.",
+      "width": 504,
+      "height": 737
+    },
+    "12": { "url": "Addie8.jpg", "caption": "", "width": 360, "height": 498 },
+    "17": {
+      "url": "AddieMax1.jpg",
+      "caption": "Adelheid holds her younger brother Max at Max’s baptism. Max died of a common childhood disease before his seventh birthday. Adelheid would have been nine years old for the photo.",
+      "width": 432,
+      "height": 699
+    },
+    "20": {
+      "url": "Adele3.jpg",
+      "caption": "**And then there were two**  \nAdele, age 4, with Uncle Mark, her Godfather, at Laurent’s baptism in August 1985.",
+      "width": 500,
+      "height": 671
+    },
+    "23": {
+      "url": "AdeleLaurent1.jpg",
+      "caption": "Adele announces Laurent Luc LeRoi Nickel, born 14 June 1985, at 8 pounds, three ounces, 21 inches.",
+      "width": 800,
+      "height": 542
+    },
+    "25": {
+      "url": "Allisons1.jpg",
+      "caption": "Mary Allison McMillan, Allison Butler, and Mary Allison (Molly) McMillan met up at the wedding of Kerry McMillan and Chris Stemland.",
+      "width": 1000,
+      "height": 544
+    },
+    "26": {
+      "url": "AlMegs1.jpg",
+      "caption": "Al Nickel and Margaret Ziesemer were born in Germany, emigrated before their first birthdays, met, married, and lived in their own house on South Howell Avenue in Milwaukee.",
+      "width": 432,
+      "height": 626
+    },
+    "27": {
+      "url": "AlMegs2.jpg",
+      "caption": "The archives do not have the wedding date, but Al and Megs celebrated their fiftieth anniversary in the late 1950s.",
+      "width": 600,
+      "height": 831
+    },
+    "28": { "url": "AlNickel1.jpg", "caption": "", "width": 360, "height": 487 },
+    "34": {
+      "url": "AnsonCharlesBigelow.jpg",
+      "caption": "A. Anson Bigelow, left, and his older brother Charles (C.H.), who was Molly McMillan's father.",
+      "width": 751,
+      "height": 1000
+    },
+    "35": { "url": "Anson1.jpg", "caption": "", "width": 800, "height": 521 },
+    "36": {
+      "url": "Anson2.jpg",
+      "caption": "Anson inherited some Duplos from older siblings and acquired a few of his own. Legos were a short way off. Designing structures and spaces became a lifelong thing.",
+      "width": 760,
+      "height": 496
+    },
+    "37": {
+      "url": "Anson3.jpg",
+      "caption": "Anson and his cousins and his uncles and his aunts were at Vista Verde in Colorado to celebrate his grandparents’ golden anniversary.",
+      "width": 650,
+      "height": 922
+    },
+    "91": {
+      "url": "Dugout1.jpg",
+      "caption": "The older Nickel boys and their summer friends in Eagle Lake, Minnesota, built a baseball diamond in an empty field behind the C&NW station. Tim had the famous little Cosmo glove; Mark had a three-fingered antique possibly from Grampa Nickel’s team in the 1920s; Jim had his beloved Reach.",
+      "width": 808,
+      "height": 442
+    },
+    "98": {
+      "url": "ErichEAMueller1.jpg",
+      "caption": "Erich, a self-described Christian socialist, lost his career in pecan polishing to automation late in the 19th century. His political writings figured into a defamation lawsuit by a Lutheran minister against his congregation.",
+      "width": 311,
+      "height": 499
+    },
+    "102": {
+      "url": "Ernie1.jpg",
+      "caption": "Ernst, the fifth of the Mueller children and the last born in Madison, Minnesota, turned 2 on June 27, 1911. Little more than two months later, the family moved to Freedom Township.",
+      "width": 428,
+      "height": 627
+    },
+    "103": { "url": "Ernie2.jpg", "caption": "", "width": 800, "height": 1068 },
+    "105": {
+      "url": "Ernie4.jpg",
+      "caption": "Opa had sent Ernie to Coyne Electrical School in Chicago, the extent of Ernie’s formal education. Ernie started an electric motor repair service, but it never got off the ground.",
+      "width": 1100,
+      "height": 747
+    },
+    "106": { "url": "ErnieCharlotte.jpg", "caption": "", "width": 446, "height": 461 },
+    "107": { "url": "ErnieCharlotte2.jpg", "caption": "", "width": 506, "height": 800 },
+    "108": {
+      "url": "ErnstHelen1.jpg",
+      "caption": "A family portrait probably taken late in 1924 or early 1925. The sons, from left: Ernst; Kurt, Herbert (seated) and Gerhard. The daughters, from left: Adelheid (casually showing off the watch she received for high school graduation), Erna, Norma and Frieda.",
+      "width": 800,
+      "height": 590
+    },
+    "111": {
+      "url": "Flett2.jpg",
+      "caption": "Like some of her siblings, Frieda attended DMLC — Doctor Martin Luther College — in New Ulm.",
+      "width": 350,
+      "height": 455
+    },
+    "112": {
+      "url": "Flett3.jpg",
+      "caption": "Frieda, right, and her younger sister Adelheid at a “popcorn party” their mother organized for kids at the church school.",
+      "width": 300,
+      "height": 559
+    },
+    "113": {
+      "url": "Flett4.jpg",
+      "caption": "Frieda moved from St. Paul to Arlington Heights, Illinois, in the early 1960s, where she began working at the Lutheran Home for the Aged. She earned a nursing license and served as a senior charge nurse until she retired and became a resident.",
+      "width": 650,
+      "height": 943
+    },
+    "118": { "url": "FrauErica6.jpg", "caption": "", "width": 1200, "height": 849 },
+    "119": {
+      "url": "FrauErica7.jpg",
+      "caption": "Frau Erica spent her final years with daughter Frieda and son-in-law Hai Feiertag in Colorado.",
+      "width": 485,
+      "height": 372
+    },
+    "120": {
+      "url": "FrauErica8.jpg",
+      "caption": "Frau Erica wrote devotional poetry until her death. “Wenn wir keinen Heiland hatten,” her last work, was published as “fragmentarisch.”",
+      "width": 543,
+      "height": 553
+    },
+    "121": {
+      "url": "FrauErica9.jpg",
+      "caption": "Frau Katharina’s *Deutsch-Amerikanische Kochbuch* was in print before Frau Erica’s *Deutsch-Amerikanisches Kochbuch,* but Frau Erica probably sold more.",
+      "width": 570,
+      "height": 412
+    },
+    "125": { "url": "GailKnowles1.jpg", "caption": "", "width": 741, "height": 1047 },
+    "126": {
+      "url": "Gerhard1.jpg",
+      "caption": "Opa Mueller, twice disappointed and not subtle about it, finally had a son on December 4, 1904. Oma had little Gerhard’s photo taken for Opa’s birthday, but the surprise was ruined when another customer met Opa on the street and said, “I see your boy had his picture taken in his rubber boots.”",
+      "width": 187,
+      "height": 323
+    },
+    "127": {
+      "url": "Gerhard3.jpg",
+      "caption": "Gerhard graduated from Concordia Seminary, Springfield, in the class of 1930. His friends remembered “Pongo” at the 35th reunion, which Gerhard attended.",
+      "width": 428,
+      "height": 570
+    },
+    "128": {
+      "url": "Gerhard4.jpg",
+      "caption": "Gerhard behind the wheel of his Packard in pre-Dust Bowl Nebraska.",
+      "width": 541,
+      "height": 357
+    },
+    "129": {
+      "url": "Gerhard5.jpg",
+      "caption": "Gerhard’s winter diversion was the Bemidji high basketball team. When they made it to the state tournament, the kids on the team chipped in to get Gerhard a bus ticket. The story by Jim Klobuchar (Sen. Amy Klobuchar's father) was on Page One of the Saturday Minneapolis Morning Tribune, March 23, 1963.",
+      "width": 752,
+      "height": 934
+    },
+    "130": { "url": "Gerhard6.jpg", "caption": "", "width": 288, "height": 372 },
+    "131": {
+      "url": "Gerhard7.jpg",
+      "caption": "The obituary ran in the Becker County Record on Thursday, September 10, 1970, page 5. There are a few errors. Gerhard actually arrived in northern Minnesota in 1948; his failed tenure at Tenstrike and Blackduck is ignored. His brother was Ernest, not Earnest; his sister was Frieda, not Freda; his sister Adelheid was Mrs. Hilbert Nickel, not Mrs. Henry; and his sister Norma, oddly, was not mentioned.",
+      "width": 504,
+      "height": 821
+    },
+    "132": {
+      "url": "Gerhard8.jpg",
+      "caption": "Gerhard finished his high school career in Waldorf, where he was valedictorian and a member of the varsity basketball team, such as it was.",
+      "width": 400,
+      "height": 750
+    },
+    "133": { "url": "Gerhard12.jpg", "caption": "", "width": 1008, "height": 750 },
+    "143": {
+      "url": "HCNickel1.jpg",
+      "caption": "H.C. Nickel, graduating from Marquette, was the first Nickel to attend college.",
+      "width": 500,
+      "height": 790
+    },
+    "144": {
+      "url": "HCNickel2.jpg",
+      "caption": "H.C. Nickel in the early 1960s.",
+      "width": 400,
+      "height": 544
+    },
+    "145": {
+      "url": "HCNickel3.jpg",
+      "caption": "H.C. Nickel, with supervisers, served as an accountant at the American Shipyard.",
+      "width": 485,
+      "height": 349
+    },
+    "146": {
+      "url": "HCNickel4.jpg",
+      "caption": "H.C. Nickel’s high school graduation picture.",
+      "width": 500,
+      "height": 705
+    },
+    "147": {
+      "url": "HCNickel5.jpg",
+      "caption": "H.C. Nickel and his first two sons, Jimmy and Jerry (James and Joel), outside the family’s second-floor flat on Marion Street in Oak Park.",
+      "width": 432,
+      "height": 582
+    },
+    "148": {
+      "url": "HCNickel6.jpg",
+      "caption": "One of H.C. Nickel’s clients gave son Mark a Kodak Brownie Starflash camera when Mark was hospitalized with osteomyelitis. This would have been ca. 1956.",
+      "width": 400,
+      "height": 410
+    },
+    "155": {
+      "url": "HerbKurtErnieAddie.jpg",
+      "caption": "In July 1986, Adelheid visited Herb, Kurt and Ernie, her three surviving brothers, at Ernie’s house in Eagle Lake. She was in Minnesota for Mark and Alli’s wedding in St. Paul.",
+      "width": 700,
+      "height": 427
+    },
+    "156": {
+      "url": "HermannHedder1.jpg",
+      "caption": "The studio name and mounting board are identical to a photograph of his wife Louise, but Hermann’s image is not as well preserved. A handwritten note on the reverse side puts Hermann’s age at 43.",
+      "width": 360,
+      "height": 469
+    },
+    "159": {
+      "url": "HibAddie2.jpg",
+      "caption": "With the bride and groom, from left: [Art Hartmann](/documents/371), Hilbert's cousin and best man, and sisters Frieda, maid of honor, and Norma, flower girl.",
+      "width": 432,
+      "height": 495
+    },
+    "164": {
+      "url": "JimNickel1.jpg",
+      "caption": "Standard Pipe Protection Inc., next door to Jim’s studio in Brentwood, Missouri, was a productive source for raw materials and a visually intriguing site for photography.",
+      "width": 600,
+      "height": 845
+    },
+    "191": {
+      "url": "KurtMueller5.jpg",
+      "caption": "Trained as a pharmacist, Kurt owned his own drug store for a time in Waseca, then worked at drug stores in Janesville, Anoka and other small Minnesota towns.",
+      "width": 400,
+      "height": 635
+    },
+    "196": {
+      "url": "LouiseLuecke1.jpg",
+      "caption": "A handwritten note on the reverse notes that Louise was 36 years old when the portrait was taken.",
+      "width": 345,
+      "height": 442
+    },
+    "199": {
+      "url": "MarkAlli1.jpg",
+      "caption": "Anson was born in the car October 24, 1987, at 2:40 a.m. about a mile short of the hospital. Mark drove home the next morning, switched cars, picked up Danny and Susie at Lana’s house, and returned to Women & Infants Hospital. (Lana arrived at our house shortly before 2 a.m., then took the kids to her house for breakfast in the morning.) Mark adopted Danny, 5, and Susie, 3, in January 1987.",
+      "width": 650,
+      "height": 475
+    },
+    "202": {
+      "url": "MarkAlliChristmas1998a.jpg",
+      "caption": "Alli, Dan, and Anson knew what they were doing. Susan and Mark, who was largely self-taught, stuck to the green trails. The photo was part of a 1998 Christmas greeting to friends and family.",
+      "width": 360,
+      "height": 494
+    },
+    "231": {
+      "url": "NickelBoys2.jpg",
+      "caption": "All four gathered at Joel’s house in Stayton for a wedding, but whose?",
+      "width": 600,
+      "height": 386
+    },
+    "234": {
+      "url": "NickelBoysOma1.jpg",
+      "caption": "Someone always had “the buck” on an outing. Forced by circumstances to smile, Mark — *Bockhans* for the day — reached for exaggerated cheerful effect and unwittingly produced the famous “neck cords” shot. The four brothers returned to Sibley Park in June 2007 but could not find the spot.",
+      "width": 700,
+      "height": 1034
+    },
+    "235": {
+      "url": "NickelGrave1.jpg",
+      "caption": "The four brothers did a Midwest tour in June 2007, Hib and Addie’s 100th birthday. Milwaukee, where they found the grave of Michael Nickel and Wilhelmina Knoll, was the final stop before wrapping up in Chicago.",
+      "width": 1000,
+      "height": 1012
+    },
+    "236": {
+      "url": "Oma1.jpg",
+      "caption": "Paul Grams, one of Oma’s grandsons, once remarked that the women were the strong one in the Mueller family. Erna and Frieda are standing behind Norma, Oma, and Adelheid.",
+      "width": 533,
+      "height": 393
+    },
+    "238": { "url": "Oma3.jpg", "caption": "", "width": 292, "height": 348 },
+    "239": {
+      "url": "Opa1.jpg",
+      "caption": "From left: Ernie, handyman and gardener; Gerhard, LCMS minister; Kurt, pharmacist and WW II veteran;and Herbert, LCMS minister.",
+      "width": 386,
+      "height": 487
+    },
+    "242": {
+      "url": "PaulHedder1.jpg",
+      "caption": "Paul’s sister Helen (Oma) Mueller wrote an inscription on the back of this photograph: “Paul and Lena celebrating 50 years of doing dishes together.”",
+      "width": 500,
+      "height": 724
+    },
+    "244": {
+      "url": "TanteFieks1.jpg",
+      "caption": "“Oma” to grandchildren, “Fieks” to siblings and “Tante Fieks” to many more Muellers, Frieda visited and corresponded with family in the Midwest. Her mother, Frau Erica, spent her final years living with the Feiertags in Colorado.",
+      "width": 322,
+      "height": 434
+    },
+    "249": {
+      "url": "UlrickaJoel1.jpg",
+      "caption": "Four generations: Joel Nickel, held by his father Hilbert Nickel, next to his grandmother Margaret Ziesemer Nickel next to his great-grandmother Ulricka Zäske Ziesemer. Taken in the backyard of the Nickel family home on Howell Avenue very likely by Joel’s mother Adelheid Mueller Nickel, possibly in summer of 1940.",
+      "width": 1000,
+      "height": 594
+    },
+    "258": { "url": "WilhelmMueller5.jpg", "caption": "", "width": 800, "height": 1036 },
+    "263": {
+      "url": "DickMcMillan1.jpg",
+      "caption": "Dick McMillan in the summer of his 14th birthday",
+      "width": 576,
+      "height": 864
+    },
+    "264": {
+      "url": "DickMcMillan2.jpg",
+      "caption": "Dick McMillan at the wedding of his daughter Allison and Mark Nickel, July 26, 1986, at the House of Hope.",
+      "width": 504,
+      "height": 639
+    },
+    "265": {
+      "url": "DickMcMillan3.jpg",
+      "caption": "Dick McMillan in his late teens",
+      "width": 324,
+      "height": 327
+    },
+    "266": {
+      "url": "DickMcMillan4.jpg",
+      "caption": "Dick McMillan, left, with his older brother Malcolm.",
+      "width": 350,
+      "height": 529
+    },
+    "267": {
+      "url": "DickMcMillan5.jpg",
+      "caption": "Malcolm, left, and Dick with their father in July 1929. Childhood polio, Dick said, had left their father with thin legs but a powerful upper body.",
+      "width": 648,
+      "height": 428
+    },
+    "268": {
+      "url": "MollyMcMillan1.jpg",
+      "caption": "Molly, likely in her college years, taken at Manitou Island. (“The Hollow” is in the background.)",
+      "width": 576,
+      "height": 986
+    },
+    "269": {
+      "url": "MollyMcMillan2.jpg",
+      "caption": "Wife, mother, and community leader.",
+      "width": 576,
+      "height": 811
+    },
+    "270": { "url": "MollyMcMillan3.jpg", "caption": "", "width": 432, "height": 553 },
+    "271": {
+      "url": "DickMcMillan6.jpg",
+      "caption": "Molly and Dick, Marnie and Mal",
+      "width": 900,
+      "height": 835
+    },
+    "272": {
+      "url": "AllisonMcKibbin1.jpg",
+      "caption": "Allison McKibbin Bigelow",
+      "width": 800,
+      "height": 1106
+    },
+    "273": {
+      "url": "AllisonMcKibbin2.jpg",
+      "caption": "Mary Allison Bigelow (Nana) with her parents C.H Bigelow and Allison McKibbin Bigelow.",
+      "width": 1000,
+      "height": 638
+    },
+    "274": {
+      "url": "AllisonMcKibbin3.jpg",
+      "caption": "Allison McKibbin Bigelow, Molly McMillan’s Mother",
+      "width": 800,
+      "height": 1217
+    },
+    "275": {
+      "url": "MaryDorsey1.jpg",
+      "caption": "Mary Dorsey McKibbin (1856-1938), Molly McMillan’s grandmother",
+      "width": 800,
+      "height": 1136
+    },
+    "276": {
+      "url": "MaryDorsey2.jpg",
+      "caption": "Mary Dorsey McKibbin with son Joseph Chambers McKibbin, 7. A note on the back puts the date at January or February 1899.",
+      "width": 800,
+      "height": 1061
+    },
+    "277": {
+      "url": "MollyMcMillan4.jpg",
+      "caption": "Molly McMillan, taken July 1, 1924 a month before her her fifth birthday.",
+      "width": 720,
+      "height": 1117
+    },
+    "278": {
+      "url": "MollyMcMillan5.jpg",
+      "caption": "Molly McMillan in the summer of 1942.",
+      "width": 720,
+      "height": 1023
+    },
+    "281": {
+      "url": "AllisonMcKibbin4.jpg",
+      "caption": "Allison McKibbin, left, with her step-sister Anne held by nurse Jennie Chandler, dated 1888.",
+      "width": 800,
+      "height": 1193
+    },
+    "283": {
+      "url": "AllisonMcKibbin5.jpg",
+      "caption": "Allison McKibbin, February 1893",
+      "width": 800,
+      "height": 1294
+    },
+    "284": {
+      "url": "AllisonMcKibbin6.jpg",
+      "caption": "Allison McKibbin, 2 years and 3 months, taken December 1883",
+      "width": 800,
+      "height": 1155
+    },
+    "285": {
+      "url": "MollyMcMillan7.jpg",
+      "caption": "Molly McMillan with her step-grandmother Mary Henderson Dorsey McKibbin, known as “Grammie,” ca. 1920.",
+      "width": 1000,
+      "height": 676
+    },
+    "286": {
+      "url": "AllisonMcKibbin7.jpg",
+      "caption": "Allison McKibbin, taken August 26, 1911, on her wedding to Charles H. Bigelow Jr.",
+      "width": 800,
+      "height": 1128
+    },
+    "287": {
+      "url": "DickMolly2.jpg",
+      "caption": "Dick and Molly met in the choir at House of Hope. Years later, Dick was still singing; Molly was ordained.",
+      "width": 800,
+      "height": 1029
+    },
+    "288": {
+      "url": "DickMcMillan7.jpg",
+      "caption": "Dick McMillan, U.S. Navy flight instructor, ca. 1940, with his red convertible.",
+      "width": 800,
+      "height": 1134
+    },
+    "289": {
+      "url": "MollyMcMillan6.jpg",
+      "caption": "Molly McMillan, about 5, taken in 1924.",
+      "width": 650,
+      "height": 925
+    },
+    "291": { "url": "DickMolly3.jpg", "caption": "", "width": 700, "height": 1012 },
+    "293": {
+      "url": "DickMolly5.jpg",
+      "caption": "Dick and Molly leave the wedding reception in Dick’s convertible.",
+      "width": 1000,
+      "height": 824
+    },
+    "294": {
+      "url": "DickMolly6.jpg",
+      "caption": "Molly’s father, Charles H. Bigelow, walks his daughter down the stairs to begin the wedding ceremony at the Bigelow family residence.",
+      "width": 1000,
+      "height": 788
+    },
+    "295": {
+      "url": "DickMolly9.jpg",
+      "caption": "With the ceremony and reception behind them and Molly changed for travel, the couple heads down the stairs and out to the waiting car.",
+      "width": 1000,
+      "height": 813
+    },
+    "296": { "url": "DickMolly8.jpg", "caption": "", "width": 1000, "height": 810 },
+    "297": { "url": "DickMolly7.jpg", "caption": "", "width": 1000, "height": 800 },
+    "298": {
+      "url": "Thomas.20160730.jpg",
+      "caption": "Newborn",
+      "width": 600,
+      "height": 807
+    },
+    "299": {
+      "url": "Thomas.20161025.jpg",
+      "caption": "October 2016",
+      "width": 576,
+      "height": 885
+    },
+    "300": {
+      "url": "Thomas.20161109.jpg",
+      "caption": "November 2016",
+      "width": 600,
+      "height": 800
+    },
+    "301": {
+      "url": "Thomas.20161208.jpg",
+      "caption": "December 2016",
+      "width": 600,
+      "height": 800
+    },
+    "302": {
+      "url": "Thomas.20170119.jpg",
+      "caption": "January 2017",
+      "width": 600,
+      "height": 800
+    },
+    "303": {
+      "url": "Thomas.20170226.jpg",
+      "caption": "February 2017, with Opa and Oma",
+      "width": 600,
+      "height": 786
+    },
+    "304": {
+      "url": "Thomas.20170301.jpg",
+      "caption": "March 2017",
+      "width": 600,
+      "height": 800
+    },
+    "305": {
+      "url": "Thomas.20170205.jpg",
+      "caption": "Not too sure about pears ...",
+      "width": 600,
+      "height": 800
+    },
+    "307": {
+      "url": "NickelBoys5.jpg",
+      "caption": "In the courtyard of the Green Building at Anson and Reva’s wedding, June 20, 2015.",
+      "width": 814,
+      "height": 542
+    },
+    "309": {
+      "url": "Thomas.20170503.jpg",
+      "caption": "Thomas was not pleased to encounter a banana in chunk form.",
+      "width": 800,
+      "height": 993
+    },
+    "310": {
+      "url": "Thomas.20170507.jpg",
+      "caption": "Thomas started to crawl in early May 2017.",
+      "width": 700,
+      "height": 933
+    },
+    "312": {
+      "url": "DickMolly10.jpg",
+      "caption": "On vacation with the Napiers",
+      "width": 1200,
+      "height": 773
+    },
+    "313": {
+      "url": "Thomas.20170712.jpg",
+      "caption": "His parents, not so much",
+      "width": 600,
+      "height": 800
+    },
+    "314": {
+      "url": "Thomas.20170719.jpg",
+      "caption": "Thomas had a special early first birthday cake in Portsmouth: His great-grandmother’s famous strawberry cream roll. (His mother remembered it from her own fourth birthday.) Thomas liked it enough to attempt a face plant.",
+      "width": 509,
+      "height": 610
+    },
+    "316": {
+      "url": "Addie3.jpg",
+      "caption": "Adelheid, violin in one hand and hugging kid sister Norma with the other, prepares to leave for Dr. Martin Luther College in New Ulm, Minnesota, about 50 miles northeast of Freedom Township. Her brothers Ernie (with toothache) and Kurt were driving her.",
+      "width": 1000,
+      "height": 651
+    },
+    "317": {
+      "url": "OmaOpa1.jpg",
+      "caption": "Opa and Oma were among the earliest automobile owners in Freedom Township, Minnesota.",
+      "width": 1000,
+      "height": 624
+    },
+    "318": {
+      "url": "Thomas.20171014.jpg",
+      "caption": "Thomas and his parents arrived in Richmond, Virginia, in September 2017. His new front door is on the corner of Grace Street and Westwood Avenue.",
+      "width": 800,
+      "height": 878
+    },
+    "319": {
+      "url": "Thomas.20171002.jpg",
+      "caption": "Thomas has a public playground for little kids — no dogs allowed — about a block away from his new home. The cast protects his left wrist, injured when he misjudged the distance from a bed to his intended landing spot.",
+      "width": 800,
+      "height": 981
+    },
+    "321": {
+      "url": "Thomas.20171029.jpg",
+      "caption": "Thomas visited a pumpkin patch, an ideal place for his growing vocabulary. He ran from one pumpkin to the next shouting “Ball! Ball! Ball!’",
+      "width": 800,
+      "height": 535
+    },
+    "322": {
+      "url": "Thomas.20171105.jpg",
+      "caption": "Thomas, in Portsmouth for an overnight visit, enjoyed his expanding locomotive talents in the wide open spaces of Oma and Opa’s backyard.",
+      "width": 700,
+      "height": 933
+    },
+    "323": {
+      "url": "Thomas.20171221.jpg",
+      "caption": "Thomas went hunting for his first Richmond Christmas tree.",
+      "width": 800,
+      "height": 800
+    },
+    "326": { "url": "Anson4.jpg", "caption": "", "width": 600, "height": 808 },
+    "327": {
+      "url": "Anson1991.jpg",
+      "caption": "Anson’s term for earth-moving equipment. He brought his front loader to Second Beach in the fall of 1990.",
+      "width": 600,
+      "height": 861
+    },
+    "328": {
+      "url": "AnsonMite.jpg",
+      "caption": "Everyone agreed: Anson got his hockey skills from his mother, who also helped coach the mites.",
+      "width": 700,
+      "height": 969
+    },
+    "329": {
+      "url": "AnsonGrade8.jpg",
+      "caption": "Top of the heap at Pennfield, but about to be a high school freshman. Anson had his choice of St. Georges and Tabor Academy. He headed for Tabor. Is that the slightest hint of a wise-guy smirk?",
+      "width": 600,
+      "height": 856
+    },
+    "330": {
+      "url": "Anson19941013.jpg",
+      "caption": "Hockey had nothing to do with it.",
+      "width": 600,
+      "height": 860
+    },
+    "331": {
+      "url": "Anson1993.jpg",
+      "caption": "Anson was sitting on the corral fence at Vista Verde, waiting for the “Tenderfoot Rodeo” to begin, part of Dick and Molly’s golden anniversary celebration in 1993.",
+      "width": 800,
+      "height": 567
+    },
+    "332": {
+      "url": "Dan.19860726.jpg",
+      "caption": "Dan, 4, with dog and blanket outside House of Hope after his parents’ wedding July 26, 1986.",
+      "width": 600,
+      "height": 850
+    },
+    "333": {
+      "url": "Susan.1985.jpg",
+      "caption": "Susan, not quite 2, at the beach with Alli.",
+      "width": 600,
+      "height": 849
+    },
+    "334": {
+      "url": "Susan.198906.jpg",
+      "caption": "Susan, 5, during a trip to Busch Gardens in Florida, where Nana and Grampa had a condo at Innisbrook.",
+      "width": 600,
+      "height": 868
+    },
+    "335": {
+      "url": "Dan.1987.jpg",
+      "caption": "Dan, not yet 2 but already into books, had just become a big brother.",
+      "width": 631,
+      "height": 417
+    },
+    "336": {
+      "url": "Dan.19841031.jpg",
+      "caption": "Dan, three months before his third birthday, was a large green frog for Halloween. His sister and brother would have their turn.",
+      "width": 700,
+      "height": 939
+    },
+    "337": {
+      "url": "DanAriz.jpg",
+      "caption": "Alli took Dan, Susan, and Anson to Sedona, Arizona, to visit Dick and Molly. Mark had to say behind and run a press conference in Washington.",
+      "width": 600,
+      "height": 917
+    },
+    "338": {
+      "url": "DanToddler.jpg",
+      "caption": "Dan in his first summer on two feet, probably June or July 1983.",
+      "width": 700,
+      "height": 905
+    },
+    "339": {
+      "url": "Dan.19880128.jpg",
+      "caption": "The football field birthday cake was Dan’s idea. Definitely homemade, definitely chocolate. Dan's birthday is within range of the Super Bowl.",
+      "width": 800,
+      "height": 533
+    },
+    "340": {
+      "url": "Dan.19820821.jpg",
+      "caption": "Dan, at seven months, would grow up to look a lot like Peter.",
+      "width": 700,
+      "height": 918
+    },
+    "341": {
+      "url": "NickelBoys6.jpg",
+      "caption": "Likely one of the last Eagle Lake photo sessions in Mankato. Once Joel started staying in Oak Park for a summer job, the long visits to Eagle Lake came to an end.",
+      "width": 500,
+      "height": 570
+    },
+    "342": {
+      "url": "Addie4.jpg",
+      "caption": "Possibly the first photo taken of Adelheid. Writing on the back says she was 3 years old, eating a piece of butter bread with Pete the turkey in Madison, Minnesota.",
+      "width": 600,
+      "height": 629
+    },
+    "343": {
+      "url": "Susan.1987.jpg",
+      "caption": "The house at 101 Gideon Lawton Lane was still new to everyone, including Susan, not quite 4.",
+      "width": 600,
+      "height": 788
+    },
+    "344": {
+      "url": "Susan.198810a.jpg",
+      "caption": "Susan, 5, on a warm October day in 1988.",
+      "width": 500,
+      "height": 694
+    },
+    "345": {
+      "url": "Susan.198810b.jpg",
+      "caption": "Anson had arrived not quite a year earlier.",
+      "width": 700,
+      "height": 922
+    },
+    "346": {
+      "url": "Susan.1985b.jpg",
+      "caption": "Likely around Christmastime, 1985.",
+      "width": 600,
+      "height": 821
+    },
+    "347": {
+      "url": "Dan.1985.jpg",
+      "caption": "Dan with his paternal grandmother, probably fall of 1985 .",
+      "width": 900,
+      "height": 689
+    },
+    "348": {
+      "url": "Dan.198512.jpg",
+      "caption": "The dump trucks and Tonka vehicles are still new, probably Christmas 1985.",
+      "width": 900,
+      "height": 629
+    },
+    "349": {
+      "url": "Dan3.jpg",
+      "caption": "Dan, 4, was on a visit to Oregon in June 1986, flying a kite on the beach. He turned out to be pretty good at it.",
+      "width": 600,
+      "height": 895
+    },
+    "350": {
+      "url": "Archie.20180502a.jpg",
+      "caption": "Archer Gaur Nickel arrived on May 2, 2018, at about 12:19 p.m.",
+      "width": 1000,
+      "height": 586
+    },
+    "351": {
+      "url": "Archie.20180502b.jpg",
+      "caption": "Archie, all 6 pounds, 8 ounces of him, met Mom and Dad on Wednesday, May 2, 2018.",
+      "width": 1000,
+      "height": 558
+    },
+    "352": {
+      "url": "Archie.20180505.jpg",
+      "caption": "Archie on his first full day in his apartment across from Prospect Park.",
+      "width": 700,
+      "height": 934
+    },
+    "353": {
+      "url": "Archie.20180509.jpg",
+      "caption": "At the end of his first week, Archie was headed for an outing. Car or stroller, when he’s in his seat he’s ready for either.",
+      "width": 700,
+      "height": 934
+    },
+    "354": {
+      "url": "Thomas.20180427.jpg",
+      "caption": "Thomas on the Grace Street terrace, eating a bowl of penne with Opa.",
+      "width": 700,
+      "height": 884
+    },
+    "355": {
+      "url": "Archie.20180523.jpg",
+      "caption": "On his three-week birthday, Archie summoned his grandparents — Opa, Oma, Nana, and Nani — to his home in Brooklyn. They were thrilled.",
+      "width": 793,
+      "height": 830
+    },
+    "356": {
+      "url": "Archie.20180524.jpg",
+      "caption": "Oma and Opa had some wonderful time with Archie while his parents took a walk in Prospect Park. He was happy, expressive, and attentive to everything around him.",
+      "width": 700,
+      "height": 876
+    },
+    "358": {
+      "url": "Archie.20180605.jpg",
+      "caption": "Happy guy Archie and his mom were on an outing to Prospect Park with Nani – Sunanda – who took the snapshot.",
+      "width": 700,
+      "height": 933
+    },
+    "359": {
+      "url": "Archie.20180613.jpg",
+      "caption": "Anson and Archie, 13 June 2018",
+      "width": 700,
+      "height": 933
+    },
+    "360": {
+      "url": "Addie15.jpg",
+      "caption": "Mark drove Mimi and Pooch from Chicago to new retirement digs at Ione Plaza in Portland. The route naturally included a stretch of Highway 14 through Eagle Lake, Minnesota.",
+      "width": 800,
+      "height": 517
+    },
+    "361": {
+      "url": "Archie.20180903.jpg",
+      "caption": "Archie, one day after turning four months, locks eyes with Uncle Dan, who was in Portsmouth with Aliki for Labor Day.",
+      "width": 800,
+      "height": 977
+    },
+    "362": {
+      "url": "Thomas.20180811.jpg",
+      "caption": "Like 3-year-old Opa, 2-year-old Thomas was a ring bearer — at Jessica Fye’s wedding on August 11, 2018. By all accounts, Thomas did a little better. On August 10, 1952, little Opa stopped at the third pew from the narthex. No one could persuade him to continue.",
+      "width": 700,
+      "height": 992
+    },
+    "363": {
+      "url": "Thomas.20180929.jpg",
+      "caption": "Thomas enjoyed his first layout, combining an Amtrak-ish passenger train with Thomas the Tank Engine. Even the inevitable derailments were fun: “Oh no! Train broke.”",
+      "width": 1000,
+      "height": 728
+    },
+    "364": {
+      "url": "Thomas.20180929c.jpg",
+      "caption": "Oma and Opa were in town when baby brother James Mark arrived. Thomas took them on several visits to his park.",
+      "width": 900,
+      "height": 675
+    },
+    "365": {
+      "url": "JamesMark.20180929.jpg",
+      "caption": "James Mark Knowles arrived in Richmond with the autumnal equinox just before midnight on Saturday, September 22, 2018, checking in at 9 pounds 11 ounces.",
+      "width": 1000,
+      "height": 684
+    },
+    "366": {
+      "url": "JamesMark.20180930.jpg",
+      "caption": "At one week, James was sporting a double-breasted onesie.",
+      "width": 1000,
+      "height": 659
+    },
+    "367": {
+      "url": "ThomasJames1.jpg",
+      "caption": "Three weeks after his little brother’s birth, Thomas was settling into his new role.",
+      "width": 700,
+      "height": 933
+    },
+    "368": { "url": "Galapagos1.jpg", "caption": "", "width": 720, "height": 540 },
+    "369": { "url": "Galapagos2.jpg", "caption": "", "width": 720, "height": 540 },
+    "371": { "url": "Galapagos4.jpg", "caption": "", "width": 720, "height": 541 },
+    "394": {
+      "url": "MarkAlli2.jpg",
+      "caption": "Mark, Alli, Dan, and Susan visited Portland in June 1986 to meet the West Coast family.",
+      "width": 900,
+      "height": 602
+    },
+    "395": {
+      "url": "MarkAlli3.jpg",
+      "caption": "Alli managed to secure two places at Newport Polo’s fundraiser. About two dozen Providence Singers were on hand for for a Sunday afternoon wine, cheese, picnic supper, and polo match July 2017.",
+      "width": 800,
+      "height": 1200
+    },
+    "397": {
+      "url": "Archie.20181031.jpg",
+      "caption": "For his first Halloween, Archie showed up in a tiger suit that will probably fit him for a couple years.",
+      "width": 800,
+      "height": 1103
+    },
+    "398": {
+      "url": "NickelBoys8.jpg",
+      "caption": "The three-railed Lionel ranked well below the American Flyer and even farther below the HO gauge, but it would have to do for the summer. This could have been the summer of 1950, a few months before Tim’s arrival.",
+      "width": 1000,
+      "height": 724
+    },
+    "399": {
+      "url": "NickelBoys9.jpg",
+      "caption": "A trip to the photographer in Mankato was part of the August summer ritual.",
+      "width": 1000,
+      "height": 291
+    },
+    "400": {
+      "url": "JamesMark.20181107.jpg",
+      "caption": "James at about six weeks.",
+      "width": 800,
+      "height": 1067
+    },
+    "402": {
+      "url": "OmaEmily.jpg",
+      "caption": "A handwritten note on the reverse says “Mother [Helen Mueller] and Great Aunt Emmie [her aunt Emily Luecke], bridesmaids at Great Uncle George Luecke’s wedding in August in St. Louis.”",
+      "width": 808,
+      "height": 790
+    },
+    "403": {
+      "url": "Archie.20181104.jpg",
+      "caption": "Archie’s first encounter with purple sweet potato purée was colorful and drippy, but he enjoyed the solid food experience.",
+      "width": 700,
+      "height": 910
+    },
+    "410": {
+      "url": "OmaOpa2.jpg",
+      "caption": "Jerry (Joel) and Jimmy visited Oma and Opa at Freedom township, probably in the mid-1940s.",
+      "width": 700,
+      "height": 971
+    },
+    "411": {
+      "url": "Addie16.jpg",
+      "caption": "Jim, 11 at the time, asked to take a picture of his mother. Aunt Frieda gave him her box camera and some film and Jim shot scenes in Eagle Lake, Minnesota. Mimi was 48.",
+      "width": 700,
+      "height": 932
+    },
+    "412": {
+      "url": "Thomas.20181125.jpg",
+      "caption": "On Thanksgiving weekend in 2018, Oma, Opa, and Thomas’s whole family went to a model railroad show at the Science Museum in Richmond. Thomas preferred the O gauge.",
+      "width": 900,
+      "height": 653
+    },
+    "413": {
+      "url": "Archie.20181127.jpg",
+      "caption": "Archie has long enjoyed his “office,” a colorful area with things to look at, grab, and play with. He moved into a new, bigger office around Thanksgiving 2018: More variety, more complexity, more fun.",
+      "width": 800,
+      "height": 1028
+    },
+    "414": {
+      "url": "JimMarkTim1.jpg",
+      "caption": "There is no record of Uncle Boo-Boo owning this particular model, but he did drive several old jalopies for their final mile, abandoning them “in the woods south of Bagley [Minnesota].”",
+      "width": 900,
+      "height": 515
+    },
+    "415": {
+      "url": "Thomas.20181210.jpg",
+      "caption": "A huge rogue snowstorm hit much of the South, including Richmond. Thomas did his part to help cope.",
+      "width": 750,
+      "height": 1000
+    },
+    "416": {
+      "url": "Thomas.20181211.jpg",
+      "caption": "Dry dog food makes perfect play dirt for earth-moving toys. Smokes didn’t object.",
+      "width": 850,
+      "height": 994
+    },
+    "418": {
+      "url": "Thomas.20181215.jpg",
+      "caption": "Lots of interest and excitement arrived with the crew that dug up Thomas’s street and connected the water main to the “Bang-Bang House.” That’s what Thomas called the new house being built next door with its months of incessant hammering.",
+      "width": 750,
+      "height": 1000
+    },
+    "419": {
+      "url": "Thomas.20190102.jpg",
+      "caption": "After Oma and Opa got on the plane back to Rhode Island, Thomas went to the Science Museum with his mom and James. He found the turtle on the second floor.",
+      "width": 800,
+      "height": 998
+    },
+    "420": {
+      "url": "Archie.20190101.jpg",
+      "caption": "It was Dad’s first effort too, and it turned out quite well.",
+      "width": 800,
+      "height": 976
+    },
+    "421": {
+      "url": "DanAliki1.jpg",
+      "caption": "Do we hike Sachuest or golf? Aliki and Alli hiked through nine holes, then headed for the clubhouse. Dan and Mark played all 18 holes, finishing about an hour before dusk. Boxing Day 2018.",
+      "width": 900,
+      "height": 676
+    },
+    "422": {
+      "url": "DanMark1.jpg",
+      "caption": "Plenty of sun and wind on the Oregon coast kept Dan’s kite way up.",
+      "width": 900,
+      "height": 633
+    },
+    "423": {
+      "url": "Addie17.jpg",
+      "caption": "With the house at 623 North Ridgeland empty and her belongings already in a moving van, Mark, Mimi, and Pooch posed for a final snapshot and then set out for Portland, Oregon, in Mimi’s red Buick Skylark.",
+      "width": 800,
+      "height": 537
+    },
+    "424": {
+      "url": "HCNickel8.jpg",
+      "caption": "H.C. Nickel was confirmed at St. Lucas Lutheran Church, probably 1919 or 1920.",
+      "width": 700,
+      "height": 1006
+    },
+    "426": {
+      "url": "JoelJimMark1.jpg",
+      "caption": "The two Aces visited Rhode Island in August of 1984, according to a note on the back. They created a sculpture out of found junk at the Haffenreffer grant in Bristol. They later found the Jimmy and Jerry, a lobster boat in Newport harbor.",
+      "width": 700,
+      "height": 976
+    },
+    "427": {
+      "url": "Addie18.jpg",
+      "caption": "Mimi’s retirement farewell at Zion, Bensenville, with Mark, Dean Lueking, Nonny, Jim, and Al Gehlhausen.",
+      "width": 900,
+      "height": 608
+    },
+    "428": {
+      "url": "JamesMark.20190302.jpg",
+      "caption": "Figuring out those complex motor skills has to start somewhere. James added rolling over to his skill set a few days before Great Uncle Joel’s 80th birthday. Now on to sitting up!",
+      "width": 1301,
+      "height": 894
+    },
+    "429": {
+      "url": "Thomas.20190203.jpg",
+      "caption": "An afternoon visit to the Richmond Science Museum is one of Thomas’s favorite things to do. There’s so much for an inquiring mind to discover — lots of it specially designed for kids.",
+      "width": 1300,
+      "height": 825
+    },
+    "430": { "url": "MarkAlli5.jpg", "caption": "", "width": 1000, "height": 711 },
+    "431": { "url": "MarkAlli4.jpg", "caption": "", "width": 700, "height": 995 },
+    "432": { "url": "MarkAlli10.jpg", "caption": "", "width": 800, "height": 565 },
+    "433": {
+      "url": "ThomasJames2.jpg",
+      "caption": "8 March 2019",
+      "width": 781,
+      "height": 904
+    },
+    "434": {
+      "url": "JamesMark.20190310.jpg",
+      "caption": "Having mastered rolling over, James is enthusiastic about tummy time.",
+      "width": 759,
+      "height": 1000
+    },
+    "435": {
+      "url": "Archie.20190502.jpg",
+      "caption": "Archie’s first birthday — Uno de Archie — was celebrated in festive Cinco de Mayo style. (“Speedy Gonzales” was standing, thinking about walking ...)",
+      "width": 600,
+      "height": 688
+    },
+    "447": {
+      "url": "Thomas.20190324.jpg",
+      "caption": "At breakfast, a Richmond city work crew began grading the alleys and spreading gravel in Thomas’s neighborhood. They parked the steamroller for Sunday and Thomas climbed aboard.",
+      "width": 1000,
+      "height": 810
+    },
+    "448": {
+      "url": "JamesMark.20190322.jpg",
+      "caption": "Little James surprised everyone by “planking” while trying to figure out how to crawl. At six months, he seemed eager to move — and was very proud of himself.",
+      "width": 1000,
+      "height": 716
+    },
+    "449": {
+      "url": "Thomas.20190418.jpg",
+      "caption": "Thomas’s school introduced him to the Easter egg hunt on the Thursday before Easter 2019.",
+      "width": 682,
+      "height": 967
+    },
+    "450": {
+      "url": "Archie.20190428.jpg",
+      "caption": "Archie, with four teeth and a renegade red ball, a few days before his first birthday.",
+      "width": 700,
+      "height": 960
+    },
+    "452": {
+      "url": "OmaOpa3.jpg",
+      "caption": "Ernst Mueller (Opa) and Helen Hedder (Oma) courted in and around Chicago. There were picnics at Concordia Cemetery in Forest Park and, above, outings in what could be Humboldt Park, half a block from Oma’s mother’s house. They were married April 12, 1899.",
+      "width": 636,
+      "height": 834
+    },
+    "453": {
+      "url": "Archie.20190510.jpg",
+      "caption": "Archie showed up at daycare sporting a bib from his father’s alma mater.",
+      "width": 1200,
+      "height": 932
+    },
+    "455": {
+      "url": "Thomas.20190504a.jpg",
+      "caption": "Thomas was waiting for his turn on horseback at the Waldorf School fair. He’ll start at Waldorf in the fall.",
+      "width": 800,
+      "height": 1340
+    },
+    "458": {
+      "url": "JamesMark.20190610.jpg",
+      "caption": "Like his big brother, James enjoys the little park a block away from his house. The swings just fit.",
+      "width": 750,
+      "height": 1000
+    },
+    "459": { "url": "ThomasJames3.jpg", "caption": "", "width": 769, "height": 1000 },
+    "460": {
+      "url": "MarkAlli8.jpg",
+      "caption": "We had lunched at the Thiessen Gallery, but we stopped in at Dan’s newest Tierra, across from the Royal Opera. It’s a beautiful, inviting place – and not quite two weeks old.",
+      "width": 750,
+      "height": 1000
+    },
+    "461": {
+      "url": "JamesMark.20190619.jpg",
+      "caption": "James, on vacation in mid-July 2019, proved to be an early and happy riser.",
+      "width": 794,
+      "height": 990
+    },
+    "462": {
+      "url": "Archie.20190525.jpg",
+      "caption": "Archie, in Rhode Island for his father's 10th (and Oma’s 45th) reunion at Brown, mostly mastered the uneven backyard terrain at Oma and Opa’s house.",
+      "width": 714,
+      "height": 1000
+    },
+    "463": {
+      "url": "Archie.20190605.jpg",
+      "caption": "Great Uncle Binyon’s *Venture Piece* had a magnetic effect on little eyes. Archie was transfixed when he discovered it in Uncle Dan’s living room in Madrid. He pointed at it, stared at it, tried to figure out what it was.",
+      "width": 1000,
+      "height": 1000
+    },
+    "464": {
+      "url": "Thomas.20190620.jpg",
+      "caption": "Thomas capped a day at the beach with the first ice cream cone of the day. Susan, George, James, and Thomas were spending a week on the Virginia shore in mid-June 2019.",
+      "width": 750,
+      "height": 1000
+    },
+    "465": {
+      "url": "HansFredericke.jpg",
+      "caption": "First row from left: Olga, Theodor, Clara, Paul. Top from left: Edwin, Hilde, Lydia, Johannes, Julia, Frederick.",
+      "width": 1200,
+      "height": 742
+    },
+    "466": {
+      "url": "FritzJohanne1.jpg",
+      "caption": "Fritz, Johanne, and their first three children, from left, Elizabeth, Theodora, and Wilhelm. Wilhelm looks to be about six or eight months, so the photo would likely have been taken in Dorum in the spring of 1847. Emigration was nearly two decades away.",
+      "width": 700,
+      "height": 752
+    },
+    "468": { "url": "AnsonMark1.jpg", "caption": "", "width": 749, "height": 1000 },
+    "469": {
+      "url": "Thomas.20190728b.jpg",
+      "caption": "Thomas and his birthday party guests had a backyard full of petting zoo farm animals, but everyone moved inside for the big event.",
+      "width": 850,
+      "height": 961
+    },
+    "470": {
+      "url": "Thomas.20190728a.jpg",
+      "caption": "Thomas and his guests had a backyard petting zoo at his third birthday: pony (saddled for rides), pig, goat, bunnies and more.",
+      "width": 850,
+      "height": 856
+    },
+    "471": {
+      "url": "Johanne.jpg",
+      "caption": "Johanne would have been 45 years old when she landed in Indiana with husband Fritz Mueller and their nine children. She wore the money belt with gold coins. The undated photograph belonged to her great-grandson Frederick Miller, last relative to own the Mueller farm in Kendallville.",
+      "width": 411,
+      "height": 600
+    },
+    "472": {
+      "url": "JamesMark.20190914.jpg",
+      "caption": "James is a strong, active guy. He crawls, walks, and climbs constantly, particularly *up* the stairs.",
+      "width": 750,
+      "height": 978
+    },
+    "473": {
+      "url": "Archie.20190825.jpg",
+      "caption": "There‘s only one proper way to eat corn on the cob and it doesn‘t require tools.",
+      "width": 750,
+      "height": 975
+    },
+    "475": {
+      "url": "ThomasJames4.jpg",
+      "caption": "Thomas and James were in their backyard horsing around in mid-October 2019. That’s the Bang-Bang House in the background, constructed on an empty lot shortly after Thomas moved in.",
+      "width": 713,
+      "height": 950
+    },
+    "477": {
+      "url": "OpaOma1.jpg",
+      "caption": "Oma and Opa – Helen Hedder and Ernst Mueller – were married April 12, 1899, in Chicago. She was 21; he was 24.",
+      "width": 1000,
+      "height": 676
+    },
+    "478": {
+      "url": "AlHibMegs.jpg",
+      "caption": "H.C. Nickel, maybe two or three years old, did not seem particularly pleased to sit for a family portrait.",
+      "width": 900,
+      "height": 726
+    },
+    "479": {
+      "url": "Addie19.jpg",
+      "caption": "Adelheid and Joel in the yard at 553 North Marion Street in Oak Park, Illinois, where the young family had settled in a second-floor flat.",
+      "width": 450,
+      "height": 724
+    },
+    "480": {
+      "url": "ErnaAddie1.jpg",
+      "caption": "Erna Marquardt and Adelheid Nickel introduced cousins Irma and Joel, probably in late summer 1939 at Box 43, the Marquardt farm outside Janesville, Minnesota.",
+      "width": 455,
+      "height": 659
+    },
+    "485": {
+      "url": "SusanZoe.jpg",
+      "caption": "Zoe, the original chocolate lab saw Susan through middle and high school.",
+      "width": 540,
+      "height": 840
+    },
+    "486": { "url": "Susan.1988.jpg", "caption": "", "width": 540, "height": 840 },
+    "490": {
+      "url": "Thomas.20170924.jpg",
+      "caption": "Thomas found a special hiding place near the back door in the kitchen of his new house.",
+      "width": 750,
+      "height": 1000
+    },
+    "491": {
+      "url": "ThomasJames5.jpg",
+      "caption": "Thomas and James explored a bit of railroad history at the Science Museum, which used to be Richmond’s train station. The Science Museum is a favorite place.",
+      "width": 850,
+      "height": 974
+    },
+    "492": {
+      "url": "Archie.20200109.jpg",
+      "caption": "Archie studies photographs of cousins Thomas and James. The three little cousins were together for the first time over Christmas 2019 in Richmond.",
+      "width": 800,
+      "height": 973
+    },
+    "493": {
+      "url": "Archie.20200201.jpg",
+      "caption": "Lots of interesting stuff on farms — tractors especially.",
+      "width": 850,
+      "height": 971
+    },
+    "494": {
+      "url": "Thomas.20200124.jpg",
+      "caption": "Thomas was exploring a few passenger and freight cars at the Science Museum’s collection of real railroad equipment.",
+      "width": 800,
+      "height": 1022
+    },
+    "495": {
+      "url": "JamesMark.20191128.jpg",
+      "caption": "Brown Bear, Brown Bear, what do you see? I see Jamesy in a basket looking at me.",
+      "width": 750,
+      "height": 1000
+    },
+    "497": {
+      "url": "Archie.20200215.jpg",
+      "caption": "On a weekend getaway with his parents and their friends, Archie found a house with lots of things for kids, including a soprano recorder. Opa was pleased.",
+      "width": 600,
+      "height": 800
+    },
+    "498": {
+      "url": "SusanBasket.jpg",
+      "caption": "Susan, a bit before her second birthday, in the Tiverton house near Lana‘s.",
+      "width": 1064,
+      "height": 850
+    },
+    "499": {
+      "url": "AnsonBinyon.jpg",
+      "caption": "Anson, not quite three in the summer of 1990, attended a soap show in Boston with Uncle Binyon and Aunt Ting. He wasn’t too sure about a bar of soap containing chocolate.",
+      "width": 687,
+      "height": 1000
+    },
+    "500": {
+      "url": "AnsonZonked.jpg",
+      "caption": "No half-measures for Anson. When he was active, he was *very* active and when he crashed, he was deeply asleep.",
+      "width": 1014,
+      "height": 850
+    },
+    "501": {
+      "url": "ThomasJames6.jpg",
+      "caption": "With James fully mobile and increasingly communicative, the brothers are finding lots of things to do together. Pulling on boots and jumping into puddles after a rainstorm is a speciality.",
+      "width": 713,
+      "height": 950
+    },
+    "502": {
+      "url": "Anson.19891225.jpg",
+      "caption": "Anson was a little more than two when he started working with Brios. This was around Christmas 1989.",
+      "width": 1000,
+      "height": 798
+    },
+    "503": {
+      "url": "ThomasJames7.jpg",
+      "caption": "The winter of 2020 wasn't much of a winter in Richmond. February was warm enough to horse around outside in light jackets.",
+      "width": 800,
+      "height": 953
+    },
+    "504": {
+      "url": "Archie.20200225.jpg",
+      "caption": "Archie found lots of fun things to do with Nani and Bob while his parents were in California for a week.",
+      "width": 750,
+      "height": 899
+    },
+    "505": {
+      "url": "MuellerKids.jpg",
+      "caption": "Opa and Oma’s first six kids: Erna, top; Frieda and Gerhard below her; Adelheid and Ernst below them; and Kurt, who was the first to be born in Freedom Township. Still to come: Herbert, Max, and Norma.",
+      "width": 566,
+      "height": 1000
+    },
+    "507": {
+      "url": "OmaOpa5Kids.jpg",
+      "caption": "Oma and Opa had five kids in Madison and would have four more in Freedom Township. The five, clockwise from left: Adelheid, 2; Erna, 9; Ernst, maybe 10 weeks; Frieda, 5 1/2, and Gerhard 4 1/2. Photo probably dates from fall 1909, two years before the move to Freedom Township.",
+      "width": 1137,
+      "height": 850
+    },
+    "508": {
+      "url": "ArenaChurch.jpg",
+      "caption": "Opa’s main congregation was St. John’s in Madison, Minnesota, but he also served Zion, a rural church in Arena Township. The five children, clockwise from left: Erna, Adelheid, Gerhard, Frieda, Ernst.",
+      "width": 850,
+      "height": 896
+    },
+    "510": {
+      "url": "Archie.20200329.jpg",
+      "caption": "With most New Yorkers keeping their COVID-19 social distance at home, Archie had acres of uninhabited sand to dig in and explore.",
+      "width": 1100,
+      "height": 936
+    },
+    "512": {
+      "url": "NickelBoys10.jpg",
+      "caption": "Building a hot rod — recruiting materials, finding tools — could take a day or more. Design evolved as the work progressed (note the trendy convertible roof). Probably summer of 1950 or ’51 in Eagle Lake, Minnesota.",
+      "width": 950,
+      "height": 520
+    },
+    "537": {
+      "url": "Archie.20200416.jpg",
+      "caption": "Sheltering in place during the pandemic gets old very fast. Archie was happy to ride in the car maybe to a deserted beach, maybe to Bob and Nani’s house.",
+      "width": 750,
+      "height": 934
+    },
+    "538": {
+      "url": "Thomas.20200423.jpg",
+      "caption": "A bedsheet hammock strung underneath the dining room table was an inventive way to pass some of the time during the pandemic stay-at-home.",
+      "width": 700,
+      "height": 933
+    },
+    "539": {
+      "url": "JamesMark.20200517.jpg",
+      "caption": "When a new shipment of art supplies arrived on Grace Street, James tried out the tempera paints.",
+      "width": 750,
+      "height": 1000
+    },
+    "540": {
+      "url": "ThomasJames8.jpg",
+      "caption": "A set of paints was a welcome change after two months of the stay-at-home Covid-19 experience. The brothers plunged right in. James was a little more free-form.",
+      "width": 900,
+      "height": 938
+    },
+    "541": {
+      "url": "MarkAlli9.jpg",
+      "caption": "The Providence Singers held a baby shower for Christine Noel, who was pregnant with Sophia, ca. fall 2015.",
+      "width": 1000,
+      "height": 707
+    },
+    "543": {
+      "url": "Archie.20200616.jpg",
+      "caption": "His feet didn’t quite reach the pedals when he tried out the driver’s seat, but Archie was determined to make the jump from stroller to a self-directed, self-powered vehicle.",
+      "width": 750,
+      "height": 1000
+    },
+    "544": {
+      "url": "JamesMark.20200728.jpg",
+      "caption": "In July 2020, Richmond and Covid-19 offered outdoors types little refuge from the heat. The backyard offered no shade after 9:30 a.m., so James and his family headed back inside.",
+      "width": 750,
+      "height": 1000
+    },
+    "545": {
+      "url": "ThomasJames10.jpg",
+      "caption": "With plenty of track and plenty of room to build, the brothers built a layout with a minimum of turns and a maximum of long hauls.",
+      "width": 800,
+      "height": 968
+    },
+    "546": {
+      "url": "Thomas.20200813.jpg",
+      "caption": "Thomas and his family spent a few days at the waterfront getaway of some family friends. Lots to explore: crabs, minnows, turtles, jellyfish and salt water.",
+      "width": 750,
+      "height": 1000
+    },
+    "547": {
+      "url": "ThomasJames11.jpg",
+      "caption": "James ponders the situation while his big brother prepares to restore a wheel that has fallen off the tractor.",
+      "width": 800,
+      "height": 938
+    },
+    "551": {
+      "url": "Friedrich_CJ.jpg",
+      "caption": "Friedrich C.J. Mueller, Fritz and Johanne’s sixth child, owned and lived on the family farm after his older brother Wilhelm left farming and moved to Chicago.",
+      "width": 300,
+      "height": 392
+    },
+    "552": {
+      "url": "Friedrich_Mary1.jpg",
+      "caption": "Friedrich C.J. Mueller and Mary Mertz worked the Mueller farm east of Kendallville and secured clear title to the land.",
+      "width": 500,
+      "height": 784
+    },
+    "553": {
+      "url": "Friedrich_CJ2.jpg",
+      "caption": "This photo appears to have been taken about the time of Friedrich’s marriage to Mary Mertz.",
+      "width": 350,
+      "height": 496
+    },
+    "554": {
+      "url": "JamesMark.20200906.jpg",
+      "caption": "At the neighborhood tot lot, James took the wheel of a favorite primary-colored two-door coupe and loved the experience.",
+      "width": 750,
+      "height": 952
+    },
+    "555": {
+      "url": "Archie.20200919.jpg",
+      "caption": "Archie and his parents visited a farm, looked at the pigs, goats and chickens, and then set to the serious work of apple picking. They came home with 25 pounds.",
+      "width": 800,
+      "height": 994
+    },
+    "556": {
+      "url": "Archie.20200919a.jpg",
+      "caption": "An outing for apple-picking isn’t only about picking apples. Archie and his parents sampled the apple-infused goodness of just-fried apple doughnuts",
+      "width": 750,
+      "height": 907
+    },
+    "557": { "url": "ThomasJames12.jpg", "caption": "", "width": 700, "height": 933 },
+    "558": {
+      "url": "JamesMark.20201017.jpg",
+      "caption": "Learning to walk was *so last year.* Scooters get you there faster — with a helmet and good brake for new riders who can't help but push the limit.",
+      "width": 750,
+      "height": 943
+    },
+    "559": {
+      "url": "MarkAlli6.jpg",
+      "caption": "The email caption read: “I fear the Pandemic Beard, already at full Hemingway, will reach full Johannes Brahms before we have a vaccine.”",
+      "width": 1000,
+      "height": 724
+    },
+    "560": {
+      "url": "MoneyBelt.jpg",
+      "caption": "After he sold Bosenbüttel, Fritz Mueller moved most of his money to America through Bremen banks. He kept some of it in gold coins, which he put into this money belt that Johanne wore on the emigration to Indiana.",
+      "width": 1000,
+      "height": 488
+    },
+    "562": {
+      "url": "ThomasJames13.jpg",
+      "caption": "Thomas and James love their cornbread and prefer the kitchen to the dining room for their breakfast. With neither table nor chairs, seating is where you find it.",
+      "width": 757,
+      "height": 900
+    },
+    "563": {
+      "url": "Archie.20201117.jpg",
+      "caption": "Archie loves his school, Covid precautions and all.",
+      "width": 757,
+      "height": 1000
+    },
+    "565": {
+      "url": "ArchieLeia_20201219.jpg",
+      "caption": "With the new, larger family settled in at 101 Prospect Park SW, Archie began reading books to his 9-day-old sister.",
+      "width": 900,
+      "height": 964
+    },
+    "571": {
+      "url": "ThomasJames14.jpg",
+      "caption": "Thomas and James found puddles everywhere after a whole morning of rain in January 2021. Puddles, of course, are perfect for punschering.",
+      "width": 700,
+      "height": 933
+    },
+    "572": {
+      "url": "JamesMark.20210116.jpg",
+      "caption": "Dinosaurs of all kinds and sizes were a big hit when they arrived from Great-uncle Binyon and Great-aunt Ting. The triceratops prefers banana slices.",
+      "width": 750,
+      "height": 956
+    },
+    "573": {
+      "url": "Leia1.jpg",
+      "caption": "Leia Reva Nickel arrived in Brooklyn on Thursday, December 10, 2020. She checked in at 7 pounds, 11 ounces, and 20.5 inches.",
+      "width": 800,
+      "height": 956
+    },
+    "574": {
+      "url": "Leia3.jpg",
+      "caption": "Leia slipped right into the family routine with Mom, Dad, and Big Brother Archie.",
+      "width": 768,
+      "height": 780
+    },
+    "575": {
+      "url": "Leia2.jpg",
+      "caption": "At home on Mom’s lap, comfy, fed, and not a care in the world.",
+      "width": 750,
+      "height": 1000
+    },
+    "576": {
+      "url": "Leia4.jpg",
+      "caption": "Leia just about a month old: Alert, eyes tracking movement, happy.",
+      "width": 750,
+      "height": 899
+    },
+    "577": {
+      "url": "Leia5.jpg",
+      "caption": "Thursday, January 21 – about five weeks old.",
+      "width": 621,
+      "height": 1000
+    },
+    "578": {
+      "url": "Leia6.jpg",
+      "caption": "Leia at six weeks.",
+      "width": 862,
+      "height": 950
+    },
+    "579": {
+      "url": "Archie.20210128.jpg",
+      "caption": "Archie, lover of all things pasta, enjoyed his first encounter with the famous German noodle, part of a holiday care package from Binyon and Ting.",
+      "width": 800,
+      "height": 974
+    },
+    "580": {
+      "url": "ThomasJames15.jpg",
+      "caption": "Snow arrived in Richmond Sunday, January 31, 2021. Heavy, wet, ideal for snowballs and snowman-making — and a perfect way to celebrate Dad’s birthday.",
+      "width": 750,
+      "height": 942
+    },
+    "581": {
+      "url": "JamesMark.20210131.jpg",
+      "caption": "Unfamiliar stuff, this snow. Rare in Richmond, it may have been James’s first encounter with a Minnesota-style winter.",
+      "width": 713,
+      "height": 950
+    },
+    "582": {
+      "url": "ArchieLeia_20210131.jpg",
+      "caption": "Big Brother Archie brought out some of his most prized possessions — especially bears and wubs — for Little Sister Leia to explore.",
+      "width": 900,
+      "height": 954
+    },
+    "583": {
+      "url": "ErichEAMueller5.jpg",
+      "caption": "Erich E.A. Mueller and Maria Carolina Bergt, seated, with their nine children. Rear, from left: Gustav, Martha, Adolf, Theodora. Front, from left: Gerhard, Emma, Louisa (in white), Magdalene, Elizabeth.",
+      "width": 600,
+      "height": 505
+    },
+    "584": {
+      "url": "ArchieLeia_20210205.jpg",
+      "caption": "Leia is just about two months old.",
+      "width": 700,
+      "height": 934
+    },
+    "585": {
+      "url": "Georg.jpg",
+      "caption": "A charcoal sketch, possibly created by his son Fritz Mueller, appeared on a Family Search website in 2018. A note on the back says “by FGW Mueller” and has the date as 1865. It may have been handed down by Gertrude Mueller Rehwinkel.",
+      "width": 543,
+      "height": 857
+    },
+    "586": { "url": "DanAliki2.jpg", "caption": "", "width": 700, "height": 933 },
+    "587": {
+      "url": "ThomasJames16.jpg",
+      "caption": "On the last night of Opa and Oma’s visit to Richmond, there was a grand fire in the fire pit and hamburgers for supper. A beautiful night.",
+      "width": 1000,
+      "height": 565
+    },
+    "588": {
+      "url": "JamesMark.20210309.jpg",
+      "caption": "James and Oma spent a long time examining and playing with the tiny Red Car. Like Great Uncle Tim with “Bearsie,” James could not sleep without it and was very sad. In the morning after a night when no one could find it, James’s Mom drove to Target and bought four of them.",
+      "width": 1000,
+      "height": 750
+    },
+    "589": {
+      "url": "TobaccoBox3.jpg",
+      "caption": "Georg Mueller owned this tobacco box late in the 18th century. He gave it to his son Fritz, who took it along when he and his family emigrated to Kendallville, Indiana, in 1865.",
+      "width": 1186,
+      "height": 621
+    },
+    "591": {
+      "url": "DanPeter_19820130.jpg",
+      "caption": "Peter, proud father, holds Daniel January 30, 1982, two days after Dan’s birth.",
+      "width": 800,
+      "height": 715
+    },
+    "592": {
+      "url": "EstherBill1.jpg",
+      "caption": "Esther and Bill Crawley in an undated Polaroid likely taken in the summer of 1982.",
+      "width": 800,
+      "height": 685
+    },
+    "593": {
+      "url": "MaryMertz.jpg",
+      "caption": "Mary and Friedrich C.J. were married in 1876. In 1890, five years after elder brother Wilhelm had left farming, Mary and Friedrich owned clear title to the 108-acre Mueller farm.",
+      "width": 700,
+      "height": 934
+    },
+    "601": {
+      "url": "Archie.20210704.jpg",
+      "caption": "His dad actually made it, but Archie was on hand to help deliver chocolate malts to the cousins at Oma and Opa’s house.",
+      "width": 850,
+      "height": 971
+    },
+    "606": {
+      "url": "Grand_20210704b.jpg",
+      "caption": "Archie was fascinated with washers, dryers, and the whole laundry process. Tom was amazed at the changing words and numbers on the display. James was just happy to be there.",
+      "width": 1200,
+      "height": 675
+    },
+    "607": {
+      "url": "JamesMark.20210705.jpg",
+      "caption": "James pitched in on the sour cherry harvest during an early July visit with his family. His pickings helped make nine jars of cherry jam.",
+      "width": 700,
+      "height": 933
+    },
+    "608": {
+      "url": "Thomas.20210705.jpg",
+      "caption": "Thomas helped pick sour cherries in early July 2021. He turned out to be pretty good at it and helped squish out the pits.",
+      "width": 750,
+      "height": 971
+    },
+    "609": {
+      "url": "AnsonSleepLab.jpg",
+      "caption": "Anson spent a few days and nights as a research subject in Mary Carskadon’s Butler Hospital sleep lab, all wired up to record brain activity. A grad student TA shot the Polaroid.",
+      "width": 350,
+      "height": 398
+    },
+    "610": {
+      "url": "Leia8.jpg",
+      "caption": "Archie yanked the beets out of the garden soil. Anson and Archie washed them with garden spritzer (on a hot day). Opa cooked them. Leia ate them by the handful and enjoyed herself immensely.",
+      "width": 1200,
+      "height": 890
+    },
+    "611": {
+      "url": "Archie.20210816.jpg",
+      "caption": "Archie, Anson, and Opa were the first visitors of the day at the Norman Bird Sanctuary. Three large deer bounded across the trail. There were turtles on the rocks, lots of bird sounds, and many trails.",
+      "width": 1200,
+      "height": 866
+    },
+    "612": {
+      "url": "MarkAlli7.jpg",
+      "caption": "Danny and Susie were part of the wedding ceremony, each receiving an engraved small silver plate. Uncle Tim, the best man, had a pocket full of gummi bears just in case.",
+      "width": 764,
+      "height": 942
+    },
+    "613": {
+      "url": "Archie.20210908.jpg",
+      "caption": "First day of preschool, 2021 — a very happy time.",
+      "width": 565,
+      "height": 900
+    },
+    "614": {
+      "url": "ArchieLeia_20210912.jpg",
+      "caption": "Leia appears to be lending a hand during a family hunt for Honeycrisps, Galas, and Fujis in a New Jersey orchard. They picked plenty — enough for a homemade apple tart.",
+      "width": 750,
+      "height": 960
+    },
+    "616": {
+      "url": "DanAliki5.jpg",
+      "caption": "Dan and Aliki were married on the terraza of Aliki’s house in Agios Lavrentios.",
+      "width": 800,
+      "height": 970
+    },
+    "621": {
+      "url": "AnsonSki.jpg",
+      "caption": "Nimble and lightweight, 11-year-old Anson plunged fearlessly down the double-black-diamond trails. His somewhat larger, self-taught father stuck to the greens and a few of the blues.",
+      "width": 700,
+      "height": 918
+    },
+    "622": {
+      "url": "Archie.20211105.jpg",
+      "caption": "Doing his part to celebrate the victory of light over darkness, Archie enjoyed his first experience with live fireworks.",
+      "width": 726,
+      "height": 949
+    },
+    "623": {
+      "url": "Thomas.20211105a.jpg",
+      "caption": "Thomas, 5, in his first year of “real” school. He loves it.",
+      "width": 606,
+      "height": 909
+    },
+    "625": {
+      "url": "AnsonNote.jpg",
+      "caption": "In the spring of 1995, Mom and the three kids visited Nana and Grampa in Arizona. (Dad had to be in Washington to run a press conference.) Anson, 8 years old, filled him in on the visit.",
+      "width": 576,
+      "height": 950
+    },
+    "626": {
+      "url": "MarkNickel8.jpg",
+      "caption": "Walter and Elsie Melahn managed to tame a deer at their resort on Lake George, Minnesota. Bucky was supposed to be a great favorite for guests who had kids. Mark wasn’t so sure.",
+      "width": 1200,
+      "height": 778
+    },
+    "627": {
+      "url": "Leia9.jpg",
+      "caption": "There's a lot to see and do in a mirror. Leia preferred to look straight at the camera ... or its reflection.",
+      "width": 750,
+      "height": 950
+    },
+    "628": {
+      "url": "Leia10.jpg",
+      "caption": "Oma and Leia had lots of time to get acquainted sitting on the “plop couch,” a favorite piece of family room furniture.",
+      "width": 766,
+      "height": 960
+    },
+    "629": {
+      "url": "Leia11.jpg",
+      "caption": "Leia’s great-great-uncle Gerhard once remarked that sleeping infants “are in cahoots with the angels.”",
+      "width": 750,
+      "height": 1000
+    },
+    "630": {
+      "url": "Archie.20210704b.jpg",
+      "caption": "During a four-grandchild visit to Oma and Opa’s house, Archie helped bring in the 2021 sour cherry harvest, much of which Opa turned into jam. Squeezing out the pits was the best part.",
+      "width": 750,
+      "height": 906
+    },
+    "631": {
+      "url": "Archie.20220129.jpg",
+      "caption": "The snowblower did the heavy lifting but there was still lots left to do.",
+      "width": 758,
+      "height": 671
+    },
+    "632": {
+      "url": "Leia12.jpg",
+      "caption": "Leia tried out the child’s chair great-uncle Jim made in 1989 for his niece Ashley, now in her 30s. The maquette-scale piece is styled after *Three Chairs for Queens College,* a large sculptural work installed on the Queens College campus in October 1984.",
+      "width": 700,
+      "height": 933
+    },
+    "633": {
+      "url": "Leia13.jpg",
+      "caption": "At 14 months, Leia uses her spoon to get drippy tomato soup from the bowl to her mouth. A healthy portion made the trip successfully.",
+      "width": 740,
+      "height": 987
+    },
+    "634": {
+      "url": "TrumanTrib.jpg",
+      "caption": "Mark was born on election day, November 2, 1948. It’s possible, though highly unlikely, that the birth announcement ran in this next-day iconic edition of the *Chicago Tribune.* (The morning *Washington Post* was not much better. Under the headline “Truman’s Defeat by Wide Margin Seen,” the *Post* said “Gov. Thomas E. Dewey of New York ... is regarded as a certain winner over President Truman. ... Should it turn out otherwise, the polltakers and prognosticators would be forced into the greatest crow-eating debacle in the annals of American politics.”)",
+      "width": 1000,
+      "height": 739
+    },
+    "636": {
+      "url": "Leia14.jpg",
+      "caption": "Leia inherited Great-uncle Jim’s *Child’s Chair,* a toddler-scale rendering of a much larger work. It turned out to be great for climbing onto, jumping off of, and even sitting in.",
+      "width": 650,
+      "height": 975
+    },
+    "638": {
+      "url": "Leia15.jpg",
+      "caption": "Leia discovered her great-grandmother’s Steinway on a visit to Opa and Oma’s house in late May. She seemed to like the bass notes best.",
+      "width": 1200,
+      "height": 808
+    },
+    "639": {
+      "url": "Doug280Z.jpg",
+      "caption": "Doug loved the design and performance of the Datson Z but disliked the color choices. Then in 1976 the Datsun 280Z appeared in British Racing Green.",
+      "width": 1000,
+      "height": 660
+    },
+    "640": {
+      "url": "DougAnn1.jpg",
+      "caption": "Doug, Ann, and the 1976 British Racing Green Datson 280Z, heading out for an evening at the “Fall Brawl.” Everything turned out well — even for the car.",
+      "width": 630,
+      "height": 943
+    },
+    "643": {
+      "url": "SecondBeach.jpg",
+      "caption": "It was a little breezy, but we wanted to try out the “Studebaker” on the sand. It was a tough pull except for the smooth, wet sand at the water's edge. The all-terrain wheelchair was a birthday gift from Alli’s siblings.",
+      "width": 750,
+      "height": 902
+    },
+    "645": {
+      "url": "Gerhard1a.jpg",
+      "caption": "Opa Mueller, twice disappointed and not subtle about it, finally had a son on December 4, 1904. Oma had little Gerhard’s photo taken for Opa’s birthday, but the surprise was ruined when another customer met Opa on the street and said, “I see your boy had his picture taken in his rubber boots.”",
+      "width": 397,
+      "height": 687
+    },
+    "646": { "url": "Flett1a.jpg", "caption": "", "width": 360, "height": 610 },
+    "647": {
+      "url": "AlliTom.jpg",
+      "caption": "A soothing session in the rocking chair was a grand success when Thomas and his parents came for a visit in August 2018.",
+      "width": 700,
+      "height": 898
+    },
+    "658": {
+      "url": "ArchieLeia_20221130.jpg",
+      "caption": "Thanksgiving marks the start of the *Stollen* season, which makes the bedtime snack special. By the time the whole household had retired, half the first loaf was gone.",
+      "width": 1000,
+      "height": 750
+    },
+    "659": {
+      "url": "Leia19.jpg",
+      "caption": "Leia turned two on a Saturday morning with cupcakes and friends.",
+      "width": 573,
+      "height": 980
+    },
+    "661": {
+      "url": "Olivia_20221210.jpg",
+      "caption": "Olivia did her part as the new three-member family began life together and a new and different household began to emerge.",
+      "width": 650,
+      "height": 866
+    },
+    "662": {
+      "url": "Olivia_20221211.jpg",
+      "caption": "After a couple nights at the hospital, newborn Olivia moved into her newly outfitted nursery on the first floor of her parents’ apartment. Everyone was very happy, very healthy, very tired.",
+      "width": 700,
+      "height": 901
+    },
+    "710": {
+      "url": "GerhardFuneral.jpg",
+      "caption": "Gerhard's living siblings arrived in Height of Land for his funeral. From left: Herbert, Ernst, Frieda, Adelheid, and Kurt.",
+      "width": 1000,
+      "height": 669
+    },
+    "908": {
+      "url": "FritzBook.jpg",
+      "caption": "*Fritz Müllers Reise nach Amerika* was published in two installments by the *Jugend-Blätter,* a monthly magazine for young German readers. Issues from 1867 were collated and sold in book form, a copy of which resides in the Lilly Library at the University of Indiana.",
+      "width": 1132,
+      "height": 1533
+    },
+    "3035": { "url": "HCNickel2c.jpg", "caption": "", "width": null, "height": null },
+    "3070": {
+      "url": "Lessing1879Manifest.jpg",
+      "caption": "Michael, Wilhelmina, and the infant Albert Nickel, listed on the SS Lessing's passenger manifest, arriving in New York on May 7, 1879.",
+      "width": null,
+      "height": null
+    },
+    "3071": {
+      "url": "MichaelFamily.jpeg",
+      "caption": "Michael, Wilhelmina, and Albert Nickel, sometime after the family settled in Milwaukee.",
+      "width": null,
+      "height": null
+    }
+  },
+  "texts": {
+    "3": { "title": "Adelheid Erica Amanda Mueller Nickel" },
+    "10": { "title": "Alice Ingram Hooker (November 8, 1933 – July 23, 2019)" },
+    "11": { "title": "The Lyman and Wood families" },
+    "23": { "title": "Introduction" },
+    "36": { "title": "Chicago 1967, Part 1" },
+    "37": { "title": "Chicago 1967, Part 2" },
+    "38": { "title": "Chicago 1967, Part 3" },
+    "39": { "title": "Chicago 1968, Part 1" },
+    "40": { "title": "Chicago 1968, Part 2" },
+    "41": { "title": "Chicago 1968, Part 3" },
+    "42": { "title": "Chicago 1968, Part 4" },
+    "43": { "title": "Chicago 1968, Part 5" },
+    "44": { "title": "Chicago 1968, Part 6" },
+    "45": { "title": "Chicago 1969, Part 1" },
+    "46": { "title": "Chicago 1969, Part 2" },
+    "47": { "title": "Chicago 1969, Part 3" },
+    "48": { "title": "Chicago 1969, Part 4" },
+    "49": { "title": "Chicago 1970, Part 1" },
+    "50": { "title": "Chicago 1970, Part 2" },
+    "51": { "title": "Chicago 1970, Part 3" },
+    "52": { "title": "Chicago 1971, Part 1" },
+    "53": { "title": "Chicago 1971, Part 2" },
+    "54": { "title": "Chicago 1971, Part 3" },
+    "55": { "title": "Chicago 1972" },
+    "56": { "title": "Introduction" },
+    "61": { "title": "The Wedding of 'Der Little Guy'" },
+    "62": { "title": "Dodo Knief: Live wire, columnist, woman of mystery" },
+    "76": { "title": "Frau Erica recipes" },
+    "77": { "title": "From Frau Erica’s cookbook: *Johann im Sack*" },
+    "78": { "title": "Notes on Frau Erica's Catsup Recipes" },
+    "79": { "title": "Keinen Heiland" },
+    "86": { "title": "Fritz Mueller’s Journal of The Voyage to America" },
+    "87": { "title": "In Bremerhaven" },
+    "88": { "title": "On the High Seas" },
+    "89": { "title": "Shipboard Portraits" },
+    "90": { "title": "Hunger and Hostilities" },
+    "91": { "title": "Arrival in New York" },
+    "92": { "title": "Journey’s End in Indiana" },
+    "93": { "title": "Early death and an epic land swindle" },
+    "95": { "title": "Gerhard Wilhelm Mueller: Boo-Boo" },
+    "96": { "title": "Immer eine Freude in Height of Land zu predigen" },
+    "97": { "title": "Pastor’s Booming Cheers Invoke Tournament Win" },
+    "98": { "title": "Estate of Gerhard Mueller" },
+    "99": { "title": "A Road Trip Through Gerhard Country" },
+    "101": { "title": "Gerhard Wilhelm Mueller: 1904 – 1970" },
+    "110": { "title": "H.C. Nickel, stock seller, teacher, dies" },
+    "116": { "title": "Oak Park, Illinois" },
+    "121": { "title": "Joel Thomas Nickel: Reflections on 40 Years of Ministry" },
+    "134": { "title": "Introduction" },
+    "135": { "title": "Childhood" },
+    "136": { "title": "Gold Rush" },
+    "137": { "title": "Back to Germany" },
+    "138": { "title": "Mission in America" },
+    "139": { "title": "The Muellers" },
+    "140": { "title": "Epilogue" },
+    "143": { "title": "Christmas 1995" },
+    "144": { "title": "Christmas 1998" },
+    "145": { "title": "Christmas 1999" },
+    "146": { "title": "Christmas 2000" },
+    "147": { "title": "Christmas 2001" },
+    "148": { "title": "Christmas 2002" },
+    "149": { "title": "Christmas 2003" },
+    "150": { "title": "Christmas 2004" },
+    "151": { "title": "Christmas 2005" },
+    "152": { "title": "Christmas 2006" },
+    "153": { "title": "Christmas 2007" },
+    "154": { "title": "Christmas 2008" },
+    "155": { "title": "Christmas 2009" },
+    "156": { "title": "Christmas 2010" },
+    "157": { "title": "Christmas 2011" },
+    "158": { "title": "Christmas 2012" },
+    "159": { "title": "Christmas 2013" },
+    "160": { "title": "Christmas 2014" },
+    "161": { "title": "Christmas 2015" },
+    "162": { "title": "Christmas 2016" },
+    "163": { "title": "Christmas 2017" },
+    "164": { "title": "Christmas 2018" },
+    "165": { "title": "Christmas 2019" },
+    "166": { "title": "Christmas 2020" },
+    "167": { "title": "Christmas 2021" },
+    "168": { "title": "Christmas 2022" },
+    "169": { "title": "Christmas 2023" },
+    "170": { "title": "Christmas 2024" },
+    "171": { "title": "Christmas 2025" },
+    "182": { "title": "My Life and Its Times" },
+    "201": { "title": "Obituary: The Rev. E.H.C. Mueller (The Lutheran Witness)" },
+    "216": { "title": "Fieks looks back" },
+    "221": { "title": "Anna’s history, Part I" },
+    "223": { "title": "Henry Waldschmidt writes his history" },
+    "224": { "title": "Kendallville, Indiana" },
+    "227": { "title": "Wilhelm Mueller: Cemetery Superintendent" },
+    "228": { "title": "SS Lessing Manifest, 1879" },
+    "247": { "title": "Dodo Knief's Wedding Story" },
+    "249": { "title": "Frau Erica's Preface" },
+    "255": { "title": "Sängerbote: A German-American Literary Outlet" },
+    "256": { "title": "Only a Little While" },
+    "258": { "title": "My Songs" },
+    "260": { "title": "My Last Greeting" },
+    "262": { "title": "Give Us This Day Our Daily Bread" },
+    "264": {
+      "title": "The Cultivation of Music and Singing in Christian Family Circles"
+    },
+    "266": { "title": "On Golgatha" },
+    "268": { "title": "God’s Messengers" },
+    "270": { "title": "About My Child" },
+    "272": { "title": "A Country Pastor Longs for Spring" },
+    "274": { "title": "Greenbriar’s Captain" },
+    "276": { "title": "Gold for Iron?" },
+    "278": { "title": "Victory" },
+    "280": { "title": "For the Singing Contest 1917" },
+    "282": { "title": "A People United" },
+    "284": { "title": "Minneopa" },
+    "286": { "title": "Minneopa in 1924" },
+    "288": { "title": "Latin Church Hymns" },
+    "290": { "title": "Michelangelo as Poet" },
+    "292": { "title": "Vittoria Colonna" },
+    "294": { "title": "The Glorious!" },
+    "296": { "title": "Behold, Zion, Your God Is King" },
+    "298": { "title": "Evening Bells" },
+    "300": { "title": "My Heart Wants to Sing and Blossom" },
+    "302": { "title": "He Will Be Your Comforter" },
+    "304": { "title": "My Song" },
+    "306": { "title": "Bridesmaid’s Song" },
+    "308": { "title": "Wedding Song" },
+    "310": { "title": "The Little Church in the Forest" },
+    "312": { "title": "I Am So Homesick" },
+    "314": { "title": "The Longing that Is Never Silent" },
+    "316": { "title": "Be welcomed by me, O Jesus" },
+    "318": { "title": "Isaiah 43:1" },
+    "320": { "title": "But Guard Your Soul" },
+    "322": { "title": "On My Husband" },
+    "324": { "title": "As Long as in Your Soul" },
+    "326": { "title": "A Poet’s Dedication" },
+    "328": { "title": "For Me!" },
+    "330": { "title": "Sing Me Your Song" },
+    "332": { "title": "The Power Is Yours" },
+    "334": { "title": "My Fatherland" },
+    "336": { "title": "Secrecy" },
+    "338": { "title": "The Final Refuge" },
+    "340": { "title": "I know, I will also carry further" },
+    "342": { "title": "Song of Joy" },
+    "344": { "title": "I would like one more thing" },
+    "346": { "title": "The Restless Heart" },
+    "348": { "title": "Comfort for the Sick" },
+    "350": { "title": "The Child of War" },
+    "352": { "title": "Please" },
+    "354": { "title": "Solitude" },
+    "356": { "title": "Johann Sebastian Bach (Part One)" },
+    "358": { "title": "Johann Sebastian Bach (Part Two)" },
+    "360": { "title": "Fellow Hikers" },
+    "362": { "title": "Greeting" },
+    "364": { "title": "“The Longing Song of One’s Own Heart”" },
+    "368": { "title": "In the Beginning" },
+    "369": { "title": "19th-Century Life in Freedom Township (Pro)" },
+    "370": { "title": "19th-Century Life in Freedom Township (Con)" },
+    "371": { "title": "Hib and Addie's Early Days" },
+    "372": { "title": "The Arrival of Joel" },
+    "373": { "title": "James: Birth and Maternal Thyroid Surgery" },
+    "374": { "title": "Mark: A Quieter Arrival" },
+    "375": { "title": "Thoughts on Retirement" },
+    "376": { "title": "McMillan Manufacturing Company" }
+  },
+  "galleries": {
+    "1": {
+      "name": "Thomas Crawley Knowles   Year One",
+      "lead_url": "Thomas.20170119.jpg"
+    },
+    "2": { "name": "Dick McMillan", "lead_url": "DickMcMillan1.jpg" },
+    "3": { "name": "Molly McMillan", "lead_url": "MollyMcMillan6.jpg" },
+    "4": { "name": "Dick and Molly’s wedding", "lead_url": "DickMolly6.jpg" },
+    "5": { "name": "Adelheid Mueller", "lead_url": "Addie1.jpg" },
+    "6": { "name": "Hilbert C. Nickel", "lead_url": "HCNickel5.jpg" },
+    "7": { "name": "The Four Nickel Boys", "lead_url": "NickelGrave1.jpg" },
+    "8": { "name": "Ernie and Charlotte Mueller", "lead_url": "Ernie4.jpg" },
+    "9": { "name": "Allison McKibbin", "lead_url": "AllisonMcKibbin1.jpg" },
+    "10": { "name": "Joel Thomas Nickel", "lead_url": "UlrickaJoel1.jpg" },
+    "11": {
+      "name": "Thomas Crawley Knowles   Volume II",
+      "lead_url": "Thomas.20171014.jpg"
+    },
+    "12": { "name": "Anson Edouard Nickel", "lead_url": "Anson1991.jpg" },
+    "13": { "name": "Daniel McMillan Crawley", "lead_url": "DanAliki1.jpg" },
+    "14": { "name": "Susan Allison Crawley", "lead_url": "Susan.198906.jpg" },
+    "15": { "name": "Archer Gaur Nickel   Year One", "lead_url": "Archie.20180524.jpg" },
+    "16": {
+      "name": "James Mark Knowles   Volume I",
+      "lead_url": "JamesMark.20191128.jpg"
+    },
+    "17": { "name": "Galapagos Islands 2018", "lead_url": "Galapagos1.jpg" },
+    "18": { "name": "Oma and Opa Mueller", "lead_url": "OmaOpa1.jpg" },
+    "19": { "name": "Mark and Alli", "lead_url": "MarkAlli10.jpg" },
+    "20": { "name": "Thomas and James", "lead_url": "ThomasJames3.jpg" },
+    "21": { "name": "Frieda Mueller", "lead_url": null },
+    "23": { "name": "Archer Gaur Nickel   Volume II", "lead_url": "Archie.20200201.jpg" },
+    "24": { "name": "Immigrants", "lead_url": "FritzJohanne1.jpg" },
+    "25": { "name": "Gerhard Mueller", "lead_url": "Gerhard3.jpg" },
+    "26": {
+      "name": "Thomas Crawley Knowles   Volume III",
+      "lead_url": "Thomas.20190620.jpg"
+    },
+    "28": { "name": "Leia Reva Nickel 1", "lead_url": "Leia2.jpg" },
+    "29": { "name": "Archie and Leia", "lead_url": "ArchieLeia_20201219.jpg" },
+    "30": { "name": "Heirlooms", "lead_url": "MoneyBelt.jpg" },
+    "31": { "name": "Nickels in Milwaukee", "lead_url": "AlMegs2.jpg" },
+    "32": {
+      "name": "Fritz Müllers Reise nach Amerika (1867)",
+      "lead_url": "FritzBook.jpg"
+    },
+    "33": { "name": "The Sängerbote", "lead_url": "Page4.jpg" }
+  },
+  "collections": {
+    "FritzReise": {
+      "name": "Fritz Mueller's Journal of the Voyage to America",
+      "slug": "fritz-muellers-journal"
+    },
+    "WilhelmMueller": {
+      "name": "Wilhelm and Frau Erica",
+      "slug": "wilhelm-and-frau-erica"
+    },
+    "FrauErica": { "name": "Adelheid Rickmeyer, Frau Erica", "slug": "frau-erica" },
+    "ErnstHelen": { "name": "Ernst and Helen Mueller", "slug": "ernst-and-helen" },
+    "OpaObit": { "name": "The Rev. E.H.C. Mueller", "slug": "ehc-mueller" },
+    "FriedaMueller": { "name": "Flett's Journal", "slug": "fletts-journal" },
+    "Hib": { "name": "H.C. Nickel", "slug": "hc-nickel" },
+    "DodoKnief": { "name": "Dodo Knief", "slug": "dodo-knief" },
+    "GerhardMueller": { "name": "Gerhard Mueller", "slug": "gerhard-mueller" },
+    "MarkAlliChristmas": {
+      "name": "Mark and Alli's Christmas Letters",
+      "slug": "christmas-letters"
+    },
+    "TanteFieks": { "name": "Tante Fieks", "slug": "tante-fieks" },
+    "Chicago": { "name": "The Chicago Memoirs", "slug": "chicago-memoirs" },
+    "JoelNickel": { "name": "Joel Nickel", "slug": "joel-nickel" },
+    "JimNickel": {
+      "name": "Jim Nickel: Three Cities",
+      "slug": "jim-nickel-three-cities"
+    },
+    "LudwigKnief": {
+      "name": "Ludwig Knief's *Lebenslauf*",
+      "slug": "ludwig-kniefs-lebenslauf"
+    },
+    "NanaLifeTimes": { "name": "My Life and Its Times", "slug": "my-life-and-its-times" },
+    "FredKnief": { "name": "Fred Knief", "slug": "fred-knief" },
+    "Waldschmidt": { "name": "The Waldschmidts", "slug": "the-waldschmidts" },
+    "AlidaBigelow": {
+      "name": "Alida Wood Bigelow: Memories",
+      "slug": "alida-bigelows-memories"
+    },
+    "CarlDeHaas": { "name": "*Winke für Auswanderer*", "slug": "winke-fuer-auswanderer" }
+  }
+}
