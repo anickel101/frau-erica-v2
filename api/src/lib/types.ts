@@ -41,6 +41,11 @@ export interface PersonSummary {
   // by omission.
   preferred_first_name?: string
   last_name: string
+  // Search results only: the name that matched, when it wasn't the
+  // record's own -- a preferred first name or a married surname, so
+  // "Molly McMillan" can say why Mary Allison Bigelow came up. See
+  // queries/search.ts.
+  also_known_as?: string
   date_of_birth?: string
   date_of_death?: string
 }
