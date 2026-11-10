@@ -14,6 +14,7 @@ const AnniversariesPage = lazy(() => import('./pages/AnniversariesPage'))
 const AccountPage = lazy(() => import('./pages/AccountPage'))
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'))
 const TagPhotosPage = lazy(() => import('./pages/TagPhotosPage'))
+const TagTextsPage = lazy(() => import('./pages/TagTextsPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const FamilyPage = lazy(() => import('./pages/FamilyPage'))
 const GalleriesPage = lazy(() => import('./pages/GalleriesPage'))
@@ -178,6 +179,22 @@ export default function App() {
             element={
               <RequireAdmin>
                 <TagPhotosPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/tag-texts"
+            element={
+              <RequireAdmin>
+                <TagTextsPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/tag-texts/:documentId"
+            element={
+              <RequireAdmin>
+                <TagTextsPage />
               </RequireAdmin>
             }
           />

@@ -298,6 +298,15 @@ export default function Sidebar({
                     Tag photographs
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/admin/tag-texts"
+                    onClick={() => setOpen(false)}
+                    className={NAV_LINK_CLASS}
+                  >
+                    Tag texts
+                  </Link>
+                </li>
               </>
             )}
             {/* Log out and Change password share a line. They are the
