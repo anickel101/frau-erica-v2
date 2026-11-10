@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import IconAction from '../components/IconAction'
 import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
-import SearchInput from '../components/SearchInput'
+import PersonSearch from '../components/PersonSearch'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import {
   GROUP_SLUGS,
@@ -19,11 +19,9 @@ import {
   removePhotoTag,
 } from '../data-access/gated/photoTags'
 import type { PhotoTag } from '../data-access/gated/photoTags'
-import { searchPersons } from '../data-access/gated/search'
 import { mockPersons } from '../data/mockPersons'
-import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import type { Person } from '../types/person'
-import { getFullName, matchesWords } from '../utils/personDisplay'
+import { getFullName } from '../utils/personDisplay'
 import {
   personLabel,
   suggestPeople,
@@ -399,28 +397,6 @@ function PhotoTagger({
   const ambiguous = unresolvedCaptionNames(photo.caption, mockPersons, suggestions)
 
   const personById = new Map(mockPersons.map((p) => [p.person_id, p]))
-  const aliases = useAliasMatches(query)
-
-  // The record's own name, matched here instantly; then anyone the API
-  // found under another name -- a married surname or the name they went
-  // by -- once it answers. Nana is filed as Mary Allison Bigelow, and a
-  // search for "Molly McMillan" used to find only her granddaughter, so
-  // the granddaughter got five of Nana's links. Showing both, each with
-  // dates and the name that matched, is what tells them apart.
-  const local = query.trim()
-    ? mockPersons.filter((p) => matchesWords(getFullName(p), query)).slice(0, 8)
-    : []
-  const localIds = new Set(local.map((p) => p.person_id))
-  const byAlias = [...aliases]
-    .filter(([id]) => !localIds.has(id))
-    .flatMap(([id, alias]) => {
-      const person = personById.get(id)
-      return person ? [{ person, alias }] : []
-    })
-  const results = [
-    ...local.map((person) => ({ person, alias: undefined as string | undefined })),
-    ...byAlias,
-  ].filter(({ person }) => !onThisPhotoIds.includes(person.person_id))
 
   return (
     <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_300px]">
@@ -511,29 +487,15 @@ function PhotoTagger({
         )}
 
         <h2 className="text-sm font-bold text-fe-brown mb-2">Someone else</h2>
-        <SearchInput value={query} onChange={setQuery} placeholder="Search by name..." />
-        <ul className="mt-2 space-y-1">
-          {results.map(({ person, alias }) => (
-            <li key={person.person_id}>
-              <button
-                type="button"
-                onClick={() => {
-                  onAdd(person)
-                  setQuery('')
-                }}
-                className="w-full cursor-pointer rounded-sm px-2 py-1 text-left text-sm hover:bg-fe-brown hover:text-white"
-              >
-                {personLabel(person)}
-                {alias && (
-                  <span className="block text-[11px] opacity-70">known as {alias}</span>
-                )}
-              </button>
-            </li>
-          ))}
-          {query.trim() && results.length === 0 && (
-            <li className="px-2 py-1 text-xs text-fe-ink/60">Nobody by that name.</li>
-          )}
-        </ul>
+        <PersonSearch
+          query={query}
+          onQueryChange={setQuery}
+          exclude={onThisPhotoIds}
+          onPick={(person) => {
+            onAdd(person)
+            setQuery('')
+          }}
+        />
         {/* No gallery id here any more. It was only ever a debugging
             aid, and for the two synthetic groups it printed "Gallery
             -2", which is both meaningless to a reader and a leak of how
@@ -543,49 +505,4 @@ function PhotoTagger({
       </div>
     </div>
   )
-}
-
-// Who the gated search found under a name other than their record's,
-// keyed by person_id -> the name that matched. Married surnames come
-// from spouse relationships, which stay behind the API rather than in
-// the public persons.json; this page is admin-only, so it may ask.
-//
-// A failed or slow search costs nothing: the instant local matches are
-// already on screen, and these only ever add to them.
-function useAliasMatches(query: string): Map<number, string> {
-  const debounced = useDebouncedValue(query, 300)
-  const [aliases, setAliases] = useState<Map<number, string>>(new Map())
-
-  useEffect(() => {
-    const q = debounced.trim()
-    let cancelled = false
-    // Deferred a microtask so no setState fires synchronously in the
-    // effect body (react-hooks/set-state-in-effect), as PersonPicker does.
-    void Promise.resolve().then(() => {
-      if (cancelled) return
-      if (q.length < 2) {
-        setAliases(new Map())
-        return
-      }
-      searchPersons(q)
-        .then((results) => {
-          if (cancelled) return
-          setAliases(
-            new Map(
-              results.flatMap((p) =>
-                p.also_known_as ? [[p.person_id, p.also_known_as] as const] : [],
-              ),
-            ),
-          )
-        })
-        .catch(() => {})
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [debounced])
-
-  // Stale answers for an old query would otherwise linger while a new
-  // one is typed; only show them once the box has settled on them.
-  return debounced === query ? aliases : new Map()
 }

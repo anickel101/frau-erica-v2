@@ -238,7 +238,7 @@ line already carries duration, memory and cold-start time.
 
 | Service                      | Used for                                                                                                                                                                                                                                                                                                | Why this one                                                                                                                                                                                                                                                                                                                                                        |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Lambda**                   | All compute — the 17 functions in `template.yaml`, one per route                                                                                                                                                                                                                                        | Pay-per-request, near-zero cost for a low-traffic family site; matches the project's original plan over an always-on server                                                                                                                                                                                                                                         |
+| **Lambda**                   | All compute — the 19 functions in `template.yaml`, one per route                                                                                                                                                                                                                                        | Pay-per-request, near-zero cost for a low-traffic family site; matches the project's original plan over an always-on server                                                                                                                                                                                                                                         |
 | **API Gateway (HTTP API)**   | Routing, the Cognito JWT authorizer, CORS                                                                                                                                                                                                                                                               | Cheaper and simpler than REST API; this project has no need for REST API's extra features                                                                                                                                                                                                                                                                           |
 | **Cognito**                  | User accounts, `pending`/`approved`/`admin` groups, the `custom:person_id` link to the family database, SRP login, password reset, and the account-creation invitation email                                                                                                                            | Fully managed auth with groups and custom attributes built in — avoids hand-rolling password storage/reset/session handling                                                                                                                                                                                                                                         |
 | **S3**                       | `frau-erica-db-backups` (nightly SQLite snapshots + a `current/` pointer the Lambda reads); `frau-erica-images-*` (public photos, fronted by CloudFront, not touched by `api/` directly)                                                                                                                | Durable, cheap object storage; the natural place to stage a periodically-refreshed read-only DB snapshot for Lambda to pull                                                                                                                                                                                                                                         |
@@ -247,7 +247,7 @@ line already carries duration, memory and cold-start time.
 | **SSM Parameter Store**      | The one real secret in this project — the reCAPTCHA secret key, as a `SecureString`                                                                                                                                                                                                                     | CloudFormation can't create `SecureString` parameters directly, and a template-level secret reference would leak the plaintext into the Lambda's environment variables anyway; runtime fetch + cache keeps it out of both git and the console                                                                                                                       |
 | **KMS**                      | Implicitly, to decrypt that `SecureString` (`alias/aws/ssm`, the default key)                                                                                                                                                                                                                           | Comes bundled with SSM `SecureString` — `kms:Decrypt` is a separate, easy-to-forget IAM grant alongside `ssm:GetParameter`                                                                                                                                                                                                                                          |
 | **IAM**                      | A role per Lambda function (auto-created by `sam deploy` from each function's `Policies` block); a deploy user (`frau-erica-v2-deploy`, broad access, used only from the developer's machine); a separate backup user (`frau-erica-backup-user`, S3-write-only, used only by the nightly backup script) | Least-privilege per function; deliberately never reusing the backup user's narrow credentials for deploy work or vice versa                                                                                                                                                                                                                                         |
-| **DynamoDB**                 | `frau-erica-api-photo-tags` — who appears in which photograph, collected by the admin tagging page                                                                                                                                                                                                      | Deliberately NOT the archive's `ImageLinks`: the archive's writable copy lives on the archivist's machine and this API only reads a snapshot of it, so letting a web form write there would mean inverting which copy is authoritative. Tags are append-only and low-stakes, so they are collected separately and applied to `ImageLinks` later in a reviewed batch |
+| **DynamoDB**                 | `frau-erica-api-photo-tags` — who appears in which photograph; `frau-erica-api-text-edits` — proposed byline/genre/summary/link changes to texts. Both collected by admin tagging pages                                                                                                                 | Deliberately NOT the archive's `ImageLinks`: the archive's writable copy lives on the archivist's machine and this API only reads a snapshot of it, so letting a web form write there would mean inverting which copy is authoritative. Tags are append-only and low-stakes, so they are collected separately and applied to `ImageLinks` later in a reviewed batch |
 | **CloudFormation** (via SAM) | The entire `api/` stack as infrastructure-as-code                                                                                                                                                                                                                                                       | Reproducible, reviewable infra changes instead of manual console clicks; `sam` is just a thinner syntax over this                                                                                                                                                                                                                                                   |
 
 **Not used**: Route53 or ACM _for this stack_ — the API is still used at
@@ -284,6 +284,40 @@ snapshot grant, which it uses purely to reject a tag naming a person who
 doesn't exist or a photograph that isn't in the stated gallery — see
 `src/lib/queries/photoTagTargets.ts` for why that is worth a cold start.
 `DeletePhotoTag` has no database access at all.
+
+## Text tagging (admin only)
+
+Two routes — `GET /text-edits` and `POST /text-edits/{documentId}` —
+backing `/admin/tag-texts`, where an admin sets a text's byline, its
+author's Persons record, its genre, its summary, and the people it is
+linked to (`DocumentLinks`).
+
+Same arrangement as photo tagging, and for the same reason: **edits go
+to their own DynamoDB table (`frau-erica-api-text-edits`), never the
+archive.** `app/scripts/reviewTextEdits.ts` applies them later.
+
+What differs from photo tags, and why:
+
+- **An edit replaces a value rather than adding a row**, so each one
+  records `was` — what the archive held when it was made. The apply
+  script stops on any edit whose `was` no longer matches the archive
+  (someone changed that field directly in the meantime) instead of
+  letting one change silently overwrite the other.
+- **The key is `document_id` + `field`**, one pending edit per field;
+  links use the field `person#<id>` with value `true`/`false`. Saving a
+  field's archive value back _deletes_ its pending edit — that is how
+  an edit is withdrawn, so there is no DELETE route.
+- **Only published works are editable** — no German halves. The apply
+  script writes byline, author record and genre to both halves of a
+  bilingual pair, the summary to the entry point only, and removes an
+  unlinked person from both halves (65 existing links sit on a German
+  half, so "linked" means linked on either).
+- **Both functions read the snapshot.** The list returns the archive's
+  current values alongside the pending edits, so the page shows the
+  same "before" the save records.
+- `--apply` clears applied edits from the table (conditionally on
+  `edited_at`, so a newer edit to the same field survives) and pushes
+  the snapshot, so the page shows the new state straight away.
 
 ## Known limitations / open items
 
