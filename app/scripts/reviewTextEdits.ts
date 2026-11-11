@@ -336,14 +336,20 @@ if (has('apply')) {
   sqlite(dbPath, `.backup '${backup}'`)
   console.log(`     ${backup}`)
 
-  console.log('2/6  rehearsing on the backup')
+  console.log('2/6  rehearsing on a copy of the backup')
+  // On a COPY. This used to rehearse on the backup itself, which left
+  // the file announced as "Backup kept at ..." already holding every
+  // change -- no backup at all. Caught on the first real run
+  // (2026-11-11), when the pre-change copy had to come from S3 instead.
+  const rehearsal = `/tmp/frau_erica.rehearsal-text-edits-${stamp}.db`
+  sqlite(backup, `.backup '${rehearsal}'`)
   // Foreign-key violations compared against the archive's own before
   // state: it carries two long-standing orphans, so the question is
   // whether this adds any, not whether there are none.
-  const fkBefore = sqlite(backup, 'PRAGMA foreign_key_check;')
-  runSqlFile(backup, sqlFile)
-  const rehearsed = sqlite(backup, 'PRAGMA integrity_check;')
-  const fkAfter = sqlite(backup, 'PRAGMA foreign_key_check;')
+  const fkBefore = sqlite(rehearsal, 'PRAGMA foreign_key_check;')
+  runSqlFile(rehearsal, sqlFile)
+  const rehearsed = sqlite(rehearsal, 'PRAGMA integrity_check;')
+  const fkAfter = sqlite(rehearsal, 'PRAGMA foreign_key_check;')
   if (rehearsed !== 'ok' || fkAfter !== fkBefore) {
     console.error(
       `     integrity "${rehearsed}"; foreign keys before:\n${fkBefore}\nafter:\n${fkAfter}`,

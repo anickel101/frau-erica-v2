@@ -234,9 +234,14 @@ if (has('apply')) {
   sqlite(dbPath, `.backup '${backup}'`)
   console.log(`     ${backup}`)
 
-  console.log('2/4  rehearsing on the backup')
-  runSqlFile(backup, sqlFile)
-  const rehearsed = sqlite(backup, 'PRAGMA integrity_check;')
+  console.log('2/4  rehearsing on a copy of the backup')
+  // On a COPY: rehearsing on the backup itself left the file announced
+  // as "Backup kept at ..." already holding every change. Found in
+  // reviewTextEdits.ts, which inherited it from here (2026-11-11).
+  const rehearsal = `/tmp/frau_erica.rehearsal-tags-${stamp}.db`
+  sqlite(backup, `.backup '${rehearsal}'`)
+  runSqlFile(rehearsal, sqlFile)
+  const rehearsed = sqlite(rehearsal, 'PRAGMA integrity_check;')
   if (rehearsed !== 'ok') {
     console.error(
       `     integrity_check said "${rehearsed}" -- stopping, archive untouched.`,
