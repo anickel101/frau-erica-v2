@@ -17,23 +17,23 @@
     "11": {
       "photos": [471, 466, 560, 908],
       "writings": [],
-      "texts": [],
+      "texts": [139],
       "galleries": [24, 30, 32],
-      "collections": []
+      "collections": ["LudwigKnief"]
     },
     "12": {
       "photos": [258, 108, 466, 589, 908],
       "writings": [],
-      "texts": [224, 227],
+      "texts": [224, 225, 226, 227],
       "galleries": [18, 21, 24, 30, 32],
       "collections": ["WilhelmMueller"]
     },
     "13": {
       "photos": [118, 119, 120],
-      "writings": [249, 256, 258, 260, 262, 264, 266, 268],
-      "texts": [76, 77, 78, 79, 255],
+      "writings": [79, 249, 256, 258, 260, 262, 264, 266, 268],
+      "texts": [76, 77, 78, 224, 225, 226, 255],
       "galleries": [30, 33],
-      "collections": ["FrauErica"]
+      "collections": ["FrauErica", "WilhelmMueller"]
     },
     "14": {
       "photos": [108, 239, 317, 410, 452, 477, 507, 589],
@@ -55,14 +55,14 @@
         427, 479, 480, 505, 508, 710
       ],
       "writings": [],
-      "texts": [3, 371],
+      "texts": [3, 371, 373],
       "galleries": [5, 6, 7, 8, 10, 18, 19, 21, 25],
       "collections": ["FriedaMueller"]
     },
     "17": {
       "photos": [143, 144, 145, 146, 148, 424, 3035, 147, 159, 249, 478],
       "writings": [],
-      "texts": [3, 110, 371],
+      "texts": [3, 110, 111, 371, 373],
       "galleries": [5, 6, 10, 31],
       "collections": ["Hib", "FriedaMueller"]
     },
@@ -73,9 +73,9 @@
         432, 460, 468, 500, 512, 541, 559, 612, 625, 630, 643
       ],
       "writings": [
-        61, 76, 77, 78, 86, 93, 95, 98, 99, 143, 144, 145, 146, 147, 148, 149, 150, 151,
-        152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167,
-        168, 169, 170, 171, 255
+        3, 58, 61, 76, 77, 78, 86, 93, 95, 98, 99, 143, 144, 145, 146, 147, 148, 149, 150,
+        151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166,
+        167, 168, 169, 170, 171, 224, 225, 226, 255
       ],
       "texts": [374],
       "galleries": [1, 5, 7, 11, 12, 13, 14, 15, 17, 19, 23],
@@ -85,6 +85,7 @@
         "FritzReise",
         "GerhardMueller",
         "MarkAlliChristmas",
+        "WilhelmMueller",
         "FriedaMueller"
       ]
     },
@@ -94,14 +95,14 @@
         460, 541, 559, 588, 612, 628, 630, 643, 647
       ],
       "writings": [],
-      "texts": [144],
+      "texts": [16, 144],
       "galleries": [1, 3, 11, 13, 14, 15, 16, 17, 19, 23, 28],
       "collections": ["MarkAlliChristmas"]
     },
     "20": {
       "photos": [340, 591],
       "writings": [],
-      "texts": [],
+      "texts": [207],
       "galleries": [13],
       "collections": []
     },
@@ -147,35 +148,43 @@
     },
     "28": {
       "photos": [244],
-      "writings": [],
-      "texts": [216],
+      "writings": [216],
+      "texts": [],
       "galleries": [],
       "collections": ["TanteFieks"]
+    },
+    "31": {
+      "photos": [],
+      "writings": [],
+      "texts": [61, 247],
+      "galleries": [],
+      "collections": ["DodoKnief"]
     },
     "33": {
       "photos": [
         10, 147, 231, 234, 235, 249, 307, 341, 398, 399, 410, 426, 479, 480, 512
       ],
       "writings": [
-        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56
+        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
+        56, 116, 117, 118, 121, 122, 123
       ],
-      "texts": [121, 372],
+      "texts": [372],
       "galleries": [5, 6, 7, 10, 18],
-      "collections": ["Chicago", "JoelNickel", "FriedaMueller"]
+      "collections": ["Chicago", "JimNickel", "JoelNickel", "FriedaMueller"]
     },
     "34": {
       "photos": [
         164, 91, 147, 231, 234, 235, 307, 341, 398, 399, 410, 414, 426, 427, 499, 512
       ],
       "writings": [],
-      "texts": [98, 116, 373],
+      "texts": [98, 116, 117, 118, 373],
       "galleries": [5, 6, 7, 12, 18],
       "collections": ["GerhardMueller", "JimNickel", "FriedaMueller"]
     },
     "35": {
       "photos": [91, 231, 234, 235, 307, 341, 399, 414, 432],
       "writings": [],
-      "texts": [98],
+      "texts": [75, 98],
       "galleries": [7, 19],
       "collections": ["GerhardMueller"]
     },
@@ -223,7 +232,7 @@
     },
     "54": {
       "photos": [],
-      "writings": [134, 135, 136, 137, 138, 139, 140],
+      "writings": [134, 135, 136, 137, 138, 139],
       "texts": [],
       "galleries": [],
       "collections": ["LudwigKnief"]
@@ -245,9 +254,9 @@
     "57": {
       "photos": [98, 583, 908],
       "writings": [],
-      "texts": [],
+      "texts": [114],
       "galleries": [24, 32],
-      "collections": []
+      "collections": ["Janzow"]
     },
     "58": {
       "photos": [551, 553, 552, 908],
@@ -314,10 +323,10 @@
     },
     "67": {
       "photos": [108, 155, 239, 710],
-      "writings": [],
+      "writings": [201, 202],
       "texts": [3],
       "galleries": [8, 18, 21, 25],
-      "collections": []
+      "collections": ["OpaObit"]
     },
     "68": {
       "photos": [17],
@@ -371,17 +380,19 @@
     "107": {
       "photos": [263, 264, 265, 288, 266, 267, 271, 287, 291, 293, 295, 296, 297, 312],
       "writings": [],
-      "texts": [],
+      "texts": [196],
       "galleries": [2, 3, 4],
-      "collections": []
+      "collections": ["NanaLifeTimes"]
     },
     "108": {
       "photos": [
         268, 269, 270, 277, 278, 289, 25, 271, 273, 285, 287, 291, 293, 295, 296, 297,
         312, 335, 346
       ],
-      "writings": [],
-      "texts": [182, 376],
+      "writings": [
+        182, 183, 184, 185, 186, 187, 188, 189, 190, 192, 193, 194, 195, 196, 197, 198
+      ],
+      "texts": [376],
       "galleries": [2, 3, 4, 9, 13, 14],
       "collections": ["NanaLifeTimes"]
     },
@@ -408,10 +419,10 @@
     },
     "136": {
       "photos": [],
-      "writings": [288, 290, 292, 294],
-      "texts": [255],
+      "writings": [140, 288, 290, 292, 294],
+      "texts": [82, 83, 134, 255],
       "galleries": [33],
-      "collections": ["FredKnief"]
+      "collections": ["LudwigKnief", "FredKnief"]
     },
     "150": {
       "photos": [583],
@@ -448,11 +459,25 @@
       "galleries": [5],
       "collections": []
     },
+    "563": {
+      "photos": [],
+      "writings": [],
+      "texts": [75],
+      "galleries": [],
+      "collections": []
+    },
     "564": {
       "photos": [103, 106, 107],
       "writings": [],
       "texts": [],
       "galleries": [8],
+      "collections": []
+    },
+    "581": {
+      "photos": [],
+      "writings": [],
+      "texts": [108],
+      "galleries": [],
       "collections": []
     },
     "679": {
@@ -464,15 +489,15 @@
     },
     "727": {
       "photos": [],
-      "writings": [],
-      "texts": [221],
+      "writings": [221, 222],
+      "texts": [223],
       "galleries": [],
       "collections": ["Waldschmidt"]
     },
     "728": {
       "photos": [],
-      "writings": [],
-      "texts": [223],
+      "writings": [223],
+      "texts": [222],
       "galleries": [],
       "collections": ["Waldschmidt"]
     },
@@ -507,16 +532,16 @@
     "831": {
       "photos": [34, 273, 294],
       "writings": [],
-      "texts": [],
+      "texts": [191],
       "galleries": [3, 4, 9],
-      "collections": []
+      "collections": ["NanaLifeTimes"]
     },
     "832": {
       "photos": [272, 274, 283, 284, 286, 273, 281],
       "writings": [],
-      "texts": [],
+      "texts": [193],
       "galleries": [3, 9],
-      "collections": []
+      "collections": ["NanaLifeTimes"]
     },
     "856": {
       "photos": [25],
@@ -525,10 +550,17 @@
       "galleries": [3],
       "collections": []
     },
-    "868": {
+    "867": {
       "photos": [],
       "writings": [],
-      "texts": [11],
+      "texts": [13, 14],
+      "galleries": [],
+      "collections": ["AlidaBigelow"]
+    },
+    "868": {
+      "photos": [],
+      "writings": [11, 14],
+      "texts": [],
       "galleries": [],
       "collections": ["AlidaBigelow"]
     },
@@ -562,7 +594,7 @@
     },
     "908": {
       "photos": [],
-      "writings": [],
+      "writings": [24, 25, 26, 27, 28, 29, 30, 31, 32],
       "texts": [23],
       "galleries": [],
       "collections": ["CarlDeHaas"]
@@ -580,6 +612,13 @@
       "texts": [],
       "galleries": [3],
       "collections": []
+    },
+    "926": {
+      "photos": [],
+      "writings": [],
+      "texts": [58, 138],
+      "galleries": [],
+      "collections": ["LudwigKnief"]
     },
     "928": {
       "photos": [242],
@@ -627,6 +666,13 @@
       "texts": [],
       "galleries": [],
       "collections": []
+    },
+    "1033": {
+      "photos": [],
+      "writings": [],
+      "texts": [128, 129],
+      "galleries": [],
+      "collections": ["KevinMcKibbin"]
     },
     "1035": {
       "photos": [281],
@@ -2496,7 +2542,19 @@
     "3": { "title": "Adelheid Erica Amanda Mueller Nickel" },
     "10": { "title": "Alice Ingram Hooker (November 8, 1933 – July 23, 2019)" },
     "11": { "title": "The Lyman and Wood families" },
+    "13": { "title": "Charlie Bigelow: Fine-looking, immaculately dressed" },
+    "14": { "title": "Alida’s letter about Charlie" },
+    "16": { "title": "Two golden anniversaries, one remarkable woman" },
     "23": { "title": "Introduction" },
+    "24": { "title": "*Winke für Auswanderer:* Hints for Emigrants" },
+    "25": { "title": "In Havre and Cherbourg" },
+    "26": { "title": "Arrival in New York" },
+    "27": { "title": "Inland to Milwaukee" },
+    "28": { "title": "First view of Calumet" },
+    "29": { "title": "Citizenship and home" },
+    "30": { "title": "Life in America: Weather and Land" },
+    "31": { "title": "Life in America: Crops, Livestock and People" },
+    "32": { "title": "Final hints and Postscript" },
     "36": { "title": "Chicago 1967, Part 1" },
     "37": { "title": "Chicago 1967, Part 2" },
     "38": { "title": "Chicago 1967, Part 3" },
@@ -2518,12 +2576,16 @@
     "54": { "title": "Chicago 1971, Part 3" },
     "55": { "title": "Chicago 1972" },
     "56": { "title": "Introduction" },
+    "58": { "title": "Constanze Rösing: Aunt, friend, matchmaker" },
     "61": { "title": "The Wedding of 'Der Little Guy'" },
     "62": { "title": "Dodo Knief: Live wire, columnist, woman of mystery" },
+    "75": { "title": "The Game of Five Rocks" },
     "76": { "title": "Frau Erica recipes" },
     "77": { "title": "From Frau Erica’s cookbook: *Johann im Sack*" },
     "78": { "title": "Notes on Frau Erica's Catsup Recipes" },
     "79": { "title": "Keinen Heiland" },
+    "82": { "title": "A brother-in-law’s account of Paul Mueller’s wedding" },
+    "83": { "title": "Fred Knief's Report" },
     "86": { "title": "Fritz Mueller’s Journal of The Voyage to America" },
     "87": { "title": "In Bremerhaven" },
     "88": { "title": "On the High Seas" },
@@ -2538,9 +2600,20 @@
     "98": { "title": "Estate of Gerhard Mueller" },
     "99": { "title": "A Road Trip Through Gerhard Country" },
     "101": { "title": "Gerhard Wilhelm Mueller: 1904 – 1970" },
+    "108": {
+      "title": "Rev. Dr. Herbert C. Mueller Jr., former LCMS first vice-president"
+    },
     "110": { "title": "H.C. Nickel, stock seller, teacher, dies" },
+    "111": { "title": "Money means nothing if it doesn’t bring happiness" },
+    "114": { "title": "A minister sues his congregation" },
     "116": { "title": "Oak Park, Illinois" },
+    "117": { "title": "Brentwood, Missouri" },
+    "118": { "title": "New York, New York" },
     "121": { "title": "Joel Thomas Nickel: Reflections on 40 Years of Ministry" },
+    "122": { "title": "“Circular Acuity” at the Keizer Community Center" },
+    "123": { "title": "Art, Nickelart and Modernism" },
+    "128": { "title": "Obituary: Kevin McKibbin" },
+    "129": { "title": "Kevin McKibbin, Park Ranger" },
     "134": { "title": "Introduction" },
     "135": { "title": "Childhood" },
     "136": { "title": "Gold Rush" },
@@ -2578,11 +2651,32 @@
     "170": { "title": "Christmas 2024" },
     "171": { "title": "Christmas 2025" },
     "182": { "title": "My Life and Its Times" },
+    "183": { "title": "Foreword" },
+    "184": { "title": "Back Home" },
+    "185": { "title": "Road to Ministry" },
+    "186": { "title": "My Way Through Thee" },
+    "187": { "title": "The Seminary" },
+    "188": { "title": "Trees" },
+    "189": { "title": "The Years Alone" },
+    "190": { "title": "Poetic Odds and Ends" },
+    "191": { "title": "My Father" },
+    "192": { "title": "The Woods" },
+    "193": { "title": "My Mother" },
+    "194": { "title": "Childhood" },
+    "195": { "title": "Education" },
+    "196": { "title": "Marriage and Children" },
+    "197": { "title": "The Hummingbird" },
+    "198": { "title": "The Junior League" },
     "201": { "title": "Obituary: The Rev. E.H.C. Mueller (The Lutheran Witness)" },
+    "202": { "title": "Obituary: The Rev. E.H.C. Mueller (Der Lutheraner)" },
+    "207": { "title": "Obituary: Peter Albert Crawley" },
     "216": { "title": "Fieks looks back" },
     "221": { "title": "Anna’s history, Part I" },
+    "222": { "title": "Anna’s history, Part II" },
     "223": { "title": "Henry Waldschmidt writes his history" },
     "224": { "title": "Kendallville, Indiana" },
+    "225": { "title": "Careers in Chicago" },
+    "226": { "title": "Muellers in America" },
     "227": { "title": "Wilhelm Mueller: Cemetery Superintendent" },
     "228": { "title": "SS Lessing Manifest, 1879" },
     "247": { "title": "Dodo Knief's Wedding Story" },
@@ -2708,6 +2802,10 @@
       "name": "Fritz Mueller's Journal of the Voyage to America",
       "slug": "fritz-muellers-journal"
     },
+    "LudwigKnief": {
+      "name": "Ludwig Knief's *Lebenslauf*",
+      "slug": "ludwig-kniefs-lebenslauf"
+    },
     "WilhelmMueller": {
       "name": "Wilhelm and Frau Erica",
       "slug": "wilhelm-and-frau-erica"
@@ -2725,14 +2823,14 @@
     },
     "TanteFieks": { "name": "Tante Fieks", "slug": "tante-fieks" },
     "Chicago": { "name": "The Chicago Memoirs", "slug": "chicago-memoirs" },
-    "JoelNickel": { "name": "Joel Nickel", "slug": "joel-nickel" },
     "JimNickel": {
       "name": "Jim Nickel: Three Cities",
       "slug": "jim-nickel-three-cities"
     },
-    "LudwigKnief": {
-      "name": "Ludwig Knief's *Lebenslauf*",
-      "slug": "ludwig-kniefs-lebenslauf"
+    "JoelNickel": { "name": "Joel Nickel", "slug": "joel-nickel" },
+    "Janzow": {
+      "name": "The Bethlehem Congregation Case",
+      "slug": "the-bethlehem-congregation"
     },
     "NanaLifeTimes": { "name": "My Life and Its Times", "slug": "my-life-and-its-times" },
     "FredKnief": { "name": "Fred Knief", "slug": "fred-knief" },
@@ -2741,6 +2839,7 @@
       "name": "Alida Wood Bigelow: Memories",
       "slug": "alida-bigelows-memories"
     },
-    "CarlDeHaas": { "name": "*Winke für Auswanderer*", "slug": "winke-fuer-auswanderer" }
+    "CarlDeHaas": { "name": "*Winke für Auswanderer*", "slug": "winke-fuer-auswanderer" },
+    "KevinMcKibbin": { "name": "Kevin McKibbin", "slug": "kevin-mckibbin" }
   }
 }
