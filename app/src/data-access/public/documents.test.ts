@@ -3,6 +3,7 @@ import documentsDetail from '../../data/generated/documents.json'
 import imagesRaw from '../../data/generated/images.json'
 import { listDocuments, resolveDocumentPair } from './documents'
 import { getDocumentById, resolveImagePlaceholders } from './documentDetail'
+import { GENRES } from '../../types/document'
 
 // The fixture is FOUND, not hardcoded.
 //
@@ -112,4 +113,12 @@ describe('resolveDocumentPair', () => {
       counterpart: undefined,
     })
   })
+})
+
+// The type above is applied with an `as` cast over the exported JSON, so
+// the compiler cannot notice a genre it has never heard of -- 'Obituary'
+// went unlisted for weeks that way. This is the check the cast skips.
+it('every exported genre is one the app knows', () => {
+  const known: readonly (string | null)[] = [...GENRES, null]
+  expect(listDocuments().filter((d) => !known.includes(d.genre))).toEqual([])
 })

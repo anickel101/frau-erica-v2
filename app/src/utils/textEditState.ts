@@ -9,20 +9,6 @@ import type {
 // pending edits are laid over the archive, which texts a filter keeps,
 // and what to send when the editor saves.
 
-// Documents.genre's CHECK constraint, in schema order. The API holds the
-// authoritative copy (and a test pinning it to schema.sql); a genre
-// missing here only means it can't be picked, never a bad save.
-export const GENRES = [
-  'Biography',
-  'Memoir',
-  'History',
-  'Literary',
-  'Letter',
-  'Recipe',
-  'Obituary',
-  'Other',
-] as const
-
 export interface TextValues {
   author: string | null
   author_person_id: number | null
