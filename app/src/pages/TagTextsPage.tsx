@@ -6,6 +6,7 @@ import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
 import PersonSearch from '../components/PersonSearch'
 import { getCollectionByKey } from '../data-access/public/collections'
+import { GENRES } from '../types/document'
 import {
   listTextEdits,
   saveTextEdits,
@@ -17,7 +18,6 @@ import { getFullName } from '../utils/personDisplay'
 import { personLabel } from '../utils/tagSuggestions'
 import {
   FILTERS,
-  GENRES,
   changesBetween,
   groupTexts,
   isTextFilter,

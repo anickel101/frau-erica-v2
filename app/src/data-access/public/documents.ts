@@ -1,4 +1,5 @@
 import documentsListRaw from '../../data/generated/documents-list.json'
+import type { Genre } from '../../types/document'
 
 // Listing documents. Reading one lives in ./documentDetail.
 //
@@ -21,8 +22,7 @@ export interface DocumentListItem {
   author: string | null
   authorPersonId: number | null
   summary: string | null
-  genre:
-    'Biography' | 'Memoir' | 'History' | 'Literary' | 'Letter' | 'Recipe' | 'Other' | null
+  genre: Genre | null
   tags: string | null
   // Which language this document's own content is in, for the handful
   // of works the archive holds in both. null for everything else, which
