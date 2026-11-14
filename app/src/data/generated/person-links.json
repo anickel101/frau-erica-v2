@@ -3,14 +3,14 @@
     "1": {
       "photos": [585, 589],
       "writings": [],
-      "texts": [],
+      "texts": [218],
       "galleries": [24, 30],
       "collections": []
     },
     "5": {
       "photos": [466, 560, 589, 908],
       "writings": [87, 88, 89, 90, 91, 92],
-      "texts": [86, 93],
+      "texts": [86, 93, 218],
       "galleries": [24, 30, 32],
       "collections": ["FritzReise"]
     },
@@ -24,7 +24,7 @@
     "12": {
       "photos": [258, 108, 466, 589, 908],
       "writings": [],
-      "texts": [224, 225, 226, 227],
+      "texts": [218, 224, 225, 226, 227],
       "galleries": [18, 21, 24, 30, 32],
       "collections": ["WilhelmMueller"]
     },
@@ -38,7 +38,7 @@
     "14": {
       "photos": [108, 239, 317, 410, 452, 477, 507, 589],
       "writings": [270, 272, 274, 276, 278, 280, 282, 284, 286],
-      "texts": [201, 255],
+      "texts": [201, 218, 255],
       "galleries": [18, 21, 30, 33],
       "collections": ["ErnstHelen", "OpaObit"]
     },
@@ -55,14 +55,14 @@
         427, 479, 480, 505, 508, 710
       ],
       "writings": [],
-      "texts": [3, 371, 373],
+      "texts": [3, 4, 371, 373],
       "galleries": [5, 6, 7, 8, 10, 18, 19, 21, 25],
       "collections": ["FriedaMueller"]
     },
     "17": {
       "photos": [143, 144, 145, 146, 148, 424, 3035, 147, 159, 249, 478],
       "writings": [],
-      "texts": [3, 110, 111, 371, 373],
+      "texts": [3, 4, 110, 111, 371, 373],
       "galleries": [5, 6, 10, 31],
       "collections": ["Hib", "FriedaMueller"]
     },
@@ -95,7 +95,7 @@
         460, 541, 559, 588, 612, 628, 630, 643, 647
       ],
       "writings": [],
-      "texts": [16, 144],
+      "texts": [15, 16, 144],
       "galleries": [1, 3, 11, 13, 14, 15, 16, 17, 19, 23, 28],
       "collections": ["MarkAlliChristmas"]
     },
@@ -166,9 +166,9 @@
       ],
       "writings": [
         36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
-        56, 116, 117, 118, 121, 122, 123
+        56, 57, 116, 117, 118, 120, 121, 122, 123
       ],
-      "texts": [372],
+      "texts": [209, 372],
       "galleries": [5, 6, 7, 10, 18],
       "collections": ["Chicago", "JimNickel", "JoelNickel", "FriedaMueller"]
     },
@@ -261,7 +261,7 @@
     "58": {
       "photos": [551, 553, 552, 908],
       "writings": [],
-      "texts": [],
+      "texts": [180],
       "galleries": [24, 32],
       "collections": []
     },
@@ -275,7 +275,7 @@
     "60": {
       "photos": [465, 908],
       "writings": [],
-      "texts": [],
+      "texts": [105],
       "galleries": [24, 32],
       "collections": []
     },
@@ -309,8 +309,8 @@
     },
     "65": {
       "photos": [102, 105, 103, 106, 107, 155, 239, 316, 505, 508, 710],
-      "writings": [],
-      "texts": [3],
+      "writings": [68],
+      "texts": [3, 218],
       "galleries": [5, 8, 18, 25],
       "collections": []
     },
@@ -324,7 +324,7 @@
     "67": {
       "photos": [108, 155, 239, 710],
       "writings": [201, 202],
-      "texts": [3],
+      "texts": [3, 211],
       "galleries": [8, 18, 21, 25],
       "collections": ["OpaObit"]
     },
@@ -345,7 +345,7 @@
     "100": {
       "photos": [20, 23],
       "writings": [],
-      "texts": [],
+      "texts": [68],
       "galleries": [],
       "collections": []
     },
@@ -380,7 +380,7 @@
     "107": {
       "photos": [263, 264, 265, 288, 266, 267, 271, 287, 291, 293, 295, 296, 297, 312],
       "writings": [],
-      "texts": [196],
+      "texts": [196, 376],
       "galleries": [2, 3, 4],
       "collections": ["NanaLifeTimes"]
     },
@@ -398,7 +398,7 @@
     },
     "111": {
       "photos": [639, 640],
-      "writings": [],
+      "writings": [63],
       "texts": [],
       "galleries": [],
       "collections": []
@@ -413,7 +413,7 @@
     "125": {
       "photos": [640],
       "writings": [],
-      "texts": [],
+      "texts": [63],
       "galleries": [],
       "collections": []
     },
@@ -438,11 +438,60 @@
       "galleries": [24],
       "collections": []
     },
+    "186": {
+      "photos": [],
+      "writings": [180],
+      "texts": [],
+      "galleries": [],
+      "collections": []
+    },
     "190": {
       "photos": [465],
       "writings": [],
       "texts": [],
       "galleries": [24],
+      "collections": []
+    },
+    "209": {
+      "photos": [],
+      "writings": [],
+      "texts": [213],
+      "galleries": [],
+      "collections": []
+    },
+    "330": {
+      "photos": [],
+      "writings": [],
+      "texts": [209],
+      "galleries": [],
+      "collections": []
+    },
+    "470": {
+      "photos": [],
+      "writings": [],
+      "texts": [204],
+      "galleries": [],
+      "collections": []
+    },
+    "480": {
+      "photos": [],
+      "writings": [],
+      "texts": [173],
+      "galleries": [],
+      "collections": []
+    },
+    "519": {
+      "photos": [],
+      "writings": [],
+      "texts": [19],
+      "galleries": [],
+      "collections": []
+    },
+    "524": {
+      "photos": [],
+      "writings": [],
+      "texts": [205],
+      "galleries": [],
       "collections": []
     },
     "552": {
@@ -473,10 +522,24 @@
       "galleries": [8],
       "collections": []
     },
+    "580": {
+      "photos": [],
+      "writings": [],
+      "texts": [211],
+      "galleries": [],
+      "collections": []
+    },
     "581": {
       "photos": [],
       "writings": [],
-      "texts": [108],
+      "texts": [108, 218],
+      "galleries": [],
+      "collections": []
+    },
+    "600": {
+      "photos": [],
+      "writings": [],
+      "texts": [210],
       "galleries": [],
       "collections": []
     },
@@ -501,6 +564,13 @@
       "galleries": [],
       "collections": ["Waldschmidt"]
     },
+    "730": {
+      "photos": [],
+      "writings": [],
+      "texts": [73],
+      "galleries": [],
+      "collections": []
+    },
     "750": {
       "photos": [402],
       "writings": [],
@@ -518,7 +588,7 @@
     "759": {
       "photos": [347, 592],
       "writings": [],
-      "texts": [],
+      "texts": [74],
       "galleries": [13],
       "collections": []
     },
@@ -581,7 +651,7 @@
     "880": {
       "photos": [266, 267, 271],
       "writings": [],
-      "texts": [],
+      "texts": [376],
       "galleries": [2],
       "collections": []
     },
@@ -611,6 +681,20 @@
       "writings": [],
       "texts": [],
       "galleries": [3],
+      "collections": []
+    },
+    "921": {
+      "photos": [],
+      "writings": [],
+      "texts": [119],
+      "galleries": [],
+      "collections": []
+    },
+    "922": {
+      "photos": [],
+      "writings": [],
+      "texts": [214],
+      "galleries": [],
       "collections": []
     },
     "926": {
@@ -701,6 +785,13 @@
       "writings": [],
       "texts": [],
       "galleries": [11, 16, 20, 23],
+      "collections": []
+    },
+    "1086": {
+      "photos": [],
+      "writings": [],
+      "texts": [73],
+      "galleries": [],
       "collections": []
     },
     "1137": {
@@ -2540,11 +2631,14 @@
   },
   "texts": {
     "3": { "title": "Adelheid Erica Amanda Mueller Nickel" },
+    "4": { "title": "The Call to St. Lucas Evangelical Lutheran Church" },
     "10": { "title": "Alice Ingram Hooker (November 8, 1933 – July 23, 2019)" },
     "11": { "title": "The Lyman and Wood families" },
     "13": { "title": "Charlie Bigelow: Fine-looking, immaculately dressed" },
     "14": { "title": "Alida’s letter about Charlie" },
+    "15": { "title": "Ann Dorris’s pearl daisy brooch" },
     "16": { "title": "Two golden anniversaries, one remarkable woman" },
+    "19": { "title": "Elizabeth Ann Mueller" },
     "23": { "title": "Introduction" },
     "24": { "title": "*Winke für Auswanderer:* Hints for Emigrants" },
     "25": { "title": "In Havre and Cherbourg" },
@@ -2576,9 +2670,14 @@
     "54": { "title": "Chicago 1971, Part 3" },
     "55": { "title": "Chicago 1972" },
     "56": { "title": "Introduction" },
+    "57": { "title": "Our Redeemer Lutheran Church, 1967-1972" },
     "58": { "title": "Constanze Rösing: Aunt, friend, matchmaker" },
     "61": { "title": "The Wedding of 'Der Little Guy'" },
     "62": { "title": "Dodo Knief: Live wire, columnist, woman of mystery" },
+    "63": { "title": "My Ride: A 1976 Datsun 280Z" },
+    "68": { "title": "Foot, Foot Foot, and Foot Foot Foot" },
+    "73": { "title": "Obituary: Erhardt H. Essig" },
+    "74": { "title": "Former church official accused of embezzling money from woman" },
     "75": { "title": "The Game of Five Rocks" },
     "76": { "title": "Frau Erica recipes" },
     "77": { "title": "From Frau Erica’s cookbook: *Johann im Sack*" },
@@ -2600,6 +2699,7 @@
     "98": { "title": "Estate of Gerhard Mueller" },
     "99": { "title": "A Road Trip Through Gerhard Country" },
     "101": { "title": "Gerhard Wilhelm Mueller: 1904 – 1970" },
+    "105": { "title": "Johannes Ernst August Mueller" },
     "108": {
       "title": "Rev. Dr. Herbert C. Mueller Jr., former LCMS first vice-president"
     },
@@ -2609,6 +2709,8 @@
     "116": { "title": "Oak Park, Illinois" },
     "117": { "title": "Brentwood, Missouri" },
     "118": { "title": "New York, New York" },
+    "119": { "title": "An Arrest Reported in Powers, Michigan" },
+    "120": { "title": "Musings on work in an abstract-geometric style" },
     "121": { "title": "Joel Thomas Nickel: Reflections on 40 Years of Ministry" },
     "122": { "title": "“Circular Acuity” at the Keizer Community Center" },
     "123": { "title": "Art, Nickelart and Modernism" },
@@ -2650,6 +2752,8 @@
     "169": { "title": "Christmas 2023" },
     "170": { "title": "Christmas 2024" },
     "171": { "title": "Christmas 2025" },
+    "173": { "title": "Obituary: Martin E. Mueller" },
+    "180": { "title": "Otto Mueller on the original Mueller farm" },
     "182": { "title": "My Life and Its Times" },
     "183": { "title": "Foreword" },
     "184": { "title": "Back Home" },
@@ -2669,8 +2773,16 @@
     "198": { "title": "The Junior League" },
     "201": { "title": "Obituary: The Rev. E.H.C. Mueller (The Lutheran Witness)" },
     "202": { "title": "Obituary: The Rev. E.H.C. Mueller (Der Lutheraner)" },
+    "204": { "title": "Paul Gerhardt Mueller, Jr." },
+    "205": { "title": "Obituary: Paul Henry Jacob Feiertag" },
     "207": { "title": "Obituary: Peter Albert Crawley" },
+    "209": { "title": "Obituary: Richard William Gahl" },
+    "210": { "title": "Obituary: Robert Kent Mueller" },
+    "211": { "title": "Obituary: Ruth H. Mueller" },
+    "213": { "title": "History of St. John’s Thrift Shop" },
+    "214": { "title": "Shirley Jean King (1947–2022)" },
     "216": { "title": "Fieks looks back" },
+    "218": { "title": "Johanne’s money belt, Georg’s tobacco box" },
     "221": { "title": "Anna’s history, Part I" },
     "222": { "title": "Anna’s history, Part II" },
     "223": { "title": "Henry Waldschmidt writes his history" },
