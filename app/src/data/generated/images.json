@@ -1848,6 +1848,18 @@
     "personIds": [28]
   },
   {
+    "image_id": 246,
+    "title": "“Lovable yet pitiful”",
+    "caption": "**“Lovable yet pitiful”** Joyce (center) and two sisters in Chinatown in the early 1960s. Everyone worked to build the family’s future.",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 720,
+    "height": 683,
+    "url": "ThreeTings1.jpg",
+    "personIds": []
+  },
+  {
     "image_id": 249,
     "title": "Four generations",
     "caption": "Four generations: Joel Nickel, held by his father Hilbert Nickel, next to his grandmother Margaret Ziesemer Nickel next to his great-grandmother Ulricka Zäske Ziesemer. Taken in the backyard of the Nickel family home on Howell Avenue very likely by Joel’s mother Adelheid Mueller Nickel, possibly in summer of 1940.",
@@ -3670,6 +3682,18 @@
     "height": 688,
     "url": "Archie.20190502.jpg",
     "personIds": [1062]
+  },
+  {
+    "image_id": 441,
+    "title": "Five Poems",
+    "caption": "Joyce Leung’s mother wrote these five poems in 2016",
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 800,
+    "height": 280,
+    "url": "KamKwai.jpg",
+    "personIds": []
   },
   {
     "image_id": 443,

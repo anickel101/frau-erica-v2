@@ -162,6 +162,15 @@
     "chapterCount": 2
   },
   {
+    "series_key": "KamKwaiChan",
+    "slug": "kam-kwai-chan",
+    "name": "Kam Kwai Chan",
+    "kind": "person",
+    "blurb": "Five poems, and a fighting determination to survive.",
+    "cover_image_url": "hdr.ThreeTings.jpg",
+    "chapterCount": 2
+  },
+  {
     "series_key": "KevinMcKibbin",
     "slug": "kevin-mckibbin",
     "name": "Kevin McKibbin",
