@@ -1200,7 +1200,7 @@
         "width": 500,
         "height": 808,
         "url": "Cousins1.jpg",
-        "personIds": []
+        "personIds": [33, 34, 552, 556]
       },
       {
         "image_id": 175,
@@ -1212,7 +1212,7 @@
         "width": 432,
         "height": 634,
         "url": "JoelJim3.jpg",
-        "personIds": []
+        "personIds": [33, 34]
       },
       {
         "image_id": 174,
@@ -1224,7 +1224,7 @@
         "width": 361,
         "height": 624,
         "url": "JoelJim1.jpg",
-        "personIds": []
+        "personIds": [33, 34]
       },
       {
         "image_id": 182,
@@ -1236,7 +1236,7 @@
         "width": 477,
         "height": 715,
         "url": "JoelNickel7.jpg",
-        "personIds": []
+        "personIds": [18, 33, 34]
       },
       {
         "image_id": 181,
@@ -1248,7 +1248,7 @@
         "width": 300,
         "height": 300,
         "url": "JoelNickel6.jpg",
-        "personIds": []
+        "personIds": [33]
       },
       {
         "image_id": 72,
@@ -1260,7 +1260,7 @@
         "width": 600,
         "height": 378,
         "url": "Chicago3.jpg",
-        "personIds": []
+        "personIds": [33, 70, 71]
       },
       {
         "image_id": 67,
@@ -1272,10 +1272,10 @@
         "width": 322,
         "height": 265,
         "url": "Chicago25.jpg",
-        "personIds": []
+        "personIds": [33]
       }
     ],
-    "linkedPersonIds": [33, 16, 62, 552, 17, 37, 47]
+    "linkedPersonIds": [33, 16, 62, 552, 17, 37, 47, 34, 556, 18, 70, 71]
   },
   {
     "gallery_id": 11,
@@ -2808,7 +2808,7 @@
         "width": 720,
         "height": 473,
         "url": "GoodThunder.jpg",
-        "personIds": []
+        "personIds": [14, 31]
       },
       {
         "image_id": 239,
@@ -2847,7 +2847,7 @@
         "personIds": [14, 15, 33, 34]
       }
     ],
-    "linkedPersonIds": [14, 15, 750, 16, 62, 63, 64, 65, 66, 12, 67, 69, 33, 34]
+    "linkedPersonIds": [14, 15, 750, 16, 62, 63, 64, 65, 66, 12, 67, 69, 31, 33, 34]
   },
   {
     "gallery_id": 19,
@@ -4224,7 +4224,7 @@
         "width": 800,
         "height": 536,
         "url": "AlNickel2.jpg",
-        "personIds": []
+        "personIds": [36]
       },
       {
         "image_id": 146,
@@ -4722,7 +4722,7 @@
         "width": 800,
         "height": 996,
         "url": "Page471a.jpg",
-        "personIds": []
+        "personIds": [14]
       },
       {
         "image_id": 763,
