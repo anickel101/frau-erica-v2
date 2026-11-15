@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import IconAction from '../components/IconAction'
 import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
@@ -7,6 +7,7 @@ import PersonSearch from '../components/PersonSearch'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import {
   GROUP_SLUGS,
+  MISCELLANEOUS_GROUP,
   getTaggableGallery,
   groupSlugFor,
   listTaggableGalleries,
@@ -172,6 +173,13 @@ function ChooseGallery() {
 
 // --------------------------------------------------------------- tagging
 
+// Groups that open on a grid of every photograph rather than on the
+// first untagged one. Miscellaneous is 180 unrelated photographs with no
+// order worth walking: clicking Next through all of them to find the
+// handful you can name was the archivist's complaint. A real gallery is
+// a sequence, and walking it is still the better way to tag it.
+const GRID_GROUPS = new Set([MISCELLANEOUS_GROUP])
+
 function TagGallery({ galleryId }: { galleryId: number }) {
   const gallery = useMemo(() => getTaggableGallery(galleryId), [galleryId])
   const [tags, setTags] = useState<PhotoTag[] | null>(null)
@@ -179,6 +187,16 @@ function TagGallery({ galleryId }: { galleryId: number }) {
   const [index, setIndex] = useState(0)
   const [started, setStarted] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  // In a grid group, the photograph being tagged lives in the URL
+  // (?photo=<image_id>); none means the grid. So the browser's Back
+  // button returns to the grid, and a reload stays on the same picture.
+  const gridMode = GRID_GROUPS.has(galleryId)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [hideTagged, setHideTagged] = useState(false)
+  // The last photograph opened from the grid, so going back to the grid
+  // lands on it rather than at the top of 180 pictures.
+  const [lastOpened, setLastOpened] = useState<number | null>(null)
 
   // Reset for a new gallery at render time, not at the top of the effect
   // below -- a synchronous setState inside an effect is a cascading
@@ -252,10 +270,26 @@ function TagGallery({ galleryId }: { galleryId: number }) {
     )
   }
 
-  const photo = gallery.photos[index]
   const photoCount = gallery.photos.length
+  const selectedId = Number(searchParams.get('photo'))
+  const gridIndex = gallery.photos.findIndex((p) => p.image_id === selectedId)
+  const showGrid = gridMode && gridIndex < 0
+  const shownIndex = gridMode ? gridIndex : index
+  const photo = gallery.photos[shownIndex]
   const taggedImageIds = new Set((tags ?? []).map((t) => t.image_id))
   const doneCount = gallery.photos.filter((p) => taggedImageIds.has(p.image_id)).length
+
+  // Replace, not push, when stepping between photographs: Back should
+  // return to the grid, not retrace every Next.
+  const openPhoto = (imageId: number, replace: boolean) => {
+    setLastOpened(imageId)
+    setSearchParams({ photo: String(imageId) }, { replace })
+  }
+  const step = (delta: number) => {
+    const next = (shownIndex + delta + photoCount) % photoCount
+    if (gridMode) openPhoto(gallery.photos[next].image_id, true)
+    else setIndex(next)
+  }
 
   return (
     <Layout>
@@ -267,8 +301,16 @@ function TagGallery({ galleryId }: { galleryId: number }) {
         </p>
         <h1 className="text-xl sm:text-2xl font-bold mb-1">{gallery.name}</h1>
         <p className="text-sm text-fe-ink/70 mb-4">
-          Photograph {index + 1} of {gallery.photos.length} &middot; {doneCount} tagged so
-          far
+          {showGrid ? (
+            <>
+              {photoCount} photographs &middot; {doneCount} tagged so far
+            </>
+          ) : (
+            <>
+              Photograph {shownIndex + 1} of {photoCount} &middot; {doneCount} tagged so
+              far
+            </>
+          )}
         </p>
 
         {loadError && (
@@ -296,61 +338,172 @@ function TagGallery({ galleryId }: { galleryId: number }) {
             button at each end answered that with nothing at all. Only
             a single-photograph gallery disables them, where every move
             would land back on the same picture. */}
-        <div className="mb-5 flex items-center justify-between gap-4 border-b border-fe-brown/20 pb-3">
-          <button
-            type="button"
-            onClick={() => setIndex((i) => (i - 1 + photoCount) % photoCount)}
-            disabled={photoCount <= 1}
-            className="text-sm text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
-          >
-            &larr; Previous
-          </button>
-          {/* As prominent as anything else on the page. "I don't know who
+        {showGrid ? (
+          tags === null && !loadError ? (
+            <p className="text-sm text-fe-ink/60">Loading&hellip;</p>
+          ) : (
+            <PhotoGrid
+              photos={gallery.photos}
+              tags={tags ?? []}
+              hideTagged={hideTagged}
+              onHideTaggedChange={setHideTagged}
+              scrollTo={lastOpened}
+              onOpen={(imageId) => openPhoto(imageId, false)}
+            />
+          )
+        ) : (
+          <>
+            <div className="mb-5 flex items-center justify-between gap-4 border-b border-fe-brown/20 pb-3">
+              <button
+                type="button"
+                onClick={() => step(-1)}
+                disabled={photoCount <= 1}
+                className="text-sm text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
+              >
+                &larr; Previous
+              </button>
+              {gridMode && (
+                <button
+                  type="button"
+                  onClick={() => setSearchParams({})}
+                  className="text-sm text-fe-link hover:text-fe-link-dark"
+                >
+                  All photographs
+                </button>
+              )}
+              {/* As prominent as anything else on the page. "I don't know who
               that is" is a legitimate answer, and a tool that makes it
               feel like a failure is a tool that gets abandoned. */}
-          <button
-            type="button"
-            onClick={() => setIndex((i) => (i + 1) % photoCount)}
-            disabled={photoCount <= 1}
-            className="text-sm font-bold text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
-          >
-            Skip / Next &rarr;
-          </button>
-        </div>
+              <button
+                type="button"
+                onClick={() => step(1)}
+                disabled={photoCount <= 1}
+                className="text-sm font-bold text-fe-link hover:text-fe-link-dark disabled:text-fe-ink/30"
+              >
+                Skip / Next &rarr;
+              </button>
+            </div>
 
-        {tags === null && !loadError ? (
-          <p className="text-sm text-fe-ink/60">Loading&hellip;</p>
-        ) : photo ? (
-          <PhotoTagger
-            photo={photo}
-            galleryPersonIds={gallery.linkedPersonIds}
-            allTags={tags ?? []}
-            onAdd={(person) =>
-              apply(
-                addPhotoTag(photo.image_id, person.person_id, galleryId),
-                (current) => [
-                  ...current,
-                  {
-                    image_id: photo.image_id,
-                    person_id: person.person_id,
-                    gallery_id: galleryId,
-                    tagged_by: 'you',
-                    tagged_at: new Date().toISOString(),
-                  },
-                ],
-              )
-            }
-            onRemove={(personId) =>
-              apply(removePhotoTag(photo.image_id, personId), (current) =>
-                current.filter(
-                  (t) => !(t.image_id === photo.image_id && t.person_id === personId),
-                ),
-              )
-            }
-          />
-        ) : null}
+            {tags === null && !loadError ? (
+              <p className="text-sm text-fe-ink/60">Loading&hellip;</p>
+            ) : photo ? (
+              <PhotoTagger
+                photo={photo}
+                galleryPersonIds={gallery.linkedPersonIds}
+                allTags={tags ?? []}
+                onAdd={(person) =>
+                  apply(
+                    addPhotoTag(photo.image_id, person.person_id, galleryId),
+                    (current) => [
+                      ...current,
+                      {
+                        image_id: photo.image_id,
+                        person_id: person.person_id,
+                        gallery_id: galleryId,
+                        tagged_by: 'you',
+                        tagged_at: new Date().toISOString(),
+                      },
+                    ],
+                  )
+                }
+                onRemove={(personId) =>
+                  apply(removePhotoTag(photo.image_id, personId), (current) =>
+                    current.filter(
+                      (t) => !(t.image_id === photo.image_id && t.person_id === personId),
+                    ),
+                  )
+                }
+              />
+            ) : null}
+          </>
+        )}
       </div>
     </Layout>
+  )
+}
+
+// Every photograph in the group at once, styled like the pop-up's photo
+// grid, so the archivist can pick out the ones they recognise instead of
+// paging through them all.
+function PhotoGrid({
+  photos,
+  tags,
+  hideTagged,
+  onHideTaggedChange,
+  scrollTo,
+  onOpen,
+}: {
+  photos: GalleryPhoto[]
+  tags: PhotoTag[]
+  hideTagged: boolean
+  onHideTaggedChange: (hide: boolean) => void
+  scrollTo: number | null
+  onOpen: (imageId: number) => void
+}) {
+  const peopleOn = new Map<number, number>()
+  for (const tag of tags)
+    peopleOn.set(tag.image_id, (peopleOn.get(tag.image_id) ?? 0) + 1)
+  const shown = hideTagged ? photos.filter((p) => !peopleOn.has(p.image_id)) : photos
+
+  const returnTo = useRef<HTMLLIElement>(null)
+  useEffect(() => {
+    returnTo.current?.scrollIntoView({ block: 'center' })
+  }, [])
+
+  return (
+    <>
+      <label className="mb-3 flex items-center gap-2 text-sm text-fe-ink/80">
+        <input
+          type="checkbox"
+          checked={hideTagged}
+          onChange={(e) => onHideTaggedChange(e.target.checked)}
+        />
+        Hide photographs already tagged
+      </label>
+      {shown.length === 0 ? (
+        <p className="text-sm text-fe-ink/60">Every photograph here is tagged.</p>
+      ) : (
+        <ul className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+          {shown.map((photo) => {
+            const count = peopleOn.get(photo.image_id) ?? 0
+            return (
+              <li
+                key={photo.image_id}
+                ref={photo.image_id === scrollTo ? returnTo : undefined}
+              >
+                <button
+                  type="button"
+                  onClick={() => onOpen(photo.image_id)}
+                  title={photo.caption || undefined}
+                  aria-label={
+                    count > 0
+                      ? `Tag this photograph (${count} tagged)`
+                      : 'Tag this photograph (nobody tagged yet)'
+                  }
+                  className={`relative block aspect-square w-full cursor-pointer overflow-hidden border-2 bg-fe-brown/20 transition hover:border-fe-accent focus-visible:border-fe-accent focus-visible:outline-none ${
+                    photo.image_id === scrollTo
+                      ? 'border-fe-accent'
+                      : 'border-transparent'
+                  }`}
+                >
+                  <img
+                    src={photo.url}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover object-top"
+                  />
+                  {count > 0 && (
+                    <span className="absolute right-1 top-1 rounded-sm bg-fe-brown px-1.5 py-0.5 text-[11px] font-bold text-white">
+                      &#10003; {count}
+                    </span>
+                  )}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </>
   )
 }
 
