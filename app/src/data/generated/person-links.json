@@ -30,7 +30,7 @@
     },
     "13": {
       "photos": [118, 119, 120, 256, 121],
-      "writings": [79, 249, 256, 258, 260, 262, 264, 266, 268],
+      "writings": [79, 80, 81, 249, 251, 253, 256, 258, 260, 262, 264, 266, 268],
       "texts": [76, 77, 78, 224, 225, 226, 255],
       "galleries": [30, 33],
       "collections": ["FrauErica", "WilhelmMueller"]
@@ -51,8 +51,8 @@
     },
     "16": {
       "photos": [
-        5, 7, 8, 9, 12, 14, 342, 360, 411, 10, 17, 108, 112, 155, 159, 236, 316, 341, 394,
-        427, 479, 480, 505, 508, 710
+        5, 7, 8, 9, 12, 13, 14, 342, 360, 411, 10, 17, 108, 112, 155, 159, 236, 316, 341,
+        394, 427, 479, 480, 505, 508, 710
       ],
       "writings": [],
       "texts": [3, 4, 371, 373],
@@ -75,9 +75,9 @@
         430, 431, 432, 460, 468, 500, 512, 541, 559, 612, 625, 630, 643
       ],
       "writings": [
-        3, 58, 61, 76, 77, 78, 86, 93, 95, 98, 99, 143, 144, 145, 146, 147, 148, 149, 150,
-        151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166,
-        167, 168, 169, 170, 171, 224, 225, 226, 255
+        3, 16, 18, 58, 61, 75, 76, 77, 78, 86, 93, 95, 98, 99, 143, 144, 145, 146, 147,
+        148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163,
+        164, 165, 166, 167, 168, 169, 170, 171, 215, 224, 225, 226, 255
       ],
       "texts": [117, 374],
       "galleries": [1, 5, 7, 10, 11, 12, 13, 14, 15, 17, 19, 23],
@@ -98,7 +98,7 @@
         431, 432, 460, 541, 559, 588, 612, 628, 630, 642, 643, 647
       ],
       "writings": [],
-      "texts": [15, 16, 144],
+      "texts": [15, 16, 143, 144],
       "galleries": [1, 3, 11, 13, 14, 15, 16, 17, 19, 23, 28],
       "collections": ["MarkAlliChristmas"]
     },
@@ -115,7 +115,7 @@
         430, 431, 432, 586, 591, 612, 616, 662
       ],
       "writings": [],
-      "texts": [144],
+      "texts": [143, 144],
       "galleries": [13, 15, 19],
       "collections": ["MarkAlliChristmas"]
     },
@@ -124,7 +124,7 @@
         334, 343, 344, 485, 486, 498, 199, 202, 333, 345, 346, 430, 431, 432, 449, 612
       ],
       "writings": [],
-      "texts": [144],
+      "texts": [143, 144],
       "galleries": [11, 14, 19],
       "collections": ["MarkAlliChristmas"]
     },
@@ -134,7 +134,7 @@
         359, 430, 431, 468, 497, 499, 500, 574, 611, 614, 625
       ],
       "writings": [],
-      "texts": [144],
+      "texts": [18, 143, 144],
       "galleries": [12, 14, 15, 19, 23, 28, 29],
       "collections": ["MarkAlliChristmas"]
     },
@@ -145,7 +145,7 @@
         326, 328, 330, 332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356,
         358, 360, 362, 364
       ],
-      "texts": [61, 62, 255],
+      "texts": [61, 62, 255, 366],
       "galleries": [33],
       "collections": ["DodoKnief"]
     },
@@ -166,7 +166,7 @@
     "31": {
       "photos": [137],
       "writings": [],
-      "texts": [61, 247],
+      "texts": [61, 247, 308],
       "galleries": [18],
       "collections": ["DodoKnief"]
     },
@@ -186,7 +186,7 @@
         36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
         56, 57, 116, 117, 118, 120, 121, 122, 123
       ],
-      "texts": [209, 372],
+      "texts": [209, 215, 372],
       "galleries": [5, 6, 7, 10, 18],
       "collections": ["Chicago", "JimNickel", "JoelNickel", "FriedaMueller"]
     },
@@ -196,14 +196,14 @@
         414, 426, 427, 451, 499, 512
       ],
       "writings": [],
-      "texts": [98, 116, 117, 118, 373],
+      "texts": [98, 116, 117, 118, 215, 373],
       "galleries": [5, 6, 7, 10, 12, 18],
       "collections": ["GerhardMueller", "JimNickel", "FriedaMueller"]
     },
     "35": {
       "photos": [91, 231, 234, 235, 307, 341, 399, 414, 432, 451],
       "writings": [],
-      "texts": [75, 98],
+      "texts": [75, 98, 215],
       "galleries": [7, 19],
       "collections": ["GerhardMueller"]
     },
@@ -315,9 +315,9 @@
     "63": {
       "photos": [111, 113, 646, 108, 112, 159, 236, 398, 408, 409, 505, 508, 619, 710],
       "writings": [368, 369, 370, 371, 372, 373, 374, 375],
-      "texts": [3],
+      "texts": [3, 80],
       "galleries": [5, 6, 7, 18, 21, 25],
-      "collections": ["FriedaMueller"]
+      "collections": ["FriedaMueller", "FrauErica"]
     },
     "64": {
       "photos": [
@@ -407,7 +407,7 @@
     },
     "91": {
       "photos": [441],
-      "writings": [124],
+      "writings": [124, 125],
       "texts": [],
       "galleries": [],
       "collections": ["KamKwaiChan"]
@@ -436,14 +436,14 @@
     "100": {
       "photos": [18, 22, 20, 23, 2000],
       "writings": [],
-      "texts": [68],
+      "texts": [68, 75],
       "galleries": [],
       "collections": []
     },
     "101": {
       "photos": [23],
       "writings": [],
-      "texts": [],
+      "texts": [75],
       "galleries": [],
       "collections": []
     },
@@ -519,10 +519,10 @@
     },
     "136": {
       "photos": [122],
-      "writings": [140, 288, 290, 292, 294],
-      "texts": [61, 82, 83, 134, 255],
+      "writings": [83, 140, 288, 290, 292, 294],
+      "texts": [61, 82, 134, 255, 322],
       "galleries": [33],
-      "collections": ["LudwigKnief", "FredKnief", "DodoKnief"]
+      "collections": ["FredKnief", "LudwigKnief", "DodoKnief"]
     },
     "150": {
       "photos": [583],
@@ -594,6 +594,34 @@
       "galleries": [],
       "collections": []
     },
+    "529": {
+      "photos": [],
+      "writings": [],
+      "texts": [73, 216, 221, 222, 223],
+      "galleries": [],
+      "collections": ["TanteFieks", "Waldschmidt"]
+    },
+    "531": {
+      "photos": [],
+      "writings": [],
+      "texts": [73, 216, 221, 222, 223],
+      "galleries": [],
+      "collections": ["TanteFieks", "Waldschmidt"]
+    },
+    "533": {
+      "photos": [],
+      "writings": [],
+      "texts": [73, 216, 221, 222],
+      "galleries": [],
+      "collections": ["TanteFieks", "Waldschmidt"]
+    },
+    "537": {
+      "photos": [],
+      "writings": [],
+      "texts": [73, 216, 221, 222, 223],
+      "galleries": [],
+      "collections": ["TanteFieks", "Waldschmidt"]
+    },
     "552": {
       "photos": [85, 480],
       "writings": [],
@@ -618,7 +646,7 @@
     "563": {
       "photos": [],
       "writings": [],
-      "texts": [75],
+      "texts": [75, 214],
       "galleries": [],
       "collections": []
     },
@@ -757,7 +785,7 @@
     },
     "868": {
       "photos": [],
-      "writings": [11, 14],
+      "writings": [11, 12, 13, 14],
       "texts": [],
       "galleries": [],
       "collections": ["AlidaBigelow"]
@@ -765,7 +793,7 @@
     "872": {
       "photos": [34],
       "writings": [],
-      "texts": [],
+      "texts": [18],
       "galleries": [],
       "collections": []
     },
@@ -828,7 +856,7 @@
     "921": {
       "photos": [],
       "writings": [],
-      "texts": [119],
+      "texts": [119, 214],
       "galleries": [],
       "collections": []
     },
@@ -872,6 +900,13 @@
       "writings": [],
       "texts": [],
       "galleries": [15],
+      "collections": []
+    },
+    "948": {
+      "photos": [],
+      "writings": [],
+      "texts": [18],
+      "galleries": [],
       "collections": []
     },
     "1016": {
@@ -940,6 +975,20 @@
       "photos": [488],
       "writings": [],
       "texts": [73],
+      "galleries": [],
+      "collections": []
+    },
+    "1119": {
+      "photos": [],
+      "writings": [],
+      "texts": [18],
+      "galleries": [],
+      "collections": []
+    },
+    "1125": {
+      "photos": [],
+      "writings": [],
+      "texts": [18],
       "galleries": [],
       "collections": []
     },
@@ -1043,6 +1092,7 @@
       "height": 737
     },
     "12": { "url": "Addie8.jpg", "caption": "", "width": 360, "height": 498 },
+    "13": { "url": "AddieCall1.jpg", "caption": "", "width": 612, "height": 828 },
     "14": { "url": "AddieCall2.jpg", "caption": "", "width": 612, "height": 828 },
     "17": {
       "url": "AddieMax1.jpg",
@@ -3097,10 +3147,12 @@
     "4": { "title": "The Call to St. Lucas Evangelical Lutheran Church" },
     "10": { "title": "Alice Ingram Hooker (November 8, 1933 – July 23, 2019)" },
     "11": { "title": "The Lyman and Wood families" },
+    "12": { "title": "Girlhood in Ohio and Massachusetts" },
     "13": { "title": "Charlie Bigelow: Fine-looking, immaculately dressed" },
     "14": { "title": "Alida’s letter about Charlie" },
     "15": { "title": "Ann Dorris’s pearl daisy brooch" },
     "16": { "title": "Two golden anniversaries, one remarkable woman" },
+    "18": { "title": "The Ansons" },
     "19": { "title": "Elizabeth Ann Mueller" },
     "23": { "title": "Introduction" },
     "24": { "title": "*Winke für Auswanderer:* Hints for Emigrants" },
@@ -3146,6 +3198,8 @@
     "77": { "title": "From Frau Erica’s cookbook: *Johann im Sack*" },
     "78": { "title": "Notes on Frau Erica's Catsup Recipes" },
     "79": { "title": "Keinen Heiland" },
+    "80": { "title": "*Biskuit oder Schwammkuchen*" },
+    "81": { "title": "Sauerbraten" },
     "82": { "title": "A brother-in-law’s account of Paul Mueller’s wedding" },
     "83": { "title": "Fred Knief's Report" },
     "86": { "title": "Fritz Mueller’s Journal of The Voyage to America" },
@@ -3247,6 +3301,7 @@
     "211": { "title": "Obituary: Ruth H. Mueller" },
     "213": { "title": "History of St. John’s Thrift Shop" },
     "214": { "title": "Shirley Jean King (1947–2022)" },
+    "215": { "title": "Stollen, a Christmas Bread" },
     "216": { "title": "Fieks looks back" },
     "218": { "title": "Johanne’s money belt, Georg’s tobacco box" },
     "221": { "title": "Anna’s history, Part I" },
@@ -3259,6 +3314,8 @@
     "228": { "title": "SS Lessing Manifest, 1879" },
     "247": { "title": "Dodo Knief's Wedding Story" },
     "249": { "title": "Frau Erica's Preface" },
+    "251": { "title": "Großer Hefenkloß" },
+    "253": { "title": "Twenty Recipes for Catsup" },
     "255": { "title": "Sängerbote: A German-American Literary Outlet" },
     "256": { "title": "Only a Little While" },
     "258": { "title": "My Songs" },
@@ -3317,6 +3374,7 @@
     "360": { "title": "Fellow Hikers" },
     "362": { "title": "Greeting" },
     "364": { "title": "“The Longing Song of One’s Own Heart”" },
+    "366": { "title": "Stars and Stripes" },
     "368": { "title": "In the Beginning" },
     "369": { "title": "19th-Century Life in Freedom Township (Pro)" },
     "370": { "title": "19th-Century Life in Freedom Township (Con)" },
