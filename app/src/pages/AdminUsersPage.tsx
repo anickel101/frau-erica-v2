@@ -201,7 +201,7 @@ export default function AdminUsersPage() {
         <h1 className="text-2xl font-bold mb-4">Manage users</h1>
 
         <p className="text-sm text-fe-ink/80 mb-8">
-          When someone requests access, they show up below under Pending requests -- click
+          When someone requests access, they show up below under Pending requests – click
           Review &amp; approve to fill in the form. You'll also still get an email the
           moment they submit. Once someone has an account, you can fix a wrong person_id
           or change their admin status further down.

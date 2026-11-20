@@ -16,7 +16,7 @@ const GENERATION_LEGEND = [
     label: 'Grandparents',
     className: 'bg-fe-gen-grandparent',
     description:
-      'The parents of the couple below, two boxes per side. Blood relations only -- a step-parent or adoptive parent appears on their own family page instead.',
+      'The parents of the couple below, two boxes per side. Blood relations only – a step-parent or adoptive parent appears on their own family page instead.',
   },
   {
     label: 'The couple',
@@ -149,7 +149,7 @@ export default function UsersGuidePage() {
               </p>
               <p>
                 Diamonds lead <em>down</em> the tree, not up. They sit on the children,
-                and the boxes above them never carry one -- so you cannot follow them
+                and the boxes above them never carry one – so you cannot follow them
                 backwards in time. Instead, jump straight to the far end of a line: the{' '}
                 <strong>Ancestry</strong> links in the sidebar take you to your most
                 distant known ancestor on each side. From there, follow the diamonds down,
@@ -162,7 +162,7 @@ export default function UsersGuidePage() {
             <h2 className="text-xl font-bold text-fe-brown mb-2">Who has access?</h2>
             <div className="space-y-3">
               <p>
-                We're sorry, but many of these pages aren't open to the general public --
+                We're sorry, but many of these pages aren't open to the general public –
                 the family tree itself, and the pages for individual family members, are
                 visible only to people we can confirm belong to the family. Some things
                 are best kept within the family circle, and we hope you understand.
@@ -187,7 +187,7 @@ export default function UsersGuidePage() {
                 >
                   request access
                 </Link>{' '}
-                and let us know how you connect to it -- your full name, and whatever you
+                and let us know how you connect to it – your full name, and whatever you
                 know about your Mueller forebears, is a good place to start. The more
                 detail you can give us, the faster we can place you on the tree.
               </p>
@@ -196,7 +196,7 @@ export default function UsersGuidePage() {
                 <Link to="/contact" className="text-fe-link hover:text-fe-link-dark">
                   Contact the Archivist
                 </Link>{' '}
-                directly -- we're happy to help.
+                directly – we're happy to help.
               </p>
             </div>
           </section>

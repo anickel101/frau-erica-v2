@@ -4,13 +4,13 @@ export const ADELHEID_PARAGRAPHS = [
   <>
     Adelheid Rickmeyer was a young woman in her late teens, living in Blumenthal, near
     Hannover, Germany. She worked as a governess, but was also a writer and poet,
-    publishing under the pen name Frau Erica -- a reference to the heather (
+    publishing under the pen name Frau Erica – a reference to the heather (
     <em>Erikablüte</em>) that grew in her beloved meadows.
   </>,
   <>
     She had become engaged to a young man named Wilhelm Ernst Paul Mueller, eldest son of
     the owner of the Bosenbüttel estate near Midlum. Before they could marry, however,
-    Wilhelm's father sold the estate and moved the family to America -- that was in the
+    Wilhelm's father sold the estate and moved the family to America – that was in the
     late summer of 1865.
   </>,
   <>

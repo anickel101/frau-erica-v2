@@ -13,7 +13,7 @@ export default function NotFoundPage() {
         <h1 className="text-2xl font-bold mb-4">That page doesn't exist</h1>
         <p className="mb-4">
           The link may be from the old version of this site, which used different
-          addresses -- or it may just have a typo in it.
+          addresses – or it may just have a typo in it.
         </p>
         <ul className="mb-6 space-y-1 text-sm">
           <li>

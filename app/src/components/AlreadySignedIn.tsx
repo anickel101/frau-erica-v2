@@ -49,7 +49,7 @@ export default function AlreadySignedIn({ pending }: { pending?: boolean }) {
       {pending ? (
         <p className="mb-6">
           Your account hasn't been approved for family-tree access yet. Once the Archivist
-          approves it, the family pages will open up automatically -- there's nothing else
+          approves it, the family pages will open up automatically – there's nothing else
           you need to do.
         </p>
       ) : (

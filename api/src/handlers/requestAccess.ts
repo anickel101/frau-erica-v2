@@ -86,7 +86,7 @@ async function baseHandler(
   if (!EMAIL_PATTERN.test(email)) {
     log.warn('request-access.invalid', { reason: 'malformed-email', email })
     return jsonResponse(400, {
-      error: "That email address doesn't look right -- please check it and try again.",
+      error: "That email address doesn't look right – please check it and try again.",
     })
   }
   if (name.length > MAX_NAME_LENGTH) {
@@ -136,7 +136,7 @@ async function baseHandler(
     )
     return jsonResponse(400, {
       error: misconfigured
-        ? "Something is misconfigured on our end, and it's not your fault -- please email the Archivist at FrauErica.archivist@gmail.com and we'll sort it out."
+        ? "Something is misconfigured on our end, and it's not your fault – please email the Archivist at FrauErica.archivist@gmail.com and we'll sort it out."
         : "We couldn't verify this request automatically. Please try again, or email the Archivist at FrauErica.archivist@gmail.com and we'll set you up directly.",
     })
   }
@@ -240,7 +240,7 @@ async function baseHandler(
     return jsonResponse(502, {
       error:
         `We've got your request, but we couldn't notify the Archivist automatically. ` +
-        `There's no need to submit the form again -- please email ` +
+        `There's no need to submit the form again – please email ` +
         `FrauErica.archivist@gmail.com so they know to look for you.`,
     })
   }

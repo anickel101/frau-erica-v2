@@ -80,7 +80,7 @@ export default function HomePage() {
                   {SECOND_PHOTO.title && (
                     <strong className="text-fe-ink">{SECOND_PHOTO.title}</strong>
                   )}
-                  {SECOND_PHOTO.title && SECOND_PHOTO.caption && ' -- '}
+                  {SECOND_PHOTO.title && SECOND_PHOTO.caption && ' – '}
                   {SECOND_PHOTO.caption}
                 </p>
               )}
