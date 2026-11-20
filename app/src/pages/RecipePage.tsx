@@ -5,9 +5,9 @@ import { PrinterIcon } from '@heroicons/react/24/outline'
 import IconAction from '../components/IconAction'
 import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
+import HeaderPhoto from '../components/HeaderPhoto'
 import { getRecipeBySlug } from '../data-access/gated/recipes'
 import { useAuth } from '../hooks/useAuth'
-import { useHeaderRef } from '../hooks/useHeaderRef'
 import {
   GENRE_SHORT_LABEL,
   RecipeDetail,
@@ -31,15 +31,7 @@ type LoadState =
 // win on a printed recipe, and nobody needs a half-page of blueberries
 // on a kitchen counter.
 function RecipeHeader({ imageUrl }: { imageUrl: string }) {
-  const headerRef = useHeaderRef()
-  return (
-    <div
-      ref={headerRef}
-      className="max-w-4xl h-48 sm:h-64 bg-fe-brown/20 overflow-hidden print:hidden"
-    >
-      <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-    </div>
-  )
+  return <HeaderPhoto src={imageUrl} className="print:hidden" />
 }
 
 // Group by sort_order, which is how the schema pairs a bilingual line:

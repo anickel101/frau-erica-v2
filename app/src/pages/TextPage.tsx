@@ -1,6 +1,7 @@
 import { type ComponentPropsWithoutRef } from 'react'
 import ReactMarkdown, { type ExtraProps } from 'react-markdown'
 import { Link, useParams } from 'react-router-dom'
+import HeaderPhoto from '../components/HeaderPhoto'
 import DocumentEmbeddedImage from '../components/DocumentEmbeddedImage'
 import DocumentImageStrip from '../components/DocumentImageStrip'
 import DocumentWideImage from '../components/DocumentWideImage'
@@ -17,7 +18,6 @@ import {
   segmentContent,
   type ContentSegment,
 } from '../utils/documentImageLayout'
-import { useHeaderRef } from '../hooks/useHeaderRef'
 import { displayKicker, getDocumentAuthors } from '../utils/textDisplay'
 import { resolveImageUrl } from '../utils/imageUrl'
 import { markdownLink } from '../utils/markdownLink'
@@ -154,15 +154,9 @@ function createImageComponents(imageWidths: Map<string, number>, exhibit: boolea
 // do"). The caption sits below at the same size as the document's own
 // image captions.
 function TextHeader({ imageUrl, caption }: { imageUrl: string; caption: string | null }) {
-  const headerRef = useHeaderRef()
   return (
     <>
-      <div
-        ref={headerRef}
-        className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
-      >
-        <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-      </div>
+      <HeaderPhoto src={imageUrl} />
       {/* text-balance for the same reason gallery captions have it: a
           two-line caption otherwise fills the first line and leaves a
           stub on the second. The Family page's own header caption

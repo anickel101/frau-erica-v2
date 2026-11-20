@@ -2,32 +2,27 @@ import { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { markdownLink } from '../utils/markdownLink'
 import Layout from '../components/Layout'
+import HeaderPhoto from '../components/HeaderPhoto'
 import LexiconIndexSection from '../components/LexiconIndexSection'
 import SearchInput from '../components/SearchInput'
 import { LexiconEntry, listLexiconEntries } from '../data-access/public/lexicon'
 import { groupByLetter } from '../utils/groupByLetter'
-import { useHeaderRef } from '../hooks/useHeaderRef'
 import { resolveImageUrl } from '../utils/imageUrl'
 
 // See FamilyHeader in FamilyPage.tsx for why this is its own component:
 // useHeaderRef() must be called from within Layout's children.
 function LexiconHeader() {
-  const headerRef = useHeaderRef()
   return (
-    <div
-      ref={headerRef}
-      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
-    >
+    <>
       {/* Already uploaded to our own image bucket (confirmed via
           `aws s3 ls`) -- a one-off page header graphic, not a
           Persons/Documents/Galleries Images row, same as LoginPage.tsx's
           FrauErica5.jpg. */}
-      <img
+      <HeaderPhoto
         src={resolveImageUrl('hdr.Streuwwelpeter.jpg')}
         alt="A Mueller Lexicon"
-        className="w-full h-full object-cover"
       />
-    </div>
+    </>
   )
 }
 
