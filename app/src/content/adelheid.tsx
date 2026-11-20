@@ -8,7 +8,7 @@ export const ADELHEID_PARAGRAPHS = [
     <em>Erikablüte</em>) that grew in her beloved meadows.
   </>,
   <>
-    She had become engaged to a young man named Wilhelm Ernst Paul Mueller, eldest son of
+    She had become engaged to a young man named E.P. Wilhelm Mueller, eldest son of
     the owner of the Bosenbüttel estate near Midlum. Before they could marry, however,
     Wilhelm's father sold the estate and moved the family to America – that was in the
     late summer of 1865.
