@@ -42,7 +42,7 @@ async function currentIdToken(): Promise<string | null> {
   }
 }
 
-const SESSION_EXPIRED = 'Your session has expired -- please log in again.'
+const SESSION_EXPIRED = 'Your session has expired – please log in again.'
 
 // Without this a stalled connection never settles: fetch has no default
 // timeout, so the promise simply never resolves and the calling page sits
@@ -79,14 +79,14 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
     if (err instanceof DOMException && err.name === 'AbortError') {
       throw new ApiError(
         408,
-        'This is taking longer than expected -- please check your connection and try again.',
+        'This is taking longer than expected – please check your connection and try again.',
       )
     }
     // fetch rejects with a bare TypeError for any network-level failure
     // (offline, DNS, CORS). "Failed to fetch" is not a useful thing to
     // show someone.
     if (err instanceof TypeError) {
-      throw new ApiError(0, "Couldn't reach the archive -- please check your connection.")
+      throw new ApiError(0, "Couldn't reach the archive – please check your connection.")
     }
     throw err
   } finally {

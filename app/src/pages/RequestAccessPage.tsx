@@ -42,7 +42,7 @@ export default function RequestAccessPage() {
         <div className="p-6 max-w-2xl">
           <h1 className="text-2xl font-bold mb-4">Request sent</h1>
           <p>
-            Thanks -- your request has been sent to the Archivist. If you're on the family
+            Thanks – your request has been sent to the Archivist. If you're on the family
             tree, you'll hear back with login instructions once it's reviewed.
           </p>
         </div>

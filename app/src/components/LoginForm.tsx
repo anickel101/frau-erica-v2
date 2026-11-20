@@ -95,7 +95,7 @@ function NewPasswordStep({
   return (
     <form onSubmit={onSubmit} className="space-y-3">
       <p className="text-sm text-fe-ink/80">
-        This is your first time signing in -- choose a new password to finish setting up
+        This is your first time signing in – choose a new password to finish setting up
         your account.
       </p>
       <div>
@@ -298,7 +298,7 @@ export default function LoginForm() {
       setPassword('')
       setResetCode('')
       setResetPassword('')
-      setResetMessage('Password reset -- log in with your new password.')
+      setResetMessage('Password reset – log in with your new password.')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not reset the password.')
     } finally {

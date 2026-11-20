@@ -93,7 +93,7 @@ class ErrorBoundaryInner extends Component<
         <div className="p-6 max-w-2xl">
           <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
           <p className="mb-4">
-            Sorry -- this page ran into a problem. Reloading usually fixes it, especially
+            Sorry – this page ran into a problem. Reloading usually fixes it, especially
             if the site was updated while you had it open.
           </p>
           <p className="mb-6">

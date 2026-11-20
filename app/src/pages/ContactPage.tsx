@@ -58,7 +58,7 @@ export default function ContactPage() {
                 Want to contribute?
               </h2>
               <p className="text-sm text-fe-ink/80">
-                Photos, documents, family stories, and corrections are always welcome --
+                Photos, documents, family stories, and corrections are always welcome –
                 send along what you have and the Archivist will make sure it finds a home
                 in the archive.
               </p>
