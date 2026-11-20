@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { markdownLink } from '../utils/markdownLink'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import HeaderPhoto from '../components/HeaderPhoto'
 import Layout from '../components/Layout'
 import PersonCard from '../components/PersonCard'
 import PersonInfoDialog from '../components/PersonInfoDialog'
@@ -10,7 +11,6 @@ import { ApiError } from '../data-access/gated/apiClient'
 import { getFamilyById } from '../data-access/gated/families'
 import { useAuth } from '../hooks/useAuth'
 import { useSetFamilyGalleries } from '../hooks/useFamilyGalleries'
-import { useHeaderRef } from '../hooks/useHeaderRef'
 import { useSetNarrowTopBar } from '../hooks/useNarrowTopBar'
 import { FamilyDetail, GallerySummary } from '../types/family'
 import { LinkedPersonSummary } from '../types/person'
@@ -83,15 +83,9 @@ function FamilyHeader({
   imageUrl: string
   caption: string | null
 }) {
-  const headerRef = useHeaderRef()
   return (
     <>
-      <div
-        ref={headerRef}
-        className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center"
-      >
-        <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-      </div>
+      <HeaderPhoto src={imageUrl} />
       {/* Outer div matches the header image's own width (max-w-4xl);
           FamilyCaption is the actual caption box -- flush against the
           image's right edge (ml-auto), ragged-left (text-right), sized

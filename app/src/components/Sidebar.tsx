@@ -165,7 +165,14 @@ export default function Sidebar({
         <div
           ref={logoRef}
           className="flex flex-col"
-          style={logoBlockHeight !== undefined ? { height: logoBlockHeight } : undefined}
+          // minHeight, not height: header photos now keep their own
+          // proportions (see HeaderPhoto), so a very wide one in a narrow
+          // window can end above the flag and title. A fixed height would
+          // then run the divider through the title; a minimum lets the
+          // block keep its natural size and the divider sit just below.
+          style={
+            logoBlockHeight !== undefined ? { minHeight: logoBlockHeight } : undefined
+          }
         >
           {/* German flag block -- official ratio is height:width = 3:5,
               i.e. width:height = 5:3. Using aspect-ratio (not a fixed

@@ -1,11 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
+import HeaderPhoto from '../components/HeaderPhoto'
 import InlineMarkdown from '../components/InlineMarkdown'
 import { getCollectionBySlug } from '../data-access/public/collections'
 import type { Collection } from '../data-access/public/collections'
 import { getSeriesChapters } from '../data-access/public/documents'
 import type { DocumentListItem } from '../data-access/public/documents'
-import { useHeaderRef } from '../hooks/useHeaderRef'
 import TextByline from '../components/TextByline'
 import {
   getCollectionAuthors,
@@ -129,15 +129,7 @@ export default function CollectionPage() {
 // and so the sidebar's divider, which aligns itself to the bottom edge
 // of whatever header is on the page, lands in the same place on both.
 function CollectionHeader({ imageUrl }: { imageUrl: string }) {
-  const headerRef = useHeaderRef()
-  return (
-    <div
-      ref={headerRef}
-      className="max-w-4xl h-64 sm:h-80 bg-fe-brown/20 flex items-center justify-center overflow-hidden"
-    >
-      <img src={imageUrl} alt="" className="w-full h-full object-cover" />
-    </div>
-  )
+  return <HeaderPhoto src={imageUrl} />
 }
 
 // getSeriesChapters already sorts by series_order, which is the reading
