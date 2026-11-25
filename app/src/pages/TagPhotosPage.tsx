@@ -7,6 +7,7 @@ import PersonSearch from '../components/PersonSearch'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import {
   GROUP_SLUGS,
+  HEADER_IMAGES_GROUP,
   MISCELLANEOUS_GROUP,
   getTaggableGallery,
   groupSlugFor,
@@ -178,7 +179,13 @@ function ChooseGallery() {
 // order worth walking: clicking Next through all of them to find the
 // handful you can name was the archivist's complaint. A real gallery is
 // a sequence, and walking it is still the better way to tag it.
-const GRID_GROUPS = new Set([MISCELLANEOUS_GROUP])
+//
+// Header images joined it for the same reason (172 banners, no order).
+// They are wide -- 1.75:1 to 3.5:1 -- so they get wide tiles showing the
+// whole banner: a square crop kept only the middle third, and with it
+// only some of the people in a group photograph.
+const GRID_GROUPS = new Set([MISCELLANEOUS_GROUP, HEADER_IMAGES_GROUP])
+const WIDE_GRID_GROUPS = new Set([HEADER_IMAGES_GROUP])
 
 function TagGallery({ galleryId }: { galleryId: number }) {
   const gallery = useMemo(() => getTaggableGallery(galleryId), [galleryId])
@@ -344,6 +351,7 @@ function TagGallery({ galleryId }: { galleryId: number }) {
           ) : (
             <PhotoGrid
               photos={gallery.photos}
+              wide={WIDE_GRID_GROUPS.has(galleryId)}
               tags={tags ?? []}
               hideTagged={hideTagged}
               onHideTaggedChange={setHideTagged}
@@ -427,6 +435,7 @@ function TagGallery({ galleryId }: { galleryId: number }) {
 // paging through them all.
 function PhotoGrid({
   photos,
+  wide,
   tags,
   hideTagged,
   onHideTaggedChange,
@@ -434,6 +443,7 @@ function PhotoGrid({
   onOpen,
 }: {
   photos: GalleryPhoto[]
+  wide: boolean
   tags: PhotoTag[]
   hideTagged: boolean
   onHideTaggedChange: (hide: boolean) => void
@@ -463,7 +473,9 @@ function PhotoGrid({
       {shown.length === 0 ? (
         <p className="text-sm text-fe-ink/60">Every photograph here is tagged.</p>
       ) : (
-        <ul className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+        <ul
+          className={`grid gap-2 ${wide ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-3 sm:grid-cols-5'}`}
+        >
           {shown.map((photo) => {
             const count = peopleOn.get(photo.image_id) ?? 0
             return (
@@ -480,7 +492,7 @@ function PhotoGrid({
                       ? `Tag this photograph (${count} tagged)`
                       : 'Tag this photograph (nobody tagged yet)'
                   }
-                  className={`relative block aspect-square w-full cursor-pointer overflow-hidden border-2 bg-fe-brown/20 transition hover:border-fe-accent focus-visible:border-fe-accent focus-visible:outline-none ${
+                  className={`relative block ${wide ? 'aspect-[2/1]' : 'aspect-square'} w-full cursor-pointer overflow-hidden border-2 bg-fe-brown/20 transition hover:border-fe-accent focus-visible:border-fe-accent focus-visible:outline-none ${
                     photo.image_id === scrollTo
                       ? 'border-fe-accent'
                       : 'border-transparent'
@@ -490,7 +502,7 @@ function PhotoGrid({
                     src={photo.url}
                     alt=""
                     loading="lazy"
-                    className="h-full w-full object-cover object-top"
+                    className={`h-full w-full ${wide ? 'object-contain' : 'object-cover object-top'}`}
                   />
                   {count > 0 && (
                     <span className="absolute right-1 top-1 rounded-sm bg-fe-brown px-1.5 py-0.5 text-[11px] font-bold text-white">
