@@ -39,6 +39,15 @@ describe('documentStatement', () => {
       "UPDATE Documents SET summary = 'A wedding.' WHERE document_id = 82;",
     )
   })
+  test('a title is shared with a German half; a body is not', () => {
+    expect(documentStatement(82, 'title', 'A wedding')).toMatch(
+      /WHERE document_id = 82 OR parallel_of = 82;$/,
+    )
+    expect(documentStatement(82, 'content', 'It rained.')).toBe(
+      "UPDATE Documents SET content = 'It rained.' WHERE document_id = 82;",
+    )
+  })
+
   test('a link inserts; an unlink removes from both halves', () => {
     expect(documentStatement(73, 'person#529', true)).toBe(
       'INSERT INTO DocumentLinks (document_id, person_id) VALUES (73, 529);',

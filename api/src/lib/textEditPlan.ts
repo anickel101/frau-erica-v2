@@ -1,4 +1,4 @@
-import { GENRES, type EditableText } from './queries/textEditTargets'
+import { GENRES, type EditableTextDetail } from './queries/textEditTargets'
 
 // Turns what the editor submitted for one text into the pending edits to
 // store and the ones to clear.
@@ -16,6 +16,11 @@ export const AUTHOR_MAX = 200
 // rule.
 export const SUMMARY_MAX = 4000
 export const PEOPLE_MAX = 50
+// The longest title in the archive is about 90 characters.
+export const TITLE_MAX = 300
+// The longest body is 28 KB. Room for a long text to grow, and a guard
+// against pasting something that isn't one.
+export const CONTENT_MAX = 100_000
 
 export type FieldValue = string | number | boolean | null
 
@@ -33,7 +38,15 @@ export interface TextEditPlan {
   personIds: number[]
 }
 
-const FIELDS = ['author', 'author_person_id', 'genre', 'summary', 'people'] as const
+const FIELDS = [
+  'title',
+  'content',
+  'author',
+  'author_person_id',
+  'genre',
+  'summary',
+  'people',
+] as const
 
 export function linkField(personId: number): string {
   return `person#${personId}`
@@ -53,7 +66,7 @@ function isPositiveId(value: unknown): value is number {
 }
 
 export function planTextEdits(
-  text: EditableText,
+  text: EditableTextDetail,
   body: unknown,
 ): TextEditPlan | { error: string } {
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
@@ -72,6 +85,37 @@ export function planTextEdits(
   const propose = (field: string, value: FieldValue, was: FieldValue, same: boolean) => {
     if (same) plan.clear.push(field)
     else plan.put.push({ field, value, was })
+  }
+
+  if ('title' in input) {
+    if (typeof input.title !== 'string') return { error: 'title must be text' }
+    const title = cleanText(input.title)
+    if (title === null) return { error: 'A text needs a title' }
+    // A title is one line everywhere it appears -- the page heading, the
+    // index, the chapter list.
+    if (title.includes('\n')) return { error: 'title must be a single line' }
+    if (title.length > TITLE_MAX) {
+      return { error: `title must be at most ${TITLE_MAX} characters` }
+    }
+    propose('title', title, text.title, title === cleanText(text.title))
+  }
+
+  if ('content' in input) {
+    // Until the editor can set a German half beside its English one, a
+    // bilingual body is refused rather than edited alone: the export
+    // won't publish a pair whose paragraphs no longer line up.
+    if (text.bilingual) {
+      return { error: "This text's body is bilingual and can't be edited here yet" }
+    }
+    if (typeof input.content !== 'string') return { error: 'content must be text' }
+    const content = cleanText(input.content)
+    // Emptying a body is never what a save means; unpublishing a text is
+    // a separate thing.
+    if (content === null) return { error: "A text's body can't be emptied" }
+    if (content.length > CONTENT_MAX) {
+      return { error: `content must be at most ${CONTENT_MAX} characters` }
+    }
+    propose('content', content, text.content, content === cleanText(text.content))
   }
 
   if ('author' in input) {

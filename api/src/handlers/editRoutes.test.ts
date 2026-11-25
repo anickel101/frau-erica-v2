@@ -3,7 +3,7 @@ import type {
   APIGatewayProxyStructuredResultV2,
 } from 'aws-lambda'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import type { EditableText } from '../lib/queries/textEditTargets'
+import type { EditableTextDetail } from '../lib/queries/textEditTargets'
 
 const putEdit = vi.fn()
 const deleteEdit = vi.fn()
@@ -23,7 +23,7 @@ vi.mock('../lib/edits', async (importOriginal) => ({
 const getDb = vi.fn(async () => ({}))
 vi.mock('../lib/db', () => ({ getDb }))
 
-const text: EditableText = {
+const text: EditableTextDetail = {
   document_id: 40,
   title: 'Chicago 1972',
   series_key: null,
@@ -35,12 +35,14 @@ const text: EditableText = {
   summary: null,
   tags: null,
   person_ids: [],
+  content: 'It was hot.',
+  bilingual: false,
 }
-const getEditableText = vi.fn((): EditableText | null => text)
+const getEditableTextDetail = vi.fn((): EditableTextDetail | null => text)
 const listEditableTexts = vi.fn(() => [text])
 vi.mock('../lib/queries/textEditTargets', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../lib/queries/textEditTargets')>()),
-  getEditableText,
+  getEditableTextDetail,
   listEditableTexts,
 }))
 const personExists = vi.fn(() => true)
@@ -90,7 +92,7 @@ beforeEach(() => {
   listEditsForEntity.mockReset().mockResolvedValue([])
   listEditsOfType.mockReset().mockResolvedValue([])
   getDb.mockReset().mockResolvedValue({})
-  getEditableText.mockReset().mockReturnValue(text)
+  getEditableTextDetail.mockReset().mockReturnValue(text)
   personExists.mockReset().mockImplementation(() => true)
 })
 
@@ -168,7 +170,7 @@ describe('POST /edits/{type}/{id}', () => {
   })
 
   test('404s a text the page should not be editing', async () => {
-    getEditableText.mockReturnValue(null)
+    getEditableTextDetail.mockReturnValue(null)
     const res = await run(save, saveDoc('2', { changes: { genre: 'Memoir' } }))
     expect(res.statusCode).toBe(404)
     expect(putEdit).not.toHaveBeenCalled()
@@ -212,6 +214,29 @@ describe('GET /edits?type=', () => {
     const res = await run(list, event({ query: type ? { type } : undefined }))
     expect(res.statusCode).toBe(400)
     expect(getDb).not.toHaveBeenCalled()
+  })
+
+  test('returns one text in full, with only its own edits', async () => {
+    listEditsForEntity.mockResolvedValue([
+      { entity: 'document#40', field: 'content' },
+    ] as never)
+    const res = await run(list, event({ query: { type: 'document', id: '40' } }))
+    expect(res.statusCode).toBe(200)
+    const body = JSON.parse(res.body as string)
+    expect(body.targets).toEqual([text])
+    expect(listEditsForEntity).toHaveBeenCalledWith('document#40')
+    expect(listEditsOfType).not.toHaveBeenCalled()
+  })
+
+  test('404s one text that cannot be edited', async () => {
+    getEditableTextDetail.mockReturnValue(null)
+    const res = await run(list, event({ query: { type: 'document', id: '2' } }))
+    expect(res.statusCode).toBe(404)
+  })
+
+  test.each(['abc', '0', '-1', ''])('400s id %j', async (id) => {
+    const res = await run(list, event({ query: { type: 'document', id } }))
+    expect(res.statusCode).toBe(400)
   })
 
   test('refuses a non-admin before touching anything', async () => {

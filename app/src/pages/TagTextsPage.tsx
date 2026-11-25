@@ -307,7 +307,14 @@ function EditText({
           className="text-fe-link hover:text-fe-link-dark"
         >
           Read the text &#8599;
-        </a>
+        </a>{' '}
+        &middot;{' '}
+        <Link
+          to={`/admin/edit/text/${text.document_id}`}
+          className="text-fe-link hover:text-fe-link-dark"
+        >
+          Edit its title, summary and text
+        </Link>
       </p>
 
       <TextForm

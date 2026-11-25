@@ -1,7 +1,5 @@
 import documentsDetailRaw from '../../data/generated/documents.json'
-import imagesRaw from '../../data/generated/images.json'
-import type { ImageDimensions } from '../../utils/documentImageLayout'
-import { resolveImageUrl } from '../../utils/imageUrl'
+import { resolveImagePlaceholders } from './documentImages'
 import { resolveDocumentPair } from './documents'
 import type { DocumentListItem, DocumentLanguage } from './documents'
 
@@ -51,17 +49,6 @@ export interface DocumentDetail extends DocumentListItem {
   header_image_caption: string | null
 }
 
-interface GeneratedImage {
-  image_id: number
-  caption: string | null
-  url: string
-  width: number | null
-  height: number | null
-}
-
-// The shape actually stored in documents.json: parallel_of is a raw id,
-// which getDocumentById resolves into a ParallelHalf before any caller
-// sees it.
 interface GeneratedDocument extends DocumentListItem {
   content: string
   parallel_of: number | null
@@ -70,9 +57,6 @@ interface GeneratedDocument extends DocumentListItem {
 }
 
 const documentsDetail = documentsDetailRaw as GeneratedDocument[]
-const imagesById = new Map(
-  (imagesRaw as GeneratedImage[]).map((img) => [img.image_id, img]),
-)
 
 // {{image:ID}} placeholders in markdown content reference a real Images
 // row and are resolved here, at read time -- not by the export script --
@@ -88,34 +72,10 @@ const imagesById = new Map(
 // reads that title back out to pick a full-width, non-floated treatment
 // ("wide") or an explicit pixel width overriding the default rotation
 // (a bare number), instead of the usual floated/rotating-width image.
-const IMAGE_PLACEHOLDER = /\{\{image:(\d+)(?::(\w+))?\}\}/g
-
-export function resolveImagePlaceholders(content: string): string {
-  return content.replace(
-    IMAGE_PLACEHOLDER,
-    (_match, idStr: string, modifier: string | undefined) => {
-      const image = imagesById.get(Number(idStr))
-      if (!image) return ''
-      const caption = image.caption ?? ''
-      const url = resolveImageUrl(image.url)
-      return modifier ? `![${caption}](${url} "${modifier}")` : `![${caption}](${url})`
-    },
-  )
-}
-
-// Keyed by the resolved src, since that is all an embedded image carries
-// once its placeholder has become markdown.
-const dimensionsBySrc = new Map(
-  (imagesRaw as GeneratedImage[]).flatMap((img) =>
-    img.width && img.height
-      ? [[resolveImageUrl(img.url), { width: img.width, height: img.height }] as const]
-      : [],
-  ),
-)
-
-export function getImageDimensions(src: string): ImageDimensions | undefined {
-  return dimensionsBySrc.get(src)
-}
+// The placeholder and dimension helpers moved to documentImages.ts, which
+// the admin editor can import without this file's 1.2 MB of bodies.
+// Re-exported so the text page and its tests keep one import.
+export { getImageDimensions, resolveImagePlaceholders } from './documentImages'
 
 export function getDocumentById(id: number): DocumentDetail | undefined {
   const resolved = resolveDocumentPair(documentsDetail, id)

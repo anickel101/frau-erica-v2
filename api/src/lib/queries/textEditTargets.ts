@@ -87,3 +87,30 @@ export function getEditableText(db: Database, documentId: number): EditableText 
   )
   return rows.length === 1 ? attachLinks(db, rows)[0] : null
 }
+
+// One text with what the full editor needs on top: its body, and whether
+// a German half sits alongside it. Kept out of listEditableTexts, which
+// serves every text at once -- the bodies run to 1.2 MB between them.
+export interface EditableTextDetail extends EditableText {
+  // As stored, {{image:ID}} placeholders and all.
+  content: string
+  // True when a German half points at this text. Its body is edited
+  // side by side with that half, which the editor can't do yet.
+  bilingual: boolean
+}
+
+export function getEditableTextDetail(
+  db: Database,
+  documentId: number,
+): EditableTextDetail | null {
+  const text = getEditableText(db, documentId)
+  if (!text) return null
+  const [row] = queryAll<{ content: string | null; halves: number }>(
+    db,
+    `SELECT content,
+            (SELECT count(*) FROM Documents WHERE parallel_of = :id) AS halves
+       FROM Documents WHERE document_id = :id`,
+    { ':id': documentId },
+  )
+  return { ...text, content: row.content ?? '', bilingual: row.halves > 0 }
+}

@@ -1,148 +1,19 @@
-import { type ComponentPropsWithoutRef } from 'react'
-import ReactMarkdown, { type ExtraProps } from 'react-markdown'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import HeaderPhoto from '../components/HeaderPhoto'
-import DocumentEmbeddedImage from '../components/DocumentEmbeddedImage'
-import DocumentImageStrip from '../components/DocumentImageStrip'
-import DocumentWideImage from '../components/DocumentWideImage'
 import InlineMarkdown from '../components/InlineMarkdown'
+import TextBody from '../components/TextBody'
 import TextByline from '../components/TextByline'
 import Layout from '../components/Layout'
-import ParallelText from '../components/ParallelText'
 import { getSeriesChapters } from '../data-access/public/documents'
-import { getDocumentById, getImageDimensions } from '../data-access/public/documentDetail'
 import {
-  floatWidth,
-  imagesIn,
-  isExhibit,
-  segmentContent,
-  type ContentSegment,
-} from '../utils/documentImageLayout'
+  getDocumentById,
+  resolveImagePlaceholders,
+} from '../data-access/public/documentDetail'
+import { useAuth } from '../hooks/useAuth'
+import { useStagedText, type StagedText } from '../hooks/useStagedText'
 import { displayKicker, getDocumentAuthors } from '../utils/textDisplay'
 import { resolveImageUrl } from '../utils/imageUrl'
-import { markdownLink } from '../utils/markdownLink'
-
-// A pure, one-time scan over the resolved content, not a counter
-// incremented as a side effect of rendering each <img> -- an earlier
-// version mutated a shared counter from inside the img render function,
-// which is exactly the kind of impure render React.StrictMode
-// deliberately double-invokes to catch: every image ended up rendering
-// the same width live, because the "real" committed call was always the
-// second of a pair, landing on the same repeated index every time.
-// Assigning widths up front here means the img renderer below only ever
-// does a plain, side-effect-free lookup, safe to call any number of
-// times. Keyed by URL (not just counted) so the same photo reused twice
-// keeps a consistent size rather than picking up wherever the sequence
-// happens to be on its second appearance.
-// Only floated images take a slot -- a modified image ("wide", an
-// explicit pixel width) and a strip member are sized by other rules, so
-// they shouldn't shift the variation the floated ones step through.
-function buildImageWidths(floatedMarkdown: string): Map<string, number> {
-  const widths = new Map<string, number>()
-  let index = 0
-  for (const { src, modifier } of imagesIn(floatedMarkdown)) {
-    if (modifier) continue
-    if (!widths.has(src)) {
-      widths.set(src, floatWidth(getImageDimensions(src), index))
-      index += 1
-    }
-  }
-  return widths
-}
-
-// Renders every embedded <img> (from {{image:ID}} shortcodes, resolved
-// to markdown image syntax -- see data-access/public/documentDetail.ts)
-// via DocumentEmbeddedImage instead of a bare <img>, with the
-// zoom-on-click modal. Images in a strip never reach here; TextPage hands
-// those to DocumentImageStrip directly.
-function createImageComponents(imageWidths: Map<string, number>, exhibit: boolean) {
-  return {
-    ...markdownLink,
-    // title carries the {{image:ID:modifier}} modifier through markdown's
-    // own image-title slot (see documentDetail.ts's
-    // resolveImagePlaceholders) -- "wide" renders a full-width hero image;
-    // a bare number pins an explicit floated width.
-    img: ({ src, alt, title }: ComponentPropsWithoutRef<'img'> & ExtraProps) => {
-      if (!src) return null
-      if (title === 'wide') return <DocumentWideImage src={src} alt={alt} />
-      // "stack" (a lone one -- a run of them becomes a strip): out of the
-      // float, at the file's own size. Exhibit documents show every image
-      // this way. Distinct from "wide", which fills the column and would
-      // enlarge a small scan to do it.
-      if (exhibit || title === 'stack') {
-        return (
-          <DocumentEmbeddedImage
-            src={src}
-            alt={alt}
-            layout={{ kind: 'large', maxWidth: getImageDimensions(src)?.width }}
-          />
-        )
-      }
-      const explicitWidth = title && /^\d+$/.test(title) ? Number(title) : undefined
-      return (
-        <DocumentEmbeddedImage
-          src={src}
-          alt={alt}
-          layout={{
-            kind: 'float',
-            width: explicitWidth ?? imageWidths.get(src) ?? floatWidth(undefined, 0),
-          }}
-        />
-      )
-    },
-    // Markdown always wraps a bare `![]()` in a <p> -- but DocumentEmbeddedImage
-    // renders a block-level <figure> (with a <figcaption>), which is invalid
-    // HTML nested inside a <p> (confirmed live: a real hydration warning, not
-    // just a lint nitpick). Two distinct cases both need handling, not just
-    // one: a paragraph whose *only* content is a single image (renders
-    // unwrapped -- no <p>, no extra <div>, so a solo image doesn't pick up
-    // an unwanted margin from a near-empty wrapper), and a paragraph with an
-    // image *mixed into* other content -- e.g. "![](...)Click on..." with no
-    // blank line between the image and the text, a real pattern in the
-    // actual source content, not just a hypothetical. That second case still
-    // contains a <figure>, so it still can't be a <p> -- it needs a <div>
-    // instead, which can validly hold both the floated figure and the
-    // flowing text around it. Every other (image-free) paragraph gets mb-4
-    // -- Tailwind's preflight zeroes out <p>'s default browser margin, so
-    // without this every paragraph ran directly into the next with no
-    // visual break at all.
-    p: ({ children, node }: ComponentPropsWithoutRef<'p'> & ExtraProps) => {
-      const hasImageChild =
-        node?.children.some(
-          (child) => child.type === 'element' && child.tagName === 'img',
-        ) ?? false
-      if (node?.children.length === 1 && hasImageChild) return <>{children}</>
-      if (hasImageChild) return <div className="mb-4">{children}</div>
-      return <p className="mb-4">{children}</p>
-    },
-    // Preflight strips list-style, padding and margin from <ul>/<ol>,
-    // exactly as it zeroes <p>'s margin above -- so a markdown list
-    // rendered as unmarked, unindented lines running straight into the
-    // paragraph after it. Nothing in the archive had a list until the
-    // Gerhard estate record, which is why this had never shown.
-    //
-    // The nested level gets a hollow marker and no bottom margin of its
-    // own, so sub-items read as subordinate to their category and sit
-    // tight under it. Only the outer list pushes the following
-    // paragraph away.
-    ul: ({ children }: ComponentPropsWithoutRef<'ul'>) => (
-      <ul className="mb-4 ml-6 list-disc space-y-1 marker:text-fe-brown [&_ul]:mt-1 [&_ul]:mb-0 [&_ul]:list-[circle]">
-        {children}
-      </ul>
-    ),
-    ol: ({ children }: ComponentPropsWithoutRef<'ol'>) => (
-      <ol className="mb-4 ml-6 list-decimal space-y-1 marker:text-fe-brown [&_ol]:mt-1 [&_ol]:mb-0">
-        {children}
-      </ol>
-    ),
-    // A markdown `---`. Preflight zeroes <hr>'s margin too, so the only
-    // space around the rule was the mb-4 of the paragraph above it, and
-    // the next line sat hard against it (the Sängerbote introduction, doc
-    // 255, per the Archivist). Same mb-4 below, so the rule sits evenly
-    // between the two. Also the footnote separator in 81, 98 and 169.
-    hr: () => <hr className="mb-4" />,
-  }
-}
 
 // Same shape and reasoning as FamilyPage's FamilyHeader: useHeaderRef()
 // has to be called from inside Layout's children, so this can't be
@@ -183,6 +54,10 @@ function TextHeader({ imageUrl, caption }: { imageUrl: string; caption: string |
 export default function TextPage() {
   const { id } = useParams<{ id: string }>()
   const document = getDocumentById(Number(id))
+  const { status, groups } = useAuth()
+  const isAdmin = status === 'signedIn' && groups.includes('admin')
+  const staged = useStagedText(document?.document_id ?? null, isAdmin)
+  const [showStaged, setShowStaged] = useState(true)
 
   if (!document) {
     return (
@@ -200,28 +75,19 @@ export default function TextPage() {
   }
 
   const seriesChapters = document.series_key ? getSeriesChapters(document.series_key) : []
-  // document.content only -- {{image:ID}} shortcodes in a summary are
-  // never resolved to real markdown image syntax in the first place (see
-  // data-access/public/documents.ts), and confirmed against the real
-  // data that no document's summary actually has one anyway.
-  // Both halves feed one width sequence, so a photo in the German
-  // column and one in the English column don't independently restart the
-  // rotation and land on the same size beside each other.
-  // Exhibit and strips apply to single-language texts. The parallel
-  // layout pairs paragraph against paragraph, so its images stay one per
-  // block, where they float within their own column.
-  const exhibit = !document.parallel && isExhibit(document.content)
-  const segments: ContentSegment[] =
-    document.parallel || exhibit
-      ? [{ kind: 'markdown', text: document.content }]
-      : segmentContent(document.content)
-  const floatedMarkdown = document.parallel
-    ? `${document.content}\n\n${document.parallel.content}`
-    : segments.flatMap((s) => (s.kind === 'markdown' ? [s.text] : [])).join('\n\n')
-  const imageComponents = createImageComponents(
-    buildImageWidths(floatedMarkdown),
-    exhibit,
-  )
+
+  // An admin sees the text as it will read once its staged changes are
+  // published, with a banner saying so and a way back to what everyone
+  // else sees. A bilingual body isn't editable yet, so only its title and
+  // summary can differ.
+  const viewing = staged && showStaged ? staged : null
+  const title = viewing?.title ?? document.title
+  const summary =
+    viewing && 'summary' in viewing ? (viewing.summary ?? null) : document.summary
+  const content =
+    viewing?.content !== undefined && !document.parallel
+      ? resolveImagePlaceholders(viewing.content)
+      : document.content
 
   return (
     <Layout>
@@ -239,8 +105,16 @@ export default function TextPage() {
         )}
         {/* text-xl/2xl, not text-2xl/3xl -- see FamilyPage.tsx's own
             comment on this: gives a long document title more room. */}
+        {isAdmin && (
+          <AdminTextNotice
+            documentId={document.document_id}
+            staged={staged}
+            showStaged={showStaged}
+            onToggle={() => setShowStaged((v) => !v)}
+          />
+        )}
         <h1 className="text-xl sm:text-2xl font-bold mb-2">
-          <InlineMarkdown>{document.title}</InlineMarkdown>
+          <InlineMarkdown>{title}</InlineMarkdown>
         </h1>
         {/* The genre stamp stays. Opa asked to "consider removing" it
             unless it served a purpose -- it does, so it's kept here and
@@ -249,87 +123,24 @@ export default function TextPage() {
           <TextByline authors={getDocumentAuthors(document)} genre={document.genre} />
         </p>
 
-        {document.summary && (
-          <>
-            {/* flow-root -- not overflow-hidden -- contains the floated
-                DocumentEmbeddedImage figures without clipping anything,
-                so this div's own height still includes a trailing image
-                taller than the text next to it. flow-root also creates a
-                new block-formatting context, though, which stops the
-                last paragraph's own mb-4 (see createImageComponents' p
-                override) from collapsing into this div's mb-6 the way it
-                normally would -- without [&>*:last-child]:mb-0 both
-                margins applied on top of each other (40px, not the
-                intended 24px). This div's mb-6 is the single source of
-                truth for the gap below the summary; the last child's own
-                trailing margin is zeroed instead of relied on, so the
-                gap stays correct no matter what markdown block the
-                summary happens to end on. */}
-            {/* pl-24 (1in at 96dpi) and text-[14px], both per Opa's
-                review: "indent summary graf an inch on the left and make
-                the summary graf a point or two larger than the body
-                text". app/CLAUDE.md had listed that indent under
-                "deliberately NOT replicated from the original site" --
-                it has now been asked for by the person whose site it is,
-                and that file has been corrected so it isn't removed
-                again as a stray re-addition. */}
-            <div className="max-w-none mb-6 pl-8 sm:pl-24 text-[14px] text-fe-ink flow-root [&>*:last-child]:mb-0">
-              <ReactMarkdown components={imageComponents}>
-                {document.summary}
-              </ReactMarkdown>
-            </div>
-            {/* Same rule style as the sidebar's own section dividers
-                (border-t-[1.5px] border-fe-brown), separating the
-                summary from the main text below it. */}
-            <hr className="border-t-[1.5px] border-fe-brown mb-6" />
-          </>
-        )}
-
-        {document.parallel ? (
-          <ParallelText
-            german={
-              document.parallel.language === 'de'
-                ? document.parallel.content
-                : document.content
-            }
-            english={
-              document.parallel.language === 'de'
-                ? document.content
-                : document.parallel.content
-            }
-            components={imageComponents}
-          />
-        ) : document.content.trim() ? (
-          <div className="max-w-none text-[12px] text-fe-ink flow-root">
-            {segments.map((segment, i) =>
-              segment.kind === 'strip' ? (
-                <DocumentImageStrip
-                  key={i}
-                  images={segment.images}
-                  dimensions={getImageDimensions}
-                />
-              ) : (
-                <ReactMarkdown key={i} components={imageComponents}>
-                  {segment.text}
-                </ReactMarkdown>
-              ),
-            )}
-          </div>
-        ) : (
-          // Five published documents have a summary and no text at all
-          // -- 98, 119, and three chapters of Nana's memoir. They used
-          // to render the header, the title, the byline, the summary and
-          // the rule that exists to separate summary from body, and then
-          // stop. The rule read as a promise of text that wasn't there,
-          // so the page looked broken rather than unfinished.
-          //
-          // Said here rather than fixed in the data, because it is true
-          // of any document whose transcription hasn't been done yet and
-          // the archive will have more of them.
-          <p className="text-[12px] italic text-fe-ink/70">
-            The text of this piece hasn&rsquo;t been transcribed into the archive yet.
-          </p>
-        )}
+        <TextBody
+          summary={summary}
+          content={content}
+          parallel={
+            document.parallel
+              ? {
+                  german:
+                    document.parallel.language === 'de'
+                      ? document.parallel.content
+                      : document.content,
+                  english:
+                    document.parallel.language === 'de'
+                      ? document.content
+                      : document.parallel.content,
+                }
+              : null
+          }
+        />
 
         {/* There was a previous/next pair of arrows here, shown on
             every parallel text. It went at the archivist's request: the
@@ -364,5 +175,54 @@ export default function TextPage() {
         )}
       </div>
     </Layout>
+  )
+}
+
+// Admins only: a way into the editor, and -- when changes are waiting on
+// this text -- a note saying the page is showing them, with a switch
+// back to the published version.
+function AdminTextNotice({
+  documentId,
+  staged,
+  showStaged,
+  onToggle,
+}: {
+  documentId: number
+  staged: StagedText | null
+  showStaged: boolean
+  onToggle: () => void
+}) {
+  const editLink = (
+    <Link
+      to={`/admin/edit/text/${documentId}`}
+      className="text-fe-link hover:text-fe-link-dark"
+    >
+      Edit this text
+    </Link>
+  )
+  if (!staged) return <p className="text-sm mb-2">{editLink}</p>
+
+  const drafts = staged.edits.some((e) => e.status === 'draft')
+  return (
+    <div
+      className="mb-3 border-l-4 border-fe-accent bg-white/60 px-3 py-2 text-sm"
+      role="status"
+    >
+      <p>
+        {showStaged
+          ? `Showing changes not yet published (${drafts ? 'some still a draft' : 'submitted'}). Visitors see the current version.`
+          : 'Showing the current version, as visitors see it. Changes are waiting.'}
+      </p>
+      <p className="mt-1 space-x-4">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="text-fe-link hover:text-fe-link-dark"
+        >
+          {showStaged ? 'Show the current version' : 'Show the changes'}
+        </button>
+        {editLink}
+      </p>
+    </div>
   )
 }
