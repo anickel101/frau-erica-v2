@@ -4,7 +4,12 @@ import { fileURLToPath } from 'node:url'
 import type { Database } from 'sql.js'
 import { beforeEach, describe, expect, test } from 'vitest'
 import { createTestDb } from '../testFixtures'
-import { GENRES, getEditableText, listEditableTexts } from './textEditTargets'
+import {
+  GENRES,
+  getEditableText,
+  getEditableTextDetail,
+  listEditableTexts,
+} from './textEditTargets'
 
 let db: Database
 
@@ -28,6 +33,9 @@ beforeEach(async () => {
             (4, 'Chicago', 'Memoir', 1, 'en')`,
   )
   db.run('UPDATE Documents SET parallel_of = 1 WHERE document_id = 2')
+  db.run(
+    "UPDATE Documents SET content = 'A summer.\n\n{{image:5}}' WHERE document_id = 4",
+  )
   db.run(
     `INSERT INTO DocumentLinks (document_id, person_id)
      VALUES (1, 21), (2, 108), (2, 21), (3, 500)`,
@@ -59,6 +67,27 @@ describe('getEditableText', () => {
     [999, 'an id nobody has'],
   ])('refuses %i, %s', (id) => {
     expect(getEditableText(db, id)).toBeNull()
+  })
+})
+
+describe('getEditableTextDetail', () => {
+  test('adds the body as stored, placeholders and all', () => {
+    const chicago = getEditableTextDetail(db, 4)
+    expect(chicago?.content).toBe('A summer.\n\n{{image:5}}')
+    expect(chicago?.bilingual).toBe(false)
+  })
+
+  test('knows a text with a German half is bilingual', () => {
+    expect(getEditableTextDetail(db, 1)?.bilingual).toBe(true)
+  })
+
+  test('an empty body is an empty string, not null', () => {
+    expect(getEditableTextDetail(db, 1)?.content).toBe('')
+  })
+
+  test('refuses what getEditableText refuses', () => {
+    expect(getEditableTextDetail(db, 2)).toBeNull()
+    expect(getEditableTextDetail(db, 3)).toBeNull()
   })
 })
 

@@ -1,8 +1,14 @@
 import { describe, expect, test } from 'vitest'
-import type { EditableText } from './queries/textEditTargets'
-import { SUMMARY_MAX, planTextEdits, type TextEditPlan } from './textEditPlan'
+import type { EditableTextDetail } from './queries/textEditTargets'
+import {
+  CONTENT_MAX,
+  SUMMARY_MAX,
+  TITLE_MAX,
+  planTextEdits,
+  type TextEditPlan,
+} from './textEditPlan'
 
-const text: EditableText = {
+const text: EditableTextDetail = {
   document_id: 40,
   title: 'Chicago 1972',
   series_key: 'Chicago',
@@ -14,6 +20,8 @@ const text: EditableText = {
   summary: 'A summer on the South Side.',
   tags: 'Nickel, Joel',
   person_ids: [21, 108],
+  content: 'It was hot.\n\n{{image:12}}\n\nWe left in August.',
+  bilingual: false,
 }
 
 function plan(body: unknown): TextEditPlan {
@@ -100,5 +108,57 @@ describe('planTextEdits', () => {
     [[], /Expected an object/],
   ])('refuses %j', (body, message) => {
     expect(error(body)).toMatch(message)
+  })
+})
+
+describe('planTextEdits: title and body', () => {
+  test('proposes a new title, recording the old one', () => {
+    expect(plan({ title: 'Chicago, 1972' }).put).toEqual([
+      { field: 'title', value: 'Chicago, 1972', was: 'Chicago 1972' },
+    ])
+  })
+
+  test.each([
+    ['', /needs a title/],
+    ['   ', /needs a title/],
+    ['Two\nlines', /single line/],
+    ['x'.repeat(TITLE_MAX + 1), /at most/],
+    [null, /must be text/],
+  ])('refuses title %j', (title, message) => {
+    expect(error({ title })).toMatch(message)
+  })
+
+  // The body is stored with its placeholders; the planner never resolves
+  // or rewrites them, only compares and stores.
+  test('proposes a new body, placeholders untouched', () => {
+    const content = 'It was hot.\n\n{{image:12}}\n\nWe left in September.'
+    expect(plan({ content }).put).toEqual([
+      { field: 'content', value: content, was: text.content },
+    ])
+  })
+
+  // A browser textarea submits \r\n; a body that differs only in its
+  // line endings or a trailing newline is not an edit.
+  test('a body differing only in line endings or edges clears instead', () => {
+    const result = plan({ content: `${text.content.replace(/\n/g, '\r\n')}\n\n` })
+    expect(result.put).toEqual([])
+    expect(result.clear).toEqual(['content'])
+  })
+
+  test.each([
+    ['', /can't be emptied/],
+    ['\n\n  ', /can't be emptied/],
+    ['x'.repeat(CONTENT_MAX + 1), /at most/],
+    [42, /must be text/],
+  ])('refuses body %j', (content, message) => {
+    expect(error({ content })).toMatch(message)
+  })
+
+  test("refuses a bilingual text's body, but not its title", () => {
+    const bilingual = { ...text, bilingual: true }
+    const body = planTextEdits(bilingual, { content: 'New.' })
+    expect('error' in body && body.error).toMatch(/bilingual/)
+    const title = planTextEdits(bilingual, { title: 'New title' })
+    expect('put' in title && title.put[0].field).toBe('title')
   })
 })

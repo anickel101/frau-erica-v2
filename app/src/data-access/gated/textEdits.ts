@@ -27,6 +27,14 @@ export interface EditableText {
   person_ids: number[]
 }
 
+// One text in full, for the editor: its body as stored ({{image:ID}}
+// placeholders and all), and whether a German half sits beside it, whose
+// body can't be edited yet.
+export interface EditableTextDetail extends EditableText {
+  content: string
+  bilingual: boolean
+}
+
 export type EditStatus = 'draft' | 'submitted'
 
 // field is 'author', 'author_person_id', 'genre', 'summary', or
@@ -45,6 +53,8 @@ export interface TextEdit {
 // for people, true to link and false to unlink. A value matching the
 // archive withdraws that field's pending edit.
 export interface TextEditChanges {
+  title?: string
+  content?: string
   author?: string | null
   author_person_id?: number | null
   genre?: string
@@ -70,6 +80,18 @@ export async function listTextEdits(): Promise<{
     edits: QueuedEdit[]
   }>('/edits?type=document')
   return { texts: targets, edits: edits.map(toTextEdit) }
+}
+
+// One text and its own pending edits, drafts included: what the editor
+// opens with.
+export async function getTextForEditing(
+  documentId: number,
+): Promise<{ text: EditableTextDetail; edits: TextEdit[] }> {
+  const { targets, edits } = await apiFetch<{
+    targets: EditableTextDetail[]
+    edits: QueuedEdit[]
+  }>(`/edits?type=document&id=${documentId}`)
+  return { text: targets[0], edits: edits.map(toTextEdit) }
 }
 
 // Resolves to the text's pending edits as stored after the save. Saving

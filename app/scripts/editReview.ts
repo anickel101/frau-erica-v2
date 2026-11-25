@@ -26,11 +26,20 @@ export function sqlLiteral(value: Value): string {
 
 export const LINK_PREFIX = 'person#'
 
-// Fields of Documents an edit may set. The summary is the English entry
-// point's own; the rest are shared with a German half, if there is one,
-// which the archive has always kept in agreement.
-export const DOCUMENT_FIELDS = ['author', 'author_person_id', 'genre', 'summary'] as const
-const ENTRY_POINT_ONLY = new Set(['summary'])
+// Fields of Documents an edit may set. The summary and the body are the
+// entry point's own (a German half has its own body); the rest -- title
+// included, 78 of 78 halves carrying their entry's -- are shared with a
+// German half, if there is one, which the archive has always kept in
+// agreement.
+export const DOCUMENT_FIELDS = [
+  'title',
+  'content',
+  'author',
+  'author_person_id',
+  'genre',
+  'summary',
+] as const
+const ENTRY_POINT_ONLY = new Set(['summary', 'content'])
 
 export function documentStatement(
   documentId: number,

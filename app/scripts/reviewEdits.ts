@@ -96,10 +96,11 @@ function nameOf(personId: number): string | null {
 }
 
 const documentRow = db.prepare(
-  `SELECT title, author, author_person_id, genre, summary, parallel_of
-     FROM Documents WHERE document_id = ?`,
+  `SELECT title, content, author, author_person_id, genre, summary, parallel_of,
+          (SELECT count(*) FROM Documents h WHERE h.parallel_of = d.document_id) AS halves
+     FROM Documents d WHERE document_id = ?`,
 )
-type DocumentRow = { title: string; parallel_of: number | null } & Record<
+type DocumentRow = { parallel_of: number | null; halves: number } & Record<
   (typeof DOCUMENT_FIELDS)[number],
   Value
 >
@@ -136,6 +137,11 @@ function checkDocument(edit: CheckedEdit): CheckedEdit {
   const doc = documentRow.get(edit.id) as DocumentRow | undefined
   if (!doc || doc.parallel_of !== null) {
     return { ...edit, verdict: 'missing', now: null, problem: 'no such text' }
+  }
+  // The API refuses this; checked again here because a German half added
+  // since the edit was made would leave the two bodies out of step.
+  if (edit.field === 'content' && doc.halves > 0) {
+    return { ...edit, verdict: 'missing', now: null, problem: 'body of a bilingual text' }
   }
   let now: Value
   if (edit.field.startsWith(LINK_PREFIX)) {

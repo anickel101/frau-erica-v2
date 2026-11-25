@@ -291,7 +291,10 @@ Two routes — `GET /edits?type=document` and `POST /edits/{type}/{id}`
 (body `{ changes, status }`) — backing `/admin/tag-texts` and, as it is
 built, the text editor: an admin changes a record on the site and the
 change waits in a queue until it is applied. Today the one type is
-`document` (byline, author record, genre, summary, linked people);
+`document` (title, body, byline, author record, genre, summary, linked
+people); `GET /edits?type=document&id=N` returns one text in full, body
+included, for the editor at `/admin/edit/text/:id`. A bilingual text's
+body is refused until the side-by-side editor exists;
 photographs, galleries and collections join it as entries in
 `src/lib/editTypes.ts`, not as new routes or tables.
 
