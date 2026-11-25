@@ -144,13 +144,15 @@ hardcoded to `null` and a database update had no visible effect at all.
 ## Propose, then apply
 
 The house pattern for anything derived or judged rather than stated:
-`splitParallelText.ts`, `proposeDates.ts` and `reviewPhotoTags.ts` all
+`splitParallelText.ts`, `proposeDates.ts` and `reviewEdits.ts` all
 emit SQL for a human to read instead of writing it themselves.
 
 Prefer it whenever a wrong answer would be *silent* — paragraphs set
 against the wrong translation read perfectly well. `--apply` is
 reasonable only where a mistake is visible and reversible, which is why
-`reviewPhotoTags.ts` has it and the others don't.
+`reviewEdits.ts` has it and the others don't. (It also never applies
+an edit made against a value the archive no longer holds: it holds that
+one back and applies the rest.)
 
 Never guess at identity. 97 first-and-last-name pairs in this archive
 are shared by two or more people (six Paul Muellers, five Martin

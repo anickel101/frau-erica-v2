@@ -23,7 +23,15 @@ const text: EditableText = {
 }
 
 function edit(field: string, value: TextEdit['value']): TextEdit {
-  return { document_id: 40, field, value, was: null, edited_by: 'a', edited_at: '' }
+  return {
+    document_id: 40,
+    field,
+    value,
+    was: null,
+    status: 'submitted',
+    edited_by: 'a',
+    edited_at: '',
+  }
 }
 
 describe('withPending', () => {

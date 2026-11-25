@@ -1,11 +1,14 @@
 import { apiFetch } from './apiClient'
 
-// Proposed changes to texts' catalogue fields -- byline, author record,
-// genre, summary, and the people a text is linked to.
+// Proposed changes to texts -- byline, author record, genre, summary, and
+// the people a text is linked to -- held in the API's staged-edits queue.
 //
 // Like photo tags, these live in their own store and never in the
-// archive: see api/CLAUDE.md's "Text tagging". They reach Documents and
-// DocumentLinks later, through scripts/reviewTextEdits.ts.
+// archive: see api/CLAUDE.md's "Staged edits". They reach Documents and
+// DocumentLinks later, through scripts/reviewEdits.ts.
+//
+// The queue holds every kind of record, keyed "document#40"; this module
+// is its text-shaped view, and hands the page plain document ids.
 
 // A published text as the archive (the API's snapshot of it) currently
 // has it.
@@ -24,6 +27,8 @@ export interface EditableText {
   person_ids: number[]
 }
 
+export type EditStatus = 'draft' | 'submitted'
+
 // field is 'author', 'author_person_id', 'genre', 'summary', or
 // 'person#<id>' with value true (link) or false (unlink).
 export interface TextEdit {
@@ -31,6 +36,7 @@ export interface TextEdit {
   field: string
   value: string | number | boolean | null
   was: string | number | boolean | null
+  status: EditStatus
   edited_by: string
   edited_at: string
 }
@@ -46,18 +52,37 @@ export interface TextEditChanges {
   people?: Record<number, boolean>
 }
 
-export function listTextEdits(): Promise<{ texts: EditableText[]; edits: TextEdit[] }> {
-  return apiFetch('/text-edits')
+// The queue's own shape: entity "document#40" rather than a document id.
+type QueuedEdit = Omit<TextEdit, 'document_id'> & { entity: string }
+
+const ENTITY_PREFIX = 'document#'
+
+export function toTextEdit({ entity, ...rest }: QueuedEdit): TextEdit {
+  return { document_id: Number(entity.slice(ENTITY_PREFIX.length)), ...rest }
 }
 
-// Resolves to the text's pending edits as stored after the save.
+export async function listTextEdits(): Promise<{
+  texts: EditableText[]
+  edits: TextEdit[]
+}> {
+  const { targets, edits } = await apiFetch<{
+    targets: EditableText[]
+    edits: QueuedEdit[]
+  }>('/edits?type=document')
+  return { texts: targets, edits: edits.map(toTextEdit) }
+}
+
+// Resolves to the text's pending edits as stored after the save. Saving
+// on the tagging page submits straight away, as it always has; a draft is
+// for longer work, like rewriting a text's body.
 export async function saveTextEdits(
   documentId: number,
   changes: TextEditChanges,
+  status: EditStatus = 'submitted',
 ): Promise<TextEdit[]> {
-  const { edits } = await apiFetch<{ edits: TextEdit[] }>(`/text-edits/${documentId}`, {
-    method: 'POST',
-    body: changes,
-  })
-  return edits
+  const { edits } = await apiFetch<{ edits: QueuedEdit[] }>(
+    `/edits/document/${documentId}`,
+    { method: 'POST', body: { changes, status } },
+  )
+  return edits.map(toTextEdit)
 }

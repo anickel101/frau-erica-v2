@@ -50,9 +50,11 @@ catches people out is that **the Keepers cookbook does not go through
    canonical database → `npm run export-data` in `app/` → review the
    generated-JSON diff → commit → deploy `app/` with
    `hosting/deploy-app.sh`.
-   Edits saved on the admin **Tag texts** page take this loop too, via
-   `node scripts/reviewTextEdits.ts --apply` in `app/` in place of the
-   hand edit — it applies them, exports, and pushes the snapshot.
+   Edits staged on the site (Tag texts, Tag photos, and the text editor)
+   take this loop too, via `npm run apply-edits` in `app/`
+   (`scripts/reviewEdits.ts`) in place of the hand edit — it applies
+   them, exports, and pushes the snapshot. `npm run review-edits` alone
+   reports what's waiting and writes nothing.
 2. **Cookbook content** — edit the canonical database (or re-run
    `npm run import-keepers` for a bulk reimport) → run
    `~/scripts/frau-erica-backup.sh`, which pushes the snapshot `api/`

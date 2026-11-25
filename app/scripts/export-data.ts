@@ -96,7 +96,7 @@ const images = (
 // per-photograph names come from here alone.
 //
 // Filled in by the tagging tool at /admin/tag-photos and applied with
-// scripts/reviewPhotoTags.ts. Six rows carried a person before that
+// scripts/reviewEdits.ts. Six rows carried a person before that
 // existed; everything beyond that is hand-tagged.
 interface ImagePersonRow {
   image_id: number

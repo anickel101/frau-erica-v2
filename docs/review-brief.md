@@ -74,8 +74,8 @@ attention that a real finding needs.
    generated JSON ships to every browser.
 3. **Propose-then-apply.** `splitParallelText.ts`, `proposeDates.ts` emit
    SQL for a human rather than writing it. Deliberate.
-   `reviewPhotoTags.ts --apply` is the deliberate exception, reasoned in
-   its header.
+   `reviewEdits.ts --apply` (staged edits and photo tags) is the
+   deliberate exception, reasoned in its header.
 4. **Verdana**, the 1-inch summary indent, and other old-site visual
    choices. Requested by the archivist. Not dated styling to modernise.
 5. **No component tests in `app/`.** Every test is a pure function; UI is
