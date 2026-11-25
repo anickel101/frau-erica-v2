@@ -247,7 +247,7 @@ line already carries duration, memory and cold-start time.
 | **SSM Parameter Store**      | The one real secret in this project — the reCAPTCHA secret key, as a `SecureString`                                                                                                                                                                                                                     | CloudFormation can't create `SecureString` parameters directly, and a template-level secret reference would leak the plaintext into the Lambda's environment variables anyway; runtime fetch + cache keeps it out of both git and the console                                                                                                                       |
 | **KMS**                      | Implicitly, to decrypt that `SecureString` (`alias/aws/ssm`, the default key)                                                                                                                                                                                                                           | Comes bundled with SSM `SecureString` — `kms:Decrypt` is a separate, easy-to-forget IAM grant alongside `ssm:GetParameter`                                                                                                                                                                                                                                          |
 | **IAM**                      | A role per Lambda function (auto-created by `sam deploy` from each function's `Policies` block); a deploy user (`frau-erica-v2-deploy`, broad access, used only from the developer's machine); a separate backup user (`frau-erica-backup-user`, S3-write-only, used only by the nightly backup script) | Least-privilege per function; deliberately never reusing the backup user's narrow credentials for deploy work or vice versa                                                                                                                                                                                                                                         |
-| **DynamoDB**                 | `frau-erica-api-photo-tags` — who appears in which photograph; `frau-erica-api-text-edits` — proposed byline/genre/summary/link changes to texts. Both collected by admin tagging pages                                                                                                                 | Deliberately NOT the archive's `ImageLinks`: the archive's writable copy lives on the archivist's machine and this API only reads a snapshot of it, so letting a web form write there would mean inverting which copy is authoritative. Tags are append-only and low-stakes, so they are collected separately and applied to `ImageLinks` later in a reviewed batch |
+| **DynamoDB**                 | `frau-erica-api-photo-tags` — who appears in which photograph; `frau-erica-api-edits` — staged changes to records (texts now), keyed by entity + field. Both collected by admin pages                                                                                                                   | Deliberately NOT the archive's `ImageLinks`: the archive's writable copy lives on the archivist's machine and this API only reads a snapshot of it, so letting a web form write there would mean inverting which copy is authoritative. Tags are append-only and low-stakes, so they are collected separately and applied to `ImageLinks` later in a reviewed batch |
 | **CloudFormation** (via SAM) | The entire `api/` stack as infrastructure-as-code                                                                                                                                                                                                                                                       | Reproducible, reviewable infra changes instead of manual console clicks; `sam` is just a thinner syntax over this                                                                                                                                                                                                                                                   |
 
 **Not used**: Route53 or ACM _for this stack_ — the API is still used at
@@ -285,28 +285,37 @@ doesn't exist or a photograph that isn't in the stated gallery — see
 `src/lib/queries/photoTagTargets.ts` for why that is worth a cold start.
 `DeletePhotoTag` has no database access at all.
 
-## Text tagging (admin only)
+## Staged edits (admin only)
 
-Two routes — `GET /text-edits` and `POST /text-edits/{documentId}` —
-backing `/admin/tag-texts`, where an admin sets a text's byline, its
-author's Persons record, its genre, its summary, and the people it is
-linked to (`DocumentLinks`).
+Two routes — `GET /edits?type=document` and `POST /edits/{type}/{id}`
+(body `{ changes, status }`) — backing `/admin/tag-texts` and, as it is
+built, the text editor: an admin changes a record on the site and the
+change waits in a queue until it is applied. Today the one type is
+`document` (byline, author record, genre, summary, linked people);
+photographs, galleries and collections join it as entries in
+`src/lib/editTypes.ts`, not as new routes or tables.
 
 Same arrangement as photo tagging, and for the same reason: **edits go
-to their own DynamoDB table (`frau-erica-api-text-edits`), never the
-archive.** `app/scripts/reviewTextEdits.ts` applies them later.
+to their own DynamoDB table (`frau-erica-api-edits`), never the
+archive.** `app/scripts/reviewEdits.ts` applies them later, together
+with the photo tags. The table is `DeletionPolicy: Retain`: it holds
+drafts that exist nowhere else.
 
 What differs from photo tags, and why:
 
 - **An edit replaces a value rather than adding a row**, so each one
   records `was` — what the archive held when it was made. The apply
-  script stops on any edit whose `was` no longer matches the archive
-  (someone changed that field directly in the meantime) instead of
-  letting one change silently overwrite the other.
-- **The key is `document_id` + `field`**, one pending edit per field;
-  links use the field `person#<id>` with value `true`/`false`. Saving a
-  field's archive value back _deletes_ its pending edit — that is how
-  an edit is withdrawn, so there is no DELETE route.
+  script **holds back** any edit whose `was` no longer matches the
+  archive (someone changed that field directly in the meantime), leaves
+  it in the queue, and applies the rest.
+- **The key is `entity` + `field`**, the entity being `<type>#<id>`
+  (`document#40`): one pending edit per field per record. Links use the
+  field `person#<id>` with value `true`/`false`. Saving a field's
+  archive value back _deletes_ its pending edit — that is how an edit
+  is withdrawn, so there is no DELETE route.
+- **`status` is `draft` or `submitted`.** Drafts are shared between
+  admins and never applied; the tagging page saves as submitted, as it
+  always has. Saving again with `submitted` promotes a draft.
 - **Only published works are editable** — no German halves. The apply
   script writes byline, author record and genre to both halves of a
   bilingual pair, the summary to the entry point only, and removes an

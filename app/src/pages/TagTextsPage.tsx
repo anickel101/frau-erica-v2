@@ -34,7 +34,7 @@ import {
 // The text-shaped sibling of TagPhotosPage, and built on the same
 // promise: nothing here can damage the archive. Edits are saved to their
 // own store and reach the archive later, in a batch someone reads first
-// (scripts/reviewTextEdits.ts).
+// (scripts/reviewEdits.ts).
 //
 // Unlike photo tags, these save with a button. A summary is typed, not
 // tapped, and saving every keystroke as a proposal would bury the one

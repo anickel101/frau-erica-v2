@@ -95,24 +95,21 @@ just means Anson hasn't done the next step yet.
 
 ```sh
 cd app
-AWS_PROFILE=frau-erica-v2-deploy npm run apply-photo-tags
+AWS_PROFILE=frau-erica-v2-deploy npm run apply-edits
 ```
 
-That is the whole thing. It reports what has been collected, refuses to
-run if any tag names a person or photograph that no longer exists, backs
-the archive up, rehearses the change on that backup, applies it, and
-re-exports `galleries.json`. Then commit the generated JSON and run
-`hosting/deploy-app.sh`.
-
-No snapshot push: photo tags reach the site through the committed
-`galleries.json`, not the gated API.
+That is the whole thing, and it applies text edits staged on the site in
+the same batch. It reports what has been collected, holds back any tag
+naming a person or photograph that no longer exists, backs the archive
+up, rehearses the change on a copy of that backup, applies it,
+re-exports, and pushes the snapshot. Then commit the generated JSON and
+run `hosting/deploy-app.sh`.
 
 To look before leaping:
 
 ```sh
-npm run review-photo-tags                     # the report, writes nothing
-npm run review-photo-tags -- --gallery=12     # one gallery
-npm run review-photo-tags -- --out=/tmp/t.sql # the SQL, to apply by hand
+npm run review-edits                      # the report, writes nothing
+npm run review-edits -- --out=/tmp/e.sql  # the SQL, to apply by hand
 ```
 
 Safely re-runnable either way: anything already in `ImageLinks` is

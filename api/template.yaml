@@ -151,29 +151,36 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-  # Text edits: proposed changes to a text's byline, author record,
-  # genre, summary and linked people, collected by the admin text-tagging
-  # page. The same arrangement as PhotoTagsTable and for the same reason
-  # -- nothing here writes to the archive; app/scripts/reviewTextEdits.ts
-  # applies them to Documents and DocumentLinks in a reviewed batch.
+  # Staged edits: proposed changes to the archive -- a text's byline,
+  # summary or body, later a photograph's caption -- made on the site by
+  # an admin. The same arrangement as PhotoTagsTable and for the same
+  # reason: nothing here writes to the archive; app/scripts/reviewEdits.ts
+  # applies them in a reviewed batch.
   #
-  # document_id + field as the key: one pending edit per field per text,
-  # so a second change to the same field replaces the first rather than
-  # queueing two that disagree. Links use the field "person#<id>".
-  TextEditsTable:
+  # entity + field as the key, entity being "<type>#<id>" ("document#12"):
+  # one pending edit per field per record, so a second change to the same
+  # field replaces the first rather than queueing two that disagree.
+  #
+  # Retained on deletion, unlike every other resource here: it holds an
+  # admin's drafts -- possibly an afternoon's rewriting of a text -- which
+  # exist nowhere else until they are applied. A template change must
+  # never be able to take them with it.
+  EditsTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
-      TableName: !Sub '${AWS::StackName}-text-edits'
+      TableName: !Sub '${AWS::StackName}-edits'
       BillingMode: PAY_PER_REQUEST
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
-        - AttributeName: document_id
-          AttributeType: N
+        - AttributeName: entity
+          AttributeType: S
         - AttributeName: field
           AttributeType: S
       KeySchema:
-        - AttributeName: document_id
+        - AttributeName: entity
           KeyType: HASH
         - AttributeName: field
           KeyType: RANGE
@@ -234,16 +241,16 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-list-photo-tags'
       RetentionInDays: 30
 
-  SaveTextEditsLogGroup:
+  SaveEditsLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-save-text-edits'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-save-edits'
       RetentionInDays: 30
 
-  ListTextEditsLogGroup:
+  ListEditsLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-list-text-edits'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-list-edits'
       RetentionInDays: 30
 
   AnniversariesLogGroup:
@@ -1045,74 +1052,74 @@ Resources:
             Path: /photo-tags
             Method: get
 
-  # --- Text tagging (admin only) --------------------------------------
+  # --- Staged edits (admin only) ------------------------------------
   #
   # Both read the snapshot, read-only: the list to show what the archive
-  # holds now, the save to refuse an edit to a text that isn't a
-  # published work or naming a person who doesn't exist. Both write to,
-  # or read from, the TextEdits table and nothing else.
+  # holds now, the save to refuse an edit to a record that can't be
+  # edited or naming a person who doesn't exist. Both write to, or read
+  # from, the Edits table and nothing else.
 
-  SaveTextEditsFunction:
+  SaveEditsFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
         EntryPoints:
-          - src/handlers/saveTextEdits.ts
+          - src/handlers/saveEdits.ts
         Format: cjs
         Target: node22
         Sourcemap: false
     Properties:
-      Handler: src/handlers/saveTextEdits.handler
+      Handler: src/handlers/saveEdits.handler
       LoggingConfig:
-        LogGroup: !Ref SaveTextEditsLogGroup
+        LogGroup: !Ref SaveEditsLogGroup
       MemorySize: 512
       Environment:
         Variables:
-          TEXT_EDITS_TABLE: !Ref TextEditsTable
+          EDITS_TABLE: !Ref EditsTable
           DB_BUCKET: frau-erica-db-backups
           DB_KEY: current/frau_erica.db
       Policies:
         - Statement:
-            # Query to hand back the text's pending edits after the save,
-            # so the page shows what was actually stored.
+            # Query to hand back the record's pending edits after the
+            # save, so the page shows what was actually stored.
             - Sid: WriteOwnEditsTableOnly
               Effect: Allow
               Action:
                 - dynamodb:PutItem
                 - dynamodb:DeleteItem
                 - dynamodb:Query
-              Resource: !GetAtt TextEditsTable.Arn
+              Resource: !GetAtt EditsTable.Arn
             - Sid: ReadCurrentSnapshotOnly
               Effect: Allow
               Action: s3:GetObject
               Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
       Events:
-        SaveTextEdits:
+        SaveEdits:
           Type: HttpApi
           Properties:
             ApiId: !Ref FrauEricaApi
-            Path: /text-edits/{documentId}
+            Path: /edits/{type}/{id}
             Method: post
 
-  ListTextEditsFunction:
+  ListEditsFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
         EntryPoints:
-          - src/handlers/listTextEdits.ts
+          - src/handlers/listEdits.ts
         Format: cjs
         Target: node22
         Sourcemap: false
     Properties:
-      Handler: src/handlers/listTextEdits.handler
+      Handler: src/handlers/listEdits.handler
       LoggingConfig:
-        LogGroup: !Ref ListTextEditsLogGroup
+        LogGroup: !Ref ListEditsLogGroup
       MemorySize: 512
       Environment:
         Variables:
-          TEXT_EDITS_TABLE: !Ref TextEditsTable
+          EDITS_TABLE: !Ref EditsTable
           DB_BUCKET: frau-erica-db-backups
           DB_KEY: current/frau_erica.db
       Policies:
@@ -1120,17 +1127,17 @@ Resources:
             - Sid: ReadOwnEditsTableOnly
               Effect: Allow
               Action: dynamodb:Scan
-              Resource: !GetAtt TextEditsTable.Arn
+              Resource: !GetAtt EditsTable.Arn
             - Sid: ReadCurrentSnapshotOnly
               Effect: Allow
               Action: s3:GetObject
               Resource: arn:aws:s3:::frau-erica-db-backups/current/frau_erica.db
       Events:
-        ListTextEdits:
+        ListEdits:
           Type: HttpApi
           Properties:
             ApiId: !Ref FrauEricaApi
-            Path: /text-edits
+            Path: /edits
             Method: get
 
 Outputs:
