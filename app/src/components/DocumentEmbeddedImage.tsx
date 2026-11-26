@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from 'react'
+import AdminPhotoId from './AdminPhotoId'
 import Modal from './Modal'
 
 // One embedded document image -- markdown image syntax resolved from an
@@ -58,10 +59,13 @@ export default function DocumentEmbeddedImage({
   src,
   alt,
   layout,
+  imageId,
 }: {
   src?: string
   alt?: string
   layout: EmbeddedImageLayout
+  // The photograph's number, shown to admins in the zoomed view.
+  imageId?: number
 }) {
   const [isZoomed, setIsZoomed] = useState(false)
   if (!src) return null
@@ -107,6 +111,7 @@ export default function DocumentEmbeddedImage({
               <p className="text-sm text-white/80">{alt}</p>
             </div>
           )}
+          <AdminPhotoId imageId={imageId} onDark className="mt-2" />
         </div>
       </Modal>
     </figure>

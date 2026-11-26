@@ -46,6 +46,15 @@ export function resolveImagePlaceholders(content: string): string {
   )
 }
 
+// A photograph's number from the address a text's placeholder resolved
+// to: a text's markdown carries only the address by the time it renders,
+// and an admin looking at the photo wants its number.
+const idBySrc = new Map(images.map((img) => [resolveImageUrl(img.url), img.image_id]))
+
+export function getImageIdBySrc(src: string): number | undefined {
+  return idBySrc.get(src)
+}
+
 const dimensionsBySrc = new Map(
   images.flatMap((img) =>
     img.width && img.height

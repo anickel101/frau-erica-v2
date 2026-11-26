@@ -2,6 +2,7 @@ import { MouseEvent, useState } from 'react'
 import { GalleryPhoto } from '../data-access/public/galleries'
 import { useHeaderRef } from '../hooks/useHeaderRef'
 import ChevronButton from './ChevronButton'
+import AdminPhotoId from './AdminPhotoId'
 import InlineMarkdown from './InlineMarkdown'
 import Modal from './Modal'
 import PhotoPeople from './PhotoPeople'
@@ -105,6 +106,8 @@ export default function GalleryLargeImage({
         )}
       </p>
 
+      <AdminPhotoId imageId={photo.image_id} className="max-w-4xl mt-1 text-right" />
+
       <Modal open={isZoomed} onClose={() => setIsZoomed(false)}>
         {/* The caption used to sit in an absolutely-positioned bar over
             the bottom of the image -- on a large photo or a long caption,
@@ -136,6 +139,7 @@ export default function GalleryLargeImage({
               <InlineMarkdown>{photo.caption}</InlineMarkdown>
             </p>
             <PhotoPeople photo={photo} tone="modal" />
+            <AdminPhotoId imageId={photo.image_id} onDark className="mt-2" />
           </div>
         </div>
       </Modal>

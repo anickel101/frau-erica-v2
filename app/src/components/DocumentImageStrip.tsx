@@ -30,9 +30,12 @@ function rowHeight(aspects: number[]): number {
 export default function DocumentImageStrip({
   images,
   dimensions,
+  imageIdFor,
 }: {
   images: MarkdownImage[]
   dimensions: (src: string) => ImageDimensions | undefined
+  // A photograph's number from its address, for the admin line in zoom.
+  imageIdFor?: (src: string) => number | undefined
 }) {
   const aspects = images.map((image) => aspectRatio(dimensions(image.src)))
   // A lone hand-sized image (see segmentContent) keeps its chosen width.
@@ -54,6 +57,7 @@ export default function DocumentImageStrip({
           key={`${image.src}-${i}`}
           src={image.src}
           alt={image.alt}
+          imageId={imageIdFor?.(image.src)}
           layout={{
             kind: 'strip',
             aspect: aspects[i],

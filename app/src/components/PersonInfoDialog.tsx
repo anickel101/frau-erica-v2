@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import AdminPhotoId from './AdminPhotoId'
 import InlineMarkdown from './InlineMarkdown'
 import Modal from './Modal'
 import { getPersonById } from '../data-access/gated/persons'
@@ -333,6 +334,7 @@ function ZoomedPhoto({
           <InlineMarkdown>{photo.caption}</InlineMarkdown>
         </p>
       )}
+      <AdminPhotoId imageId={photo.image_id} className="mt-1" />
     </div>
   )
 }
