@@ -9562,5 +9562,17 @@
     "height": 347,
     "url": "hdr.Sängerbote.jpg",
     "personIds": []
+  },
+  {
+    "image_id": 3105,
+    "title": null,
+    "caption": null,
+    "credit": null,
+    "year_taken": null,
+    "location": null,
+    "width": 754,
+    "height": 1076,
+    "url": "Alli_Wetsuits.jpg",
+    "personIds": [19]
   }
 ]

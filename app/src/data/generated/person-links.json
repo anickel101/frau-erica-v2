@@ -95,11 +95,11 @@
     },
     "19": {
       "photos": [
-        371, 896, 3006, 25, 199, 202, 303, 333, 355, 361, 364, 368, 369, 395, 421, 430,
-        431, 432, 460, 541, 559, 588, 612, 628, 630, 642, 643, 647
+        371, 896, 3006, 3105, 25, 199, 202, 303, 333, 355, 361, 364, 368, 369, 395, 421,
+        430, 431, 432, 460, 541, 559, 588, 612, 628, 630, 642, 643, 647
       ],
       "writings": [],
-      "texts": [15, 16, 143, 144],
+      "texts": [15, 16, 143, 144, 377],
       "galleries": [1, 3, 11, 13, 14, 15, 16, 17, 19, 23, 28],
       "collections": ["MarkAlliChristmas"]
     },
@@ -3141,7 +3141,8 @@
       "caption": "Michael, Wilhelmina, and Albert Nickel, sometime after the family settled in Milwaukee.",
       "width": null,
       "height": null
-    }
+    },
+    "3105": { "url": "Alli_Wetsuits.jpg", "caption": "", "width": 754, "height": 1076 }
   },
   "texts": {
     "3": { "title": "Adelheid Erica Amanda Mueller Nickel" },
@@ -3384,7 +3385,8 @@
     "373": { "title": "James: Birth and Maternal Thyroid Surgery" },
     "374": { "title": "Mark: A Quieter Arrival" },
     "375": { "title": "Thoughts on Retirement" },
-    "376": { "title": "McMillan Manufacturing Company" }
+    "376": { "title": "McMillan Manufacturing Company" },
+    "377": { "title": "In Memoriam: Mary Allison McMillan" }
   },
   "galleries": {
     "1": {
