@@ -3127,7 +3127,12 @@
       "width": null,
       "height": null
     },
-    "3006": { "url": "Alli_Hockey.jpg", "caption": "", "width": null, "height": null },
+    "3006": {
+      "url": "Alli_Hockey.jpg",
+      "caption": "Alli skated as a member of the Pembroke Pandas, soon to be known as the Brown Bears women’s hockey team.",
+      "width": null,
+      "height": null
+    },
     "3035": { "url": "HCNickel2c.jpg", "caption": "", "width": null, "height": null },
     "3064": { "url": "RuthPolley.jpg", "caption": "", "width": null, "height": null },
     "3070": {
