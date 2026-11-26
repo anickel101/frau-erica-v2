@@ -18,12 +18,6 @@ import { parseJsonBody } from '../lib/parseJsonBody'
 import { jsonResponse } from '../lib/response'
 import { withLogging } from '../lib/withLogging'
 
-function asId(value: string | undefined): number | null {
-  if (!value || !/^\d+$/.test(value)) return null
-  const n = Number(value)
-  return Number.isSafeInteger(n) && n > 0 ? n : null
-}
-
 // Saves proposed changes to one record: POST /edits/{type}/{id} with
 // { changes, status }. status is 'draft' (work in progress, never
 // applied) or 'submitted' (ready for the review script), defaulting to
@@ -41,8 +35,8 @@ async function baseHandler(
   const editType = Object.hasOwn(EDIT_TYPES, type) ? EDIT_TYPES[type] : undefined
   if (!editType) return jsonResponse(404, { error: `Unknown record type "${type}"` })
 
-  const id = asId(event.pathParameters?.id)
-  if (id === null) return jsonResponse(400, { error: 'id must be a positive integer' })
+  const id = editType.parseId(event.pathParameters?.id ?? '')
+  if (id === null) return jsonResponse(400, { error: `Not a ${type} id` })
 
   const body = parseJsonBody<{ changes?: unknown; status?: unknown }>(event.body)
   if (body === null || typeof body !== 'object' || Array.isArray(body)) {

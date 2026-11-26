@@ -46,7 +46,7 @@ export interface Edit {
   edited_at: string
 }
 
-export function entityKey(type: string, id: number): string {
+export function entityKey(type: string, id: number | string): string {
   return `${type}#${id}`
 }
 

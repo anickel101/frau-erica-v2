@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest'
-import { documentStatement, judge, sqlLiteral, wordDiff } from './editReview.ts'
+import {
+  documentStatement,
+  judge,
+  plainStatement,
+  sqlLiteral,
+  wordDiff,
+} from './editReview.ts'
 
 describe('judge', () => {
   test('ready when the archive still holds what the edit saw', () => {
@@ -111,5 +117,35 @@ describe('wordDiff', () => {
     const diff = wordDiff(before, after)
     expect(diff.startsWith('[-a0 a1')).toBe(true)
     expect(diff).toContain('{+b0 b1')
+  })
+})
+
+describe('plainStatement', () => {
+  test("a photograph's caption", () => {
+    expect(plainStatement('image', 246, 'caption', 'Joyce, 1960s.')).toBe(
+      "UPDATE Images SET caption = 'Joyce, 1960s.' WHERE image_id = 246;",
+    )
+  })
+  test('a year is a number, and none is NULL', () => {
+    expect(plainStatement('image', 246, 'year_taken', 1962)).toMatch(
+      /SET year_taken = 1962 /,
+    )
+    expect(plainStatement('image', 246, 'location', null)).toMatch(/SET location = NULL /)
+  })
+  test('a collection by its quoted key', () => {
+    expect(plainStatement('series', 'FredKnief', 'blurb', "Fred's essays.")).toBe(
+      "UPDATE Series SET blurb = 'Fred''s essays.' WHERE series_key = 'FredKnief';",
+    )
+  })
+  test.each([
+    ['image', 246, 'url'],
+    ['image', 246, 'is_published'],
+    ['gallery', 3, 'lead_image_id'],
+    ['series', 'FredKnief', 'slug'],
+    ['series', "x'; DROP TABLE Series; --", 'blurb'],
+    ['image', 0, 'caption'],
+    ['image', '246', 'caption'],
+  ] as const)('refuses %s %j %s', (type, id, field) => {
+    expect(() => plainStatement(type, id, field, 'x')).toThrow()
   })
 })

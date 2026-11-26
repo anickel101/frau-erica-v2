@@ -48,6 +48,10 @@ import {
   DOCUMENT_FIELDS,
   LINK_PREFIX,
   documentStatement,
+  isPlainType,
+  plainStatement,
+  PLAIN_RECORDS,
+  type PlainType,
   judge,
   wordDiff,
   type Value,
@@ -130,7 +134,8 @@ interface Edit {
 
 interface CheckedEdit extends Edit {
   type: string
-  id: number
+  // A number, or a collection's key ("FredKnief").
+  id: number | string
   verdict: Status
   now: Value
   problem?: string
@@ -176,22 +181,57 @@ function checkDocument(edit: CheckedEdit): CheckedEdit {
     now,
     statement:
       verdict === 'ready'
-        ? documentStatement(edit.id, edit.field, edit.value)
+        ? documentStatement(edit.id as number, edit.field, edit.value)
+        : undefined,
+  }
+}
+
+// A photograph, gallery or collection: one row, plain columns.
+function plainRow(
+  type: PlainType,
+  id: number | string,
+): Record<string, Value> | undefined {
+  const { table, key, nameColumn, fields } = PLAIN_RECORDS[type]
+  return db
+    .prepare(
+      `SELECT ${nameColumn} AS __name, ${fields.join(', ')} FROM ${table} WHERE ${key} = ?`,
+    )
+    .get(id) as Record<string, Value> | undefined
+}
+
+function checkPlain(edit: CheckedEdit, type: PlainType): CheckedEdit {
+  const row = plainRow(type, edit.id)
+  if (!row) return { ...edit, verdict: 'missing', problem: `no such ${type}` }
+  if (!(PLAIN_RECORDS[type].fields as readonly string[]).includes(edit.field)) {
+    return { ...edit, verdict: 'missing', problem: `unknown field ${edit.field}` }
+  }
+  const now = row[edit.field] ?? null
+  const verdict = judge(edit.value, edit.was, now)
+  return {
+    ...edit,
+    verdict,
+    now,
+    statement:
+      verdict === 'ready'
+        ? plainStatement(type, edit.id, edit.field, edit.value)
         : undefined,
   }
 }
 
 function checkEdit(raw: Edit): CheckedEdit {
   const [type, idText] = raw.entity.split('#')
+  const numeric =
+    type === 'document' || (isPlainType(type) && PLAIN_RECORDS[type].numericKey)
   const edit: CheckedEdit = {
     ...raw,
     type,
-    id: Number(idText),
+    id: numeric ? Number(idText) : idText,
     verdict: 'ready',
     now: null,
   }
   if (raw.status === 'draft') return { ...edit, verdict: 'draft' }
   if (type === 'document') return checkDocument(edit)
+  if (isPlainType(type)) return checkPlain(edit, type)
   return { ...edit, verdict: 'missing', problem: `unknown record type ${type}` }
 }
 
@@ -326,17 +366,25 @@ for (const edit of edits)
 const entities = [...byEntity.keys()].sort((a, b) => {
   const [ta, ia] = a.split('#')
   const [tb, ib] = b.split('#')
-  return ta.localeCompare(tb) || Number(ia) - Number(ib)
+  return ta.localeCompare(tb) || Number(ia) - Number(ib) || ia.localeCompare(ib)
 })
 for (const entity of entities) {
   const group = byEntity.get(entity)!
   const { type, id } = group[0]
-  const title =
+  const [label, title] =
     type === 'document'
-      ? ((documentRow.get(id) as DocumentRow | undefined)?.title ?? '(no such text)')
-      : ''
+      ? [
+          'Text',
+          (documentRow.get(id) as DocumentRow | undefined)?.title ?? '(no such text)',
+        ]
+      : isPlainType(type)
+        ? [
+            PLAIN_RECORDS[type].label,
+            String(plainRow(type, id)?.__name ?? '(no such record)'),
+          ]
+        : [type, '']
   console.log(`\n${'='.repeat(78)}`)
-  console.log(`${type === 'document' ? 'Text' : type} ${id}: ${title}`)
+  console.log(`${label} ${id}: ${title}`)
   console.log('='.repeat(78))
   group.sort((a, b) => a.field.localeCompare(b.field)).forEach(printEdit)
 }

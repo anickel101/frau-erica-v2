@@ -92,7 +92,7 @@ export default function GalleryLargeImage({
         <strong className="text-fe-ink">
           <InlineMarkdown>{photo.title}</InlineMarkdown>
         </strong>{' '}
-        -- <InlineMarkdown>{photo.caption}</InlineMarkdown>
+        – <InlineMarkdown>{photo.caption}</InlineMarkdown>
         {(photo.location || photo.year_taken || photo.credit) && (
           <>
             {' '}

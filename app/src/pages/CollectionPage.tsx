@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import HeaderPhoto from '../components/HeaderPhoto'
+import AdminOnly from '../components/AdminOnly'
 import InlineMarkdown from '../components/InlineMarkdown'
 import { getCollectionBySlug } from '../data-access/public/collections'
 import type { Collection } from '../data-access/public/collections'
@@ -55,6 +56,16 @@ export default function CollectionPage() {
             Collections
           </Link>
         </p>
+        <AdminOnly>
+          <p className="text-sm mb-2">
+            <Link
+              to={`/admin/edit/series/${collection.series_key}`}
+              className="text-fe-link hover:text-fe-link-dark"
+            >
+              Edit this collection
+            </Link>
+          </p>
+        </AdminOnly>
         <h1 className="text-xl sm:text-2xl font-bold mb-2">
           <InlineMarkdown>{collection.name}</InlineMarkdown>
         </h1>

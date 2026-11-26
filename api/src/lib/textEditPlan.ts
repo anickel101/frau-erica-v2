@@ -67,7 +67,7 @@ export function linkField(personId: number): string {
 // Trimmed, with Windows line endings folded, and empty meaning "none".
 // A textarea submits \r\n on some browsers, and a summary that differs
 // from the archive only in its line endings is not an edit.
-function cleanText(value: string | null): string | null {
+export function cleanText(value: string | null): string | null {
   if (value === null) return null
   const cleaned = value.replace(/\r\n?/g, '\n').trim()
   return cleaned === '' ? null : cleaned
