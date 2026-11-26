@@ -6,6 +6,7 @@ import {
   getEditableImage,
   getEditableSeries,
   listEditableImages,
+  listHiddenImages,
 } from './recordEditTargets'
 
 let db: Database
@@ -26,11 +27,20 @@ beforeEach(async () => {
 })
 
 describe('photographs', () => {
-  test('only published ones can be edited', () => {
+  test('the list holds published ones; the hidden list the rest', () => {
     expect(listEditableImages(db).map((i) => i.image_id)).toContain(900)
     expect(listEditableImages(db).map((i) => i.image_id)).not.toContain(901)
-    expect(getEditableImage(db, 900)?.caption).toBe('The team.')
-    expect(getEditableImage(db, 901)).toBeNull()
+    expect(listHiddenImages(db).map((i) => i.image_id)).toEqual([901])
+  })
+
+  // How a hidden photograph is brought back: it has to be editable.
+  test('either can be opened, saying whether it is published', () => {
+    expect(getEditableImage(db, 900)).toMatchObject({
+      caption: 'The team.',
+      is_published: true,
+    })
+    expect(getEditableImage(db, 901)?.is_published).toBe(false)
+    expect(getEditableImage(db, 999)).toBeNull()
   })
 })
 

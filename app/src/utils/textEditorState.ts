@@ -10,9 +10,23 @@ import { toBlocks } from './paragraphs'
 // sends, and the small text surgery the toolbar does.
 
 // content_de is the German half's body: a bilingual text only.
-export const EDITOR_FIELDS = ['title', 'summary', 'content', 'content_de'] as const
+// is_published is whether visitors can see the text: unchecking it hides
+// the text (kept in the archive), checking it brings a hidden one back.
+export const EDITOR_FIELDS = [
+  'title',
+  'summary',
+  'content',
+  'content_de',
+  'is_published',
+] as const
 export type EditorField = (typeof EDITOR_FIELDS)[number]
-export type EditorValues = Record<EditorField, string>
+export interface EditorValues {
+  title: string
+  summary: string
+  content: string
+  content_de: string
+  is_published: boolean
+}
 
 // The archive's own values. An absent summary is an empty box; the API
 // stores an empty one as "none".
@@ -22,6 +36,7 @@ export function archiveValues(text: EditableTextDetail): EditorValues {
     summary: text.summary ?? '',
     content: text.content,
     content_de: text.content_de ?? '',
+    is_published: text.is_published,
   }
 }
 
@@ -31,8 +46,10 @@ export function archiveValues(text: EditableTextDetail): EditorValues {
 export function openingValues(text: EditableTextDetail, edits: TextEdit[]): EditorValues {
   const values = archiveValues(text)
   for (const edit of edits) {
-    if ((EDITOR_FIELDS as readonly string[]).includes(edit.field)) {
-      values[edit.field as EditorField] = (edit.value as string | null) ?? ''
+    if (edit.field === 'is_published') values.is_published = edit.value === true
+    else if ((EDITOR_FIELDS as readonly string[]).includes(edit.field)) {
+      values[edit.field as Exclude<EditorField, 'is_published'>] =
+        (edit.value as string | null) ?? ''
     }
   }
   return values
@@ -40,6 +57,16 @@ export function openingValues(text: EditableTextDetail, edits: TextEdit[]): Edit
 
 export function pendingEditorEdits(edits: TextEdit[]): TextEdit[] {
   return edits.filter((e) => (EDITOR_FIELDS as readonly string[]).includes(e.field))
+}
+
+// One field into a change set, keeping its type: the four bodies of text
+// are strings, the published flag a boolean.
+function set(
+  changes: TextEditChanges,
+  field: EditorField,
+  value: string | boolean,
+): void {
+  ;(changes as Record<string, string | boolean>)[field] = value
 }
 
 // An English-only text has no German body to send.
@@ -58,7 +85,7 @@ export function changedFields(
   const changes: TextEditChanges = {}
   for (const field of EDITOR_FIELDS) {
     if (editable(field, bilingual) && from[field] !== to[field])
-      changes[field] = to[field]
+      set(changes, field, to[field])
   }
   return changes
 }
@@ -77,7 +104,7 @@ export function submitChanges(
   for (const field of EDITOR_FIELDS) {
     if (!editable(field, text.bilingual)) continue
     if (values[field] !== archive[field] || pending.has(field))
-      changes[field] = values[field]
+      set(changes, field, values[field])
   }
   return changes
 }
@@ -92,7 +119,7 @@ export function discardChanges(
   const changes: TextEditChanges = {}
   for (const edit of pendingEditorEdits(edits)) {
     const field = edit.field as EditorField
-    if (editable(field, text.bilingual)) changes[field] = archive[field]
+    if (editable(field, text.bilingual)) set(changes, field, archive[field])
   }
   return changes
 }

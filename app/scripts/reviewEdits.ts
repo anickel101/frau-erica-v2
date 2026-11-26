@@ -47,6 +47,7 @@ import { validateParallelTexts, type ParallelRow } from './parallelTextValidatio
 import {
   DOCUMENT_FIELDS,
   LINK_PREFIX,
+  asStored,
   documentStatement,
   isPlainType,
   plainStatement,
@@ -102,7 +103,7 @@ function nameOf(personId: number): string | null {
 }
 
 const documentRow = db.prepare(
-  `SELECT title, content, author, author_person_id, genre, summary, parallel_of,
+  `SELECT title, content, author, author_person_id, genre, summary, parallel_of, is_published,
           (SELECT count(*) FROM Documents h WHERE h.parallel_of = d.document_id) AS halves,
           (SELECT content FROM Documents h WHERE h.parallel_of = d.document_id
             ORDER BY h.document_id LIMIT 1) AS content_de
@@ -158,7 +159,7 @@ function checkDocument(edit: CheckedEdit): CheckedEdit {
     }
     now = (isLinked.get({ ':person': personId, ':doc': edit.id }) as { n: number }).n > 0
   } else if ((DOCUMENT_FIELDS as readonly string[]).includes(edit.field)) {
-    now = doc[edit.field as (typeof DOCUMENT_FIELDS)[number]]
+    now = asStored(edit.field, doc[edit.field as (typeof DOCUMENT_FIELDS)[number]])
     if (
       edit.field === 'author_person_id' &&
       typeof edit.value === 'number' &&
@@ -205,7 +206,7 @@ function checkPlain(edit: CheckedEdit, type: PlainType): CheckedEdit {
   if (!(PLAIN_RECORDS[type].fields as readonly string[]).includes(edit.field)) {
     return { ...edit, verdict: 'missing', problem: `unknown field ${edit.field}` }
   }
-  const now = row[edit.field] ?? null
+  const now = asStored(edit.field, row[edit.field] ?? null)
   const verdict = judge(edit.value, edit.was, now)
   return {
     ...edit,
@@ -310,7 +311,50 @@ function holdUnpaired(list: CheckedEdit[]): CheckedEdit[] {
   )
 }
 
-const edits = holdUnpaired((await scan<Edit>(editsTable)).map(checkEdit))
+// A photograph being brought back must have its file on the image
+// server, or the gallery would show a broken image. Most hidden ones do;
+// a sample found one in thirty that doesn't.
+const IMAGE_HOST = 'https://d28yzpcwy2p42m.cloudfront.net'
+async function holdMissingFiles(list: CheckedEdit[]): Promise<CheckedEdit[]> {
+  const out: CheckedEdit[] = []
+  for (const e of list) {
+    if (
+      e.type === 'image' &&
+      e.field === 'is_published' &&
+      e.value === true &&
+      e.verdict === 'ready'
+    ) {
+      const url = String(plainRow('image', e.id)?.__name ?? '')
+      const res = await fetch(`${IMAGE_HOST}/${encodeURIComponent(url)}`, {
+        method: 'HEAD',
+      })
+      if (!res.ok) {
+        out.push({
+          ...e,
+          verdict: 'missing',
+          problem: `${url} isn't on the image server`,
+          statement: undefined,
+        })
+        continue
+      }
+    }
+    out.push(e)
+  }
+  return out
+}
+
+const edits = await holdMissingFiles(
+  holdUnpaired((await scan<Edit>(editsTable)).map(checkEdit)),
+)
+
+// Published texts that show a photograph being hidden: they would lose it
+// without a word (the export drops an embedded photograph that isn't
+// published). Said in the report, not refused -- it may be the point.
+const showsImage = db.prepare(
+  `SELECT document_id, title FROM Documents
+    WHERE is_published = 1 AND content LIKE '%{{image:' || ? || '}}%'
+       OR is_published = 1 AND content LIKE '%{{image:' || ? || ':%'`,
+)
 const tags = (await scan<Tag>(tagsTable)).map(checkTag)
 
 function describe(field: string, value: Value): string {
@@ -387,6 +431,24 @@ for (const entity of entities) {
   console.log(`${label} ${id}: ${title}`)
   console.log('='.repeat(78))
   group.sort((a, b) => a.field.localeCompare(b.field)).forEach(printEdit)
+  if (
+    type === 'image' &&
+    group.some(
+      (e) => e.field === 'is_published' && e.value === false && e.verdict === 'ready',
+    )
+  ) {
+    // As text: node:sqlite binds a number as a float, and 246 concatenated
+    // into the pattern would read "246.0" and match nothing.
+    const texts = showsImage.all(String(id), String(id)) as {
+      document_id: number
+      title: string
+    }[]
+    for (const t of texts) {
+      console.log(
+        `  WARNING: published text ${t.document_id} ("${t.title}") shows this photograph`,
+      )
+    }
+  }
 }
 
 const newTags = tags.filter((t) => t.verdict !== 'already applied')

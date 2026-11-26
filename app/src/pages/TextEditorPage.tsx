@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Link, useParams } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import EditStatusLine, { type SaveState } from '../components/EditStatusLine'
+import PublishedBox from '../components/PublishedBox'
 import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
 import Modal from '../components/Modal'
@@ -443,6 +444,13 @@ function TextEditor({
               </p>
             </>
           )}
+
+          <PublishedBox
+            noun="text"
+            checked={values.is_published}
+            wasPublished={text.is_published}
+            onChange={(is_published) => setValues((v) => ({ ...v, is_published }))}
+          />
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <button

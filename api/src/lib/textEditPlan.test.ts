@@ -23,6 +23,7 @@ const text: EditableTextDetail = {
   content: 'It was hot.\n\n{{image:12}}\n\nWe left in August.',
   bilingual: false,
   content_de: null,
+  is_published: true,
 }
 
 function plan(body: unknown): TextEditPlan {
@@ -214,5 +215,25 @@ describe('planTextEdits: a bilingual text', () => {
   test('a title change needs no pairing check', () => {
     const result = run({ title: 'Neuer Titel' })
     expect('put' in result && result.put[0].field).toBe('title')
+  })
+})
+
+describe('planTextEdits: publishing', () => {
+  test('unpublishing a text proposes false, recording that it was published', () => {
+    expect(plan({ is_published: false }).put).toEqual([
+      { field: 'is_published', value: false, was: true },
+    ])
+  })
+
+  test("sending the archive's own state withdraws a pending change", () => {
+    expect(plan({ is_published: true })).toEqual({
+      put: [],
+      clear: ['is_published'],
+      personIds: [],
+    })
+  })
+
+  test.each([['false'], [0], [null]])('refuses %j', (value) => {
+    expect(error({ is_published: value })).toMatch(/true or false/)
   })
 })

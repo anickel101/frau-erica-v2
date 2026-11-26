@@ -43,12 +43,18 @@ export interface EditableText {
   // bilingual pair. 65 of the existing links sit on a German half, so
   // reading the entry point alone would show those texts as unlinked.
   person_ids: number[]
+  // Whether visitors can see it. The Tag texts list only ever holds
+  // published texts; one opened in the editor may be hidden, which is how
+  // a hidden text is brought back.
+  is_published: boolean
 }
 
-type TextRow = Omit<EditableText, 'person_ids'>
+type TextRow = Omit<EditableText, 'person_ids' | 'is_published'> & {
+  is_published: number
+}
 
 const TEXT_COLUMNS = `document_id, title, series_key, series_title, series_order,
-                      author, author_person_id, genre, summary, tags`
+                      author, author_person_id, genre, summary, tags, is_published`
 
 function attachLinks(db: Database, rows: TextRow[]): EditableText[] {
   const links = queryAll<{ work_id: number; person_id: number }>(
@@ -63,7 +69,11 @@ function attachLinks(db: Database, rows: TextRow[]): EditableText[] {
   for (const { work_id, person_id } of links) {
     byWork.set(work_id, [...(byWork.get(work_id) ?? []), person_id])
   }
-  return rows.map((row) => ({ ...row, person_ids: byWork.get(row.document_id) ?? [] }))
+  return rows.map((row) => ({
+    ...row,
+    is_published: row.is_published === 1,
+    person_ids: byWork.get(row.document_id) ?? [],
+  }))
 }
 
 export function listEditableTexts(db: Database): EditableText[] {
@@ -76,13 +86,26 @@ export function listEditableTexts(db: Database): EditableText[] {
   return attachLinks(db, rows)
 }
 
-// null for anything the page should not be editing: an unpublished
-// document, a German half, or an id nobody has.
+// Every hidden work -- unpublished, and not a German half -- for the admin
+// list that brings one back. Title and collection are all that list
+// shows; the editor fetches the rest.
+export function listHiddenTexts(db: Database): EditableText[] {
+  const rows = queryAll<TextRow>(
+    db,
+    `SELECT ${TEXT_COLUMNS} FROM Documents
+      WHERE is_published = 0 AND parallel_of IS NULL
+      ORDER BY title`,
+  )
+  return attachLinks(db, rows)
+}
+
+// null for a German half (edited through its entry point) or an id nobody
+// has. A hidden text is editable: that is how it is brought back.
 export function getEditableText(db: Database, documentId: number): EditableText | null {
   const rows = queryAll<TextRow>(
     db,
     `SELECT ${TEXT_COLUMNS} FROM Documents
-      WHERE document_id = :id AND is_published = 1 AND parallel_of IS NULL`,
+      WHERE document_id = :id AND parallel_of IS NULL`,
     { ':id': documentId },
   )
   return rows.length === 1 ? attachLinks(db, rows)[0] : null

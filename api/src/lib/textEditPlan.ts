@@ -47,6 +47,7 @@ const FIELDS = [
   'genre',
   'summary',
   'people',
+  'is_published',
 ] as const
 
 // A text's paragraphs as the site pairs them: split at blank lines. The
@@ -191,6 +192,21 @@ export function planTextEdits(
       return { error: `summary must be at most ${SUMMARY_MAX} characters` }
     }
     propose('summary', summary, text.summary, summary === cleanText(text.summary))
+  }
+
+  // Unpublishing hides a text from visitors and keeps it in the archive;
+  // publishing brings a hidden one back. Both halves of a bilingual pair
+  // go together (the apply script sees to that), as the export requires.
+  if ('is_published' in input) {
+    if (typeof input.is_published !== 'boolean') {
+      return { error: 'is_published must be true or false' }
+    }
+    propose(
+      'is_published',
+      input.is_published,
+      text.is_published,
+      input.is_published === text.is_published,
+    )
   }
 
   if ('people' in input) {

@@ -5,8 +5,14 @@ const spec: Record<string, FieldSpec> = {
   name: { kind: 'line', max: 20, required: true },
   caption: { kind: 'text', max: 50 },
   year_taken: { kind: 'year' },
+  is_published: { kind: 'flag' },
 }
-const current = { name: 'Pandas', caption: 'The team.', year_taken: null }
+const current = {
+  name: 'Pandas',
+  caption: 'The team.',
+  year_taken: null,
+  is_published: true,
+}
 
 function plan(body: unknown) {
   const result = planRecordEdits(current, body, spec)
@@ -61,4 +67,14 @@ describe('planRecordEdits', () => {
       expect(error({ year_taken: bad })).toMatch(/year between/)
     }
   })
+})
+
+test('a flag takes true or false, or the words a form holds them as', () => {
+  expect(plan({ is_published: false }).put).toEqual([
+    { field: 'is_published', value: false, was: true },
+  ])
+  expect(plan({ is_published: 'false' }).put[0].value).toBe(false)
+  expect(plan({ is_published: 'true' })).toEqual({ put: [], clear: ['is_published'] })
+  for (const bad of ['yes', 1, null])
+    expect(error({ is_published: bad })).toMatch(/true or false/)
 })

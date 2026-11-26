@@ -26,6 +26,23 @@ export async function getRecordForEditing(
   return { record: targets[0], edits }
 }
 
+export interface QueuedRecordEdit extends PendingEdit {
+  entity: string
+}
+
+// Every hidden photograph, and every pending edit to photographs -- so
+// the Hidden page can say which are already on their way back.
+export async function listHiddenImages(): Promise<{
+  images: EditableRecord[]
+  edits: QueuedRecordEdit[]
+}> {
+  const { targets, edits } = await apiFetch<{
+    targets: EditableRecord[]
+    edits: QueuedRecordEdit[]
+  }>('/edits?type=image&hidden=1')
+  return { images: targets, edits }
+}
+
 // Resolves to the record's pending edits as stored after the save.
 export async function saveRecordEdits(
   type: RecordType,

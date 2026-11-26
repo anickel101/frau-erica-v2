@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import { Link, useParams } from 'react-router-dom'
 import EditStatusLine, { type SaveState } from '../components/EditStatusLine'
 import InlineMarkdown from '../components/InlineMarkdown'
+import PublishedBox from '../components/PublishedBox'
 import Layout from '../components/Layout'
 import {
   getRecordForEditing,
@@ -35,8 +36,8 @@ interface FieldConfig {
   key: string
   label: string
   // A line is one line; text is markdown that may run on; a year is a
-  // number box.
-  kind: 'line' | 'text' | 'year'
+  // number box; a flag is the Published checkbox, held as "true"/"false".
+  kind: 'line' | 'text' | 'year' | 'flag'
   hint?: string
 }
 
@@ -61,6 +62,7 @@ const KINDS: Record<RecordType, Kind> = {
       { key: 'credit', label: 'Photo credit', kind: 'line' },
       { key: 'year_taken', label: 'Year taken', kind: 'year' },
       { key: 'location', label: 'Where it was taken', kind: 'line' },
+      { key: 'is_published', label: 'Published', kind: 'flag' },
     ],
     heading: (record, values) => values.title || String(record.url),
   },
@@ -255,35 +257,48 @@ function RecordEditor({
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section>
-          {kind.fields.map((field) => (
-            <div key={field.key} className="mb-4">
-              <label
-                className="block text-sm font-bold text-fe-brown mb-1"
-                htmlFor={`edit-${field.key}`}
-              >
-                {field.label}
-              </label>
-              {field.kind === 'text' ? (
-                <textarea
-                  id={`edit-${field.key}`}
-                  rows={6}
-                  spellCheck
-                  className={`${inputClassName} resize-y`}
-                  value={values[field.key]}
-                  onChange={(e) => set(field.key, e.target.value)}
+          {kind.fields.map((field) =>
+            field.kind === 'flag' ? (
+              <div key={field.key} className="mb-4">
+                <PublishedBox
+                  noun={kind.noun}
+                  checked={values[field.key] === 'true'}
+                  wasPublished={archive[field.key] === 'true'}
+                  onChange={(published) => set(field.key, String(published))}
                 />
-              ) : (
-                <input
-                  id={`edit-${field.key}`}
-                  inputMode={field.kind === 'year' ? 'numeric' : undefined}
-                  className={`${inputClassName} ${field.kind === 'year' ? 'max-w-32' : ''}`}
-                  value={values[field.key]}
-                  onChange={(e) => set(field.key, e.target.value)}
-                />
-              )}
-              {field.hint && <p className="mt-1 text-xs text-fe-ink/60">{field.hint}</p>}
-            </div>
-          ))}
+              </div>
+            ) : (
+              <div key={field.key} className="mb-4">
+                <label
+                  className="block text-sm font-bold text-fe-brown mb-1"
+                  htmlFor={`edit-${field.key}`}
+                >
+                  {field.label}
+                </label>
+                {field.kind === 'text' ? (
+                  <textarea
+                    id={`edit-${field.key}`}
+                    rows={6}
+                    spellCheck
+                    className={`${inputClassName} resize-y`}
+                    value={values[field.key]}
+                    onChange={(e) => set(field.key, e.target.value)}
+                  />
+                ) : (
+                  <input
+                    id={`edit-${field.key}`}
+                    inputMode={field.kind === 'year' ? 'numeric' : undefined}
+                    className={`${inputClassName} ${field.kind === 'year' ? 'max-w-32' : ''}`}
+                    value={values[field.key]}
+                    onChange={(e) => set(field.key, e.target.value)}
+                  />
+                )}
+                {field.hint && (
+                  <p className="mt-1 text-xs text-fe-ink/60">{field.hint}</p>
+                )}
+              </div>
+            ),
+          )}
 
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -336,13 +351,49 @@ function Preview({
   record: EditableRecord
   values: FormValues
 }) {
-  if (type === 'image') {
-    const details = [values.location, values.year_taken].filter(Boolean).join(', ')
-    return (
+  if (type === 'image') return <PhotoPreview record={record} values={values} />
+  const body = type === 'gallery' ? values.summary : values.blurb
+  return (
+    <>
+      <h2 className="text-xl sm:text-2xl font-bold mb-3">
+        <InlineMarkdown>{values.name}</InlineMarkdown>
+      </h2>
+      <div className="text-[12px] text-fe-ink [&_p]:mb-3">
+        <ReactMarkdown components={markdownLink}>{body}</ReactMarkdown>
+      </div>
+    </>
+  )
+}
+
+// A photograph with the caption line the gallery gives it. If the file
+// won't load, it says so: a hidden photograph sometimes was never put on
+// the image server, and publishing it would show visitors a broken image
+// (scripts/reviewEdits.ts holds such a change back).
+function PhotoPreview({
+  record,
+  values,
+}: {
+  record: EditableRecord
+  values: FormValues
+}) {
+  const [missing, setMissing] = useState(false)
+  const details = [values.location, values.year_taken].filter(Boolean).join(', ')
+  return (
+    <>
+      {values.is_published !== 'true' && (
+        <p className="mb-2 text-xs font-bold text-fe-brown">Hidden from visitors</p>
+      )}
+      {missing && (
+        <p className="mb-2 text-sm text-red-700">
+          This photograph&rsquo;s file isn&rsquo;t on the image server, so it can&rsquo;t
+          be shown on the site.
+        </p>
+      )}
       <figure>
         <img
           src={resolveImageUrl(String(record.url))}
           alt=""
+          onError={() => setMissing(true)}
           className="max-h-[50vh] w-auto max-w-full"
         />
         <figcaption className="mt-2 text-[12px] text-fe-ink/80">
@@ -360,17 +411,6 @@ function Preview({
           )}
         </figcaption>
       </figure>
-    )
-  }
-  const body = type === 'gallery' ? values.summary : values.blurb
-  return (
-    <>
-      <h2 className="text-xl sm:text-2xl font-bold mb-3">
-        <InlineMarkdown>{values.name}</InlineMarkdown>
-      </h2>
-      <div className="text-[12px] text-fe-ink [&_p]:mb-3">
-        <ReactMarkdown components={markdownLink}>{body}</ReactMarkdown>
-      </div>
     </>
   )
 }

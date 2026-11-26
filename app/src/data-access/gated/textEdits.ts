@@ -25,6 +25,9 @@ export interface EditableText {
   // The old site's free-text subject tags, e.g. "Schumm, Adelheid".
   tags: string | null
   person_ids: number[]
+  // Whether visitors can see it. The Tag texts list holds published texts
+  // only; a hidden one is opened from the Hidden page, to bring it back.
+  is_published: boolean
 }
 
 // One text in full, for the editor: its body as stored ({{image:ID}}
@@ -58,6 +61,8 @@ export interface TextEditChanges {
   content?: string
   // The German half's body; a bilingual text only.
   content_de?: string
+  // false hides the text from visitors; true brings a hidden one back.
+  is_published?: boolean
   author?: string | null
   author_person_id?: number | null
   genre?: string
@@ -82,6 +87,19 @@ export async function listTextEdits(): Promise<{
     targets: EditableText[]
     edits: QueuedEdit[]
   }>('/edits?type=document')
+  return { texts: targets, edits: edits.map(toTextEdit) }
+}
+
+// Every hidden text, and every pending edit to texts -- so the Hidden
+// page can say which are already on their way back.
+export async function listHiddenTexts(): Promise<{
+  texts: EditableText[]
+  edits: TextEdit[]
+}> {
+  const { targets, edits } = await apiFetch<{
+    targets: EditableText[]
+    edits: QueuedEdit[]
+  }>('/edits?type=document&hidden=1')
   return { texts: targets, edits: edits.map(toTextEdit) }
 }
 

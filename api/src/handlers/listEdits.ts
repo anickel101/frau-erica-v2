@@ -30,6 +30,19 @@ async function baseHandler(
   const editType = Object.hasOwn(EDIT_TYPES, type) ? EDIT_TYPES[type] : undefined
   if (!editType) return jsonResponse(400, { error: `Unknown record type "${type}"` })
 
+  // GET /edits?type=document&hidden=1: the hidden records of a kind that
+  // can be hidden, and that kind's pending edits (a republish waiting).
+  if (event.queryStringParameters?.hidden === '1') {
+    if (!editType.listHidden) {
+      return jsonResponse(400, { error: `A ${type} can't be hidden` })
+    }
+    const db = await getDb()
+    return jsonResponse(200, {
+      targets: editType.listHidden(db),
+      edits: await listEditsOfType(type),
+    })
+  }
+
   const idParam = event.queryStringParameters?.id
   if (idParam !== undefined) {
     const id = editType.parseId(idParam)
