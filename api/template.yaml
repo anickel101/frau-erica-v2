@@ -1124,9 +1124,13 @@ Resources:
           DB_KEY: current/frau_erica.db
       Policies:
         - Statement:
+            # Scan for every edit of a type (the Tag texts list); Query
+            # for one record's edits (the text editor opening one text).
             - Sid: ReadOwnEditsTableOnly
               Effect: Allow
-              Action: dynamodb:Scan
+              Action:
+                - dynamodb:Scan
+                - dynamodb:Query
               Resource: !GetAtt EditsTable.Arn
             - Sid: ReadCurrentSnapshotOnly
               Effect: Allow
