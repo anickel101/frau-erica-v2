@@ -3,19 +3,26 @@ import type {
   TextEdit,
   TextEditChanges,
 } from '../data-access/gated/textEdits'
+import { toBlocks } from './paragraphs'
 
 // The bookkeeping behind the admin text editor, kept out of the page so
 // it can be tested: what the form opens with, what each kind of save
 // sends, and the small text surgery the toolbar does.
 
-export const EDITOR_FIELDS = ['title', 'summary', 'content'] as const
+// content_de is the German half's body: a bilingual text only.
+export const EDITOR_FIELDS = ['title', 'summary', 'content', 'content_de'] as const
 export type EditorField = (typeof EDITOR_FIELDS)[number]
 export type EditorValues = Record<EditorField, string>
 
 // The archive's own values. An absent summary is an empty box; the API
 // stores an empty one as "none".
 export function archiveValues(text: EditableTextDetail): EditorValues {
-  return { title: text.title, summary: text.summary ?? '', content: text.content }
+  return {
+    title: text.title,
+    summary: text.summary ?? '',
+    content: text.content,
+    content_de: text.content_de ?? '',
+  }
 }
 
 // What the form opens with: the archive, with any pending edit -- a draft
@@ -35,10 +42,9 @@ export function pendingEditorEdits(edits: TextEdit[]): TextEdit[] {
   return edits.filter((e) => (EDITOR_FIELDS as readonly string[]).includes(e.field))
 }
 
-// A bilingual text's body is refused by the API until the side-by-side
-// editor exists, so it is never sent.
+// An English-only text has no German body to send.
 function editable(field: EditorField, bilingual: boolean): boolean {
-  return !(field === 'content' && bilingual)
+  return field !== 'content_de' || bilingual
 }
 
 // Fields that differ between two states of the form: what an autosave
@@ -190,4 +196,58 @@ export function searchImages<T extends SearchableImage>(
       return words.every((word) => haystack.includes(word))
     })
     .slice(0, limit)
+}
+
+// --------------------------------------------------- bilingual paragraphs
+
+export interface ParagraphPair {
+  de: string
+  en: string
+}
+
+// A bilingual text's two bodies as rows of German beside English, the way
+// the page sets them. A pair that is out of step -- a draft saved half
+// way through adding a paragraph -- gets an empty cell to fill rather than
+// losing the extra paragraph.
+export function toPairs(english: string, german: string): ParagraphPair[] {
+  const en = toBlocks(english)
+  const de = toBlocks(german)
+  return Array.from({ length: Math.max(en.length, de.length, 1) }, (_, i) => ({
+    de: de[i] ?? '',
+    en: en[i] ?? '',
+  }))
+}
+
+export function fromPairs(pairs: ParagraphPair[]): {
+  content: string
+  content_de: string
+} {
+  return {
+    content: pairs.map((p) => p.en.trim()).join('\n\n'),
+    content_de: pairs.map((p) => p.de.trim()).join('\n\n'),
+  }
+}
+
+// What would stop the two halves pairing once saved, row by row. An
+// empty side vanishes from the count; a blank line inside a cell splits
+// it in two. Either would set every later paragraph beside the wrong
+// translation, so Submit waits until there are none.
+export function pairProblems(pairs: ParagraphPair[]): { row: number; message: string }[] {
+  const problems: { row: number; message: string }[] = []
+  pairs.forEach((pair, row) => {
+    for (const [side, label] of [
+      ['de', 'German'],
+      ['en', 'English'],
+    ] as const) {
+      const blocks = toBlocks(pair[side]).length
+      if (blocks === 0) problems.push({ row, message: `The ${label} is empty.` })
+      else if (blocks > 1) {
+        problems.push({
+          row,
+          message: `The ${label} has a blank line in it, which would make it two paragraphs. Use “Add a paragraph” instead.`,
+        })
+      }
+    }
+  })
+  return problems
 }

@@ -78,16 +78,20 @@ export default function TextPage() {
 
   // An admin sees the text as it will read once its staged changes are
   // published, with a banner saying so and a way back to what everyone
-  // else sees. A bilingual body isn't editable yet, so only its title and
-  // summary can differ.
+  // else sees. Every bilingual pair's entry point is its English half, so
+  // a staged German body replaces the counterpart.
   const viewing = staged && showStaged ? staged : null
   const title = viewing?.title ?? document.title
   const summary =
     viewing && 'summary' in viewing ? (viewing.summary ?? null) : document.summary
   const content =
-    viewing?.content !== undefined && !document.parallel
+    viewing?.content !== undefined
       ? resolveImagePlaceholders(viewing.content)
       : document.content
+  const counterpart =
+    viewing?.content_de !== undefined
+      ? resolveImagePlaceholders(viewing.content_de)
+      : document.parallel?.content
 
   return (
     <Layout>
@@ -130,13 +134,9 @@ export default function TextPage() {
             document.parallel
               ? {
                   german:
-                    document.parallel.language === 'de'
-                      ? document.parallel.content
-                      : document.content,
+                    document.parallel.language === 'de' ? (counterpart ?? '') : content,
                   english:
-                    document.parallel.language === 'de'
-                      ? document.content
-                      : document.parallel.content,
+                    document.parallel.language === 'de' ? content : (counterpart ?? ''),
                 }
               : null
           }

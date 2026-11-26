@@ -294,8 +294,11 @@ change waits in a queue until it is applied. Today the one type is
 `document` (title, body, byline, author record, genre, summary, linked
 people); `GET /edits?type=document&id=N` returns one text in full, body
 included, for the editor at `/admin/edit/text/:id`. A bilingual text's
-body is refused until the side-by-side editor exists;
-photographs, galleries and collections join it as entries in
+German half is edited through its entry point as the field `content_de`,
+and a **submitted** edit must leave the two bodies with the same number
+of paragraphs (the export's pairing rule; a draft may be out of step);
+`reviewEdits.ts` re-checks the pairing on the result and holds back
+anything that would break it. Photographs, galleries and collections join it as entries in
 `src/lib/editTypes.ts`, not as new routes or tables.
 
 Same arrangement as photo tagging, and for the same reason: **edits go

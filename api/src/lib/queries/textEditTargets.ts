@@ -94,9 +94,13 @@ export function getEditableText(db: Database, documentId: number): EditableText 
 export interface EditableTextDetail extends EditableText {
   // As stored, {{image:ID}} placeholders and all.
   content: string
-  // True when a German half points at this text. Its body is edited
-  // side by side with that half, which the editor can't do yet.
+  // True when a German half points at this text; its body is then
+  // edited paragraph by paragraph beside content_de.
   bilingual: boolean
+  // The German half's body, as stored, or null for an English-only text.
+  // Edited through this, the entry point, as the field "content_de":
+  // the German half is never a record of its own in the queue.
+  content_de: string | null
 }
 
 export function getEditableTextDetail(
@@ -105,12 +109,22 @@ export function getEditableTextDetail(
 ): EditableTextDetail | null {
   const text = getEditableText(db, documentId)
   if (!text) return null
-  const [row] = queryAll<{ content: string | null; halves: number }>(
+  const [row] = queryAll<{ content: string | null }>(
     db,
-    `SELECT content,
-            (SELECT count(*) FROM Documents WHERE parallel_of = :id) AS halves
-       FROM Documents WHERE document_id = :id`,
+    'SELECT content FROM Documents WHERE document_id = :id',
     { ':id': documentId },
   )
-  return { ...text, content: row.content ?? '', bilingual: row.halves > 0 }
+  // The export allows one German half per text; more than one is an
+  // archive error it refuses to publish, so the first is as good as any.
+  const [german] = queryAll<{ content: string | null }>(
+    db,
+    'SELECT content FROM Documents WHERE parallel_of = :id ORDER BY document_id LIMIT 1',
+    { ':id': documentId },
+  )
+  return {
+    ...text,
+    content: row.content ?? '',
+    bilingual: german !== undefined,
+    content_de: german ? (german.content ?? '') : null,
+  }
 }

@@ -54,7 +54,7 @@ async function baseHandler(
   }
 
   const db = await getDb()
-  const plan = editType.plan(db, id, body.changes)
+  const plan = editType.plan(db, id, body.changes, status)
   if ('error' in plan) return jsonResponse(plan.status, { error: plan.error })
 
   const entity = entityKey(type, id)

@@ -34,6 +34,9 @@ export const LINK_PREFIX = 'person#'
 export const DOCUMENT_FIELDS = [
   'title',
   'content',
+  // The German half's body. Edited through the entry point, so it lives
+  // on the entry point's record in the queue, but written to the half.
+  'content_de',
   'author',
   'author_person_id',
   'genre',
@@ -61,6 +64,9 @@ export function documentStatement(
   }
   if (!(DOCUMENT_FIELDS as readonly string[]).includes(field)) {
     throw new Error(`not an editable field: ${field}`)
+  }
+  if (field === 'content_de') {
+    return `UPDATE Documents SET content = ${sqlLiteral(value)} WHERE parallel_of = ${documentId};`
   }
   const where = ENTRY_POINT_ONLY.has(field)
     ? `document_id = ${documentId}`
