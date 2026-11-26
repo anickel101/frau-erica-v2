@@ -9566,13 +9566,13 @@
   {
     "image_id": 3105,
     "title": null,
-    "caption": null,
+    "caption": "Alli and Mark on a trip to the Galapagos Islands.",
     "credit": null,
     "year_taken": null,
-    "location": null,
+    "location": "Galapagos Islands",
     "width": 754,
     "height": 1076,
     "url": "Alli_Wetsuits.jpg",
-    "personIds": [19]
+    "personIds": [19, 18]
   }
 ]
