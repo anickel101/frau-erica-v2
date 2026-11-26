@@ -4,7 +4,7 @@ import DocumentEmbeddedImage from './DocumentEmbeddedImage'
 import DocumentImageStrip from './DocumentImageStrip'
 import DocumentWideImage from './DocumentWideImage'
 import ParallelText from './ParallelText'
-import { getImageDimensions } from '../data-access/public/documentImages'
+import { getImageDimensions, getImageIdBySrc } from '../data-access/public/documentImages'
 import {
   floatWidth,
   imagesIn,
@@ -64,7 +64,9 @@ function createImageComponents(imageWidths: Map<string, number>, exhibit: boolea
     // a bare number pins an explicit floated width.
     img: ({ src, alt, title }: ComponentPropsWithoutRef<'img'> & ExtraProps) => {
       if (!src) return null
-      if (title === 'wide') return <DocumentWideImage src={src} alt={alt} />
+      if (title === 'wide') {
+        return <DocumentWideImage src={src} alt={alt} imageId={getImageIdBySrc(src)} />
+      }
       // "stack" (a lone one -- a run of them becomes a strip): out of the
       // float, at the file's own size. Exhibit documents show every image
       // this way. Distinct from "wide", which fills the column and would
@@ -74,6 +76,7 @@ function createImageComponents(imageWidths: Map<string, number>, exhibit: boolea
           <DocumentEmbeddedImage
             src={src}
             alt={alt}
+            imageId={getImageIdBySrc(src)}
             layout={{ kind: 'large', maxWidth: getImageDimensions(src)?.width }}
           />
         )
@@ -83,6 +86,7 @@ function createImageComponents(imageWidths: Map<string, number>, exhibit: boolea
         <DocumentEmbeddedImage
           src={src}
           alt={alt}
+          imageId={getImageIdBySrc(src)}
           layout={{
             kind: 'float',
             width: explicitWidth ?? imageWidths.get(src) ?? floatWidth(undefined, 0),
@@ -228,6 +232,7 @@ export default function TextBody({ summary, content, parallel }: TextBodyProps) 
                 key={i}
                 images={segment.images}
                 dimensions={getImageDimensions}
+                imageIdFor={getImageIdBySrc}
               />
             ) : (
               <ReactMarkdown key={i} components={imageComponents}>

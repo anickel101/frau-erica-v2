@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import AdminPhotoId from '../components/AdminPhotoId'
 import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
 import Modal from '../components/Modal'
@@ -103,6 +104,7 @@ export default function PersonPhotosPage() {
                 <InlineMarkdown>{zoomed.caption}</InlineMarkdown>
               </div>
             )}
+            <AdminPhotoId imageId={zoomed.image_id} onDark className="mt-2" />
           </div>
         )}
       </Modal>

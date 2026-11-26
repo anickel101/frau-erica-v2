@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AdminPhotoId from './AdminPhotoId'
 import Modal from './Modal'
 
 // Sibling to DocumentEmbeddedImage.tsx, for the {{image:ID:wide}} shortcode
@@ -8,7 +9,16 @@ import Modal from './Modal'
 // gets. Same click-to-zoom Modal and stacked-caption pattern as
 // DocumentEmbeddedImage/GalleryLargeImage, just not floated and sized to
 // the full content column instead of a rotating pixel width.
-export default function DocumentWideImage({ src, alt }: { src?: string; alt?: string }) {
+export default function DocumentWideImage({
+  src,
+  alt,
+  imageId,
+}: {
+  src?: string
+  alt?: string
+  // The photograph's number, shown to admins in the zoomed view.
+  imageId?: number
+}) {
   const [isZoomed, setIsZoomed] = useState(false)
   if (!src) return null
 
@@ -40,6 +50,7 @@ export default function DocumentWideImage({ src, alt }: { src?: string; alt?: st
               <p className="text-sm text-white/80">{alt}</p>
             </div>
           )}
+          <AdminPhotoId imageId={imageId} onDark className="mt-2" />
         </div>
       </Modal>
     </figure>
