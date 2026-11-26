@@ -305,6 +305,15 @@ queue until it is applied. The kinds, each an entry in
   each, planned by `src/lib/recordEditPlan.ts`, edited at
   `/admin/edit/:type/:id`.
 
+**Publishing:** `is_published` is a field on `document` (applied to both
+halves of a bilingual pair) and `image`. Unpublishing hides an item and
+keeps it; `GET /edits?type=document&hidden=1` (or `type=image`) lists the
+hidden ones, for the admin page that brings them back, and a hidden one
+can be opened in its editor. Galleries and collections have no such flag.
+18 of the 308 hidden photographs have no file on the image server; the
+apply script holds back republishing one of those, and warns when a
+photograph being hidden is still shown by a published text.
+
 `app/scripts/reviewEdits.ts` re-checks everything against the archive
 when applying, including a bilingual text's pairing, and holds back
 anything that would no longer hold.

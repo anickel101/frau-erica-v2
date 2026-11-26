@@ -29,6 +29,7 @@ const text: EditableTextDetail = {
   content: 'Women at Brown.\n\nThe Pandas.',
   bilingual: false,
   content_de: null,
+  is_published: true,
 }
 
 function edit(
@@ -59,6 +60,7 @@ describe('openingValues', () => {
       summary: 'Hockey and song.',
       content: 'Rewritten.',
       content_de: '',
+      is_published: true,
     })
   })
 
@@ -68,7 +70,13 @@ describe('openingValues', () => {
 })
 
 describe('changedFields', () => {
-  const saved = { title: 'A', summary: '', content: 'Body.', content_de: 'Text.' }
+  const saved = {
+    title: 'A',
+    summary: '',
+    content: 'Body.',
+    content_de: 'Text.',
+    is_published: true,
+  }
 
   test('only what changed since the last save', () => {
     expect(changedFields(saved, { ...saved, content: 'Body!' }, false)).toEqual({
@@ -222,5 +230,21 @@ describe('paragraph pairs', () => {
     expect(
       pairProblems([{ de: 'Zeile eins\nZeile zwei', en: 'Line one\nLine two' }]),
     ).toEqual([])
+  })
+})
+
+describe('publishing', () => {
+  test('a pending unpublish opens unchecked, and is sent as false', () => {
+    const hidden = edit('is_published', null)
+    hidden.value = false
+    const values = openingValues(text, [hidden])
+    expect(values.is_published).toBe(false)
+    expect(submitChanges(text, values, [hidden])).toEqual({ is_published: false })
+  })
+
+  test('discarding sends the archive state back', () => {
+    const hidden = edit('is_published', null)
+    hidden.value = false
+    expect(discardChanges(text, [hidden])).toEqual({ is_published: true })
   })
 })

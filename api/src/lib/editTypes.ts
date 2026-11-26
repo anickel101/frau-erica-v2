@@ -7,8 +7,13 @@ import {
   listEditableGalleries,
   listEditableImages,
   listEditableSeries,
+  listHiddenImages,
 } from './queries/recordEditTargets'
-import { getEditableTextDetail, listEditableTexts } from './queries/textEditTargets'
+import {
+  getEditableTextDetail,
+  listEditableTexts,
+  listHiddenTexts,
+} from './queries/textEditTargets'
 import type { EditStatus } from './edits'
 import { planRecordEdits, type FieldSpec } from './recordEditPlan'
 import { planTextEdits, type FieldValue, type PlannedEdit } from './textEditPlan'
@@ -30,6 +35,9 @@ export interface EditType {
   // Every record of this kind an admin may edit, as the archive has it
   // now: what the editing page shows as "before".
   list(db: Database): unknown[]
+  // The hidden ones -- unpublished texts and photographs -- for the list
+  // an admin brings one back from. Absent for kinds that can't be hidden.
+  listHidden?(db: Database): unknown[]
   // One record in full -- for a text, with its body, which the list
   // leaves out. null if it isn't one an admin may edit.
   get(db: Database, id: RecordId): unknown
@@ -54,10 +62,11 @@ function positiveInt(raw: string): number | null {
 const document: EditType = {
   parseId: positiveInt,
   list: (db) => listEditableTexts(db),
+  listHidden: (db) => listHiddenTexts(db),
   get: (db, id) => getEditableTextDetail(db, id as number),
   plan(db, id, changes, status) {
     const text = getEditableTextDetail(db, id as number)
-    if (!text) return { error: `No published text ${id}`, status: 404 }
+    if (!text) return { error: `No text ${id}`, status: 404 }
     const plan = planTextEdits(text, changes, status)
     if ('error' in plan) return { error: plan.error, status: 400 }
     const missing = plan.personIds.filter((personId) => !personExists(db, personId))
@@ -78,10 +87,12 @@ function plainRecord<T>(
   list: (db: Database) => T[],
   get: (db: Database, id: RecordId) => T | null,
   spec: Record<string, FieldSpec>,
+  listHidden?: (db: Database) => T[],
 ): EditType {
   return {
     parseId,
     list,
+    listHidden,
     get,
     plan(db, id, changes) {
       const record = get(db, id)
@@ -93,7 +104,7 @@ function plainRecord<T>(
 }
 
 const image = plainRecord(
-  'published photograph',
+  'photograph',
   positiveInt,
   listEditableImages,
   (db, id) => getEditableImage(db, id as number),
@@ -103,7 +114,9 @@ const image = plainRecord(
     credit: { kind: 'line', max: 300 },
     year_taken: { kind: 'year' },
     location: { kind: 'line', max: 300 },
+    is_published: { kind: 'flag' },
   },
+  listHiddenImages,
 )
 
 const gallery = plainRecord(

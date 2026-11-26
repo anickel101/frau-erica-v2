@@ -41,6 +41,9 @@ export const DOCUMENT_FIELDS = [
   'author_person_id',
   'genre',
   'summary',
+  // Shared with a German half: the export refuses a pair whose halves
+  // don't publish together.
+  'is_published',
 ] as const
 const ENTRY_POINT_ONLY = new Set(['summary', 'content'])
 
@@ -199,7 +202,7 @@ export const PLAIN_RECORDS = {
     numericKey: true,
     label: 'Photograph',
     nameColumn: 'url',
-    fields: ['title', 'caption', 'credit', 'year_taken', 'location'],
+    fields: ['title', 'caption', 'credit', 'year_taken', 'location', 'is_published'],
   },
   gallery: {
     table: 'Galleries',
@@ -245,4 +248,12 @@ export function plainStatement(
       : null
   if (key === null) throw new Error(`bad ${type} id ${id}`)
   return `UPDATE ${record.table} SET ${field} = ${sqlLiteral(value)} WHERE ${record.key} = ${key};`
+}
+
+// Yes-or-no columns, stored as 1 and 0 and compared with an edit's true
+// and false.
+export const FLAG_FIELDS = new Set(['is_published'])
+
+export function asStored(field: string, value: Value): Value {
+  return FLAG_FIELDS.has(field) && typeof value === 'number' ? value === 1 : value
 }

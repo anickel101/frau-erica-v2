@@ -9,6 +9,7 @@ import {
   getEditableText,
   getEditableTextDetail,
   listEditableTexts,
+  listHiddenTexts,
 } from './textEditTargets'
 
 let db: Database
@@ -57,14 +58,23 @@ describe('listEditableTexts', () => {
   })
 })
 
+test('the hidden list holds unpublished works only, no German halves', () => {
+  expect(listHiddenTexts(db).map((t) => t.document_id)).toEqual([3])
+})
+
 describe('getEditableText', () => {
-  test('returns a published work', () => {
+  test('returns a published work, saying so', () => {
     expect(getEditableText(db, 1)?.title).toBe('Frau Erica')
+    expect(getEditableText(db, 1)?.is_published).toBe(true)
+  })
+
+  // How a hidden text is brought back: it has to be editable.
+  test('returns a hidden work too, saying so', () => {
+    expect(getEditableText(db, 3)?.is_published).toBe(false)
   })
 
   test.each([
     [2, 'a German half'],
-    [3, 'an unpublished text'],
     [999, 'an id nobody has'],
   ])('refuses %i, %s', (id) => {
     expect(getEditableText(db, id)).toBeNull()
@@ -91,7 +101,7 @@ describe('getEditableTextDetail', () => {
 
   test('refuses what getEditableText refuses', () => {
     expect(getEditableTextDetail(db, 2)).toBeNull()
-    expect(getEditableTextDetail(db, 3)).toBeNull()
+    expect(getEditableTextDetail(db, 999)).toBeNull()
   })
 })
 

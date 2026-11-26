@@ -20,6 +20,7 @@ const text: EditableText = {
   summary: 'A summer.',
   tags: null,
   person_ids: [21, 108],
+  is_published: true,
 }
 
 function edit(field: string, value: TextEdit['value']): TextEdit {

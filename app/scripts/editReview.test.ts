@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  asStored,
   documentStatement,
   judge,
   plainStatement,
@@ -70,7 +71,7 @@ describe('documentStatement', () => {
   })
   // A field name goes straight into SQL, so anything not on the list is
   // refused rather than trusted because it came from our own table.
-  test.each(['content; DROP TABLE Documents', 'is_published', 'person#x', 'person#0'])(
+  test.each(['content; DROP TABLE Documents', 'parallel_of', 'person#x', 'person#0'])(
     'refuses field %j',
     (field) => {
       expect(() => documentStatement(1, field, 'x')).toThrow()
@@ -139,7 +140,6 @@ describe('plainStatement', () => {
   })
   test.each([
     ['image', 246, 'url'],
-    ['image', 246, 'is_published'],
     ['gallery', 3, 'lead_image_id'],
     ['series', 'FredKnief', 'slug'],
     ['series', "x'; DROP TABLE Series; --", 'blurb'],
@@ -147,5 +147,23 @@ describe('plainStatement', () => {
     ['image', '246', 'caption'],
   ] as const)('refuses %s %j %s', (type, id, field) => {
     expect(() => plainStatement(type, id, field, 'x')).toThrow()
+  })
+})
+
+describe('publishing', () => {
+  test('a text is published or hidden on both halves of a pair', () => {
+    expect(documentStatement(298, 'is_published', false)).toBe(
+      'UPDATE Documents SET is_published = 0 WHERE document_id = 298 OR parallel_of = 298;',
+    )
+  })
+  test('a photograph too', () => {
+    expect(plainStatement('image', 246, 'is_published', true)).toBe(
+      'UPDATE Images SET is_published = 1 WHERE image_id = 246;',
+    )
+  })
+  test('the archive stores a flag as 1 or 0; an edit holds true or false', () => {
+    expect(asStored('is_published', 1)).toBe(true)
+    expect(asStored('is_published', 0)).toBe(false)
+    expect(asStored('year_taken', 1)).toBe(1)
   })
 })

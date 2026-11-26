@@ -12,10 +12,12 @@ export interface StagedText {
   content?: string
   // A bilingual text's German half.
   content_de?: string
+  // false: the text is set to be hidden from visitors.
+  is_published?: boolean
   edits: TextEdit[]
 }
 
-const FIELDS = ['title', 'summary', 'content', 'content_de'] as const
+const FIELDS = ['title', 'summary', 'content', 'content_de', 'is_published'] as const
 
 export function useStagedText(
   documentId: number | null,

@@ -5,8 +5,8 @@ import { queryAll } from '../sqlHelpers'
 // collections an admin can edit, read from the snapshot: the "before"
 // the editing pages show and each save records.
 
-// A published photograph. An unpublished one isn't on the site to be
-// found and edited; bringing one back is a separate step.
+// A photograph. The list for the Tag-photos-style pages holds published
+// ones; a hidden one can be opened too, which is how it is brought back.
 export interface EditableImage {
   image_id: number
   url: string
@@ -15,24 +15,40 @@ export interface EditableImage {
   credit: string | null
   year_taken: number | null
   location: string | null
+  is_published: boolean
 }
 
-const IMAGE_COLUMNS = 'image_id, url, title, caption, credit, year_taken, location'
+const IMAGE_COLUMNS =
+  'image_id, url, title, caption, credit, year_taken, location, is_published'
+
+type ImageRow = Omit<EditableImage, 'is_published'> & { is_published: number }
+const toImage = (row: ImageRow): EditableImage => ({
+  ...row,
+  is_published: row.is_published === 1,
+})
 
 export function listEditableImages(db: Database): EditableImage[] {
-  return queryAll<EditableImage>(
+  return queryAll<ImageRow>(
     db,
     `SELECT ${IMAGE_COLUMNS} FROM Images WHERE is_published = 1 ORDER BY image_id`,
-  )
+  ).map(toImage)
+}
+
+// Every hidden photograph, for the admin list that brings one back.
+export function listHiddenImages(db: Database): EditableImage[] {
+  return queryAll<ImageRow>(
+    db,
+    `SELECT ${IMAGE_COLUMNS} FROM Images WHERE is_published = 0 ORDER BY image_id`,
+  ).map(toImage)
 }
 
 export function getEditableImage(db: Database, imageId: number): EditableImage | null {
-  const rows = queryAll<EditableImage>(
+  const rows = queryAll<ImageRow>(
     db,
-    `SELECT ${IMAGE_COLUMNS} FROM Images WHERE image_id = :id AND is_published = 1`,
+    `SELECT ${IMAGE_COLUMNS} FROM Images WHERE image_id = :id`,
     { ':id': imageId },
   )
-  return rows[0] ?? null
+  return rows[0] ? toImage(rows[0]) : null
 }
 
 export interface EditableGallery {

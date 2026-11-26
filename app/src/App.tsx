@@ -17,6 +17,7 @@ const TagPhotosPage = lazy(() => import('./pages/TagPhotosPage'))
 const TagTextsPage = lazy(() => import('./pages/TagTextsPage'))
 const TextEditorPage = lazy(() => import('./pages/TextEditorPage'))
 const RecordEditorPage = lazy(() => import('./pages/RecordEditorPage'))
+const HiddenPage = lazy(() => import('./pages/HiddenPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const FamilyPage = lazy(() => import('./pages/FamilyPage'))
 const GalleriesPage = lazy(() => import('./pages/GalleriesPage'))
@@ -205,6 +206,14 @@ export default function App() {
             element={
               <RequireAdmin>
                 <TextEditorPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/hidden"
+            element={
+              <RequireAdmin>
+                <HiddenPage />
               </RequireAdmin>
             }
           />

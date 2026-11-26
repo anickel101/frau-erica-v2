@@ -212,6 +212,9 @@ function AdminTextNotice({
         {showStaged
           ? `Showing changes not yet published (${drafts ? 'some still a draft' : 'submitted'}). Visitors see the current version.`
           : 'Showing the current version, as visitors see it. Changes are waiting.'}
+        {staged.is_published === false && (
+          <strong> Once published, this text will be hidden from visitors.</strong>
+        )}
       </p>
       <p className="mt-1 space-x-4">
         <button

@@ -16,6 +16,9 @@ export type FieldSpec =
   | { kind: 'text'; max: number; required?: boolean }
   // A whole year, or nothing.
   | { kind: 'year' }
+  // Yes or no: whether a photograph is published. A form may send the
+  // words "true" and "false", as it holds every field as text.
+  | { kind: 'flag' }
 
 export interface RecordEditPlan {
   put: PlannedEdit[]
@@ -43,6 +46,14 @@ export function planRecordEdits(
     const raw = input[field]
     const was = current[field] ?? null
     let value: FieldValue
+
+    if (rule.kind === 'flag') {
+      const flag = raw === 'true' ? true : raw === 'false' ? false : raw
+      if (typeof flag !== 'boolean') return { error: `${field} must be true or false` }
+      if (flag === was) plan.clear.push(field)
+      else plan.put.push({ field, value: flag, was })
+      continue
+    }
 
     if (rule.kind === 'year') {
       if (raw === null || raw === '') value = null

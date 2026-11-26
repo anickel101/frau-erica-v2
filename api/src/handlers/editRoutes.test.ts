@@ -38,13 +38,16 @@ const text: EditableTextDetail = {
   content: 'It was hot.',
   bilingual: false,
   content_de: null,
+  is_published: true,
 }
 const getEditableTextDetail = vi.fn((): EditableTextDetail | null => text)
 const listEditableTexts = vi.fn(() => [text])
+const listHiddenTexts = vi.fn(() => [{ ...text, document_id: 77, is_published: false }])
 vi.mock('../lib/queries/textEditTargets', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../lib/queries/textEditTargets')>()),
   getEditableTextDetail,
   listEditableTexts,
+  listHiddenTexts,
 }))
 const getEditableImage = vi.fn(() => ({
   image_id: 246,
@@ -292,6 +295,22 @@ describe('GET /edits?type=', () => {
     const res = await run(list, event({ query: type ? { type } : undefined }))
     expect(res.statusCode).toBe(400)
     expect(getDb).not.toHaveBeenCalled()
+  })
+
+  test('hidden=1 lists the hidden texts, with the pending edits of the type', async () => {
+    const res = await run(list, event({ query: { type: 'document', hidden: '1' } }))
+    expect(res.statusCode).toBe(200)
+    expect(
+      JSON.parse(res.body as string).targets.map(
+        (t: { document_id: number }) => t.document_id,
+      ),
+    ).toEqual([77])
+    expect(listEditsOfType).toHaveBeenCalledWith('document')
+  })
+
+  test("hidden=1 for a kind that can't be hidden is refused", async () => {
+    const res = await run(list, event({ query: { type: 'gallery', hidden: '1' } }))
+    expect(res.statusCode).toBe(400)
   })
 
   test('returns one text in full, with only its own edits', async () => {
