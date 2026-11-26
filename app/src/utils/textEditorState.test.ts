@@ -2,6 +2,9 @@ import { describe, expect, test } from 'vitest'
 import type { EditableTextDetail, TextEdit } from '../data-access/gated/textEdits'
 import {
   changedFields,
+  fromPairs,
+  pairProblems,
+  toPairs,
   discardChanges,
   insertBlock,
   insertLink,
@@ -25,6 +28,7 @@ const text: EditableTextDetail = {
   person_ids: [],
   content: 'Women at Brown.\n\nThe Pandas.',
   bilingual: false,
+  content_de: null,
 }
 
 function edit(
@@ -54,6 +58,7 @@ describe('openingValues', () => {
       title: 'Two golden anniversaries',
       summary: 'Hockey and song.',
       content: 'Rewritten.',
+      content_de: '',
     })
   })
 
@@ -63,7 +68,7 @@ describe('openingValues', () => {
 })
 
 describe('changedFields', () => {
-  const saved = { title: 'A', summary: '', content: 'Body.' }
+  const saved = { title: 'A', summary: '', content: 'Body.', content_de: 'Text.' }
 
   test('only what changed since the last save', () => {
     expect(changedFields(saved, { ...saved, content: 'Body!' }, false)).toEqual({
@@ -71,12 +76,10 @@ describe('changedFields', () => {
     })
   })
 
-  test("never a bilingual text's body", () => {
-    expect(
-      changedFields(saved, { ...saved, content: 'Body!', title: 'B' }, true),
-    ).toEqual({
-      title: 'B',
-    })
+  test('a German body only for a bilingual text', () => {
+    const changed = { ...saved, content_de: 'Text!' }
+    expect(changedFields(saved, changed, true)).toEqual({ content_de: 'Text!' })
+    expect(changedFields(saved, changed, false)).toEqual({})
   })
 })
 
@@ -168,5 +171,56 @@ describe('searchImages', () => {
 
   test('an empty query lists the first few', () => {
     expect(searchImages(images, '  ', 2)).toHaveLength(2)
+  })
+})
+
+describe('paragraph pairs', () => {
+  test('split two bodies into German-beside-English rows', () => {
+    expect(toPairs('One.\n\nTwo.', 'Eins.\n\nZwei.')).toEqual([
+      { de: 'Eins.', en: 'One.' },
+      { de: 'Zwei.', en: 'Two.' },
+    ])
+  })
+
+  test('a half that is a paragraph short gets an empty cell, not a lost one', () => {
+    expect(toPairs('One.\n\nTwo.\n\nThree.', 'Eins.')).toEqual([
+      { de: 'Eins.', en: 'One.' },
+      { de: '', en: 'Two.' },
+      { de: '', en: 'Three.' },
+    ])
+  })
+
+  test('an empty text opens with one row to type in', () => {
+    expect(toPairs('', '')).toEqual([{ de: '', en: '' }])
+  })
+
+  test('join back into two bodies', () => {
+    expect(
+      fromPairs([
+        { de: ' Eins. ', en: 'One.' },
+        { de: 'Zwei.', en: 'Two.' },
+      ]),
+    ).toEqual({
+      content: 'One.\n\nTwo.',
+      content_de: 'Eins.\n\nZwei.',
+    })
+  })
+
+  test('name each row that would not pair, and why', () => {
+    const problems = pairProblems([
+      { de: 'Eins.', en: 'One.' },
+      { de: '', en: 'Two.' },
+      { de: 'Drei.\n\nVier.', en: 'Three.' },
+    ])
+    expect(problems.map((p) => [p.row, p.message.slice(0, 34)])).toEqual([
+      [1, 'The German is empty.'],
+      [2, 'The German has a blank line in it,'],
+    ])
+  })
+
+  test('a line break inside a paragraph is fine', () => {
+    expect(
+      pairProblems([{ de: 'Zeile eins\nZeile zwei', en: 'Line one\nLine two' }]),
+    ).toEqual([])
   })
 })

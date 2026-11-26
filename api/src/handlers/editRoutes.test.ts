@@ -37,6 +37,7 @@ const text: EditableTextDetail = {
   person_ids: [],
   content: 'It was hot.',
   bilingual: false,
+  content_de: null,
 }
 const getEditableTextDetail = vi.fn((): EditableTextDetail | null => text)
 const listEditableTexts = vi.fn(() => [text])
@@ -110,6 +111,22 @@ describe('POST /edits/{type}/{id}', () => {
         edited_by: 'admin@example.com',
       }),
     )
+  })
+
+  // The handler hands the status to the planner, which lets a draft of a
+  // bilingual body be out of step and refuses a submitted one.
+  test('a bilingual body out of step saves as a draft, not as submitted', async () => {
+    getEditableTextDetail.mockReturnValue({
+      ...text,
+      bilingual: true,
+      content: 'One.\n\nTwo.',
+      content_de: 'Eins.\n\nZwei.',
+    })
+    const changes = { content: 'One.\n\nTwo.\n\nThree.' }
+    expect(
+      (await run(save, saveDoc('40', { changes, status: 'draft' }))).statusCode,
+    ).toBe(200)
+    expect((await run(save, saveDoc('40', { changes }))).statusCode).toBe(400)
   })
 
   test('saves a draft when asked', async () => {

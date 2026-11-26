@@ -10,10 +10,12 @@ export interface StagedText {
   title?: string
   summary?: string | null
   content?: string
+  // A bilingual text's German half.
+  content_de?: string
   edits: TextEdit[]
 }
 
-const FIELDS = ['title', 'summary', 'content'] as const
+const FIELDS = ['title', 'summary', 'content', 'content_de'] as const
 
 export function useStagedText(
   documentId: number | null,

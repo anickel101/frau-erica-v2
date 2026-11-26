@@ -42,6 +42,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { homedir } from 'node:os'
 import path from 'node:path'
+import { toBlocks } from './parallelTextSplitter.ts'
+import { validateParallelTexts, type ParallelRow } from './parallelTextValidation.ts'
 import {
   DOCUMENT_FIELDS,
   LINK_PREFIX,
@@ -84,7 +86,7 @@ async function scan<T>(table: string): Promise<T[]> {
   return items
 }
 
-type Status = 'ready' | 'already applied' | 'conflict' | 'missing' | 'draft'
+type Status = 'ready' | 'already applied' | 'conflict' | 'missing' | 'unpaired' | 'draft'
 
 // ------------------------------------------------------------ the archive
 
@@ -97,7 +99,9 @@ function nameOf(personId: number): string | null {
 
 const documentRow = db.prepare(
   `SELECT title, content, author, author_person_id, genre, summary, parallel_of,
-          (SELECT count(*) FROM Documents h WHERE h.parallel_of = d.document_id) AS halves
+          (SELECT count(*) FROM Documents h WHERE h.parallel_of = d.document_id) AS halves,
+          (SELECT content FROM Documents h WHERE h.parallel_of = d.document_id
+            ORDER BY h.document_id LIMIT 1) AS content_de
      FROM Documents d WHERE document_id = ?`,
 )
 type DocumentRow = { parallel_of: number | null; halves: number } & Record<
@@ -138,10 +142,8 @@ function checkDocument(edit: CheckedEdit): CheckedEdit {
   if (!doc || doc.parallel_of !== null) {
     return { ...edit, verdict: 'missing', now: null, problem: 'no such text' }
   }
-  // The API refuses this; checked again here because a German half added
-  // since the edit was made would leave the two bodies out of step.
-  if (edit.field === 'content' && doc.halves > 0) {
-    return { ...edit, verdict: 'missing', now: null, problem: 'body of a bilingual text' }
+  if (edit.field === 'content_de' && doc.halves === 0) {
+    return { ...edit, verdict: 'missing', now: null, problem: 'no German half' }
   }
   let now: Value
   if (edit.field.startsWith(LINK_PREFIX)) {
@@ -226,7 +228,49 @@ function checkTag(tag: Tag): CheckedTag {
 
 // -------------------------------------------------------------- report
 
-const edits = (await scan<Edit>(editsTable)).map(checkEdit)
+// A bilingual text's two bodies must still pair up, paragraph for
+// paragraph, once its ready edits are applied -- judged on the result,
+// the ready half or halves over the archive's other one. The API refuses
+// an unpaired submit, but an edit to one half can be held back as a
+// conflict while the other is ready, and applying that one alone would
+// set the text's paragraphs against the wrong translation. So if the
+// result wouldn't pair, every body edit on that text waits.
+function holdUnpaired(list: CheckedEdit[]): CheckedEdit[] {
+  const isBody = (e: CheckedEdit) => e.field === 'content' || e.field === 'content_de'
+  const unpaired = new Map<string, string>()
+  for (const entity of new Set(
+    list.filter((e) => e.type === 'document').map((e) => e.entity),
+  )) {
+    const ready = list.filter(
+      (e) => e.entity === entity && e.verdict === 'ready' && isBody(e),
+    )
+    if (ready.length === 0) continue
+    const doc = documentRow.get(ready[0].id) as DocumentRow | undefined
+    if (!doc || doc.halves === 0) continue
+    const result = (field: 'content' | 'content_de') =>
+      String(ready.find((e) => e.field === field)?.value ?? doc[field] ?? '')
+    const english = toBlocks(result('content')).length
+    const german = toBlocks(result('content_de')).length
+    if (english !== german) {
+      unpaired.set(
+        entity,
+        `would leave ${english} English paragraphs beside ${german} German`,
+      )
+    }
+  }
+  return list.map((e) =>
+    unpaired.has(e.entity) && isBody(e) && e.verdict === 'ready'
+      ? {
+          ...e,
+          verdict: 'unpaired',
+          problem: unpaired.get(e.entity),
+          statement: undefined,
+        }
+      : e,
+  )
+}
+
+const edits = holdUnpaired((await scan<Edit>(editsTable)).map(checkEdit))
 const tags = (await scan<Tag>(tagsTable)).map(checkTag)
 
 function describe(field: string, value: Value): string {
@@ -254,7 +298,13 @@ function printEdit(edit: CheckedEdit): void {
     const long = [edit.was, edit.value].some(
       (v) => typeof v === 'string' && v.length > DIFF_FROM,
     )
-    if (long && edit.verdict !== 'conflict') {
+    if (long && edit.verdict === 'conflict') {
+      // Two diffs from the value the edit saw: what the archive did since,
+      // and what the edit wants. Printing three whole bodies says nothing.
+      const was = String(edit.was ?? '')
+      console.log(`      archive since: ${wordDiff(was, String(edit.now ?? ''))}`)
+      console.log(`      edit wanted:   ${wordDiff(was, String(edit.value ?? ''))}`)
+    } else if (long) {
       console.log(`      ${wordDiff(String(edit.was ?? ''), String(edit.value ?? ''))}`)
     } else {
       console.log(`      was ${describe(edit.field, edit.was)}`)
@@ -317,7 +367,10 @@ const count = <T extends { verdict: string }>(list: T[], verdict: string) =>
 const readyEdits = edits.filter((e) => e.verdict === 'ready')
 const readyTags = tags.filter((t) => t.verdict === 'ready')
 const heldBack =
-  count(edits, 'conflict') + count(edits, 'missing') + count(tags, 'missing')
+  count(edits, 'conflict') +
+  count(edits, 'missing') +
+  count(edits, 'unpaired') +
+  count(tags, 'missing')
 
 console.log(`\n${'='.repeat(78)}`)
 console.log(`Text and record edits: ${edits.length} on ${byEntity.size} records`)
@@ -329,6 +382,8 @@ if (count(edits, 'conflict'))
   console.log(`  HELD BACK, conflict:     ${count(edits, 'conflict')}`)
 if (count(edits, 'missing'))
   console.log(`  HELD BACK, missing:      ${count(edits, 'missing')}`)
+if (count(edits, 'unpaired'))
+  console.log(`  HELD BACK, unpaired:     ${count(edits, 'unpaired')}`)
 console.log(`Photo tags: ${tags.length}`)
 console.log(`  ready to apply:          ${readyTags.length}`)
 console.log(`  already in the archive:  ${count(tags, 'already applied')}`)
@@ -428,6 +483,25 @@ if (has('apply')) {
   runSqlFile(rehearsal, sqlFile)
   const rehearsed = sqlite(rehearsal, 'PRAGMA integrity_check;')
   const fkAfter = sqlite(rehearsal, 'PRAGMA foreign_key_check;')
+  // The export's own check that every bilingual pair still lines up,
+  // run on the rehearsal: the export runs after the archive is changed,
+  // and refusing then would leave the archive holding an unpaired text.
+  const rehearsedDb = new DatabaseSync(rehearsal, { readOnly: true })
+  const pairing = validateParallelTexts(
+    rehearsedDb
+      .prepare(
+        'SELECT document_id, title, content, summary, language, parallel_of, is_published FROM Documents',
+      )
+      .all() as unknown as ParallelRow[],
+  )
+  rehearsedDb.close()
+  if (pairing.errors.length > 0) {
+    console.error(
+      `     bilingual texts would no longer pair:\n       ${pairing.errors.join('\n       ')}`,
+    )
+    console.error('     stopping, archive untouched.')
+    process.exit(1)
+  }
   if (rehearsed !== 'ok' || fkAfter !== fkBefore) {
     console.error(
       `     integrity "${rehearsed}"; foreign keys before:\n${fkBefore}\nafter:\n${fkAfter}`,

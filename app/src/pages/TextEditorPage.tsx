@@ -26,8 +26,12 @@ import {
   hasChanges,
   insertBlock,
   insertLink,
+  fromPairs,
   openingValues,
+  pairProblems,
   pendingEditorEdits,
+  toPairs,
+  type ParagraphPair,
   searchImages,
   submitChanges,
   wrapSelection,
@@ -117,12 +121,40 @@ function TextEditor({
   const [saved, setSaved] = useState<EditorValues>(values)
   const [saveState, setSaveState] = useState<SaveState>({ kind: 'idle' })
   const saving = saveState.kind === 'saving'
-  const [phoneView, setPhoneView] = useState<'write' | 'preview'>('write')
+  // Phones, and every bilingual text, get one pane at a time.
+  const [view, setView] = useState<'write' | 'preview'>('write')
   const [pickerOpen, setPickerOpen] = useState(false)
   const body = useRef<HTMLTextAreaElement>(null)
   // Where the cursor was when the picker opened: the textarea loses its
   // selection to the picker's search box.
   const insertAt = useRef(0)
+
+  // A bilingual text is edited as rows of paragraph pairs, German beside
+  // English, the way the page sets them. The rows are the source of truth
+  // while editing: re-deriving them from the joined text on every
+  // keystroke would split a row the moment a blank line was typed into
+  // it, and move every row below under the cursor.
+  const [pairs, setPairs] = useState<ParagraphPair[]>(() =>
+    text.bilingual ? toPairs(values.content, values.content_de) : [],
+  )
+  const problems = text.bilingual ? pairProblems(pairs) : []
+  // The paragraph the toolbar acts on: the one last typed in.
+  const focusedCell = useRef<{
+    row: number
+    side: 'de' | 'en'
+    area: HTMLTextAreaElement
+  } | null>(null)
+  const [hint, setHint] = useState<string | null>(null)
+
+  function changePairs(next: ParagraphPair[]) {
+    setPairs(next)
+    setValues((v) => ({ ...v, ...fromPairs(next) }))
+  }
+
+  function resetTo(next: EditorValues) {
+    setValues(next)
+    if (text.bilingual) setPairs(toPairs(next.content, next.content_de))
+  }
 
   const save = useCallback(
     async (changes: TextEditChanges, status: EditStatus, after: EditorValues) => {
@@ -160,6 +192,15 @@ function TextEditor({
   }, [unsaved, saving])
 
   async function submit() {
+    // The API would refuse an unpaired bilingual text; saying which
+    // paragraph, here, is more use than its count of each.
+    if (problems.length > 0) {
+      setSaveState({
+        kind: 'error',
+        message: `Paragraph ${problems[0].row + 1}: ${problems[0].message}`,
+      })
+      return
+    }
     const changes = submitChanges(text, values, edits)
     if (!hasChanges(changes)) {
       setSaveState({ kind: 'error', message: 'Nothing has changed from the archive.' })
@@ -171,7 +212,7 @@ function TextEditor({
   async function discard() {
     const changes = discardChanges(text, edits)
     if (!hasChanges(changes)) {
-      setValues(archiveValues(text))
+      resetTo(archiveValues(text))
       return
     }
     if (
@@ -182,12 +223,33 @@ function TextEditor({
       return
     }
     const archive = archiveValues(text)
-    if (await save(changes, 'submitted', archive)) setValues(archive)
+    if (await save(changes, 'submitted', archive)) resetTo(archive)
   }
 
   // Toolbar edits go through the textarea's own value and selection, then
   // put the selection back where the edit says it belongs.
   function applyToBody(edit: (value: string, start: number, end: number) => Edited) {
+    if (text.bilingual) {
+      const cell = focusedCell.current
+      if (!cell) {
+        setHint('Click into a paragraph first.')
+        return
+      }
+      setHint(null)
+      const result = edit(
+        pairs[cell.row][cell.side],
+        cell.area.selectionStart,
+        cell.area.selectionEnd,
+      )
+      changePairs(
+        pairs.map((p, i) => (i === cell.row ? { ...p, [cell.side]: result.value } : p)),
+      )
+      requestAnimationFrame(() => {
+        cell.area.focus()
+        cell.area.setSelectionRange(result.selectionStart, result.selectionEnd)
+      })
+      return
+    }
     const area = body.current
     if (!area) return
     const result = edit(values.content, area.selectionStart, area.selectionEnd)
@@ -200,7 +262,30 @@ function TextEditor({
 
   function insertPhoto(imageId: number) {
     setPickerOpen(false)
-    applyToBody((value) => insertBlock(value, insertAt.current, `{{image:${imageId}}}`))
+    const code = `{{image:${imageId}}}`
+    // In a bilingual text a photograph can't be a paragraph of its own --
+    // it would need a partner in the other language -- so it goes at the
+    // head of the current paragraph, floating within its column, which is
+    // how the archive's bilingual texts already carry theirs.
+    if (text.bilingual) {
+      applyToBody((value) => ({
+        value: `${code}\n${value}`,
+        selectionStart: code.length + 1,
+        selectionEnd: code.length + 1,
+      }))
+      return
+    }
+    applyToBody((value) => insertBlock(value, insertAt.current, code))
+  }
+
+  function openPicker() {
+    if (text.bilingual && !focusedCell.current) {
+      setHint('Click into the paragraph the photo belongs with first.')
+      return
+    }
+    setHint(null)
+    insertAt.current = body.current?.selectionStart ?? values.content.length
+    setPickerOpen(true)
   }
 
   const pending = pendingEditorEdits(edits)
@@ -208,6 +293,11 @@ function TextEditor({
     () => resolveImagePlaceholders(values.content),
     [values.content],
   )
+  const previewGerman = useMemo(
+    () => resolveImagePlaceholders(values.content_de),
+    [values.content_de],
+  )
+  const oneAtATime = text.bilingual
 
   return (
     <>
@@ -238,28 +328,35 @@ function TextEditor({
         className="mb-4"
       />
 
-      {/* Phones get one pane at a time; from lg the two sit side by side. */}
-      <div className="lg:hidden mb-3 flex gap-2 text-sm" role="tablist">
-        {(['write', 'preview'] as const).map((view) => (
+      {/* Phones get one pane at a time; from lg the two sit side by side --
+          except a bilingual text, whose German-beside-English rows need
+          the whole width. */}
+      <div
+        className={`${oneAtATime ? '' : 'lg:hidden'} mb-3 flex gap-2 text-sm`}
+        role="tablist"
+      >
+        {(['write', 'preview'] as const).map((tab) => (
           <button
-            key={view}
+            key={tab}
             type="button"
             role="tab"
-            aria-selected={phoneView === view}
-            onClick={() => setPhoneView(view)}
+            aria-selected={view === tab}
+            onClick={() => setView(tab)}
             className={`px-3 py-1 rounded-sm border ${
-              phoneView === view
+              view === tab
                 ? 'bg-fe-brown text-white border-fe-brown'
                 : 'border-fe-brown/40 text-fe-ink'
             }`}
           >
-            {view === 'write' ? 'Write' : 'Preview'}
+            {tab === 'write' ? 'Write' : 'Preview'}
           </button>
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className={phoneView === 'write' ? '' : 'hidden lg:block'}>
+      <div className={`grid gap-6 ${oneAtATime ? '' : 'lg:grid-cols-2'}`}>
+        <section
+          className={view === 'write' ? '' : oneAtATime ? 'hidden' : 'hidden lg:block'}
+        >
           <label
             className="block text-sm font-bold text-fe-brown mb-1"
             htmlFor="edit-title"
@@ -293,44 +390,50 @@ function TextEditor({
           >
             Text
           </label>
+          <div className="flex flex-wrap gap-1 mb-1" aria-label="Formatting">
+            <ToolButton
+              label="Bold"
+              onClick={() =>
+                applyToBody((v, s, e) => wrapSelection(v, s, e, '**', 'bold text'))
+              }
+            >
+              <b>B</b>
+            </ToolButton>
+            <ToolButton
+              label="Italic"
+              onClick={() =>
+                applyToBody((v, s, e) => wrapSelection(v, s, e, '*', 'italic text'))
+              }
+            >
+              <i>I</i>
+            </ToolButton>
+            <ToolButton label="Link" onClick={() => applyToBody(insertLink)}>
+              Link
+            </ToolButton>
+            <ToolButton label="Insert photo" onClick={openPicker}>
+              Insert photo
+            </ToolButton>
+          </div>
+          {hint && <p className="mb-1 text-xs text-red-700">{hint}</p>}
           {text.bilingual ? (
-            <p className="text-sm text-fe-ink/70 border border-fe-brown/30 rounded-sm p-3">
-              This text is bilingual. Editing its English and German side by side is
-              coming next; for now its title and summary can be changed here.
-            </p>
+            <>
+              <PairEditor
+                pairs={pairs}
+                problems={problems}
+                onChange={changePairs}
+                onFocusCell={(row, side, area) => {
+                  focusedCell.current = { row, side, area }
+                  setHint(null)
+                }}
+              />
+              <p className="mt-1 text-xs text-fe-ink/60">
+                Each row is one paragraph, German beside its English, as the page sets
+                them. Add or remove a paragraph with the buttons, so both languages keep
+                the same number. **Two stars** for bold, *one* for italic.
+              </p>
+            </>
           ) : (
             <>
-              <div className="flex flex-wrap gap-1 mb-1" aria-label="Formatting">
-                <ToolButton
-                  label="Bold"
-                  onClick={() =>
-                    applyToBody((v, s, e) => wrapSelection(v, s, e, '**', 'bold text'))
-                  }
-                >
-                  <b>B</b>
-                </ToolButton>
-                <ToolButton
-                  label="Italic"
-                  onClick={() =>
-                    applyToBody((v, s, e) => wrapSelection(v, s, e, '*', 'italic text'))
-                  }
-                >
-                  <i>I</i>
-                </ToolButton>
-                <ToolButton label="Link" onClick={() => applyToBody(insertLink)}>
-                  Link
-                </ToolButton>
-                <ToolButton
-                  label="Insert photo"
-                  onClick={() => {
-                    insertAt.current =
-                      body.current?.selectionStart ?? values.content.length
-                    setPickerOpen(true)
-                  }}
-                >
-                  Insert photo
-                </ToolButton>
-              </div>
               <textarea
                 id="edit-body"
                 ref={body}
@@ -381,26 +484,19 @@ function TextEditor({
 
         <section
           aria-label="Preview"
-          className={`${phoneView === 'preview' ? '' : 'hidden lg:block'} border border-fe-brown/20 rounded-sm bg-fe-bg p-4 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:sticky lg:top-4`}
+          className={`${view === 'preview' ? '' : oneAtATime ? 'hidden' : 'hidden lg:block'} border border-fe-brown/20 rounded-sm bg-fe-bg p-4 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:sticky lg:top-4`}
         >
           <p className="text-xs uppercase tracking-wide text-fe-ink/50 mb-2">Preview</p>
           <h2 className="text-xl sm:text-2xl font-bold mb-4">
             <InlineMarkdown>{values.title}</InlineMarkdown>
           </h2>
-          {text.bilingual ? (
-            <>
-              <TextBody summary={values.summary || null} content="" parallel={null} />
-              <p className="text-xs text-fe-ink/60">
-                The bilingual text itself is shown on the published page.
-              </p>
-            </>
-          ) : (
-            <TextBody
-              summary={values.summary || null}
-              content={previewContent}
-              parallel={null}
-            />
-          )}
+          <TextBody
+            summary={values.summary || null}
+            content={previewContent}
+            parallel={
+              text.bilingual ? { german: previewGerman, english: previewContent } : null
+            }
+          />
         </section>
       </div>
 
@@ -548,5 +644,119 @@ function PhotoPicker({
         )}
       </div>
     </Modal>
+  )
+}
+
+// A bilingual text's body as rows: each a German paragraph beside its
+// English one. Paragraphs are added and removed a pair at a time, so the
+// two languages can't drift out of step -- the one thing the page's
+// side-by-side layout can't survive.
+function PairEditor({
+  pairs,
+  problems,
+  onChange,
+  onFocusCell,
+}: {
+  pairs: ParagraphPair[]
+  problems: { row: number; message: string }[]
+  onChange: (next: ParagraphPair[]) => void
+  onFocusCell: (row: number, side: 'de' | 'en', area: HTMLTextAreaElement) => void
+}) {
+  // Tall enough to show a paragraph whole, without a scroll bar per cell.
+  const rowsFor = (value: string) =>
+    Math.min(
+      16,
+      Math.max(3, Math.ceil(value.length / 48) + (value.match(/\n/g)?.length ?? 0)),
+    )
+
+  function remove(row: number) {
+    const pair = pairs[row]
+    if (
+      (pair.de.trim() || pair.en.trim()) &&
+      !window.confirm(`Remove paragraph ${row + 1}, in both languages?`)
+    ) {
+      return
+    }
+    const next = pairs.filter((_, i) => i !== row)
+    onChange(next.length > 0 ? next : [{ de: '', en: '' }])
+  }
+
+  return (
+    <div>
+      <div className="hidden sm:grid grid-cols-2 gap-3 mb-1 text-xs font-bold uppercase tracking-wide text-fe-brown">
+        <p>German</p>
+        <p>English</p>
+      </div>
+      <ol className="space-y-3">
+        {pairs.map((pair, row) => {
+          const rowProblems = problems.filter((p) => p.row === row)
+          return (
+            <li
+              key={row}
+              className={`rounded-sm border p-2 ${rowProblems.length ? 'border-red-300 bg-red-50/40' : 'border-fe-brown/20'}`}
+            >
+              <div className="flex items-center justify-between mb-1 text-xs text-fe-ink/60">
+                <span>Paragraph {row + 1}</span>
+                <span className="space-x-3">
+                  <button
+                    type="button"
+                    className="text-fe-link hover:text-fe-link-dark"
+                    onClick={() =>
+                      onChange([
+                        ...pairs.slice(0, row + 1),
+                        { de: '', en: '' },
+                        ...pairs.slice(row + 1),
+                      ])
+                    }
+                  >
+                    Add a paragraph below
+                  </button>
+                  <button
+                    type="button"
+                    className="text-fe-link hover:text-fe-link-dark"
+                    onClick={() => remove(row)}
+                  >
+                    Remove
+                  </button>
+                </span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {(['de', 'en'] as const).map((side) => (
+                  <textarea
+                    key={side}
+                    lang={side}
+                    spellCheck
+                    aria-label={`Paragraph ${row + 1}, ${side === 'de' ? 'German' : 'English'}`}
+                    rows={rowsFor(pair[side])}
+                    className={`${inputClassName} resize-y font-mono text-[13px] leading-relaxed`}
+                    value={pair[side]}
+                    onFocus={(e) => onFocusCell(row, side, e.currentTarget)}
+                    onChange={(e) =>
+                      onChange(
+                        pairs.map((p, i) =>
+                          i === row ? { ...p, [side]: e.target.value } : p,
+                        ),
+                      )
+                    }
+                  />
+                ))}
+              </div>
+              {rowProblems.map((p) => (
+                <p key={p.message} className="mt-1 text-xs text-red-700">
+                  {p.message}
+                </p>
+              ))}
+            </li>
+          )
+        })}
+      </ol>
+      <button
+        type="button"
+        className="mt-2 text-sm text-fe-link hover:text-fe-link-dark"
+        onClick={() => onChange([...pairs, { de: '', en: '' }])}
+      >
+        Add a paragraph at the end
+      </button>
+    </div>
   )
 }

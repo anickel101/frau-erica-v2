@@ -1,6 +1,7 @@
 import type { Database } from 'sql.js'
 import { personExists } from './queries/photoTagTargets'
 import { getEditableTextDetail, listEditableTexts } from './queries/textEditTargets'
+import type { EditStatus } from './edits'
 import { planTextEdits, type PlannedEdit } from './textEditPlan'
 
 // The kinds of record the staged-edit routes accept, and for each one how
@@ -28,16 +29,17 @@ export interface EditType {
     db: Database,
     id: number,
     changes: unknown,
+    status: EditStatus,
   ): EditPlan | { error: string; status: 400 | 404 }
 }
 
 const document: EditType = {
   list: (db) => listEditableTexts(db),
   get: (db, id) => getEditableTextDetail(db, id),
-  plan(db, id, changes) {
+  plan(db, id, changes, status) {
     const text = getEditableTextDetail(db, id)
     if (!text) return { error: `No published text ${id}`, status: 404 }
-    const plan = planTextEdits(text, changes)
+    const plan = planTextEdits(text, changes, status)
     if ('error' in plan) return { error: plan.error, status: 400 }
     const missing = plan.personIds.filter((personId) => !personExists(db, personId))
     if (missing.length > 0) {

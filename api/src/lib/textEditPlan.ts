@@ -41,12 +41,24 @@ export interface TextEditPlan {
 const FIELDS = [
   'title',
   'content',
+  'content_de',
   'author',
   'author_person_id',
   'genre',
   'summary',
   'people',
 ] as const
+
+// A text's paragraphs as the site pairs them: split at blank lines. The
+// same rule as app/src/utils/paragraphs.ts and the export's
+// parallelTextValidation.ts, which refuses a pair whose counts differ;
+// copied rather than shared, as the two packages share no code.
+export function toBlocks(content: string): string[] {
+  return content
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+}
 
 export function linkField(personId: number): string {
   return `person#${personId}`
@@ -65,9 +77,14 @@ function isPositiveId(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value > 0
 }
 
+// status matters for one rule only: a bilingual text's two bodies must
+// pair up paragraph for paragraph when SUBMITTED. A draft may be out of
+// step -- the editor adds an English paragraph a moment before its German
+// one -- but nothing unpaired is ever offered for publishing.
 export function planTextEdits(
   text: EditableTextDetail,
   body: unknown,
+  status: 'draft' | 'submitted' = 'submitted',
 ): TextEditPlan | { error: string } {
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
     return { error: 'Expected an object of fields' }
@@ -100,22 +117,41 @@ export function planTextEdits(
     propose('title', title, text.title, title === cleanText(text.title))
   }
 
-  if ('content' in input) {
-    // Until the editor can set a German half beside its English one, a
-    // bilingual body is refused rather than edited alone: the export
-    // won't publish a pair whose paragraphs no longer line up.
-    if (text.bilingual) {
-      return { error: "This text's body is bilingual and can't be edited here yet" }
+  // The two bodies -- English, and for a bilingual text its German half.
+  const bodies: Partial<Record<'content' | 'content_de', string>> = {}
+  for (const field of ['content', 'content_de'] as const) {
+    if (!(field in input)) continue
+    if (field === 'content_de' && !text.bilingual) {
+      return { error: 'This text has no German half' }
     }
-    if (typeof input.content !== 'string') return { error: 'content must be text' }
-    const content = cleanText(input.content)
+    const raw = input[field]
+    if (typeof raw !== 'string') return { error: `${field} must be text` }
+    const value = cleanText(raw)
     // Emptying a body is never what a save means; unpublishing a text is
     // a separate thing.
-    if (content === null) return { error: "A text's body can't be emptied" }
-    if (content.length > CONTENT_MAX) {
-      return { error: `content must be at most ${CONTENT_MAX} characters` }
+    if (value === null) return { error: "A text's body can't be emptied" }
+    if (value.length > CONTENT_MAX) {
+      return { error: `${field} must be at most ${CONTENT_MAX} characters` }
     }
-    propose('content', content, text.content, content === cleanText(text.content))
+    const archived = field === 'content' ? text.content : (text.content_de ?? '')
+    bodies[field] = value
+    propose(field, value, archived, value === cleanText(archived))
+  }
+
+  // The rule the export enforces, checked at the moment of submitting:
+  // the site sets the nth German paragraph beside the nth English one, so
+  // unequal counts would put every paragraph after the gap beside the
+  // wrong translation.
+  if (status === 'submitted' && text.bilingual && Object.keys(bodies).length > 0) {
+    const english = toBlocks(bodies.content ?? text.content).length
+    const german = toBlocks(bodies.content_de ?? text.content_de ?? '').length
+    if (english !== german) {
+      return {
+        error:
+          `The English has ${english} paragraphs and the German ${german}. ` +
+          'They must pair up before the text can be submitted.',
+      }
+    }
   }
 
   if ('author' in input) {

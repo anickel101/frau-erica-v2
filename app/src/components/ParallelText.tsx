@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
 import ReactMarkdown, { type Components } from 'react-markdown'
+import { toBlocks } from '../utils/paragraphs'
 
 // A work the archive holds in both German and English, set side by side
 // with each paragraph against its own translation.
@@ -24,17 +25,11 @@ import ReactMarkdown, { type Components } from 'react-markdown'
 // is ever bypassed -- a stale documents.json, say -- where showing one
 // half short is far better than dropping paragraphs silently.
 
-// Markdown blocks are separated by blank lines. Safe for these documents
+// Paragraphs are split at blank lines (utils/paragraphs.ts, the same
+// rule the export and the editor use). Safe for these documents
 // specifically: none of the archive's parallel texts contain lists,
 // block quotes or fenced code, where a blank line can fall INSIDE a
 // single markdown block.
-function toBlocks(content: string): string[] {
-  return content
-    .split(/\n\s*\n/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-}
-
 export default function ParallelText({
   german,
   english,

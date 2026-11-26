@@ -22,6 +22,7 @@ const text: EditableTextDetail = {
   person_ids: [21, 108],
   content: 'It was hot.\n\n{{image:12}}\n\nWe left in August.',
   bilingual: false,
+  content_de: null,
 }
 
 function plan(body: unknown): TextEditPlan {
@@ -154,11 +155,64 @@ describe('planTextEdits: title and body', () => {
     expect(error({ content })).toMatch(message)
   })
 
-  test("refuses a bilingual text's body, but not its title", () => {
-    const bilingual = { ...text, bilingual: true }
-    const body = planTextEdits(bilingual, { content: 'New.' })
-    expect('error' in body && body.error).toMatch(/bilingual/)
-    const title = planTextEdits(bilingual, { title: 'New title' })
-    expect('put' in title && title.put[0].field).toBe('title')
+  test('an English-only text has no German body to edit', () => {
+    expect(error({ content_de: 'Neu.' })).toMatch(/no German half/)
+  })
+})
+
+describe('planTextEdits: a bilingual text', () => {
+  const bilingual: EditableTextDetail = {
+    ...text,
+    bilingual: true,
+    content: 'One.\n\nTwo.',
+    content_de: 'Eins.\n\nZwei.',
+  }
+  const run = (body: unknown, status?: 'draft' | 'submitted') =>
+    planTextEdits(bilingual, body, status)
+
+  test('proposes a German body, recording the old one', () => {
+    const result = run({ content_de: 'Eins!\n\nZwei.' })
+    expect('put' in result && result.put).toEqual([
+      { field: 'content_de', value: 'Eins!\n\nZwei.', was: 'Eins.\n\nZwei.' },
+    ])
+  })
+
+  test('a paragraph added to both halves submits', () => {
+    const result = run({
+      content: 'One.\n\nTwo.\n\nThree.',
+      content_de: 'Eins.\n\nZwei.\n\nDrei.',
+    })
+    expect('put' in result && result.put.map((e) => e.field)).toEqual([
+      'content',
+      'content_de',
+    ])
+  })
+
+  // Checked against the archive's other half when only one is sent.
+  test('submitting one half out of step with the other is refused, naming the counts', () => {
+    const result = run({ content: 'One.\n\nTwo.\n\nThree.' })
+    expect('error' in result && result.error).toMatch(
+      /English has 3 paragraphs and the German 2/,
+    )
+  })
+
+  test('a draft may be out of step while the editor works', () => {
+    const result = run({ content: 'One.\n\nTwo.\n\nThree.' }, 'draft')
+    expect('put' in result && result.put[0].field).toBe('content')
+  })
+
+  test('a blank line inside a paragraph counts as two', () => {
+    const result = run({ content_de: 'Eins.\n\n\nZwei.\n  \nDrei.' })
+    expect('error' in result && result.error).toMatch(/German 3/)
+  })
+
+  test('the German body cannot be emptied either', () => {
+    const result = run({ content_de: '  ' })
+    expect('error' in result && result.error).toMatch(/can't be emptied/)
+  })
+
+  test('a title change needs no pairing check', () => {
+    const result = run({ title: 'Neuer Titel' })
+    expect('put' in result && result.put[0].field).toBe('title')
   })
 })

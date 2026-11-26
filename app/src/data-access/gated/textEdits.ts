@@ -28,11 +28,12 @@ export interface EditableText {
 }
 
 // One text in full, for the editor: its body as stored ({{image:ID}}
-// placeholders and all), and whether a German half sits beside it, whose
-// body can't be edited yet.
+// placeholders and all), and for a bilingual text its German half's body,
+// edited paragraph by paragraph beside it.
 export interface EditableTextDetail extends EditableText {
   content: string
   bilingual: boolean
+  content_de: string | null
 }
 
 export type EditStatus = 'draft' | 'submitted'
@@ -55,6 +56,8 @@ export interface TextEdit {
 export interface TextEditChanges {
   title?: string
   content?: string
+  // The German half's body; a bilingual text only.
+  content_de?: string
   author?: string | null
   author_person_id?: number | null
   genre?: string

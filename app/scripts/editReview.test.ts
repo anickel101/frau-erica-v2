@@ -48,6 +48,12 @@ describe('documentStatement', () => {
     )
   })
 
+  test("a German body is written to the German half, by the entry point's id", () => {
+    expect(documentStatement(298, 'content_de', 'Abendglocken.')).toBe(
+      "UPDATE Documents SET content = 'Abendglocken.' WHERE parallel_of = 298;",
+    )
+  })
+
   test('a link inserts; an unlink removes from both halves', () => {
     expect(documentStatement(73, 'person#529', true)).toBe(
       'INSERT INTO DocumentLinks (document_id, person_id) VALUES (73, 529);',

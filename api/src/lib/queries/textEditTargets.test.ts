@@ -36,6 +36,7 @@ beforeEach(async () => {
   db.run(
     "UPDATE Documents SET content = 'A summer.\n\n{{image:5}}' WHERE document_id = 4",
   )
+  db.run("UPDATE Documents SET content = 'Ein Gedicht.' WHERE document_id = 2")
   db.run(
     `INSERT INTO DocumentLinks (document_id, person_id)
      VALUES (1, 21), (2, 108), (2, 21), (3, 500)`,
@@ -75,10 +76,13 @@ describe('getEditableTextDetail', () => {
     const chicago = getEditableTextDetail(db, 4)
     expect(chicago?.content).toBe('A summer.\n\n{{image:5}}')
     expect(chicago?.bilingual).toBe(false)
+    expect(chicago?.content_de).toBeNull()
   })
 
-  test('knows a text with a German half is bilingual', () => {
-    expect(getEditableTextDetail(db, 1)?.bilingual).toBe(true)
+  test('knows a text with a German half is bilingual, and carries its body', () => {
+    const frauErica = getEditableTextDetail(db, 1)
+    expect(frauErica?.bilingual).toBe(true)
+    expect(frauErica?.content_de).toBe('Ein Gedicht.')
   })
 
   test('an empty body is an empty string, not null', () => {
