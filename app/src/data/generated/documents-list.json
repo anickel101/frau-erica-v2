@@ -3157,5 +3157,18 @@
     "genre": "Memoir",
     "tags": "McMillan, Molly Bigelow",
     "language": null
+  },
+  {
+    "document_id": 377,
+    "series_key": null,
+    "series_title": null,
+    "series_order": null,
+    "title": "In Memoriam: Mary Allison McMillan",
+    "author": "Mark Nickel",
+    "authorPersonId": 18,
+    "summary": null,
+    "genre": "Obituary",
+    "tags": null,
+    "language": null
   }
 ]
