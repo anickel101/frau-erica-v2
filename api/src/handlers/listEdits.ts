@@ -32,10 +32,8 @@ async function baseHandler(
 
   const idParam = event.queryStringParameters?.id
   if (idParam !== undefined) {
-    const id = /^\d+$/.test(idParam) ? Number(idParam) : NaN
-    if (!Number.isSafeInteger(id) || id <= 0) {
-      return jsonResponse(400, { error: 'id must be a positive integer' })
-    }
+    const id = editType.parseId(idParam)
+    if (id === null) return jsonResponse(400, { error: `Not a ${type} id` })
     const db = await getDb()
     const target = editType.get(db, id)
     if (!target) return jsonResponse(404, { error: `No editable ${type} ${id}` })

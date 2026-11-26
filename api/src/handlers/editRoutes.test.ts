@@ -46,6 +46,25 @@ vi.mock('../lib/queries/textEditTargets', async (importOriginal) => ({
   getEditableTextDetail,
   listEditableTexts,
 }))
+const getEditableImage = vi.fn(() => ({
+  image_id: 246,
+  url: 'KamKwai.jpg',
+  title: null,
+  caption: 'Lovable yet pitiful.',
+  credit: null,
+  year_taken: null,
+  location: null,
+}))
+const getEditableSeries = vi.fn((_db: unknown, key: string) =>
+  key === 'FredKnief'
+    ? { series_key: 'FredKnief', slug: 'fred-knief', name: 'Fred Knief', blurb: null }
+    : null,
+)
+vi.mock('../lib/queries/recordEditTargets', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../lib/queries/recordEditTargets')>()),
+  getEditableImage,
+  getEditableSeries,
+}))
 const personExists = vi.fn(() => true)
 vi.mock('../lib/queries/photoTagTargets', () => ({ personExists }))
 
@@ -129,6 +148,48 @@ describe('POST /edits/{type}/{id}', () => {
     expect((await run(save, saveDoc('40', { changes }))).statusCode).toBe(400)
   })
 
+  test("stores a photograph's caption under image#id", async () => {
+    const res = await run(
+      save,
+      event({
+        type: 'image',
+        id: '246',
+        body: { changes: { caption: 'Joyce and her sisters.' } },
+      }),
+    )
+    expect(res.statusCode).toBe(200)
+    expect(putEdit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        entity: 'image#246',
+        field: 'caption',
+        was: 'Lovable yet pitiful.',
+      }),
+    )
+  })
+
+  test('a collection is named by its key, not a number', async () => {
+    const res = await run(
+      save,
+      event({ type: 'series', id: 'FredKnief', body: { changes: { blurb: 'Essays.' } } }),
+    )
+    expect(res.statusCode).toBe(200)
+    expect(putEdit).toHaveBeenCalledWith(
+      expect.objectContaining({ entity: 'series#FredKnief' }),
+    )
+  })
+
+  test.each(['Fred Knief', 'x#y', '../etc', ''])(
+    'refuses collection key %j',
+    async (id) => {
+      const res = await run(
+        save,
+        event({ type: 'series', id, body: { changes: { blurb: 'x' } } }),
+      )
+      expect(res.statusCode).toBe(400)
+      expect(putEdit).not.toHaveBeenCalled()
+    },
+  )
+
   test('saves a draft when asked', async () => {
     await run(save, saveDoc('40', { changes: { genre: 'Memoir' }, status: 'draft' }))
     expect(putEdit).toHaveBeenCalledWith(expect.objectContaining({ status: 'draft' }))
@@ -163,7 +224,7 @@ describe('POST /edits/{type}/{id}', () => {
     expect(putEdit).not.toHaveBeenCalled()
   })
 
-  test.each(['image', 'constructor', '__proto__', ''])(
+  test.each(['person', 'constructor', '__proto__', ''])(
     '404s record type %j',
     async (type) => {
       const res = await run(
@@ -227,7 +288,7 @@ describe('GET /edits?type=', () => {
     expect(listEditsOfType).toHaveBeenCalledWith('document')
   })
 
-  test.each([undefined, 'image', 'toString'])('400s type %j', async (type) => {
+  test.each([undefined, 'person', 'toString'])('400s type %j', async (type) => {
     const res = await run(list, event({ query: type ? { type } : undefined }))
     expect(res.statusCode).toBe(400)
     expect(getDb).not.toHaveBeenCalled()

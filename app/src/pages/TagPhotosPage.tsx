@@ -580,6 +580,14 @@ function PhotoTagger({
             <InlineMarkdown>{photo.caption}</InlineMarkdown>
           </div>
         )}
+        <p className="mt-2 text-sm">
+          <Link
+            to={`/admin/edit/image/${photo.image_id}`}
+            className="text-fe-link hover:text-fe-link-dark"
+          >
+            Edit its caption and details
+          </Link>
+        </p>
       </div>
 
       <div>

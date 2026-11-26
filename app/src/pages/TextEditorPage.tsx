@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import EditStatusLine, { type SaveState } from '../components/EditStatusLine'
 import InlineMarkdown from '../components/InlineMarkdown'
 import Layout from '../components/Layout'
 import Modal from '../components/Modal'
@@ -55,12 +56,6 @@ import {
 // Long enough to finish a word, short enough that closing the tab loses
 // a sentence at most -- and the page warns before it closes anyway.
 const AUTOSAVE_MS = 2000
-
-type SaveState =
-  | { kind: 'idle' }
-  | { kind: 'saving' }
-  | { kind: 'saved'; at: Date }
-  | { kind: 'error'; message: string }
 
 export default function TextEditorPage() {
   const { documentId } = useParams<{ documentId: string }>()
@@ -321,7 +316,7 @@ function TextEditor({
         </p>
       </div>
 
-      <StatusLine
+      <EditStatusLine
         pending={pending}
         saveState={saveState}
         unsaved={unsaved}
@@ -473,7 +468,7 @@ function TextEditor({
               times (the archivist's first real edit, 2026-11-26). This
               copy is the live region; the top one is silent so a screen
               reader doesn't announce every save twice. */}
-          <StatusLine
+          <EditStatusLine
             pending={pending}
             saveState={saveState}
             unsaved={unsaved}
@@ -506,49 +501,6 @@ function TextEditor({
         onPick={insertPhoto}
       />
     </>
-  )
-}
-
-function StatusLine({
-  pending,
-  saveState,
-  unsaved,
-  live = false,
-  className = '',
-}: {
-  pending: TextEdit[]
-  saveState: SaveState
-  unsaved: boolean
-  live?: boolean
-  className?: string
-}) {
-  const latest = [...pending].sort((a, b) => b.edited_at.localeCompare(a.edited_at))[0]
-  const drafts = pending.some((e) => e.status === 'draft')
-  const when = (iso: string) =>
-    new Date(iso).toLocaleString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-
-  let state: string
-  if (saveState.kind === 'saving') state = 'Saving…'
-  else if (saveState.kind === 'error') state = `Not saved: ${saveState.message}`
-  else if (unsaved) state = 'Unsaved changes…'
-  else if (!latest) state = 'No changes waiting. This is the archive’s version.'
-  else if (drafts)
-    state = `Draft, saved ${when(latest.edited_at)} by ${latest.edited_by}. Submit it when it’s ready.`
-  else
-    state = `Submitted ${when(latest.edited_at)} by ${latest.edited_by}, waiting to be published.`
-
-  return (
-    <p
-      role={live ? 'status' : undefined}
-      className={`${className} text-sm ${saveState.kind === 'error' ? 'text-red-700' : 'text-fe-ink/70'}`}
-    >
-      {state}
-    </p>
   )
 }
 

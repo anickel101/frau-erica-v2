@@ -185,3 +185,64 @@ export function wordDiff(before: string, after: string, context = 6): string {
   })
   return parts.join(' ')
 }
+
+// ------------------------------------------------- photographs and others
+
+// Records whose editable fields are plain columns: the table, its key,
+// and the columns an edit may set. A field name goes straight into SQL,
+// so anything not listed here is refused rather than trusted because it
+// came from our own table.
+export const PLAIN_RECORDS = {
+  image: {
+    table: 'Images',
+    key: 'image_id',
+    numericKey: true,
+    label: 'Photograph',
+    nameColumn: 'url',
+    fields: ['title', 'caption', 'credit', 'year_taken', 'location'],
+  },
+  gallery: {
+    table: 'Galleries',
+    key: 'gallery_id',
+    numericKey: true,
+    label: 'Gallery',
+    nameColumn: 'name',
+    fields: ['name', 'summary'],
+  },
+  series: {
+    table: 'Series',
+    key: 'series_key',
+    numericKey: false,
+    label: 'Collection',
+    nameColumn: 'name',
+    fields: ['name', 'blurb'],
+  },
+} as const
+
+export type PlainType = keyof typeof PLAIN_RECORDS
+
+export function isPlainType(type: string): type is PlainType {
+  return Object.hasOwn(PLAIN_RECORDS, type)
+}
+
+export function plainStatement(
+  type: PlainType,
+  id: number | string,
+  field: string,
+  value: Value,
+): string {
+  const record = PLAIN_RECORDS[type]
+  if (!(record.fields as readonly string[]).includes(field)) {
+    throw new Error(`not an editable ${type} field: ${field}`)
+  }
+  // Each kind takes one shape of key: a number, or a collection's word.
+  const key = record.numericKey
+    ? typeof id === 'number' && Number.isSafeInteger(id) && id > 0
+      ? String(id)
+      : null
+    : typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id)
+      ? sqlLiteral(id)
+      : null
+  if (key === null) throw new Error(`bad ${type} id ${id}`)
+  return `UPDATE ${record.table} SET ${field} = ${sqlLiteral(value)} WHERE ${record.key} = ${key};`
+}

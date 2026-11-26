@@ -17,7 +17,12 @@ import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const DIST = path.join(import.meta.dirname, '..', 'dist')
-const PATTERN = / -- /g
+// " -- " inside one string; or a string that starts with "-- " or ends
+// with " --", which is how JSX splits "Title -- {caption}" across an
+// element: the gallery's photo captions read "Title -- caption" for
+// months with the first pattern alone, because the space and the "-- "
+// were separate strings in the bundle.
+const PATTERN = / -- |[`"']-- | --[`"']/g
 
 const files = [
   'index.html',

@@ -16,6 +16,7 @@ const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'))
 const TagPhotosPage = lazy(() => import('./pages/TagPhotosPage'))
 const TagTextsPage = lazy(() => import('./pages/TagTextsPage'))
 const TextEditorPage = lazy(() => import('./pages/TextEditorPage'))
+const RecordEditorPage = lazy(() => import('./pages/RecordEditorPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const FamilyPage = lazy(() => import('./pages/FamilyPage'))
 const GalleriesPage = lazy(() => import('./pages/GalleriesPage'))
@@ -204,6 +205,17 @@ export default function App() {
             element={
               <RequireAdmin>
                 <TextEditorPage />
+              </RequireAdmin>
+            }
+          />
+          {/* Photographs, galleries and collections: /admin/edit/image/246,
+              /admin/edit/gallery/3, /admin/edit/series/FredKnief. The
+              static "text" route above outranks this one. */}
+          <Route
+            path="/admin/edit/:type/:id"
+            element={
+              <RequireAdmin>
+                <RecordEditorPage />
               </RequireAdmin>
             }
           />

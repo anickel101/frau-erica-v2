@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { markdownLink } from '../utils/markdownLink'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
+import AdminOnly from '../components/AdminOnly'
 import Layout from '../components/Layout'
 import PhotoPeople from '../components/PhotoPeople'
 import GalleryLargeImage from '../components/GalleryLargeImage'
@@ -145,6 +146,22 @@ export default function GalleryPage() {
             Back to Index of Galleries
           </Link>
         </div>
+        <AdminOnly>
+          <p className="max-w-4xl -mt-2 mb-4 text-sm space-x-4">
+            <Link
+              to={`/admin/edit/gallery/${gallery.gallery_id}`}
+              className="text-fe-link hover:text-fe-link-dark"
+            >
+              Edit this gallery
+            </Link>
+            <Link
+              to={`/admin/edit/image/${photos[activeIndex].image_id}`}
+              className="text-fe-link hover:text-fe-link-dark"
+            >
+              Edit this photo
+            </Link>
+          </p>
+        </AdminOnly>
 
         {/* pl-8: a deliberate indent, not an alignment target the way the
             Family page's summary indent lines up with box text -- Gallery

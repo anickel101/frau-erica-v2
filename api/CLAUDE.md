@@ -287,19 +287,27 @@ doesn't exist or a photograph that isn't in the stated gallery — see
 
 ## Staged edits (admin only)
 
-Two routes — `GET /edits?type=document` and `POST /edits/{type}/{id}`
-(body `{ changes, status }`) — backing `/admin/tag-texts` and, as it is
-built, the text editor: an admin changes a record on the site and the
-change waits in a queue until it is applied. Today the one type is
-`document` (title, body, byline, author record, genre, summary, linked
-people); `GET /edits?type=document&id=N` returns one text in full, body
-included, for the editor at `/admin/edit/text/:id`. A bilingual text's
-German half is edited through its entry point as the field `content_de`,
-and a **submitted** edit must leave the two bodies with the same number
-of paragraphs (the export's pairing rule; a draft may be out of step);
-`reviewEdits.ts` re-checks the pairing on the result and holds back
-anything that would break it. Photographs, galleries and collections join it as entries in
-`src/lib/editTypes.ts`, not as new routes or tables.
+Two routes — `GET /edits?type=…` (add `&id=…` for one record in full) and
+`POST /edits/{type}/{id}` (body `{ changes, status }`) — backing the admin
+editors: an admin changes a record on the site and the change waits in a
+queue until it is applied. The kinds, each an entry in
+`src/lib/editTypes.ts` rather than its own route or table:
+
+- `document`: title, body, byline, author record, genre, summary, linked
+  people (the Tag texts page and the text editor at
+  `/admin/edit/text/:id`). A bilingual text's German half is edited
+  through its entry point as the field `content_de`, and a **submitted**
+  edit must leave the two bodies with the same number of paragraphs (the
+  export's pairing rule; a draft may be out of step).
+- `image` (published photographs: title, caption, credit, year, location),
+  `gallery` (name, summary) and `series` (a collection, keyed by its
+  `series_key` word, not a number: name, blurb) — plain fields, one spec
+  each, planned by `src/lib/recordEditPlan.ts`, edited at
+  `/admin/edit/:type/:id`.
+
+`app/scripts/reviewEdits.ts` re-checks everything against the archive
+when applying, including a bilingual text's pairing, and holds back
+anything that would no longer hold.
 
 Same arrangement as photo tagging, and for the same reason: **edits go
 to their own DynamoDB table (`frau-erica-api-edits`), never the
