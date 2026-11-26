@@ -231,7 +231,12 @@ function TextEditor({
         </p>
       </div>
 
-      <StatusLine pending={pending} saveState={saveState} unsaved={unsaved} />
+      <StatusLine
+        pending={pending}
+        saveState={saveState}
+        unsaved={unsaved}
+        className="mb-4"
+      />
 
       {/* Phones get one pane at a time; from lg the two sit side by side. */}
       <div className="lg:hidden mb-3 flex gap-2 text-sm" role="tablist">
@@ -348,7 +353,7 @@ function TextEditor({
               disabled={saving}
               onClick={() => void submit()}
             >
-              Submit for publishing
+              {saving ? 'Saving…' : 'Submit for publishing'}
             </button>
             <button
               type="button"
@@ -359,6 +364,19 @@ function TextEditor({
               Discard changes
             </button>
           </div>
+          {/* The same line again, under the buttons: at the top alone it
+              was off-screen when Submit was pressed at the foot of a long
+              text, so nothing seemed to happen and it got pressed three
+              times (the archivist's first real edit, 2026-11-26). This
+              copy is the live region; the top one is silent so a screen
+              reader doesn't announce every save twice. */}
+          <StatusLine
+            pending={pending}
+            saveState={saveState}
+            unsaved={unsaved}
+            live
+            className="mt-2"
+          />
         </section>
 
         <section
@@ -399,10 +417,14 @@ function StatusLine({
   pending,
   saveState,
   unsaved,
+  live = false,
+  className = '',
 }: {
   pending: TextEdit[]
   saveState: SaveState
   unsaved: boolean
+  live?: boolean
+  className?: string
 }) {
   const latest = [...pending].sort((a, b) => b.edited_at.localeCompare(a.edited_at))[0]
   const drafts = pending.some((e) => e.status === 'draft')
@@ -426,8 +448,8 @@ function StatusLine({
 
   return (
     <p
-      role="status"
-      className={`mb-4 text-sm ${saveState.kind === 'error' ? 'text-red-700' : 'text-fe-ink/70'}`}
+      role={live ? 'status' : undefined}
+      className={`${className} text-sm ${saveState.kind === 'error' ? 'text-red-700' : 'text-fe-ink/70'}`}
     >
       {state}
     </p>
